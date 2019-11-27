@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Veitor的技术点滴</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术点滴">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;page&#x2F;4&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Veitor的技术点滴" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Veitor的技术点滴</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.veitor.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-e7-ae-80-e5-8d-95-e4-ba-86-e8-a7-a3mysql-e9-80-bb-e8-be-91-e6-9e-b6-e6-9e-84" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/30/e7-ae-80-e5-8d-95-e4-ba-86-e8-a7-a3mysql-e9-80-bb-e8-be-91-e6-9e-b6-e6-9e-84/" class="article-date">
+  <time datetime="2014-11-30T05:36:31.000Z" itemprop="datePublished">2014-11-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mysql/">Mysql</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/30/e7-ae-80-e5-8d-95-e4-ba-86-e8-a7-a3mysql-e9-80-bb-e8-be-91-e6-9e-b6-e6-9e-84/">简单了解mysql逻辑架构</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://storage.veitor.net/uploads/2014/11/2012031510324452.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/2012031510324452.png" alt="2012031510324452"></a> 如图，mysql逻辑架构大致分为三层。 第一层，服务层(为客户端服务)：这并不是mysql所独有的，很多基于网络的客户端/服务器的工具或者服务都有这样的类似架构，比如为请求做连接处理，授权认证，安全等。 第二层，核心层：这是一个比较有意思的部分，大多数mysql核心服务功能都在这一层，包括查询解析、分析、优化、缓存以及所有的内置函数（例如日期、时间、数学和加密函数），所有跨存储引擎的功能都在这一层实现：存储过程、触发器、视图等。 第三层，存储引擎层：存储引擎负责Mysql中数据的存储和提取，每个存储引擎都有它的优势和劣势。服务器（即上面的核心层）通过API与存储引擎进行通信。这些接口屏蔽了不同存储引擎之间的差异，使得这些差异对上层的查询过程透明。存储引擎API包含几十个底层函数，用于执行注入“开始一个事务”或者“根据主键提取一行记录”等操作。但存储引擎不会去解析SQL（InnoDB是一个例外，它会解析外键定义，因为Mysql服务器本身没有实现该功能），不同存储引擎之间也不会相互通信，而只是简单的响应上层服务器的请求。 下面进一步了解第一层和第二层。</p>
+<blockquote>
+<h1 id="连接管理与安全性（第一层-服务层）"><a href="#连接管理与安全性（第一层-服务层）" class="headerlink" title="连接管理与安全性（第一层 服务层）"></a>连接管理与安全性（第一层 服务层）</h1></blockquote>
+<p><img src="http://storage.veitor.net/uploads/2014/11/2012031510114191.png" alt="2012031510114191"></p>
+<ul>
+<li>每个客户端链接都会在服务器进程中拥有一个线程，这个链接的查询只会在这个单独的线程中进行，即每个连接的查询都在一个进程中的线程完成。</li>
+<li>服务层会负责缓存线程，因此不需要为每个新建的连接创建一个线程或销毁已经使用的线程，类似线程池。</li>
+</ul>
+<h3 id="认证流程"><a href="#认证流程" class="headerlink" title="认证流程"></a>认证流程</h3><p><img src="http://storage.veitor.net/uploads/2014/11/2012031510220113.png" alt="2012031510220113">   当客户端（应用）连接到mysql服务器时，服务器需要对其进行认证。认证基于原始主机信息和密码。如果使用了安全套接字（SSL）的方式连接，还可以使用X.509证书认证。一旦客户端连接成功，服务器会继续验证该客户端是否具有执行某个特定查询的权限。例如，是否允许客户端对world数据库的country数据表执行select语句。</p>
+<blockquote>
+<h1 id="优化与执行（第二层-核心层）"><a href="#优化与执行（第二层-核心层）" class="headerlink" title="优化与执行（第二层 核心层）"></a>优化与执行（第二层 核心层）</h1></blockquote>
+<p><img src="http://storage.veitor.net/uploads/2014/11/2012031510482383.png" alt="2012031510482383">  </p>
+<p>mysql会解析查询，并创建内部数据结构（解析树），然后对其进行各种优化，包括重写查询、决定表的读取顺序，以及选择合适的索引等。</p>
+<p>在解析查询之前，服务器会“询问”是否进行了查询缓存(只能缓存SELECT语句和相应结果)。缓存过的直接返回结果，未缓存的就需要进行解析查询，优化，重新执行返回结果。</p>
+<p>参考文献《高性能Mysql》</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/30/e7-ae-80-e5-8d-95-e4-ba-86-e8-a7-a3mysql-e9-80-bb-e8-be-91-e6-9e-b6-e6-9e-84/" data-id="ck3hcwydy00501qxie12cbgqw" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-bd-bf-e7-94-a8-e6-b8-90-e8-bf-9b-e5-bc-8fjpeg-e6-9d-a5-e6-8f-90-e5-8d-87-e7-94-a8-e6-88-b7-e4-bd-93-e9-aa-8c" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/27/e4-bd-bf-e7-94-a8-e6-b8-90-e8-bf-9b-e5-bc-8fjpeg-e6-9d-a5-e6-8f-90-e5-8d-87-e7-94-a8-e6-88-b7-e4-bd-93-e9-aa-8c/" class="article-date">
+  <time datetime="2014-11-27T20:35:41.000Z" itemprop="datePublished">2014-11-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/27/e4-bd-bf-e7-94-a8-e6-b8-90-e8-bf-9b-e5-bc-8fjpeg-e6-9d-a5-e6-8f-90-e5-8d-87-e7-94-a8-e6-88-b7-e4-bd-93-e9-aa-8c/">使用渐进式JPEG来提升用户体验</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天才认识到原来JPEG文件有两种保存方式他们分别是Baseline JPEG(标准型)和Progressive JPEG(渐进式)。两种格式有相同尺寸以及图像数据，他们的扩展名也是相同的，唯一的区别是二者显示的方式不同。 <strong>Baseline JPEG</strong> 这种类型的JPEG文件存储方式是按从上到下的扫描方式，把每一行顺序的保存在JPEG文件中。打开这个文件显示它的内容时，数据将按照存储时的顺序从上到下一行一行的被显示出来，直到所有的数据都被读完，就完成了整张图片的显示。如果文件较大或者网络下载速度较慢，那么就会看到图片被一行行加载的效果，这种格式的JPEG没有什么优点，因此，一般都推荐使用Progressive JPEG。 <a href="http://storage.veitor.net/uploads/2014/11/baseline.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/baseline.gif" alt="baseline"></a>   <strong>Progressive JPEG</strong> 和Baseline一遍扫描不同，Progressive JPEG文件包含多次扫描，这些扫描顺寻的存储在JPEG文件中。打开文件过程中，会先显示整个图片的模糊轮廓，随着扫描次数的增加，图片变得越来越清晰。这种格式的主要优点是在网络较慢的情况下，可以看到图片的轮廓知道正在加载的图片大概是什么。在一些网站打开较大图片时，你就会注意到这种技术。 <a href="http://storage.veitor.net/uploads/2014/11/progressive.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/progressive.gif" alt="progressive"></a>   渐进式图片带来的好处是可以让用户在没有下载完图片就可以看到最终图像的大致轮廓，一定程度上可以提升用户体验。(瀑布留的网站建议还是使用标准型的) <a href="http://storage.veitor.net/uploads/2014/11/baseline_vs_progressive.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/baseline_vs_progressive.jpg" alt="baseline_vs_progressive"></a>   另外渐进式的图片的大小并不会和基本的图片大小相差很多，有时候可能会比基本图片更小。渐进式的图片的缺点就是吃用户的CPU和内存，不过对于现在的电脑来说这点图片的计算并不算什么。 说了这边多下面就改讲讲怎么讲图片保存为或者转化为Progressive JPEG了。 1、PhotoShop 在photoshop中有“存储为web所用格式”，打开后选择“连续”就是渐进式JPEG。 <a href="http://storage.veitor.net/uploads/2014/11/photoshop.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/photoshop.png" alt="photoshop"></a>   2、Linux 检测是否为progressive jpeg ： identify -verbose filename.jpg | grep Interlace(如果输出 None 说明不是progressive jpeg；如果输出 Plane 说明是 progressive jpeg。) 将basic jpeg转换成progressive jpeg：&gt; convert infile.jpg -interlace Plane outfile.jpg 3、PHP 使用<a href="http://php.net/manual/en/function.imageinterlace.php" target="_blank" rel="noopener">imageinterlace</a>和<a href="http://www.php.net/manual/en/function.imagejpeg.php" target="_blank" rel="noopener">imagejpeg</a>函数我们可以轻松解决转换问题。</p>
+<?php
+    $im = imagecreatefromjpeg('pic.jpg');
+    imageinterlace($im, 1);
+    imagejpeg($im, './php_interlaced.jpg', 100);
+    imagedestroy($im);
+?>
+
+<p>4、Python</p>
+<p>import PIL<br>from exceptions import IOError<br>&nbsp;&nbsp;<br>img = PIL.Image.open(“c:\\users\\biaodianfu\\pictures\\in.jpg”)<br>destination = “c:\\users\\biaodianfu\\pictures\\test.jpeg”<br>try:<br>&nbsp;&nbsp;&nbsp;&nbsp;img.save(destination, “JPEG”, quality=80, optimize=True, progressive=True)<br>except IOError:<br>&nbsp;&nbsp;&nbsp;&nbsp;PIL.ImageFile.MAXBLOCK = img.size[0] * img.size[1]<br>&nbsp;&nbsp;&nbsp;&nbsp;img.save(destination, “JPEG”, quality=80, optimize=True, progressive=True)</p>
+<p>5、jpegtran jpegtran -copy none -progressive <inputfile> <outputfile> 6、C#</p>
+<p>using (Image source = Image.FromFile(@”D:\temp\test2.jpg”)) {<br>    ImageCodecInfo codec = ImageCodecInfo.GetImageEncoders().First(c =&gt; c.MimeType == “image/jpeg”);<br>    EncoderParameters parameters = new EncoderParameters(3);<br>    parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);<br>    parameters.Param[1] = new EncoderParameter(System.Drawing.Imaging.Encoder.ScanMethod, (int)EncoderValue.ScanMethodInterlaced);<br>    parameters.Param[2] = new EncoderParameter(System.Drawing.Imaging.Encoder.RenderMethod, (int)EncoderValue.RenderProgressive);<br>    source.Save(@”D:\temp\saved.jpg”, codec, parameters);<br>}</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/27/e4-bd-bf-e7-94-a8-e6-b8-90-e8-bf-9b-e5-bc-8fjpeg-e6-9d-a5-e6-8f-90-e5-8d-87-e7-94-a8-e6-88-b7-e4-bd-93-e9-aa-8c/" data-id="ck3hcwyd2003q1qxifsnz19rf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BD%93%E9%AA%8C/" rel="tag">体验</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-oauth2-0-e8-ae-a4-e8-af-81-e5-92-8c-e6-8e-88-e6-9d-83-e5-8e-9f-e7-90-86" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/25/oauth2-0-e8-ae-a4-e8-af-81-e5-92-8c-e6-8e-88-e6-9d-83-e5-8e-9f-e7-90-86/" class="article-date">
+  <time datetime="2014-11-25T23:09:32.000Z" itemprop="datePublished">2014-11-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/25/oauth2-0-e8-ae-a4-e8-af-81-e5-92-8c-e6-8e-88-e6-9d-83-e5-8e-9f-e7-90-86/">OAuth2.0认证和授权原理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>以前做过一个人人网的站内应用（<a href="http://apps.renren.com/rr_timer不过已经很久没更新了），其中就用到了OAtuth授权，今天要做个新浪微博授权登陆，那么正巧再复习一下OAuth认证和授权原理吧，也没多少时间写这玩意儿，网上之前看到一篇不错的就拉过来了。" target="_blank" rel="noopener">http://apps.renren.com/rr_timer不过已经很久没更新了），其中就用到了OAtuth授权，今天要做个新浪微博授权登陆，那么正巧再复习一下OAuth认证和授权原理吧，也没多少时间写这玩意儿，网上之前看到一篇不错的就拉过来了。</a> <a href="http://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noopener">OAuth</a>是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。 本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为<a href="http://www.rfcreader.com/#rfc6749" target="_blank" rel="noopener">RFC 6749</a>。 <img src="http://storage.veitor.net/uploads/2014/11/bg2014051201.png" alt="bg2014051201"></p>
+<h2 id="一、应用场景"><a href="#一、应用场景" class="headerlink" title="一、应用场景"></a>一、应用场景</h2><p>为了理解OAuth的适用场合，让我举一个假设的例子。 有一个”云冲印”的网站，可以将用户储存在Google的照片，冲印出来。用户为了使用该服务，必须让”云冲印”读取自己储存在Google上的照片。 问题是只有得到用户的授权，Google才会同意”云冲印”读取这些照片。那么，”云冲印”怎样获得用户的授权呢？ 传统方法是，用户将自己的Google用户名和密码，告诉”云冲印”，后者就可以读取用户的照片了。这样的做法有以下几个严重的缺点。</p>
+<blockquote>
+<p>（1）”云冲印”为了后续的服务，会保存用户的密码，这样很不安全。 （2）Google不得不部署密码登录，而我们知道，单纯的密码登录并不安全。 （3）”云冲印”拥有了获取用户储存在Google所有资料的权力，用户没法限制”云冲印”获得授权的范围和有效期。 （4）用户只有修改密码，才能收回赋予”云冲印”的权力。但是这样做，会使得其他所有获得用户授权的第三方应用程序全部失效。 （5）只要有一个第三方应用程序被破解，就会导致用户密码泄漏，以及所有被密码保护的数据泄漏。</p>
+</blockquote>
+<p>OAuth就是为了解决上面这些问题而诞生的。</p>
+<h2 id="二、名词定义"><a href="#二、名词定义" class="headerlink" title="二、名词定义"></a>二、名词定义</h2><p>在详细讲解OAuth 2.0之前，需要了解几个专用名词。它们对读懂后面的讲解，尤其是几张图，至关重要。</p>
+<blockquote>
+<p>（1） Third-party application：第三方应用程序，本文中又称”客户端”（client），即上一节例子中的”云冲印”。 （2）HTTP service：HTTP服务提供商，本文中简称”服务提供商”，即上一节例子中的Google。 （3）Resource Owner：资源所有者，本文中又称”用户”（user）。 （4）User Agent：用户代理，本文中就是指浏览器。 （5）Authorization server：认证服务器，即服务提供商专门用来处理认证的服务器。 （6）Resource server：资源服务器，即服务提供商存放用户生成的资源的服务器。它与认证服务器，可以是同一台服务器，也可以是不同的服务器。</p>
+</blockquote>
+<p>知道了上面这些名词，就不难理解，OAuth的作用就是让”客户端”安全可控地获取”用户”的授权，与”服务商提供商”进行互动。</p>
+<h2 id="三、OAuth的思路"><a href="#三、OAuth的思路" class="headerlink" title="三、OAuth的思路"></a>三、OAuth的思路</h2><p>OAuth在”客户端”与”服务提供商”之间，设置了一个授权层（authorization layer）。”客户端”不能直接登录”服务提供商”，只能登录授权层，以此将用户与客户端区分开来。”客户端”登录授权层所用的令牌（token），与用户的密码不同。用户可以在登录的时候，指定授权层令牌的权限范围和有效期。 “客户端”登录授权层以后，”服务提供商”根据令牌的权限范围和有效期，向”客户端”开放用户储存的资料。</p>
+<h2 id="四、运行流程"><a href="#四、运行流程" class="headerlink" title="四、运行流程"></a>四、运行流程</h2><p>OAuth 2.0的运行流程如下图，摘自RFC 6749。 <a href="http://storage.veitor.net/uploads/2014/11/bg2014051203.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/bg2014051203.png" alt="bg2014051203"></a>  </p>
+<blockquote>
+<p>（A）用户打开客户端以后，客户端要求用户给予授权。 （B）用户同意给予客户端授权。 （C）客户端使用上一步获得的授权，向认证服务器申请令牌。 （D）认证服务器对客户端进行认证以后，确认无误，同意发放令牌。 （E）客户端使用令牌，向资源服务器申请获取资源。 （F）资源服务器确认令牌无误，同意向客户端开放资源。</p>
+</blockquote>
+<p>不难看出来，上面六个步骤之中，B是关键，即用户怎样才能给于客户端授权。有了这个授权以后，客户端就可以获取令牌，进而凭令牌获取资源。 下面一一讲解客户端获取授权的四种模式。</p>
+<h2 id="五、客户端的授权模式"><a href="#五、客户端的授权模式" class="headerlink" title="五、客户端的授权模式"></a>五、客户端的授权模式</h2><p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0定义了四种授权方式。</p>
+<ul>
+<li>授权码模式（authorization code）</li>
+<li>简化模式（implicit）</li>
+<li>密码模式（resource owner password credentials）</li>
+<li>客户端模式（client credentials）</li>
+</ul>
+<h2 id="六、授权码模式"><a href="#六、授权码模式" class="headerlink" title="六、授权码模式"></a>六、授权码模式</h2><p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与”服务提供商”的认证服务器进行互动。 <a href="http://storage.veitor.net/uploads/2014/11/bg20140512031.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/bg20140512031.png" alt="bg2014051203"></a>   它的步骤如下：</p>
+<blockquote>
+<p>（A）用户访问客户端，后者将前者导向认证服务器。 （B）用户选择是否给予客户端授权。 （C）假设用户给予授权，认证服务器将用户导向客户端事先指定的”重定向URI”（redirection URI），同时附上一个授权码。 （D）客户端收到授权码，附上早先的”重定向URI”，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。 （E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+</blockquote>
+<p>下面是上面这些步骤所需要的参数。 A步骤中，客户端申请认证的URI，包含以下参数：</p>
+<ul>
+<li>response_type：表示授权类型，必选项，此处的值固定为”code”</li>
+<li>client_id：表示客户端的ID，必选项</li>
+<li>redirect_uri：表示重定向URI，可选项</li>
+<li>scope：表示申请的权限范围，可选项</li>
+<li>state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>GET /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;state=xyz &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1 Host: server.example.com</p>
+</blockquote>
+<p>C步骤中，服务器回应客户端的URI，包含以下参数：</p>
+<ul>
+<li>code：表示授权码，必选项。该码的有效期应该很短，通常设为10分钟，客户端只能使用该码一次，否则会被授权服务器拒绝。该码与客户端ID和重定向URI，是一一对应关系。</li>
+<li>state：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>HTTP/1.1 302 Found Location: <a href="https://client.example.com/cb" target="_blank" rel="noopener">https://client.example.com/cb</a>?code=SplxlOBeZQQYbYS6WxSbIA &amp;state=xyz</p>
+</blockquote>
+<p>D步骤中，客户端向认证服务器申请令牌的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant_type：表示使用的授权模式，必选项，此处的值固定为”authorization_code”。</li>
+<li>code：表示上一步获得的授权码，必选项。</li>
+<li>redirect_uri：表示重定向URI，必选项，且必须与A步骤中的该参数值保持一致。</li>
+<li>client_id：表示客户端ID，必选项。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>POST /token HTTP/1.1 Host: server.example.com Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW Content-Type: application/x-www-form-urlencoded grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb</p>
+</blockquote>
+<p>E步骤中，认证服务器发送的HTTP回复，包含以下参数：</p>
+<ul>
+<li>access_token：表示访问令牌，必选项。</li>
+<li>token_type：表示令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。</li>
+<li>expires_in：表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</li>
+<li>refresh_token：表示更新令牌，用来获取下一次的访问令牌，可选项。</li>
+<li>scope：表示权限范围，如果与客户端申请的范围一致，此项可省略。</li>
+</ul>
+<p>下面是一个例子。</p>
+<p>HTTP/1.1 200 OK<br>Content-Type: application/json;charset=UTF-8<br>Cache-Control: no-store<br>Pragma: no-cache<br>{<br>“access_token”:”2YotnFZFEjr1zCsicMWpAA”,<br>“token_type”:”example”,<br>“expires_in”:3600,<br>“refresh_token”:”tGzv3JOkF0XG5Qx2TlKWIA”,<br>“example_parameter”:”example_value”<br>}</p>
+<p>  从上面代码可以看到，相关参数使用JSON格式发送（Content-Type: application/json）。此外，HTTP头信息中明确指定不得缓存。</p>
+<h2 id="七、简化模式"><a href="#七、简化模式" class="headerlink" title="七、简化模式"></a>七、简化模式</h2><p>简化模式（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。 <a href="http://storage.veitor.net/uploads/2014/11/bg20140512032.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/bg20140512032.png" alt="bg2014051203"></a>   它的步骤如下：</p>
+<blockquote>
+<p>（A）客户端将用户导向认证服务器。 （B）用户决定是否给于客户端授权。 （C）假设用户给予授权，认证服务器将用户导向客户端指定的”重定向URI”，并在URI的Hash部分包含了访问令牌。 （D）浏览器向资源服务器发出请求，其中不包括上一步收到的Hash值。 （E）资源服务器返回一个网页，其中包含的代码可以获取Hash值中的令牌。 （F）浏览器执行上一步获得的脚本，提取出令牌。 （G）浏览器将令牌发给客户端。</p>
+</blockquote>
+<p>下面是上面这些步骤所需要的参数。 A步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>response_type：表示授权类型，此处的值固定为”token”，必选项。</li>
+<li>client_id：表示客户端的ID，必选项。</li>
+<li>redirect_uri：表示重定向的URI，可选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+<li>state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>GET /authorize?response_type=token&amp;client_id=s6BhdRkqt3&amp;state=xyz &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1 Host: server.example.com</p>
+</blockquote>
+<p>C步骤中，认证服务器回应客户端的URI，包含以下参数：</p>
+<ul>
+<li>access_token：表示访问令牌，必选项。</li>
+<li>token_type：表示令牌类型，该值大小写不敏感，必选项。</li>
+<li>expires_in：表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</li>
+<li>scope：表示权限范围，如果与客户端申请的范围一致，此项可省略。</li>
+<li>state：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>HTTP/1.1 302 Found Location: <a href="http://example.com/cb" target="_blank" rel="noopener">http://example.com/cb</a>#access_token=2YotnFZFEjr1zCsicMWpAA &amp;state=xyz&amp;token_type=example&amp;expires_in=3600</p>
+</blockquote>
+<p>在上面的例子中，认证服务器用HTTP头信息的Location栏，指定浏览器重定向的网址。注意，在这个网址的Hash部分包含了令牌。 根据上面的D步骤，下一步浏览器会访问Location指定的网址，但是Hash部分不会发送。接下来的E步骤，服务提供商的资源服务器发送过来的代码，会提取出Hash中的令牌。</p>
+<h2 id="八、密码模式"><a href="#八、密码模式" class="headerlink" title="八、密码模式"></a>八、密码模式</h2><p>密码模式（Resource Owner Password Credentials Grant）中，用户向客户端提供自己的用户名和密码。客户端使用这些信息，向”服务商提供商”索要授权。 在这种模式中，用户必须把自己的密码给客户端，但是客户端不得储存密码。这通常用在用户对客户端高度信任的情况下，比如客户端是操作系统的一部分，或者由一个著名公司出品。而认证服务器只有在其他授权模式无法执行的情况下，才能考虑使用这种模式。 <a href="http://storage.veitor.net/uploads/2014/11/bg20140512033.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/bg20140512033.png" alt="bg2014051203"></a>   它的步骤如下：</p>
+<blockquote>
+<p>（A）用户向客户端提供用户名和密码。 （B）客户端将用户名和密码发给认证服务器，向后者请求令牌。 （C）认证服务器确认无误后，向客户端提供访问令牌。</p>
+</blockquote>
+<p>B步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant_type：表示授权类型，此处的值固定为”password”，必选项。</li>
+<li>username：表示用户名，必选项。</li>
+<li>password：表示用户的密码，必选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>POST /token HTTP/1.1 Host: server.example.com Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW Content-Type: application/x-www-form-urlencoded grant_type=password&amp;username=johndoe&amp;password=A3ddj3w</p>
+</blockquote>
+<p>C步骤中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
+<p>HTTP/1.1 200 OK<br>     Content-Type: application/json;charset=UTF-8<br>     Cache-Control: no-store<br>     Pragma: no-cache<br>     {<br>       “access_token”:”2YotnFZFEjr1zCsicMWpAA”,<br>       “token_type”:”example”,<br>       “expires_in”:3600,<br>       “refresh_token”:”tGzv3JOkF0XG5Qx2TlKWIA”,<br>       “example_parameter”:”example_value”<br>     }</p>
+<p>  上面代码中，各个参数的含义参见《授权码模式》一节。 整个过程中，客户端不得保存用户的密码。</p>
+<h2 id="九、客户端模式"><a href="#九、客户端模式" class="headerlink" title="九、客户端模式"></a>九、客户端模式</h2><p>客户端模式（Client Credentials Grant）指客户端以自己的名义，而不是以用户的名义，向”服务提供商”进行认证。严格地说，客户端模式并不属于OAuth框架所要解决的问题。在这种模式中，用户直接向客户端注册，客户端以自己的名义要求”服务提供商”提供服务，其实不存在授权问题。 <a href="http://storage.veitor.net/uploads/2014/11/bg20140512034.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/bg20140512034.png" alt="bg2014051203"></a>   它的步骤如下：</p>
+<blockquote>
+<p>（A）客户端向认证服务器进行身份认证，并要求一个访问令牌。 （B）认证服务器确认无误后，向客户端提供访问令牌。</p>
+</blockquote>
+<p>A步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>granttype：表示授权类型，此处的值固定为”clientcredentials”，必选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+</ul>
+<blockquote>
+<p>POST /token HTTP/1.1 Host: server.example.com Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW Content-Type: application/x-www-form-urlencoded grant_type=client_credentials</p>
+</blockquote>
+<p>认证服务器必须以某种方式，验证客户端身份。 B步骤中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
+<p>HTTP/1.1 200 OK<br>     Content-Type: application/json;charset=UTF-8<br>     Cache-Control: no-store<br>     Pragma: no-cache<br>     {<br>       “access_token”:”2YotnFZFEjr1zCsicMWpAA”,<br>       “token_type”:”example”,<br>       “expires_in”:3600,<br>       “example_parameter”:”example_value”<br>     }</p>
+<p>  上面代码中，各个参数的含义参见《授权码模式》一节。</p>
+<h2 id="十、更新令牌"><a href="#十、更新令牌" class="headerlink" title="十、更新令牌"></a>十、更新令牌</h2><p>如果用户访问的时候，客户端的”访问令牌”已经过期，则需要使用”更新令牌”申请一个新的访问令牌。 客户端发出更新令牌的HTTP请求，包含以下参数：</p>
+<ul>
+<li>granttype：表示使用的授权模式，此处的值固定为”refreshtoken”，必选项。</li>
+<li>refresh_token：表示早前收到的更新令牌，必选项。</li>
+<li>scope：表示申请的授权范围，不可以超出上一次申请的范围，如果省略该参数，则表示与上一次一致。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<p>POST /token HTTP/1.1 Host: server.example.com Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW Content-Type: application/x-www-form-urlencoded grant_type=refresh_token&amp;refresh_token=tGzv3JOkF0XG5Qx2TlKWIA</p>
+</blockquote>
+<p>  （完） 原文地址：<a href="http://www.ruanyifeng.com/blog/2014/05/oauth\_2\_0.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/05/oauth\_2\_0.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/25/oauth2-0-e8-ae-a4-e8-af-81-e5-92-8c-e6-8e-88-e6-9d-83-e5-8e-9f-e7-90-86/" data-id="ck3hcwyh700ck1qxibekwf0m9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8E%88%E6%9D%83/" rel="tag">授权</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%A4%E8%AF%81/" rel="tag">认证</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/19/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/" class="article-date">
+  <time datetime="2014-11-19T18:03:42.000Z" itemprop="datePublished">2014-11-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mysql/">Mysql</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/19/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/">PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&gt;bindParam(1, $string); $statement-&gt;bindParam(2, $int, PDO::PARAM_INT); 我在以前的文章中分析介绍过PDO的ATTR_EMULATE_PREPARES属性对PDO底层协议与MySQL Server通讯机制影响： 1. 默认情况下，PDO会使用DSN中指定的字符集对输入参数进行本地转义（PHP手册中称为native prepared statements），然后拼接成完整的SQL语句，发送给MySQL Server。这有些像我们平时程序中拼接变量到SQL再执行查询的形式。 这种情况下，PDO驱动能否正确转义输入参数，是拦截SQL注入的关键。然而PHP 5.3.6及老版本，并不支持在DSN中定义charset属性（会忽略之），这时如果使用PDO的本地转义，仍然可能导致SQL注入，解决办法后面会提到。 2. MySQL Server 5.1开始支持prepare预编译SQL机制，即SQL查询语句与参数分离提交，但这个特性需要客户端协议支持支持，目前所有版本的PHP均支持。 如果PDO客户端使用mysql Server的prepare功能，大致的交互过程是： A. PDO将SQL模板发送给mysql server， SQL模板即包含参数占位符（问号或命名参数）的SQL语句 B. PDO不对输入参数作任何转义处理，将参数的位置，值，类型等等信息发送给MySQL Server C. PDO客户端调用execute statement D. MySQL Server 对B步骤提交的参数进行内部转义，并执行查询,返回结果给客户端。 看到没有，如果使用了mysql server prepare功能，则字符串的转义是由MySQL Server完成的。mysql会根据字符集（set names <charset>）对输入参数转换，确保没有注入产生。   PDO默认情况下使用了本地模拟prepare（并未使用MySQL server的prepare）,如果要禁止PDO本地模拟行为而使用MySQL Server的prepare机制，则需要设置PDO的参数： $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false); 如果你使用了PHP 5.3.6及以前版本，强烈推荐使用上述语句加强安全性。 如果你使用PHP 5.3.6+, 则请在DSN中指定 charset，是否设置上述参数，都是安全的。   好了，现在步入正题，假设有以下代码逻辑：   $pdo = new PDO(“mysql:host=localhost;dbname=test;charset=utf8”,’root’,’’); $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION); $pdo-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC); $pdo-&gt;exec(‘set names utf8’); $id = ‘0 or 1 =1 order by id desc’; $sql = “select * from article where id = ?”; $statement = $pdo-&gt;prepare($sql); $statement-&gt;bindParam(1, $id, PDO::PARAM_INT); $statement-&gt;execute(); 假设$id是外部变量（由其它函数传递，或用户提交），我们也没有使用intval对这两个参数进行强制类型转换（我们认为使用PDO绑定参数时已经指定参数类型为INT, 即PDO::PARAM_INT），期待PDO能使用我们指定的类型对其进行转义，但是事实上呢？却有太多不确定因素： 1. 以上代码实测在PHP 5.2.1造成了SQL注入 2. 以上代码在PHP 5.3.9下，没有造成任何SQL注入 那么，如果使用了存在bug的PHP版本，那么如何从根本上解决这个问题？ 1. 设置PDO不使用本地模拟prepare, 即 $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false);   这样，即使不使用intval对输入进行转换，也可以确保是安全的。如果由于程序员遗忘没有使用intval转换，那么还是存在安全隐患的。   使用这种方式，更彻底，更安全。 原文地址：<a href="http://zhangxugg-163-com.iteye.com/blog/1855088" target="_blank" rel="noopener">http://zhangxugg-163-com.iteye.com/blog/1855088</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/19/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/" data-id="ck3hcwyew00691qxi03p46so0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-windows-e4-b8-8b-e5-ae-89-e8-a3-85python-e5-92-8cpip" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/18/windows-e4-b8-8b-e5-ae-89-e8-a3-85python-e5-92-8cpip/" class="article-date">
+  <time datetime="2014-11-18T00:11:43.000Z" itemprop="datePublished">2014-11-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/18/windows-e4-b8-8b-e5-ae-89-e8-a3-85python-e5-92-8cpip/">Windows下安装python和pip</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>此前安装过python，但因为安装pip过程中遇到了问题，所以把python也一起卸载了。现在重新安装一下这两个。 这里选择了python2.7.8版本进行安装，因为我需要使用sqlmap这个工具，而这个工具对python版本有要求，最新版本的python会出错，所以我选择了2.7.8的版本。 首先上官网<a href="https://www.python.org/downloads" target="_blank" rel="noopener">https://www.python.org/downloads</a> 下载</p>
+<p><a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118141425.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118141425.jpg" alt="QQ截图20141118141425"></a></p>
+<p>下载的是msi文件，直接打开像安装普通软件一样安装就行。<strong>但有一点一定要注意，如果你要使用pip，则安装python时选择的安装路径目录中不要有空格，如果安装到了Program Files这样的目录下，那么接下来安装的pip将无法正常运行，会报错。</strong>所以这里我直接选择了D盘下，安装前记得选择将python.exe添加到系统环境变量。 <a href="http://storage.veitor.net/uploads/2014/11/QQ图片20141118142038.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E5%9B%BE%E7%89%8720141118142038.jpg" alt="QQ图片20141118142038"></a>   安装完之后在CMD中输入python命令会看到欢迎界面。 接下来安装pip，上<a href="https://pip.pypa.io/en/latest/installing.html下载" target="_blank" rel="noopener">https://pip.pypa.io/en/latest/installing.html下载</a> get-pip.py脚本 在CMD下找到该文件目录并运行下列命令（需要管理员权限）： python get-pip.py <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118142644.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118142644.jpg" alt="QQ截图20141118142644"></a> 安装好之后，会发现python安装目录下会多出一个Scripts目录（若之前没有）。 这时我们直接在命令行输入pip，会显示‘pip’不是内部命令，也不是可运行的程序。因为我们还没有添加环境变量。 只要在PATH变量中添加：D:\Python27\Scripts;（路径自己更换）就好了，输入pip list 查看安装情况 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118143306.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118143306.jpg" alt="QQ截图20141118143306"></a>   如果出现下列错误，那么原因可能就是上面我所说的python安装路径目录名中有空格了  </p>
+<p>Fatal error in launcher: Unable to create process using ‘“D:\Program Files\Python27\python.exe” “D:\Program Files\Python27\Scripts\pip.exe” ‘</p>
+<p>  （完）</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/18/windows-e4-b8-8b-e5-ae-89-e8-a3-85python-e5-92-8cpip/" data-id="ck3hcwyfe007j1qxierehbrhb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pip/" rel="tag">pip</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-sql-e4-b8-adwhere-11-e5-92-8c-01-e7-9a-84-e4-bd-9c-e7-94-a8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/09/sql-e4-b8-adwhere-11-e5-92-8c-01-e7-9a-84-e4-bd-9c-e7-94-a8/" class="article-date">
+  <time datetime="2014-11-09T18:36:09.000Z" itemprop="datePublished">2014-11-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Mysql/">Mysql</a>►<a class="article-category-link" href="/categories/Mysql/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/09/sql-e4-b8-adwhere-11-e5-92-8c-01-e7-9a-84-e4-bd-9c-e7-94-a8/">sql中where 1=1和 0=1 的作用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>刚在写sql的时候思考了一下在不确定条件因素时的情况，之前看到别人使用过where 1=1这个条件， 这个条件始终为True，后来了解到在不定数量查询条件情况下，1=1可以很方便的规范语句。</p>
+<h2 id="一、不用where-1-1-在多条件查询中的困扰"><a href="#一、不用where-1-1-在多条件查询中的困扰" class="headerlink" title="一、不用where  1=1  在多条件查询中的困扰"></a>一、不用where  1=1  在多条件查询中的困扰</h2><p>　　举个例子，如果您做查询页面，并且，可查询的选项有多个，同时，还让用户自行选择并输入查询关键词，那么，按平时的查询语句的动态构造，代码大体如下：</p>
+<p>$sql=”select * from table where”；<br>if(!empty($age))<br>{<br>    $sql .= ‘age=’.$age’；<br>}<br>if(!empty($address))<br>{<br>　　$sql. = ‘and address=’.$address;<br>}</p>
+<p>如果上述的两个if判断语句，均为true，即用户都输入了查询词，那么，最终的$sql动态构造语句变为： $sql= ‘select * from table where age=20 and address=”常州”‘; 可以看得出来，这是一条完整的正确的SQL查询语句，能够正确的被执行，并根据数据库是否存在记录，返回数据。 ②种假设 如果上述的两个if判断语句不成立，那么，最终的$sql动态构造语句变为： $sql  = ‘select * from table where’; 现在，我们来看一下这条语句，由于where关键词后面需要使用条件，但是这条语句根本就不存在条件，所以，该语句就是一条错误的语句，肯定不能被执行，不仅报错，同时还不会查询到任何数据。 上述的两种假设，代表了现实的应用，说明，语句的构造存在问题，不足以应付灵活多变的查询条件。</p>
+<h2 id="二、使用-where-1-1-的好处"><a href="#二、使用-where-1-1-的好处" class="headerlink" title="二、使用 where  1=1  的好处"></a>二、使用 where  1=1  的好处</h2><p>假如我们将上述的语句改为：</p>
+<p>$sql=”select * from table where 1=1”；<br>if(!empty($age))<br>{<br>    $sql .= ‘ and age=’.$age’；<br>}<br>if(!empty($address))<br>{<br>　　$sql. = ‘and address=’.$address;<br>}</p>
+<p>①种假设 如果两个if都成立，那么，语句变为： $sql = ‘select * from table where 1=1 and age=12 and address=”常州’”，很明显，该语句是一条正确的语句，能够正确执行，如果数据库有记录，肯定会被查询到。 ②种假设 如果两个if都不成立，那么，语句变为： $sql = ‘select * from table where 1=1’，现在，我们来看这条语句，由于where 1=1 是为true的语句，因此，该条语句语法正确，能够被正确执行，它的作用相当于：$sql = ‘select * from table’，即返回表中所有数据。 言下之意就是：如果用户在多条件查询页面中，不选择任何字段、不输入任何关键词，那么，必将返回表中所有数据；如果用户在页面中，选择了部分字段并且输入了部分查询关键词，那么，就按用户设置的条件进行查询。 说到这里，不知道您是否已明白，其实，where 1=1的应用，不是什么高级的应用，也不是所谓的智能化的构造，仅仅只是为了满足多条件查询页面中不确定的各种因素而采用的一种构造一条正确能运行的动态SQL语句的一种方法。 where 1=0; 这个条件始终为false，结果不会返回任何数据，只有表结构，可用于快速建表 “select * from table where 1=0”; 该select语句主要用于读取表的结构而不考虑表中的数据，这样节省了内存，因为可以不用保存结果集。 create table newtable as select * from oldtable where 1=0;  创建一个新表，而新表的结构与查询的表的结构是一样的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/09/sql-e4-b8-adwhere-11-e5-92-8c-01-e7-9a-84-e4-bd-9c-e7-94-a8/" data-id="ck3hcwyf900751qxi3xtsegod" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ascii-unicode-e5-92-8cutf-8-e7-9a-84-e5-85-b3-e7-b3-bb" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/06/ascii-unicode-e5-92-8cutf-8-e7-9a-84-e5-85-b3-e7-b3-bb/" class="article-date">
+  <time datetime="2014-11-06T01:06:59.000Z" itemprop="datePublished">2014-11-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/06/ascii-unicode-e5-92-8cutf-8-e7-9a-84-e5-85-b3-e7-b3-bb/">ASCII，Unicode和UTF-8的关系</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这个笔记主要用来整理自己的思路。但是，尽量试图写得通俗易懂，希望能对其他朋友有用。毕竟，字符编码是计算机技术的基石，想要熟练使用计算机，就必须懂得一点字符编码的知识。 <strong>1. ASCII码</strong> 我们知道，在计算机内部，所有的信息最终都表示为一个二进制的字符串。每一个二进制位（bit）有0和1两种状态，因此八个二进制位就可以组合出 256种状态，这被称为一个字节（byte）。也就是说，一个字节一共可以用来表示256种不同的状态，每一个状态对应一个符号，就是256个符号，从 0000000到11111111。 上个世纪60年代，美国制定了一套字符编码，对英语字符与二进制位之间的关系，做了统一规定。这被称为ASCII码，一直沿用至今。 ASCII码一共规定了128个字符的编码，比如空格”SPACE”是32（二进制00100000），大写的字母A是65（二进制01000001）。这128个符号（包括32个不能打印出来的控制符号），只占用了一个字节的后面7位，最前面的1位统一规定为0。 <strong>2、非ASCII编码</strong> 英语用128个符号编码就够了，但是用来表示其他语言，128个符号是不够的。比如，在法语中，字母上方有注音符号，它就无法用ASCII码表示。 于是，一些欧洲国家就决定，利用字节中闲置的最高位编入新的符号。比如，法语中的é的编码为130（二进制10000010）。这样一来，这些欧洲国家使 用的编码体系，可以表示最多256个符号。 但是，这里又出现了新的问题。不同的国家有不同的字母，因此，哪怕它们都使用256个符号的编码方式，代表的字母却不一样。比如，130在法语编码 中代表了é，在希伯来语编码中却代表了字母Gimel (ג)，在俄语编码中又会代表另一个符号。但是不管怎样，所有这些编码方式中，0–127表示的符号是一样的，不一样的只是128–255的这一段。 至于亚洲国家的文字，使用的符号就更多了，汉字就多达10万左右。一个字节只能表示256种符号，肯定是不够的，就必须使用多个字节表达一个符号。 比如，简体中文常见的编码方式是GB2312，使用两个字节表示一个汉字，所以理论上最多可以表示256x256=65536个符号。 中文编码的问题需要专文讨论，这篇笔记不涉及。这里只指出，虽然都是用多个字节表示一个符号，但是GB类的汉字编码与后文的Unicode和UTF-8是毫无关系的。 <strong>3.Unicode</strong> 正如上一节所说，世界上存在着多种编码方式，同一个二进制数字可以被解释成不同的符号。因此，要想打开一个文本文件，就必须知道它的编码方式，否则用错误的编码方式解读，就会出现乱码。为什么电子邮件常常出现乱码？就是因为发信人和收信人使用的编码方式不一样。 可以想象，如果有一种编码，将世界上所有的符号都纳入其中。每一个符号都给予一个独一无二的编码，那么乱码问题就会消失。这就是Unicode，就像它的名字都表示的，这是一种所有符号的编码。 Unicode当然是一个很大的集合，现在的规模可以容纳100多万个符号。每个符号的编码都不一样，比如，U+0639表示阿拉伯字母Ain，U+0041表示英语的大写字母A，U+4E25表示汉字”严”。具体的符号对应表，可以查询<a href="http://www.unicode.org" target="_blank" rel="noopener">unicode.org</a>，或者专门的<a href="http://www.chi2ko.com/tool/CJK.htm" target="_blank" rel="noopener">汉字对应表</a>。 <strong>4. Unicode的问题</strong> 需要注意的是，Unicode只是一个符号集，它只规定了符号的二进制代码，却没有规定这个二进制代码应该如何存储。 比如，汉字”严”的unicode是十六进制数4E25，转换成二进制数足足有15位（100111000100101），也就是说这个符号的表示至少需要2个字节。表示其他更大的符号，可能需要3个字节或者4个字节，甚至更多。 这里就有两个严重的问题，第一个问题是，如何才能区别Unicode和ASCII？计算机怎么知道三个字节表示一个符号，而不是分别表示三个符号 呢？第二个问题是，我们已经知道，英文字母只用一个字节表示就够了，如果Unicode统一规定，每个符号用三个或四个字节表示，那么每个英文字母前都必 然有二到三个字节是0，这对于存储来说是极大的浪费，文本文件的大小会因此大出二三倍，这是无法接受的。 它们造成的结果是：1）出现了Unicode的多种存储方式，也就是说有许多种不同的二进制格式，可以用来表示Unicode。2）Unicode在很长一段时间内无法推广，直到互联网的出现。 <strong>5.UTF-8</strong> 互联网的普及，强烈要求出现一种统一的编码方式。UTF-8就是在互联网上使用最广的一种Unicode的实现方式。其他实现方式还包括UTF-16（字符用两个字节或四个字节表示）和UTF-32（字符用四个字节表示），不过在互联网上基本不用。<strong>重复一遍，这里的关系是，UTF-8是Unicode的实现方式之一。</strong> UTF-8最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度。 UTF-8的编码规则很简单，只有二条： 1）对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。 2）对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。 下表总结了编码规则，字母x表示可用编码的位。</p>
+<blockquote>
+<p>Unicode符号范围 | UTF-8编码方式 (十六进制) | （二进制） ——————–+——————————————— 0000 0000-0000 007F | 0xxxxxxx 0000 0080-0000 07FF | 110xxxxx 10xxxxxx 0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx 0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</p>
+</blockquote>
+<p>跟据上表，解读UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。 下面，还是以汉字”严”为例，演示如何实现UTF-8编码。 已知”严”的unicode是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800-0000 FFFF），因此”严”的UTF-8编码需要三个字节，即格式是”1110xxxx 10xxxxxx 10xxxxxx”。然后，从”严”的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，”严”的UTF-8编码 是”11100100 10111000 10100101”，转换成十六进制就是E4B8A5。 <strong>6. Unicode与UTF-8之间的转换</strong> 通过上一节的例子，可以看到”严”的Unicode码是4E25，UTF-8编码是E4B8A5，两者是不一样的。它们之间的转换可以通过程序实现。 在Windows平台下，有一个最简单的转化方法，就是使用内置的记事本小程序Notepad.exe。打开文件后，点击”文件”菜单中的”另存为”命令，会跳出一个对话框，在最底部有一个”编码”的下拉条。 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141106170522.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141106170522.jpg" alt="QQ截图20141106170522"></a> 里面有四个选项：ANSI，Unicode，Unicode big endian 和 UTF-8。 1）ANSI是默认的编码方式。对于英文文件是ASCII编码，对于简体中文文件是GB2312编码（只针对Windows简体中文版，如果是繁体中文版会采用Big5码）。 2）Unicode编码指的是UCS-2编码方式，即直接用两个字节存入字符的Unicode码。这个选项用的little endian格式。 3）Unicode big endian编码与上一个选项相对应。我在下一节会解释little endian和big endian的涵义。 4）UTF-8编码，也就是上一节谈到的编码方法。 选择完”编码方式”后，点击”保存”按钮，文件的编码方式就立刻转换好了。 <strong>7. Little endian和Big endian</strong> 上一节已经提到，Unicode码可以采用UCS-2格式直接存储。以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节 是4E，另一个字节是25。存储的时候，4E在前，25在后，就是Big endian方式；25在前，4E在后，就是Little endian方式。 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中，小人国里爆发了内战，战争起因是人们争论，吃鸡蛋时究竟是从大头(Big- Endian)敲开还是从小头(Little-Endian)敲开。为了这件事情，前后爆发了六次战争，一个皇帝送了命，另一个皇帝丢了王位。 因此，第一个字节在前，就是”大头方式”（Big endian），第二个字节在前就是”小头方式”（Little endian）。 那么很自然的，就会出现一个问题：计算机怎么知道某一个文件到底采用哪一种方式编码？ Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 <strong>8. 实例</strong> 下面，举一个实例。 打开”记事本”程序Notepad.exe，新建一个文本文件，内容就是一个”严”字，依次采用ANSI，Unicode，Unicode big endian 和 UTF-8编码方式保存。 然后，用文本编辑软件<a href="http://www.google.cn/search?aq=t&oq=UltraEdit&complete=1&hl=zh-CN&newwindow=1&rlz=1B3GGGL_zh-CNCN216CN216&q=ultraedit+%E4%B8%8B%E8%BD%BD&btnG=Google+%E6%90%9C%E7%B4%A2&meta=" target="_blank" rel="noopener">UltraEdit中</a>的”十六进制功能”，观察该文件的内部编码方式。 1）ANSI：文件的编码就是两个字节”D1 CF”，这正是”严”的GB2312编码，这也暗示GB2312是采用大头方式存储的。 2）Unicode：编码是四个字节”FF FE 25 4E”，其中”FF FE”表明是小头方式存储，真正的编码是4E25。 3）Unicode big endian：编码是四个字节”FE FF 4E 25”，其中”FE FF”表明是大头方式存储。 4）UTF-8：编码是六个字节”EF BB BF E4 B8 A5”，前三个字节”EF BB BF”表示这是UTF-8编码，后三个”E4B8A5”就是”严”的具体编码，它的存储顺序与编码顺序是一致的。 <strong>9. 延伸阅读</strong> * <a href="http://www.joelonsoftware.com/articles/Unicode.html" target="_blank" rel="noopener">The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets</a>（关于字符集的最基本知识） * <a href="http://www.pconline.com.cn/pcedu/empolder/gj/other/0505/616631.html" target="_blank" rel="noopener">谈谈Unicode编码</a> * <a href="http://www.ietf.org/rfc/rfc3629.txt" target="_blank" rel="noopener">RFC3629：UTF-8, a transformation format of ISO 10646</a>（如果实现UTF-8的规定） （完）   原文地址：<a href="http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/06/ascii-unicode-e5-92-8cutf-8-e7-9a-84-e5-85-b3-e7-b3-bb/" data-id="ck3hcwyfl00841qxi3opg4h7h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ASCII/" rel="tag">ASCII</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unicode/" rel="tag">unicode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94-e7-9a-84-e5-8c-ba-e5-88-ab" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/06/e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94-e7-9a-84-e5-8c-ba-e5-88-ab/" class="article-date">
+  <time datetime="2014-11-06T00:14:09.000Z" itemprop="datePublished">2014-11-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/06/e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94-e7-9a-84-e5-8c-ba-e5-88-ab/">响应式与自适应的区别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" alt="6310d41cjw1em0lsear2xg20b408cn22"></a></p>
+<p>起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式<strong>宽度自适应布局</strong>。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：</p>
+<ul>
+<li>百分比宽度布局</li>
+<li>流式布局</li>
+</ul>
+<p>题主说的是第一派，宽度使用百分比，文字使用em。第二派的布局以 iGoogle 为代表（已经停止）。 再后来，浏览器大战 时代，firefox、Oparo、Chrome …… 出现，结束了 IE 一统江湖的局面，N 年没有更新的 IE6 发布了新版本，以前已 IE 为标准的 CSS 向 W3C 标准趋近，随后各种针对浏览器的 <a href="http://baike.baidu.com/view/1119452.htm" target="_blank" rel="noopener">css hack</a> 技术出现。 虽然浏览器这么多，但是<strong>响应式布局</strong>依然不是主流，人们还在使用 css hack 技术。注意我的用词——「不是主流」，虽然不是主流，不代表当时不被使用。 比如一向超前的伟大的 Google。当时没有响应式布局这个词语，但是慢慢出现了一个词——<strong>渐进增强</strong>，新词的出现总是伴随的旧词一起出现。就好比 3G 出现之前，没人管自己的手机叫 2G，所以，3G 和 2G 两个词是一起出现的（技术上当然2G技术先出现）。同理，渐进增强出现后，另一个词「优雅降级」也随之出现了。 词的意思可以自己看 wiki、Google，我只在这儿举一个例子，gmail 和 qqmail。 他俩的宽度都是 100%，都是自适应。但是： qqmail 就是 css hack 的完美体现，你用任何一个浏览器，几乎可以看到同一个样子的邮箱，腾讯的前端工程师们用各种 css hack 技术来展示邮箱页面，为的是<strong>统一的用户体验</strong>。 而 gmail 使用了<strong>渐进增强</strong>，你的浏览器越强，你看到的效果就越好，用户体验就越好。 再后来，就是大家都熟知的 Google 发布了 android，于是互联网大战从 PC 打到了手机。还有 HTML5 标准的发布。 手机虽然屏幕变小了，但是却提供了更丰富的功能。还记得以前用诺基亚上 QQ 的事儿吗？我们访问的是 3g.qq.com，当时我使用的是中兴的手机，访问 wap.qq.com，在后来的职能手机都是访问 m.qq.com。 不禁有人问「真的需要为每个手机分别设计一个网页吗？」、「真的需要为手机和电脑设计不同的网页吗？」，解决方法当然有很多种，可以看看 <a href="http://www.csszengarden.com/" target="_blank" rel="noopener">css zen garden</a> 相信做过前端的都看过这个网站，一个神奇的网站。 最终的解决方案胜出者是<strong>响应式布局</strong>。 响应式布局被大家熟知的一个重要原因就是 twitter 开源了 bootstrap。Google 第一次完成了<strong>从先驱到烈士</strong>。 好了，上面介绍的是从从“自适应”到“响应式”，以下 Responsive design ＝ RWD，Adaptive design ＝ AWD。 先说共同点，两者都是因为越来越多的 移动设备（ mobile, tablet device ）加入到互联网中来而出现的为移动设备提供更好的体验的技术。用技术来使网页适应从小到大（现在到超大）的不同分辨率的屏幕。有人说，RWD 是 AWD 包含的一个子集。 RWD：Ethan Marcote 的文章是大家认为 RWD 的起源。他提出的 RWD 是采用 CSS 的 media query 技术，配合流体布局（ fluid grids ）和同样可以自适应的图片/视频等资源素材。以上所说，都是通过 HTML 和 CSS 就能完成的。一般来说，RWD 倾向于只改变元素的外观布局，而不大幅度改变内容。Jeffrey Zeldman 总结说，我们就把 RWD 定义为一切能用来为各种分辨率和设备性能优化<strong>视觉体验</strong>的技术吧。 AWD：Adaptive Design 是 Aaron Gustafson 的书的标题。他认为 AWD 在包括 RWD 的 CSS media query 技术以外，也要用 Javascript 来操作 HTML 来更适应移动设备的能力。AWD 有可能会针对移动端用户减去内容，减去功能。AWD 可以在服务器端就进行优化，把优化过的内容送到终端上。AWD 通常会牵扯到另外一个词 “progressive enhancement” 。 progressive enhancement（渐进增强）：从针对最低端的，最低分辨率的设备的设计做起，逐步逐步为更高阶的设备增加功能和效果的做法。（换个角度说，也就是相当于为移动设备减去功能） RWD 和 AWD 在断点（ break point ）的区别： RWD 采用流体＋断点，在断点之间，页面依然会随窗口大小自动缩放（通过 fluid grid ），直到遇到断点改变界面样式。相对的，AWD 只在针对几种分辨率（如1280，800，640，320px）进行优化，在断点之间的自动过渡比较少。 还有一种说法： RWD 一般来说需要在网页设计初期就开始（通常采用 mobile first 策略），所以旧的网站要做 RWD 很可能要完全重建。而 AWD 则采用保留现有桌面网站（ desktop version ）而对于更小的分辨率做针对性的优化（适应），这点对于很多老的网站来说很重要，因为重构成本太大。 另外，对于 mobile 用户的优化到底应该怎么做，有两方的说法各不相让。有人说，不应该因为用户使用的是 mobile device 就删去内容，限制他们的功能，应该平等对待。也有人说，正因为是移动设备，有其流量，性能，网速的局限性，用移动设备登录网站的目的也会更有针对性，要为 用户精简文字，精简最常用的功能放在首页，服务器端的优化才是真的针对 mobile 的优化。 最后： 在网上的各种说法里确实是有很多相互干扰相互矛盾的地方，但是其实技术都是摆在那里的。其实可以认为，AWD 在针对布局的优化中，可以采用 RWD 的策略，但是AWD 着力于更多其他的 JS 或者服务器上的优化，来强化移动端体验。 不用纠结于词汇，根据网站功能复杂度，预算和资源等，选择要使用的技术，从客户端的展现，到 JS，到服务器的优化等等。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/06/e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94-e7-9a-84-e5-8c-ba-e5-88-ab/" data-id="ck3hcwydg004f1qxi77i97j62" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" rel="tag">响应式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" rel="tag">自适应</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-php-e6-80-a7-e8-83-bd-e8-b0-83-e8-af-95-e5-b7-a5-e5-85-b7xhprof-e7-9a-84-e5-ae-89-e8-a3-85-e4-b8-8e-e4-bd-bf-e7-94-a8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/02/php-e6-80-a7-e8-83-bd-e8-b0-83-e8-af-95-e5-b7-a5-e5-85-b7xhprof-e7-9a-84-e5-ae-89-e8-a3-85-e4-b8-8e-e4-bd-bf-e7-94-a8/" class="article-date">
+  <time datetime="2014-11-02T23:47:41.000Z" itemprop="datePublished">2014-11-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>►<a class="article-category-link" href="/categories/PHP/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/02/php-e6-80-a7-e8-83-bd-e8-b0-83-e8-af-95-e5-b7-a5-e5-85-b7xhprof-e7-9a-84-e5-ae-89-e8-a3-85-e4-b8-8e-e4-bd-bf-e7-94-a8/">PHP性能调试工具xhprof的安装与使用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天试用了一下facebook的php性能调试工具xhprof，在安装的时候是一波三折，虽说从百度了安装方法，但也折腾了半天，不知是说明没写全还是我个人操作失误，那么我在这把我的安装方法讲述一下。环境是：Linux+Nginx+PHP</p>
+<p>#cd /tmp<br>#mkdir xhprof<br>#cd xhprof<br>#wget <a href="http://pecl.php.net/get/xhprof-0.9.4.tgz" target="_blank" rel="noopener">http://pecl.php.net/get/xhprof-0.9.4.tgz</a><br>//解压<br>#tar zxf xhprof-0.9.4.tgz<br>#cd xhprof-0.9.4/extension<br>//拷贝xhprof_html和xhprof_lib两个文件夹至可访问的web目录下，我的web根目录为/home/www<br>#cp -r xhprof_html xhprof_lib /home/www<br>//运行phpize<br>#/usr/local/webserver/php/bin/phpize<br>//运行configure为下一步编译做准备，详情了解Linux下的configure命令<br>#./configure –with-php-config=/usr/local/php/bin/php-config<br>#make<br>#make install</p>
+<p>安装完后你会看到一个提示Installing shared extensions /usr/local/php/lib/php/extensions/no-debug-non-zts-20060626/xhprof.so，说明xhprof.so这个模块被生成了 接下来修改php.ini文件，添加：</p>
+<p>//添加xhprof.so这个扩展，位置就是刚才生成给你的<br>extension=/usr/local/php/lib/php/extensions/no-debug-non-zts-20060626/xhprof.so<br>//指定生成测试报告分析日志的目录，并保证可写权限<br>xhprof.output_dir=/home/www/tmp</p>
+<p>重启php-fpm重新加载php配置文件 #/etc/init.d/php-fpm restart 至此安装完毕，可以搞个phpinfo();页面看看，如果能看到下图则说明安装成功了<a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141103143752.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103143752.jpg" alt="QQ截图20141103143752"></a>  </p>
+<h2 id="xhprof的使用"><a href="#xhprof的使用" class="headerlink" title="xhprof的使用"></a>xhprof的使用</h2><p>写一个php脚本如</p>
+<p>xhprof_enable();<br>function test()<br>{<br> return ‘this is a test demo’;<br>}<br>test();<br>$xhprofData = xhprof_disable();<br>include_once ‘/home/www/houseinfo/xhprof_lib/utils/xhprof_lib.php’;<br>include_once ‘/home/www/houseinfo/xhprof_lib/utils/xhprof_runs.php’;<br>$xhprofRuns = new XHProfRuns_Default();<br>$xhprofRuns-&gt;save_run($xhprofData,’xhprof_foo’);<br>?&gt;</p>
+<p>通过URL访问该脚本后，会在之前设定的/home/www/tmp（php.ini中设定的）目录下生成分析日志，如“5457280fd8500.xhprof_foo.xhprof” 其中5457280fd8500为日志生成的id，通过地址<a href="http://YOUR\_URL/xhprof_html/index.php?run=**5457315580b0e**&amp;source=xhprof_foo即可查看性能分析（如下图）" target="_blank" rel="noopener">http://YOUR\_URL/xhprof_html/index.php?run=**5457315580b0e**&amp;source=xhprof_foo即可查看性能分析（如下图）</a> <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141103154222.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103154222.jpg" alt="QQ截图20141103154222"></a> 你可以将上面php代码最后一行改为这样，以便直接点击链接到分析页查看，而无需自己再查看id并拼接成URL访问</p>
+<?php
+$run\_id = $xhprofRuns->save\_run($xhprofData,'xhprof_foo');
+echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" target="\_blank">查看分析报告</a>';
+?>
+
+<p>xhprof提供3种报告： 一、单一运行报告：通过<a href="http://YOUR\_URL/xhprof\_html/index.php?run=**5457315580b0e**&amp;source=xhprof\_foo地址查看的单一运行时的报告" target="_blank" rel="noopener">http://YOUR\_URL/xhprof\_html/index.php?run=**5457315580b0e**&amp;source=xhprof\_foo地址查看的单一运行时的报告</a> 二、diff报告：地址如<a href="http://YOUR\_URL/xhprof_html/index.php?run1=**xxxxxx**&amp;run2=**xxxxxxx**&amp;source=xhprof\_foo，提供两次对比id即可。" target="_blank" rel="noopener">http://YOUR\_URL/xhprof_html/index.php?run1=**xxxxxx**&amp;run2=**xxxxxxx**&amp;source=xhprof\_foo，提供两次对比id即可。</a> 三、汇总报告，指定一组run id来汇总得到您想要的报告视图。如果你有三个XHProf运行，都在”xhprof_foo‘命名空间下,run id分别是1，2，3。要查看这些运行的汇总报告:<a href="http://YOUR\_URL/xhprof\_html/index.php?run**=1，2，3**&amp;source=xhprof_foo" target="_blank" rel="noopener">http://YOUR\_URL/xhprof\_html/index.php?run**=1，2，3**&amp;source=xhprof_foo</a> XHProf输出说明 1. Inclusive Time ： 包括子函数所有执行时间。 2. Exclusive Time/Self Time ： 函数执行本身花费的时间，不包括子树执行时间。 3. Wall Time ： 花去了的时间或挂钟时间。 4. CPU Time ： 用户耗的时间+ 内核耗的时间 5. Inclusive CPU ： 包括子函数一起所占用的CPU 6. Exclusive CPU ： 函数自身所占用的CPU 可是这个界面看起来不是很直观也不爽，我们还可以装一个graphviz画图工具</p>
+<p>#wget <a href="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.28.0.tar.gz" target="_blank" rel="noopener">http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.28.0.tar.gz</a><br>#tar -zxvf graphviz-2.28.0.tar.gz<br>#cd graphviz-2.28.0<br>#./configure<br>#make<br>#make install</p>
+<p>安装完成后，会生成/usr/local/bin/dot文件，确保路径在PATH环境变量里，以便XHProf能找到它，graphviz处于<strong>/usr/local/lib/graphviz</strong>。 #vi ~/.bash_profile <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141104133618.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104133618.jpg" alt="QQ截图20141104133618"></a>#echo $PATH 输出一下看看应该有了这个路径 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141104135151.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104135151.jpg" alt="QQ截图20141104135151"></a> 之后进入分析页面点击[View Full Callgraph]就能看到类似下图了</p>
+<p><a href="http://storage.veitor.net/uploads/2014/11/callgraph.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/callgraph.png" alt="callgraph"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/11/02/php-e6-80-a7-e8-83-bd-e8-b0-83-e8-af-95-e5-b7-a5-e5-85-b7xhprof-e7-9a-84-e5-ae-89-e8-a3-85-e4-b8-8e-e4-bd-bf-e7-94-a8/" data-id="ck3hcwyf0006k1qxi4pgndi3h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xhprof/" rel="tag">xhprof</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-linux-e7-9a-84inode-e7-9a-84-e7-90-86-e8-a7-a3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/10/30/linux-e7-9a-84inode-e7-9a-84-e7-90-86-e8-a7-a3/" class="article-date">
+  <time datetime="2014-10-30T22:22:22.000Z" itemprop="datePublished">2014-10-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/10/30/linux-e7-9a-84inode-e7-9a-84-e7-90-86-e8-a7-a3/">Linux的inode的理解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、inode是什么？</p>
+<p>理解inode，要从文件储存说起。</p>
+<p>文件储存在硬盘上，硬盘的最小存储单位叫做”扇区”（Sector）。每个扇区储存512字节（相当于0.5KB）。</p>
+<p>操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，即一次性读取一个”块”（block）。这种由多个扇区组成的”块”，是文件存取的最小单位。”块”的大小，最常见的是4KB，即连续八个 sector组成一个 block。</p>
+<p>文件数据都储存在”块”中，那么很显然，我们还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、文件的大小等等。这种储存文件元信息的区域就叫做inode，中文译名为”索引节点”。</p>
+<p>二、inode的内容</p>
+<p>inode包含文件的元信息，具体来说有以下内容：</p>
+<p>　　* 文件的字节数</p>
+<p>　　* 文件拥有者的User ID</p>
+<p>　　* 文件的Group ID</p>
+<p>　　* 文件的读、写、执行权限</p>
+<p>　　* 文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</p>
+<p>　　* 链接数，即有多少文件名指向这个inode</p>
+<p>　　* 文件数据block的位置</p>
+<p>可以用stat命令，查看某个文件的inode信息：</p>
+<p>stat example.txt</p>
+<p>总之，除了文件名以外的所有文件信息，都存在inode之中。至于为什么没有文件名，下文会有详细解释。</p>
+<p>三、inode的大小</p>
+<p>inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是数据区，存放文件数据；另一个是inode区（inode table），存放inode所包含的信息。</p>
+<p>每 个inode节点的大小，一般是128字节或256字节。inode节点的总数，在格式化时就给定，一般是每1KB或每2KB就设置一个inode。假定 在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode table的大小就会达到128MB，占整块硬盘的12.8%。</p>
+<p>查看每个硬盘分区的inode总数和已经使用的数量，可以使用df命令。</p>
+<p>df -i</p>
+<p>查看每个inode节点的大小，可以用如下命令：</p>
+<p>sudo dumpe2fs -h /dev/hda | grep “Inode size”</p>
+<p>由于每个文件都必须有一个inode，因此有可能发生inode已经用光，但是硬盘还未存满的情况。这时，就无法在硬盘上创建新文件。</p>
+<p>四、inode号码</p>
+<p>每个inode都有一个号码，操作系统用inode号码来识别不同的文件。</p>
+<p>这 里值得重复一遍，Unix/Linux系统内部不使用文件名，而使用inode号码来识别文件。对于系统来说，文件名只是inode号码便于识别的别称或 者绰号。表面上，用户通过文件名，打开文件。实际上，系统内部这个过程分成三步：首先，系统找到这个文件名对应的inode号码；其次，通过inode号 码，获取inode信息；最后，根据inode信息，找到文件数据所在的block，读出数据。</p>
+<p>使用ls -i命令，可以看到文件名对应的inode号码：</p>
+<p>ls -i example.txt</p>
+<p>五、目录文件</p>
+<p>Unix/Linux系统中，目录（directory）也是一种文件。打开目录，实际上就是打开目录文件。</p>
+<p>目录文件的结构非常简单，就是一系列目录项（dirent）的列表。每个目录项，由两部分组成：所包含文件的文件名，以及该文件名对应的inode号码。</p>
+<p>ls命令只列出目录文件中的所有文件名：</p>
+<p>ls /etc</p>
+<p>ls -i命令列出整个目录文件，即文件名和inode号码：</p>
+<p>ls -i /etc</p>
+<p>如果要查看文件的详细信息，就必须根据inode号码，访问inode节点，读取信息。ls -l命令列出文件的详细信息。</p>
+<p>ls -l /etc</p>
+<p>六、硬链接</p>
+<p>一 般情况下，文件名和inode号码是”一一对应”关系，每个inode号码对应一个文件名。但是，Unix/Linux系统允许，多个文件名指向同一个 inode号码。这意味着，可以用不同的文件名访问同样的内容；对文件内容进行修改，会影响到所有文件名；但是，删除一个文件名，不影响另一个文件名的访 问。这种情况就被称为”硬链接”（hard link）。</p>
+<p>ln命令可以创建硬链接：</p>
+<p>ln 源文件 目标文件</p>
+<p>运 行上面这条命令以后，源文件与目标文件的inode号码相同，都指向同一个inode。inode信息中有一项叫做”链接数”，记录指向该inode的文 件名总数，这时就会增加1。反过来，删除一个文件名，就会使得inode节点中的”链接数”减1。当这个值减到0，表明没有文件名指向这个inode，系 统就会回收这个inode号码，以及其所对应block区域。</p>
+<p>这里顺便说一下目录文件的”链接数”。创建目录时， 默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当 前目录的父目录的inode号码，等同于父目录的”硬链接”。所以，任何一个目录的”硬链接”总数，总是等于2加上它的子目录总数（含隐藏目录）,这里的 2是父目录对其的“硬链接”和当前目录下的”.硬链接“。</p>
+<p>七、软链接</p>
+<p>除了硬链接以外，还有 一种特殊情况。文件A和文件B的inode号码虽然不一样，但是文件A的内容是文件B的路径。读取文件A时，系统会自动将访问者导向文件B。因此，无论打 开哪一个文件，最终读取的都是文件B。这时，文件A就称为文件B的”软链接”（soft link）或者”符号链接（symbolic link）。</p>
+<p>这 意味着，文件A依赖于文件B而存在，如果删除了文件B，打开文件A就会报错：”No such file or directory”。这是软链接与硬链接最大的不同：文件A指向文件B的文件名，而不是文件B的inode号码，文件B的inode”链接数”不会因此 发生变化。</p>
+<p>ln -s命令可以创建软链接。</p>
+<p>ln -s 源文文件或目录 目标文件或目录</p>
+<p>八、inode的特殊作用</p>
+<p>由于inode号码与文件名分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
+<p>　　1. 有时，文件名包含特殊字符，无法正常删除。这时，直接删除inode节点，就能起到删除文件的作用。</p>
+<p>　　2. 移动文件或重命名文件，只是改变文件名，不影响inode号码。</p>
+<p>　　3. 打开一个文件以后，系统就以inode号码来识别这个文件，不再考虑文件名。因此，通常来说，系统无法从inode号码得知文件名。</p>
+<pre><code>第3点使得软件更新变得简单，可以在不关闭软件的情况下进行更新，不需要重启。因为系统通过inode号码，识别运行中的文件，不通过文件名。更新的时 候，新版文件以同样的文件名，生成一个新的inode，不会影响到运行中的文件。等到下一次运行这个软件的时候，文件名就自动指向新版文件，旧版文件的 inode则被回收。</code></pre><p>  九 实际问题 在一台配置较低的Linux服务器（内存、硬盘比较小）的/data分区内创建文件时，系统提示磁盘空间不足，用df -h命令查看了一下磁盘使用情况，发现/data分区只使用了66%，还有12G的剩余空间，按理说不会出现这种问题。 后来用df -i查看了一下/data分区的索引节点(inode)，发现已经用满(IUsed=100%)，导致系统无法创建新目录和文件。     查找原因： /data/cache目录中存在数量非常多的小字节缓存文件，占用的Block不多，但是占用了大量的inode。   解决方案： 1、删除/data/cache目录中的部分文件，释放出/data分区的一部分inode。 2、用软连接将空闲分区/opt中的newcache目录连接到/data/cache，使用/opt分区的inode来缓解/data分区inode不足的问题： ln -s /opt/newcache /data/cache   转自： <a href="http://www.ruanyifeng.com/blog/2011/12/inode.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2011/12/inode.html</a> <a href="http://blog.s135.com/post/295/" target="_blank" rel="noopener">http://blog.s135.com/post/295/</a> <a href="http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html" target="_blank" rel="noopener">http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/10/30/linux-e7-9a-84inode-e7-9a-84-e7-90-86-e8-a7-a3/" data-id="ck3hcwygt00ba1qxi30xzclxv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/">JS</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9E%B6%E6%9E%84/">架构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACID/" rel="tag">ACID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASCII/" rel="tag">ASCII</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CQRS/" rel="tag">CQRS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Sourcing/" rel="tag">Event Sourcing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Store/" rel="tag">Event Store</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDO/" rel="tag">PDO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/URL/" rel="tag">URL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unix/" rel="tag">Unix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crypt/" rel="tag">crypt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csrf/" rel="tag">csrf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ddd/" rel="tag">ddd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flash/" rel="tag">flash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iphone/" rel="tag">iphone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pear/" rel="tag">pear</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pip/" rel="tag">pip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retina/" rel="tag">retina</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/safari/" rel="tag">safari</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/session/" rel="tag">session</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime/" rel="tag">sublime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/" rel="tag">unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xhprof/" rel="tag">xhprof</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xss/" rel="tag">xss</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6/" rel="tag">事件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag">事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BC%98%E9%85%B7/" rel="tag">优酷</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%93%E9%AA%8C/" rel="tag">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag">加密</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%9F%E7%A0%81/" rel="tag">原码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E7%A0%81/" rel="tag">反码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" rel="tag">响应式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag">存储引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8E%88%E6%9D%83/" rel="tag">授权</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%9D%BF/" rel="tag">模板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag">线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" rel="tag">自适应</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%B1%E8%AF%AD/" rel="tag">英语</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8F%9C%E5%8D%95/" rel="tag">菜单</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A1%A5%E7%A0%81/" rel="tag">补码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%84%E8%8C%83/" rel="tag">规范</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A4%E8%AF%81/" rel="tag">认证</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD/" rel="tag">负载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E5%BE%84/" rel="tag">路径</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag">进程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%82%E9%85%8D/" rel="tag">适配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag">集群</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" rel="tag">预加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag">领域驱动设计</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ACID/" style="font-size: 10px;">ACID</a> <a href="/tags/ASCII/" style="font-size: 10px;">ASCII</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/CQRS/" style="font-size: 12.86px;">CQRS</a> <a href="/tags/DNS/" style="font-size: 10px;">DNS</a> <a href="/tags/Event-Sourcing/" style="font-size: 11.43px;">Event Sourcing</a> <a href="/tags/Event-Store/" style="font-size: 10px;">Event Store</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/PDO/" style="font-size: 10px;">PDO</a> <a href="/tags/PHP/" style="font-size: 20px;">PHP</a> <a href="/tags/SVN/" style="font-size: 11.43px;">SVN</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/URL/" style="font-size: 10px;">URL</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Yii/" style="font-size: 17.14px;">Yii</a> <a href="/tags/crypt/" style="font-size: 10px;">crypt</a> <a href="/tags/csrf/" style="font-size: 10px;">csrf</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/ddd/" style="font-size: 12.86px;">ddd</a> <a href="/tags/flash/" style="font-size: 10px;">flash</a> <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/iphone/" style="font-size: 10px;">iphone</a> <a href="/tags/mysql/" style="font-size: 18.57px;">mysql</a> <a href="/tags/pear/" style="font-size: 10px;">pear</a> <a href="/tags/pip/" style="font-size: 10px;">pip</a> <a href="/tags/python/" style="font-size: 12.86px;">python</a> <a href="/tags/retina/" style="font-size: 10px;">retina</a> <a href="/tags/safari/" style="font-size: 10px;">safari</a> <a href="/tags/session/" style="font-size: 10px;">session</a> <a href="/tags/sublime/" style="font-size: 10px;">sublime</a> <a href="/tags/unicode/" style="font-size: 10px;">unicode</a> <a href="/tags/xhprof/" style="font-size: 10px;">xhprof</a> <a href="/tags/xss/" style="font-size: 10px;">xss</a> <a href="/tags/%E4%BA%8B%E4%BB%B6/" style="font-size: 10px;">事件</a> <a href="/tags/%E4%BA%8B%E5%8A%A1/" style="font-size: 12.86px;">事务</a> <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" style="font-size: 10px;">人工智能</a> <a href="/tags/%E4%BC%98%E9%85%B7/" style="font-size: 10px;">优酷</a> <a href="/tags/%E4%BD%93%E9%AA%8C/" style="font-size: 10px;">体验</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 15.71px;">前端</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8E%9F%E7%A0%81/" style="font-size: 10px;">原码</a> <a href="/tags/%E5%8F%8D%E7%A0%81/" style="font-size: 10px;">反码</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" style="font-size: 11.43px;">响应式</a> <a href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" style="font-size: 10px;">存储引擎</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 10px;">并发</a> <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="font-size: 11.43px;">微服务</a> <a href="/tags/%E6%8E%88%E6%9D%83/" style="font-size: 10px;">授权</a> <a href="/tags/%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">数学</a> <a href="/tags/%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">架构</a> <a href="/tags/%E6%A8%A1%E6%9D%BF/" style="font-size: 10px;">模板</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">线程</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 11.43px;">编码</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" style="font-size: 11.43px;">自适应</a> <a href="/tags/%E8%8B%B1%E8%AF%AD/" style="font-size: 10px;">英语</a> <a href="/tags/%E8%8F%9C%E5%8D%95/" style="font-size: 10px;">菜单</a> <a href="/tags/%E8%A1%A5%E7%A0%81/" style="font-size: 10px;">补码</a> <a href="/tags/%E8%A7%84%E8%8C%83/" style="font-size: 10px;">规范</a> <a href="/tags/%E8%AE%A4%E8%AF%81/" style="font-size: 10px;">认证</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.86px;">设计模式</a> <a href="/tags/%E8%B4%9F%E8%BD%BD/" style="font-size: 10px;">负载</a> <a href="/tags/%E8%B7%AF%E5%BE%84/" style="font-size: 10px;">路径</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 17.14px;">转载</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E8%BF%9B%E7%A8%8B/" style="font-size: 10px;">进程</a> <a href="/tags/%E9%80%82%E9%85%8D/" style="font-size: 10px;">适配</a> <a href="/tags/%E9%9B%86%E7%BE%A4/" style="font-size: 10px;">集群</a> <a href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" style="font-size: 10px;">预加载</a> <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" style="font-size: 10px;">领域驱动设计</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/06/593/">什么是SNI？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/584/">微服务模式：Saga</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/580/">微服务模式：一个服务一个数据库</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/577/">CQRS/ES架构下如何保证用户名的唯一性？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/15/576/">编程中的hydration是什么意思</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Veitor<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

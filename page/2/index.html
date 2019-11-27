@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Veitor的技术点滴</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术点滴">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;page&#x2F;2&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Veitor的技术点滴" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Veitor的技术点滴</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.veitor.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-544" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/21/544/" class="article-date">
+  <time datetime="2015-12-21T06:02:00.000Z" itemprop="datePublished">2015-12-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>►<a class="article-category-link" href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/21/544/">设计模式笔记：第一个设计模式原则——按接口编程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!--markdown-->第一个设计模式原则：按接口而不是按实现来编程。  
+<p>以最简单的方式来讲就是，要将变量设置为一个抽象类或接口数据类型的实例，而不是一个具体实现的实例。</p>
+<p>比如说，声明一个变量<code>$bianliang</code>，那么其值类型应该是某个抽象类或接口。这在强类型语言中比较容易做到，假设有个接口ITest，那么我声明变量则应该是这样声明的<code>ITest bianliang</code>，此时变量<code>bianliang</code>的数据类型是<code>ITest</code>。但对于PHP来说，这可能有些困难，因为PHP变量的数据类型是在给该变量赋值时而确定的，但抽象类或接口不能被直接实例化（因为需要被继承实现啊），所以也就无法得到一个接口数据类型的PHP变量。最多得到一个该接口具体实现类的数据类型的变量。看下列代码及注释：</p>
+<pre><code>//现有一个接口ITest
+Interface ITest
+{
+    ...
+}
+//现有一个类Ceshi，实现了ITest
+class Ceshi implenmts ITest
+{
+    ...
+}
+//那么，最多我声明的变量$bianliang的数据类型是Ceshi
+$bianliang = new Ceshi;</code></pre><p>但其实没关系，变量<code>$bianliang</code>的数据类型不仅是<code>Ceshi</code>，<code>ITest</code>也可以作为该变量的数据类型。记住这一句话：<strong>一个对象实例的数据类型不仅是它实例化的对象类型，该对象的父类也将作为它的数据类型</strong></p>
+<p>在这里要注意一点是，按接口编程中的接口这个概念，并不是只用关键字Interface创建的才叫接口，我们这里的接口可以指Interface创建出来的也可以指某个抽象类，我觉得其实所有类都可以成为接口，不过这里我们就只要认为是Interface和抽象类吧，免得搞混。</p>
+<p>来一个按接口编程的例子：</p>
+<pre><code>abstract class IAbstract
+{
+    //对所有实现都可用的属性
+    protected $valueNow;
+    /*所有实现都必须包含以下两个方法*/
+    //必须返回十进制值
+    abstract protected function giveCost();
+    //必须返回字符串值
+    abstract protected function giveCity();
+    //这个具体函数对所有类实现都可以用，而不覆盖内容
+    public function displayShow()
+    {
+        $stringCost =  $this-&gt;giveCost();
+        $stringCost = (string)$stringCost;
+        $allTogether = (&quot;Cost: $&quot;: . $stringCost . &quot; for &quot; . $this-&gt;giveCity());
+        return $allTogether;
+    }
+}
+//接下来是这个抽象类的两个不同扩展，它们分别提供抽象方法的不同实现。
+class NorthRegion extends IAbstract
+{
+    //必须返回十进制值
+    protected function giveCost()
+    {
+        return 210.54;
+    }
+    //必须返回字符串值
+    protected function giveCity()
+    {
+        return &quot;Moose Breath&quot;;
+    }
+}
+class WestRegion extends IAbstract
+{
+    //必须返回十进制值
+    protected function giveCost()
+    {
+        $solarSavings = 2;
+        $this-&gt;valueNow=210.54/$solarSavings;
+        return $this-&gt;valueNow;
+    }
+    //必须返回字符串值
+    protected function giveCity()
+    {
+        return &quot;Rattlesnake Gulch&quot;;
+    }
+}</code></pre><p>利用一个抽象类的两个不同实现，可以看到，这里所说的“按接口编程”实际上是指类的接口，而不是使用关键字interface定义的接口结构。最后，Client类建立了一个包含代码提示的方法，指定这个抽象类作为接口：</p>
+<pre><code>class Client
+{
+    public function __construct()
+    {
+        $north = new NorthRegion;
+        $west = new WestRegion;
+        $this-&gt;showInterface($north);
+        $this-&gt;showInterface($west);
+    }
+    private function showInterface(IAbstract $region)
+    {
+        echo $region-&gt;displayShow().&apos;&lt;br&gt;&apos;;
+    }
+}
+$worker = new Client();</code></pre><p>最终输出结果：</p>
+<pre><code>Cost: $210.54 for Moose Breath
+Cost: $105.27 for Rattlesnake Gulch</code></pre><p>对于不同的地区，结果值是不同的，因为两个具体类<code>NorthRegion</code>和<code>WestRegion</code>分别采用了不同方式来实现这个抽象方法。如果使用了一个不正确的数据类型，则会报错。</p>
+<p>所以，就其自身而言，类型提示可以帮助你尽可能遵守第一个设计模式原则，即按接口而不是按实现来编程。</p>
+<p>如果想了解这种编程风格的好处，可以增加<code>IAbstract</code>抽象类的实现，并增加到Client类中，可以看到，只要保持接口一致，完成增补和修改很容易。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/12/21/544/" data-id="ck3hcwyaq000p1qxi4bjfgo4p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-543" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/09/543/" class="article-date">
+  <time datetime="2015-11-09T07:15:00.000Z" itemprop="datePublished">2015-11-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/09/543/">关于Yii中findByPk被sql注入的一个误区</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!--markdown-->树大招风，当然网站被恶意攻击注入是常有的事，这也是对一个程序员代码质量以及经验水平的考验。
+
+<p>今天公司一个项目不幸被sql注入了，根据日志查询到了注入点，是某个详情页的代码，大致就是根据某条数据id查询该条数据。</p>
+<p>理所当然的，我们会使用Yii中Ar类提供的<code>findByPk()</code>方法来查询该数据，而正是这里却被注入了。</p>
+<p>首先有人可能会想，数据的主键，不就是一个自增id数字吗？那未必，但大多数情况下其实就是自增id。</p>
+<p>那么既然是自增id，是int型，Yii提供的这个方法不会帮我们去验证字段类型吗？Yii当然会帮我们验证该字段类型。这里推荐一下这篇文章（<a href="http://www.yiiframework.com/wiki/275/how-to-write-secure-yii-applications/" target="_blank" rel="noopener">http://www.yiiframework.com/wiki/275/how-to-write-secure-yii-applications/</a>），比较适合使用Yii开发的人员如何注意安全</p>
+<p>这篇文章中有段提到：In fact, Yii will help, even in the first case. The method findByPk() uses the table schema to ensure that a numeric column only gets numeric criteria.</p>
+<p>说明使用Yii的findByPk()会使用数据表schema确保对应类型的字段获得对应类型的查询条件，那么也就是说int型自增id字段通过这个函数传入id值，都是能验证或转换成对应的int型。可此时此刻并没有，我们还是被注入了。</p>
+<p>那么我们就要去分析一下到底是什么原因导致了这样，难道是Yii版本的问题？我们分析一下源码。</p>
+<p>从Ar类<code>ActiveRecord</code>入手，找到<code>findByPk()</code>，再找到了<code>CDbCommandBuilder</code>类中的<code>createPkCriteria()</code>方法，接着找到同类中的<code>createInCondition()</code>方法，会发现该方法中使用了一个方法<code>typecast()</code>将传入的id值进行了类型转换，这个方法位于<code>CMysqlColumnSchema</code>类中，该类的一个实例就代表着一张表中的一个字段，在这里是主键id字段，其源代码是这样的：</p>
+<pre><code>public function typecast($value)
+{
+    if(gettype($value)===$this-&gt;type || $value===null || $value instanceof CDbExpression)
+        return $value;
+    if($value===&apos;&apos; &amp;&amp; $this-&gt;allowNull)
+        return $this-&gt;type===&apos;string&apos; ? &apos;&apos; : null;
+    switch($this-&gt;type)
+    {
+        case &apos;string&apos;: return (string)$value;
+        case &apos;integer&apos;: return (integer)$value;
+        case &apos;boolean&apos;: return (boolean)$value;
+        case &apos;double&apos;:
+        default: return $value;
+    }
+}</code></pre><p><code>$value</code>是传入的id值，<code>$this-&gt;type</code>是字段类型，假设弱类型语言php获得到的id数字是string类型，字段类型是integer，那么逻辑就会进入switch内，并且走的是case ‘integer’，将string类型转换为integer，但并没有。<br>打印$this-&gt;type出来看，竟然显示的是<code>string</code>，也就是Yii将该表中的主键id认为是string类型，也就因此没有将传入参数转换成integer型，所以被注入了。</p>
+<p>但究竟是什么原因导致的？于是接着开始找是什么地方使得$this-&gt;type值为string的，于是找到该类的<code>extractType()</code>方法，这方法传了一个参数<code>$dyType</code>，但在哪被调用传入的呢？我们可以看到这个<code>CMysqlColumnSchema</code>类继承了<code>CDbColumnSchema</code>，在<code>CDbColumnSchema</code>类中的<strong><code>init()</code></strong>方法中就调用了<code>extractType()</code>，但<code>init</code>方法中传入的第一个参数还是我们想要知道的<code>$dbType</code>，于是接着找哪个地方又调用了该方法。</p>
+<p>我们看<br><code>CDbSchema</code>类，这是一个抽象类，<code>CMysqlSchema</code>继承了它，在CDbConnection中使用了<code>CMysqlSchema</code>作为mysql驱动类。<br>当我们要获得表的schema时，必定要调用到该类中的<code>getTable()</code>方法，而该方法又调用了同类或子类中的<code>loadTable()</code>，意思就是获得表信息，传入的参数就是表名，接着调用了同类中的<code>findColumns()</code>方法，查找出当前表中的字段，方法中使用了<code>SHOW FULL COLUMNS FROM TABLE</code>，然后获得的了一个数组，数组中包含着各个字段名，再使用<code>createColumn()</code>方法将每个字段实例化一个<code>CMysqlColumnSchema</code>实例，那么就又回到上面将的这个类了，此时这里执行该类中的<code>init()</code>方法了（上面标粗的地方），并且传入了数据库获得到的字段类型，此时<code>$dbType</code>的值是<code>int(10) unsigned</code>，也正是我们数据库中设定的类型。</p>
+<p><code>init()</code>方法自然就执行了同类中的<code>extractType()</code>方法，现在我们就仔细看这个类：</p>
+<pre><code>protected function extractType($dbType)
+{
+    if(strncmp($dbType,&apos;enum&apos;,4)===0)
+        $this-&gt;type=&apos;string&apos;;
+    elseif(strpos($dbType,&apos;float&apos;)!==false || strpos($dbType,&apos;double&apos;)!==false)
+        $this-&gt;type=&apos;double&apos;;
+    elseif(strpos($dbType,&apos;bool&apos;)!==false)
+        $this-&gt;type=&apos;boolean&apos;;
+    elseif(strpos($dbType,&apos;int&apos;)===0 &amp;&amp; strpos($dbType,&apos;unsigned&apos;)===false || preg_match(&apos;/(bit|tinyint|smallint|mediumint)/&apos;,$dbType))
+        $this-&gt;type=&apos;integer&apos;;
+    else
+        $this-&gt;type=&apos;string&apos;;
+}</code></pre><p>其中<code>$dbType</code>的值是”int(10) unsigned”，这是通过<code>SHOW FULL COLUMNS FROM TABLE</code>得来的，那么对应到PHP中该是哪种类型呢？看代码，我们会发现最终程序走了最后的<code>else</code>，这里导致了<code>$this-&gt;type</code>为<code>string</code>。也就因此没有转换我们的传入值。</p>
+<p>网上我们可以看到这个问题：<a href="https://code.google.com/p/yii/issues/detail?id=1820#c1" target="_blank" rel="noopener">https://code.google.com/p/yii/issues/detail?id=1820#c1</a></p>
+<p>数据库中无符号的int型在php中如果用integer型可能会失去精度，因此用了string。</p>
+<p>解决办法就是建表的时候，建议将每个int型字段不要设置unsigned，毕竟signed int能存入的值已经够我们用了。</p>
+<p>这样一来，使用Yii中<code>findByPk()</code>方法就是自动帮我们把传入参数转为<code>integer</code>型了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/11/09/543/" data-id="ck3hcwyan000m1qxibpia2lo3" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-536" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/06/536/" class="article-date">
+  <time datetime="2015-11-06T09:01:00.000Z" itemprop="datePublished">2015-11-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/06/536/">博客上阿里云了</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!--markdown-->好久没收拾博客了，折腾了好几天终于迁移到了阿里云上了，同时将SAE环境改成自己搭建的LNMP，完成了从wordpress数据的迁移转换。  
+<p>接下来继续完善，自己写插件支持七牛云存储。<br>这篇文章就当是测试的吧。。测试评论、测试分享、测试新的编辑器等等等</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/11/06/536/" data-id="ck3hcwyaj000k1qxianm8er64" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-bd-bf-e7-94-a8composer-e5-ae-89-e8-a3-85yii2-e5-87-ba-e7-8e-b0could-not-parse-version-e7-9a-84-e9-97-ae-e9-a2-98" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/13/e4-bd-bf-e7-94-a8composer-e5-ae-89-e8-a3-85yii2-e5-87-ba-e7-8e-b0could-not-parse-version-e7-9a-84-e9-97-ae-e9-a2-98/" class="article-date">
+  <time datetime="2015-08-13T16:53:42.000Z" itemprop="datePublished">2015-08-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/13/e4-bd-bf-e7-94-a8composer-e5-ae-89-e8-a3-85yii2-e5-87-ba-e7-8e-b0could-not-parse-version-e7-9a-84-e9-97-ae-e9-a2-98/">使用composer安装yii2出现&#34;could not parse version..&#34;的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>如果安装时出现这个错误</p>
+<p>[UnexpectedValueException]<br>Could not parse version constraint &lt;=2.<em>: Invalid version string “2.</em>“</p>
+<p>很有可能是composer Asset插件版本的问题 官网说明使用“composer global require “fxp/composer-asset-plugin:~1.0.0”” 可是会出错，所以如果出错了，使用这个命令”composer global require “fxp / composer-asset-plugin: 1.0.1”重新安装一遍后，再安装yii2应该会正常了</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/08/13/e4-bd-bf-e7-94-a8composer-e5-ae-89-e8-a3-85yii2-e5-87-ba-e7-8e-b0could-not-parse-version-e7-9a-84-e9-97-ae-e9-a2-98/" data-id="ck3hcwyd3003s1qxidecy0zwd" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e7-bc-96-e7-a8-8b-e4-b8-ad-e8-8b-b1-e8-af-ad-e5-8d-95-e8-af-8dstate-e5-92-8cstatus-e7-9a-84-e5-8c-ba-e5-88-ab" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/27/e7-bc-96-e7-a8-8b-e4-b8-ad-e8-8b-b1-e8-af-ad-e5-8d-95-e8-af-8dstate-e5-92-8cstatus-e7-9a-84-e5-8c-ba-e5-88-ab/" class="article-date">
+  <time datetime="2015-02-27T17:24:19.000Z" itemprop="datePublished">2015-02-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/27/e7-bc-96-e7-a8-8b-e4-b8-ad-e8-8b-b1-e8-af-ad-e5-8d-95-e8-af-8dstate-e5-92-8cstatus-e7-9a-84-e5-8c-ba-e5-88-ab/">编程中英语单词state和status的区别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>state：比较常用，各种状态都可以用它，但是它更着重于一种心理状态或者物理状态。 Status：用在人的身上一般是其身份和地位，作“状态，情形”讲时，多指政治和商业。 state倾向于condition，是一种延续性的状态。status常用于描述一个过程中的某阶段（phase），类似于C语言中枚举型变量某一个固定的值，这个值属于一个已知的集合。 比如淘宝买家问卖家“我的网购现在是什么状况？” 这个问题的背景是讲话双方都清楚，交易状态有“买家选购”“买家已付款”“卖家已发货”“买家已签收”或者有“买家已 投诉”等等状态。这些状态描述一件事情发展过程中的不同阶段。而且，这些阶段的先后顺序也是双方默许的。 所以在这里可以问“What’s the status of my purchase?”，此处用state不太贴切，如果硬用上去从语感上可能听着别扭。 说物态变化用state再恰当不过。如果说一个物质的四种状态，可以说“solid state”，但如果你说“solid status”，第 一，这两个词的组合不像是描述物态，更像是在说“确定的状况（solid产生歧义‘确定的/确凿的’）”；第二，这个说法即 使不被误解，也需要事先约定一组物态变化顺序，比如把这个物质从固态开始加热然后电离，可能先后经历固态、液态、气态、等离子态这四个阶段。类似先定义枚举，然后引用的方式。   扩展： ajax中readyState，statusText，onreadystatechange，window.status怎么一会state一会是status都晕乎了 state所指的状态，一般都是有限的、可列举的，status则是不可确定的。 比如 readyState – 就那么四五种值 statusText – 描述性的文字，可以任意 onreadystatechange – 那么四五种值之间发生变化 window.status – 描述性的文字，可以任意 来个形象的比方，你体重多少公斤，属于status，但说你体重属于偏瘦、正常还是偏胖，那就是state.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/02/27/e7-bc-96-e7-a8-8b-e4-b8-ad-e8-8b-b1-e8-af-ad-e5-8d-95-e8-af-8dstate-e5-92-8cstatus-e7-9a-84-e5-8c-ba-e5-88-ab/" data-id="ck3hcwye100541qxiaoep33nm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%8B%B1%E8%AF%AD/" rel="tag">英语</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-yii-e4-ba-8b-e4-bb-b6-e6-9c-ba-e5-88-b6-e5-88-86-e6-9e-90" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/26/yii-e4-ba-8b-e4-bb-b6-e6-9c-ba-e5-88-b6-e5-88-86-e6-9e-90/" class="article-date">
+  <time datetime="2015-02-26T05:34:26.000Z" itemprop="datePublished">2015-02-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>►<a class="article-category-link" href="/categories/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/26/yii-e4-ba-8b-e4-bb-b6-e6-9c-ba-e5-88-b6-e5-88-86-e6-9e-90/">Yii事件机制分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在Yii中使用事件需要三个步骤：1、定义事件；2、定义事件回调函数；3、将回调函数添加到事件中4、触发事件。 Yii事件机制的实现是在其底层基类CComponent类里，这是所有组件的基类。</p>
+<h2 id="1、如何定义事件"><a href="#1、如何定义事件" class="headerlink" title="1、如何定义事件"></a>1、如何定义事件</h2><p>很简单，事件以on开头的命名方式定义，如以下定义了一个onEcho的事件：</p>
+<p>public function onEcho($event)<br>{<br>     $this-&gt;raiseEvent(‘onEcho’, $event);<br>}</p>
+<p>这样就定义了一个事件，其中$event参数是一个CEvent或其子类的实例（但其实用到的并不多，下面再说）。</p>
+<h2 id="2、定义事件回调函数"><a href="#2、定义事件回调函数" class="headerlink" title="2、定义事件回调函数"></a>2、定义事件回调函数</h2><p>回调函数可以是一个全局函数或者一个类中的函数（说白了就是一个函数而已），其需要一个参数$event，如下：</p>
+<p>public function huidiao($event)<br>{<br>     //TODO<br>}</p>
+<p>$event参数其实是接收定义事件时传入的那个参数，也就是上面第一步定义的事件函数的参数，它最终会传到这个回调函数里来。然后回调函数根据业务逻辑使用这个参数，但一般情况下我们不怎么使用到这个参数，所以意义也不是很大，不过如果你需要参数的情况下可以通过这样方式定义，因为传入的参数并不一定限制是CEvent的实例或其子类，也可以是其他类型（待会下面继续解释）。</p>
+<h2 id="3、将回调函数添加到事件中"><a href="#3、将回调函数添加到事件中" class="headerlink" title="3、将回调函数添加到事件中"></a>3、将回调函数添加到事件中</h2><p>为啥还要将回调函数添加到事件中呢？因为当事件触发后总得要有程序逻辑（也就是一段php代码）去处理业务是吧。所以光光的定义一个事件而不往里面添加回调函数是没有意义的，而且即使定义了回调函数却添加到事件里也是没有意义的。就如同你只买了个电脑主机有啥意义呢？也或者你只买了一台显示器也同样没有意义，要将两者结合才是他们真正的用处。 那么如何将回调函数添加到事件中？</p>
+<p>一种方法：$this-&gt;onEcho=array($this, ‘huidiao’);</p>
+<p>另一种方法：$this-&gt;attachEventHandler(‘onEcho’, array($this, ‘huidiao’));</p>
+<p>第一种方法利用了Yii组件中setter原理，看代码：</p>
+<p>public function __set($name,$value)<br>{<br>    $setter=’set’.$name;<br>    if(method_exists($this,$setter))<br>        return $this-&gt;$setter($value);<br>    elseif(strncasecmp($name,’on’,2)===0 &amp;&amp; method_exists($this,$name))<br>    {<br>        // duplicating getEventHandlers() here for performance<br>        $name=strtolower($name);<br>        if(!isset($this-&gt;_e[$name]))<br>            $this-&gt;_e[$name]=new CList;<br>        return $this-&gt;_e[$name]-&gt;add($value);<br>    }<br>    elseif(is_array($this-&gt;_m))<br>    {<br>        foreach($this-&gt;_m as $object)<br>        {<br>            if($object-&gt;getEnabled() &amp;&amp; (property_exists($object,$name) || $object-&gt;canSetProperty($name)))<br>                return $object-&gt;$name=$value;<br>        }<br>    }<br>    if(method_exists($this,’get’.$name))<br>        throw new CException(Yii::t(‘yii’,’Property “{class}.{property}” is read only.’,<br>            array(‘{class}’=&gt;get_class($this), ‘{property}’=&gt;$name)));<br>    else<br>        throw new CException(Yii::t(‘yii’,’Property “{class}.{property}” is not defined.’,<br>            array(‘{class}’=&gt;get_class($this), ‘{property}’=&gt;$name)));<br>}</p>
+<p>这是一个魔术方法__set，6-13行是给事件添加回调函数的步骤。如果类里面存在以on开头的函数，那么将事件放到私有变量$_e里，$_e是个数组，其键名是事件名称，其值是一个CList实例（也可以理解为一个数组，因为CList实现了一个整数索引的集合类，可以用数组的形式往里面添加元素 ，可详见CList），再使用CList中add方法往数组形式的值里面添加回调函数，也等同于$_e[‘onecho’][]=array($this,’huidiao’)。那么按我上面添加一个事件来说，添加一个回调函数huidiao后$_e的内容应该是array(‘onecho’=&gt;array(array($this,’huidiao’)) 第二种方法使用了类中的attachEventHandler函数，代码如下：</p>
+<p>public function attachEventHandler($name,$handler)<br>{<br>    $this-&gt;getEventHandlers($name)-&gt;add($handler);<br>}<br>public function getEventHandlers($name)<br>{<br>    if($this-&gt;hasEvent($name))<br>    {<br>        $name=strtolower($name);<br>        if(!isset($this-&gt;_e[$name]))<br>            $this-&gt;_e[$name]=new CList;<br>        return $this-&gt;_e[$name];<br>    }<br>    else<br>        throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is not defined.’,<br>            array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name)));<br>}<br>public function hasEvent($name)<br>{<br>    return !strncasecmp($name,’on’,2) &amp;&amp; method_exists($this,$name);<br>}</p>
+<p>attachEventHandler函数首先用getEventHandler函数获取需要添加回调函数的事件，用hasEvent判断是否存在这个事件函数名，如果存在的话（也就是定义事件函数的话）就和第一种方法原理一样，获得$_e[‘onecho’]的值（CList实例），使用其方法add往数组形式的值里添加回调函数。 至此，回调函数都已经添加到事件中去了。</p>
+<h2 id="4、触发事件"><a href="#4、触发事件" class="headerlink" title="4、触发事件"></a>4、触发事件</h2><p>这个比较简单，在你需要执行这个事件的地方调用第1步定义的事件，如$this-&gt;onEcho($event)，函数执行里面的一句话$this-&gt;raiseEvent(‘onEcho’.$event)，raiseEvent这个方法代码如下：</p>
+<p>public function raiseEvent($name,$event)<br>{<br>    $name=strtolower($name);<br>    if(isset($this-&gt;_e[$name]))<br>    {<br>        foreach($this-&gt;_e[$name] as $handler)<br>        {<br>            if(is_string($handler))<br>                call_user_func($handler,$event);<br>            elseif(is_callable($handler,true))<br>            {<br>                if(is_array($handler))<br>                {<br>                    // an array: 0 - object, 1 - method name<br>                    list($object,$method)=$handler;<br>                    if(is_string($object))    // static method call<br>                        call_user_func($handler,$event);<br>                    elseif(method_exists($object,$method))<br>                        $object-&gt;$method($event);<br>                    else<br>                        throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is attached with an invalid handler “{handler}”.’,<br>                            array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name, ‘{handler}’=&gt;$handler[1])));<br>                }<br>                else // PHP 5.3: anonymous function<br>                    call_user_func($handler,$event);<br>            }<br>            else<br>                throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is attached with an invalid handler “{handler}”.’,<br>                    array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name, ‘{handler}’=&gt;gettype($handler))));<br>            // stop further handling if param.handled is set true<br>            if(($event instanceof CEvent) &amp;&amp; $event-&gt;handled)<br>                return;<br>        }<br>    }<br>    elseif(YII_DEBUG &amp;&amp; !$this-&gt;hasEvent($name))<br>        throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is not defined.’,<br>            array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name)));<br>}</p>
+<p>这个方法会获得$_e[‘onecho’]值，那么这个值是数组形式对吧，而且数组的每个元素都是一个回调函数，那么用foreach对其进行遍历（代码第6行），循环部分的代码最终都是调用了call_user_func，把回调函数和$event传入进去，那么回调函数就被执行了，并且该回调函数得到的参数是触发事件时$this-&gt;onEcho($event)的这个$event参数。所以我在第2步中说道，这个$event参数并不一定要CEvent的实例或其子类，因为要看你回调函数需要什么参数。这么一看，通过foreach后，注册到这个事件onEcho中的所有回调函数都会被执行一遍。 那么就这样完成了整个事件了，还比较容易理解吧？有任何疑问可以留言，一起探讨</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/02/26/yii-e4-ba-8b-e4-bb-b6-e6-9c-ba-e5-88-b6-e5-88-86-e6-9e-90/" data-id="ck3hcwyfg007o1qxi9e2g8qgx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6/" rel="tag">事件</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-php-e5-91-bd-e5-90-8d-e5-a4-a7-e5-b0-8f-e5-86-99-e6-95-8f-e6-84-9f-e8-a7-84-e5-88-99" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/25/php-e5-91-bd-e5-90-8d-e5-a4-a7-e5-b0-8f-e5-86-99-e6-95-8f-e6-84-9f-e8-a7-84-e5-88-99/" class="article-date">
+  <time datetime="2015-02-25T06:44:24.000Z" itemprop="datePublished">2015-02-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/25/php-e5-91-bd-e5-90-8d-e5-a4-a7-e5-b0-8f-e5-86-99-e6-95-8f-e6-84-9f-e8-a7-84-e5-88-99/">PHP命名大小写敏感规则</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一直觉得PHP中各种大小写规则理不清，就连工作多年的老手们也不一定能对PHP大小写敏感问题足够了解。在PHP中，大小写敏感问题的处理比较乱，大家一定要注意。即使某些地方大小写不敏感，但在编程过程中能始终坚持“大小写敏感”是最好不过的。下面整理了一些大小写问题注意点：</p>
+<blockquote>
+<p><strong>大小写敏感</strong></p>
+</blockquote>
+<p><strong>1. 变量名区分大小写</strong> 所有变量均区分大小写，包括普通变量以 及$_GET,$_POST,$_REQUEST,$_COOKIE,$_SESSION,$GLOBALS,$_SERVER,$_FILES,$_ENV 等；</p>
+<?php
+$abc = 'abc';
+echo $abc;    //输出'abc'
+echo $aBc;    //无输出
+echo $ABC;    //无输出
+?>
+
+<p><strong>2、常量名区分大小写</strong> 使用define定义的常量是区分大小写的。</p>
+<?php
+define('BLOGGER','Veitor');
+echo BLOGGER;    //输出'Veitor'
+echo BLOgger;    //报NOTICE提示，并输出'BLOgger'
+echo blogger;    //报NOTICE提示，并输出'blogger'
+?>
+
+<p><strong>3、数组索引（键名）区分大小写</strong></p>
+<?php
+$arr = array('one'=>'first');
+echo $arr\['one'\];    //输出'first'
+echo $arr\['One'\];    //无输出并报错
+echo $Arr\['one'\];    //上面讲过，变量名区分大小写，所以无输出并报错
+?>
+
+
+
+<blockquote>
+<p><strong>大小写不敏感</strong></p>
+</blockquote>
+<p><strong>1. 函数名、方法名、类名不区分大小写</strong> 虽然这些不区分大小写，但坚持“大小写敏感”原则，建议还是使用与定义时相同大小写的名字</p>
+<?php
+class Test
+{
+    static public function Ceshi()
+    {
+        echo '123';
+    }
+    public funcion Dxx()
+    {
+        echo '321';
+    }
+}
+$obj = new Test;
+$obj->Dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
+$obj->dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
+$obj = new test;
+$obj->Dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
+$obj->dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
+Test::Ceshi();    //输出'123'
+test::Ceshi();    //输出'123'
+Test::ceshi();    //输出'123'
+test::ceshi();    //输出'123'
+?>
+
+<p><strong>2、魔术常量不区分大小写</strong> 一些魔术常量包括：__LINE__、__FILE__、__DIR__、__FUNCTION__、__CLASS__、__METHOD__、 __NAMESPACE__等都不区分大小写。</p>
+<?php
+echo \_\_LINE\_\_;    //输出2
+echo \_\_line\_\_;    //输出3
+?>
+
+<p>** 3、 NULL、TRUE、FALSE不区分大小写** 这个知道的人应该比较多就不举例了。 <strong>4、强制类型转换不区分大小写</strong> 如这些 (int)，(integer) – 转换成整型 (bool)，(boolean) – 转换成布尔型 (float)，(double)，(real) – 转换成浮点型 (string) – 转换成字符串 (array) – 转换成数组 (object) – 转换成对象 一般我们都小写，这个问题不大。   <strong>总的来说，容易搞不明白的就是变量、常量、类名、方法名和函数名，把这些记住对自己会有帮助的。</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/02/25/php-e5-91-bd-e5-90-8d-e5-a4-a7-e5-b0-8f-e5-86-99-e6-95-8f-e6-84-9f-e8-a7-84-e5-88-99/" data-id="ck3hcwyez006h1qxiahue75k8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-web-e5-89-8d-e5-90-8e-e7-ab-af-e5-88-86-e7-a6-bb-e5-bc-80-e5-8f-91-e6-80-9d-e8-b7-af" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/02/01/web-e5-89-8d-e5-90-8e-e7-ab-af-e5-88-86-e7-a6-bb-e5-bc-80-e5-8f-91-e6-80-9d-e8-b7-af/" class="article-date">
+  <time datetime="2015-02-01T06:36:04.000Z" itemprop="datePublished">2015-02-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/01/web-e5-89-8d-e5-90-8e-e7-ab-af-e5-88-86-e7-a6-bb-e5-bc-80-e5-8f-91-e6-80-9d-e8-b7-af/">Web前后端分离开发思路</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-问题的提出"><a href="#1-问题的提出" class="headerlink" title="1. 问题的提出"></a>1. 问题的提出</h2><p>开发一个Web应用的时候我们一般都会简单地分为前端工程师和后端工程师（注：在一些比较复杂的系统中，前端可以细分为外观和逻辑，后端可以分为CGI和Server）。前端工程师负责浏览器端用户交互界面和逻辑等，后端负责数据的处理和存储等。前后端的关系可以浅显地概括为：后端提供数据，前端负责显示数据。 在这种前后端的分工下，会经常有一些疑惑：<strong>既然前端数据是由后端提供，那么后端数据接口还没有完成，前端是否就无法进行编码？怎么样才能做到前后端独立开发？</strong> 考虑这么一个场景：Alex和Bob是一对好基友，他们有个可以颠覆世界的idea，准备把它实现出来，但是他们不需要程序员，因为他们就是程序员。说干就干，两个就干上了。Alex写前端，Bob写后端。 Alex和Bob都经过良好的训练，按部就班地把产品的主要功能设计，交互原型，视觉设计做好了，然后他们根据产品功能和交互制定了一堆叼炸天的前后端交互的API，这套API就类似于一套前后端开发的“协议”，Alex和Bob开发的时候都需要遵守。例如其中一个发表评论的功能：</p>
+<pre><code>// API: Create New Comment v2
+// Ajax, JSON, RESTful
+url: /comments
+type: POST
+request: {content: &quot;comment content.&quot;, userId: 123456}
+response:
+    - status: 200
+        data: {result: &quot;SUCCESS&quot;, msg: &quot;The comment has been created.&quot;}
+    - status: 404
+        data: {result: &quot;failed&quot;, msg: &quot;User is not found.&quot;}</code></pre><p>Alex的前端需要向/comments这个url以POST的方式发送类似于{content: “comment content.”, userId: 123456}这样的JSON请求数据；Bob的服务端识别后以后，操作成功则返回200状态和上面的JSON的数据，不同的操作状态有不同的响应数据（为了简单起见只列出了两种，200和404）。 API制定完以后，Alex和Bob就开始编码了。Alex把评论都外观和交互写完了，但是写到发表评论功能就纳闷了：Alex现在需要发Ajax过去，但是只能把Ajax代码写好，因为是本地服务器，却无法获取到数据：</p>
+<pre><code>// jQuery Ajax
+$.ajax({ // 这个ajax直接报错，因为这个是Alex的前端服务器，请求无法获取数据；
+    url: &quot;/comments&quot;,
+    type: &quot;POST&quot;,
+    data: {content: content, userId: userId},
+    success: funtion(data) {
+        // 这里不会被执行
+    }
+})</code></pre><p>相比起来Bob就没有这个烦恼，因为后端是基于测试驱动开发，且后端可以轻易地模拟前端发送请求，可以对前端没有依赖地进行开发和测试。 Alex把这种情况和Bob说了，Bob就说，要不我们把代码弄到你本地前后端连接一下，这不就可以测试了吗。Alex觉得Bob简直是天才。 他们把前后端代码代码都部署到Alex的本地服务器以后，经过一系列的测试，调试，终于把这个API连接成功了。但是他们发现这个方法简直不科学：难道每写一个API都要把前后端链接测试一遍吗？而且，Alex的如果需要测试某个API，而Bob的这个API还没写好，Alex这个功能模块的进度就“阻塞”了。 后面还有168个API需要写，不能这么做。Alex和Bob就开始思考这个问题的解决方案。</p>
+<h2 id="2-解决思路"><a href="#2-解决思路" class="headerlink" title="2. 解决思路"></a>2. 解决思路</h2><p>在这个场景下，前后端是有比较强的数据依赖的关系，后端依赖前端的请求，前端依赖后端的响应。而后端可以轻松模拟前端请求（基本上能写后端的语言都可以直接发送HTTP请求），前端没有一个比较明显的方案来可以做到模拟响应，所以这里的需要解决的点就是：<strong>如何给前端模拟的响应数据</strong>。 先来一句非常形而上的话：如果两个对象具有强耦合的关系，我们一般只要引入第三个对象就可以打破这种强耦合的关系。</p>
+<p><a href="http://storage.veitor.net/uploads/2015/02/QQ截图20150201223003.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2015/02/QQ%E6%88%AA%E5%9B%BE20150201223003.jpg" alt="QQ截图20150201223003"></a></p>
+<p>在我们上述开发的过程中，前后端的耦合性太强了，我们需要借助额外的东西来打破它们的耦合性。所以，在前后端接口定下来以后，<strong>我们根据接口构建另外一个Server，这个Server会一一响应前端的请求，并且根据接口返回数据</strong>。当然这些数据都是假数据。我们把这个Server叫做_Mock Server_，而Bob真正在开发的Server叫做_Real Server_。</p>
+<p><a href="http://storage.veitor.net/uploads/2015/02/QQ截图20150201223038.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2015/02/QQ%E6%88%AA%E5%9B%BE20150201223038.jpg" alt="QQ截图20150201223038"></a></p>
+<p>Mock Server是根据API实现的，但是是没有数据逻辑的，只是非常简单地返回数据。例如上面Alex和Bob的发表评论的接口在Mock Server上是这样的：</p>
+<pre><code>// Mock Server
+// Create New Comment API
+route.post(&quot;/comments&quot;, function(req, res) {
+    res.send(200, {result: &quot;Success&quot;});
+})</code></pre><p>Alex在开发的时候向Mock Server发出请求，而不是向Bob的服务器发出请求：</p>
+<pre><code>// Sending Request to Mock Server
+// jQuery Ajax
+$.ajax({
+    url: config.HOST + &quot;/comments&quot;,
+    type: &quot;POST&quot;,
+    data: {content: content, userId: userId},
+    success: funtion(data) {
+        // OK
+    }
+})</code></pre><p>注意上面的<code>config.HOST</code>，我们把服务器配置放在一个全局共用的模块当中：</p>
+<pre><code>// Front-end Configuration Module
+var config = modules.exports;
+config.HOST = &quot;http://192.169.10.20&quot; // Mock Server IP</code></pre><p>那么上面我们其实是向IP为<code>http://192.169.10.20</code>的Mock Server发出请求<code>http://192.169.10.20/comments</code>发出POST的请求。 当Alex和Bob都代码写好了以后，需要连接调试了，Alex只要简单地改一下配置文件即可把所有的请求都转向Bob所开发的Real Server：</p>
+<pre><code>// Front-end Configuration Module
+var config = module.exports;
+// config.HOST = &quot;http://192.169.10.20&quot; // Mock Server IP
+config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</code></pre><p>然后Alex和Bob就可以愉快地分离独立开发，而最后只需要联合调试就可以了。 总结一下基本上前后端分离开发包括下面几个步骤：</p>
+<ol>
+<li>根据功能制定前后端接口（API）。</li>
+<li>根据接口构建Mock Server工程及其部署。</li>
+<li>前后端独立开发，前端向Mock Server发送请求，获取模拟的数据进行开发和测试。</li>
+<li>前后端都完成后，前后端连接调试（前端修改配置向Real Server而不是Mock Server发送请求）。</li>
+</ol>
+<p>当然要注意，如果接口修改了，Mock Server要同步修改。</p>
+<h2 id="3-实现方案"><a href="#3-实现方案" class="headerlink" title="3. 实现方案"></a>3. 实现方案</h2><p>Mock Server具体应该如何构建？应该存放在哪里？应该怎么维护？ 前后端是不同的两个工程，它们各自占用一个仓库。Mock Server应该和它们分离出来，独立进行开发和维护，也就是说会有三个仓库，Mock Server是一个单独的工程。 Mock Server可以部署在本地，也可以部署到远程服务器，两者之间各有优劣。</p>
+<hr>
+<h3 id="3-1-远程Mock-Server"><a href="#3-1-远程Mock-Server" class="headerlink" title="3.1 远程Mock Server"></a>3.1 远程Mock Server</h3><p><strong>做法</strong>：把Mock Server工程部署到一个远程的always on的远程服务器上，前端开发的时候向该服务器发请求。 <strong>优点</strong>：</p>
+<ol>
+<li>没有给原有的前后端工程增加负担。</li>
+<li>每个前端开发人员向同一个Mock Server服务器发送请求，保持所有人获取响应请求的一致性。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>有跨域问题（思考：locahost如何向192.169.10.20发请求？）。</li>
+<li>需要额外的远程服务器支持。</li>
+</ol>
+<p>（在写这篇博客的时候，逛<a href="https://news.ycombinator.com/" target="_blank" rel="noopener">Hacker News</a>，刚好看到有人做了一个开发辅助工具（<a href="http://reqr.es/" target="_blank" rel="noopener">http://reqr.es/</a>），可以用于开发时响应前端请求，其实也就是这里所说的远程Mock Server。真是不能再巧更多。）</p>
+<h3 id="3-2-本地Mock-Server"><a href="#3-2-本地Mock-Server" class="headerlink" title="3.2 本地Mock Server"></a>3.2 本地Mock Server</h3><p><strong>做法</strong>：前端把Mock Server克隆到本地，开发的时候，开启前端工程服务器和Mock Server，所有的请求都发向本地服务器，获取到Mock数据。 <strong>优点</strong>：</p>
+<ol>
+<li>节约资源，不需要依赖远程服务器。环保节能。</li>
+<li>没有跨域问题。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>增加前端工程开发流程复杂程度。</li>
+<li>每个前端开发人员自己部署服务器在本地，可能会有仓库没有及时更新导致API不一致的情况。</li>
+</ol>
+<hr>
+<p>Mock Server工程一般可以由后端开发人员来维护。因为在开发的过程中，后端因为各种原因可能需要修改API，后端人员是最熟悉请求的响应数据和格式的人，可以同步维护Mock Server和Real Server，更好保证数据的一致。Mock Server维护起来并不复杂，对于比较大多工程来说，这样的前期准备和过程的维护是非常值得的。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>所以要点就是：<strong>根据API构建可以模拟服务器响应的Mock Server，用于前端请求模拟数据进行测试</strong>。 再重复总结一下前后端分离开发包括下面几个步骤：</p>
+<ol>
+<li>根据功能制定前后端接口。</li>
+<li>根据接口构建Mock Server工程及其部署。</li>
+<li>前后端独立开发，前端向Mock Server发送请求，获取模拟的数据进行开发和测试。</li>
+<li>前后端都完成后，前后端连接调试。</li>
+</ol>
+<p>当开发只有我一个人的时候，我更喜欢后端独立开发，开发前端的时候开个Real Server来做响应。又爽又快。其实如果团队的人是full-stack的话，完全可以按照功能模块来划分任务，而不是分为前端工程师和后端工程师。 但一般来说还是会选择前后端职能划分，对于这种情况下的多人开发的工程来说，前后端分离开发的方式确实需要考虑和构建的，可以更好帮助我们构建一个高效，规范化，流程化的开发流程。 还是那句话，没有银弹，所有的东西都需要根据实际情况来构建独特的流程。 <strong>原文链接：<a href="http://segmentfault.com/blog/livoras/1190000002413526" target="_blank" rel="noopener">http://segmentfault.com/blog/livoras/1190000002413526</a></strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/02/01/web-e5-89-8d-e5-90-8e-e7-ab-af-e5-88-86-e7-a6-bb-e5-bc-80-e5-8f-91-e6-80-9d-e8-b7-af/" data-id="ck3hcwygx00bl1qxi2t2yh47z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e5-85-b3-e4-ba-8ephp-e4-b8-adcurl-e6-85-a2-e7-9a-84-e9-97-ae-e9-a2-98" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/01/21/e5-85-b3-e4-ba-8ephp-e4-b8-adcurl-e6-85-a2-e7-9a-84-e9-97-ae-e9-a2-98/" class="article-date">
+  <time datetime="2015-01-21T22:57:54.000Z" itemprop="datePublished">2015-01-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>►<a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/21/e5-85-b3-e4-ba-8ephp-e4-b8-adcurl-e6-85-a2-e7-9a-84-e9-97-ae-e9-a2-98/">关于php中curl慢的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在自己的服务器上运行程序时需要远程请求一个接口，发现此时程序响应特别慢，平均时间都要十几秒。 最后断定问题出现在了curl地方，使用服务器命令（我的是centos）curl一个域名也很慢，但curl一个IP却能得到及时响应。（因此其实本文标题说是PHP中的问题是不严谨的） 这说明问题可能就出现在了DNS设置上，后来改了一下DNS后发现正常了，在此写文记一下。 配置DNS： 输入命令vi /etc/resolv.conf 设置一下DNS，我这里使用的阿里DNS</p>
+<p>nameserver 223.5.5.5<br>nameserver 223.6.6.6</p>
+<p>最后再重启下php和nginx</p>
+<p>/etc/init.d/php-fpm restart<br>/etc/init.d/php-fpm restart</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/01/21/e5-85-b3-e4-ba-8ephp-e4-b8-adcurl-e6-85-a2-e7-9a-84-e9-97-ae-e9-a2-98/" data-id="ck3hcwyd7003z1qxi31ckhb8j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DNS/" rel="tag">DNS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e5-85-b3-e4-ba-8eswfupload-e6-8f-92-e4-bb-b6-e6-97-a0-e6-b3-95-e4-b8-8a-e4-bc-a0-e6-96-87-e4-bb-b6-e7-9a-84-e9-97-ae-e9-a2-98" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/01/17/e5-85-b3-e4-ba-8eswfupload-e6-8f-92-e4-bb-b6-e6-97-a0-e6-b3-95-e4-b8-8a-e4-bc-a0-e6-96-87-e4-bb-b6-e7-9a-84-e9-97-ae-e9-a2-98/" class="article-date">
+  <time datetime="2015-01-17T00:59:29.000Z" itemprop="datePublished">2015-01-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JS/">JS</a>►<a class="article-category-link" href="/categories/JS/PHP/">PHP</a>►<a class="article-category-link" href="/categories/JS/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/17/e5-85-b3-e4-ba-8eswfupload-e6-8f-92-e4-bb-b6-e6-97-a0-e6-b3-95-e4-b8-8a-e4-bc-a0-e6-96-87-e4-bb-b6-e7-9a-84-e9-97-ae-e9-a2-98/">关于swfupload插件无法上传文件的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>因为项目上所使用的flash上传图片插件名叫swfupload，但里面的js写法好像另一个上传插件sapload，所以我也搞不清到底是哪个，但最终了解到这两个插件都是有共同的一个问题，就是对需要进行身份才能上传文件的方式会失效。 我们都知道服务器端要对识别当前用户登录状态需要客户端cookie的支持，请求URL时会带着cookie，服务器端才能找到对应的session。而使用这个flash插件上传文件请求接口时，如果被请求的接口需要登陆才能传文件的话，那很可能就会失败。 <strong>一种原因是说：因为该插件会忽略部分浏览器下的cookie，IE和chrome下是正常的，像火狐等浏览器上传文件时，服务器端会发现请求带过来的cookie是空的（建议尝试打印一下cookie）。</strong> <strong>另一种可能的说法：该插件是通过soket套接字进行通信，相当于建立了一次新对话，即使请求带着cookie过去了，但打印出来发现存储的sessionid并不是当前登录时的，因此用户身份又验证失败。（建议多打印cookie并查看）</strong> <strong>归根到底，无法上传文件的原因就是无法验证身份。</strong> 解决方法有两种： 1、在初始化flash插件时，在js代码中设置一下传递参数（可参考其插件手册）。swfupload插件中增加一个post_params选项，格式如post_params:{“PHPSESSID”: <?php echo session\_id(); ?>} ，sapload插件中增加一个args选项，格式如args:”PHPSESSID=<?php echo session_id(); ?>“ 。这两个意思都是在post文件时，带上参数PHPSESSID（注：后端是PHP脚本）。 咱用不了cookie中的值，那就用POST过来值，然后在PHP脚本中处理一下：</p>
+<p>if(isset($_POST[‘PHPSESSID’])){<br>    session_id($_POST[‘PHPSESSID’]);<br>    session_start()<br>}</p>
+<p>这样就可以使用当前登录正确的session id进行一系列操作了。 2、取消上传URL接口的登陆验证。（有点蛋疼，非必要情况下还是使用第一种方法吧）     附（这是给我自己看的，swfupload好像格式有所不同，如本文开头提到的，不知道是不是同一个插件）： <strong>flash 接口文档：</strong> upUrl ：后台文件的地址，必须要绝对路径 etmsg：每次文件上传成功后需不需要回调函数（0|1），默认回调函数为sapLoadMsg(x)函数。 ltmsg：最后一个文件上传成功后需不需要回调函数（0|1），默认回调函数为sapLoadMsg(x)函数。 types：上传文件的类型（如<em>.apk;</em>.jpg）用分号分隔各个类型 args：需要传递的参数（如apkName=123;apkName1=1234)用分号分隔各个类型 fileName：此参数可选，允许你自定义文件域名称，默认是Filedata。 maxNum：当最大上传数为1的时候自动切换到单文件上传模式，用户将不能在使用多选选取文件。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2015/01/17/e5-85-b3-e4-ba-8eswfupload-e6-8f-92-e4-bb-b6-e6-97-a0-e6-b3-95-e4-b8-8a-e4-bc-a0-e6-96-87-e4-bb-b6-e7-9a-84-e9-97-ae-e9-a2-98/" data-id="ck3hcwyda00461qxibrxu7o6w" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flash/" rel="tag">flash</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/session/" rel="tag">session</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/">JS</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9E%B6%E6%9E%84/">架构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACID/" rel="tag">ACID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASCII/" rel="tag">ASCII</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CQRS/" rel="tag">CQRS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Sourcing/" rel="tag">Event Sourcing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Store/" rel="tag">Event Store</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDO/" rel="tag">PDO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/URL/" rel="tag">URL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unix/" rel="tag">Unix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crypt/" rel="tag">crypt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csrf/" rel="tag">csrf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ddd/" rel="tag">ddd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flash/" rel="tag">flash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iphone/" rel="tag">iphone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pear/" rel="tag">pear</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pip/" rel="tag">pip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retina/" rel="tag">retina</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/safari/" rel="tag">safari</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/session/" rel="tag">session</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime/" rel="tag">sublime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/" rel="tag">unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xhprof/" rel="tag">xhprof</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xss/" rel="tag">xss</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6/" rel="tag">事件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag">事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BC%98%E9%85%B7/" rel="tag">优酷</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%93%E9%AA%8C/" rel="tag">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag">加密</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%9F%E7%A0%81/" rel="tag">原码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E7%A0%81/" rel="tag">反码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" rel="tag">响应式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag">存储引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8E%88%E6%9D%83/" rel="tag">授权</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%9D%BF/" rel="tag">模板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag">线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" rel="tag">自适应</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%B1%E8%AF%AD/" rel="tag">英语</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8F%9C%E5%8D%95/" rel="tag">菜单</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A1%A5%E7%A0%81/" rel="tag">补码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%84%E8%8C%83/" rel="tag">规范</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A4%E8%AF%81/" rel="tag">认证</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD/" rel="tag">负载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E5%BE%84/" rel="tag">路径</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag">进程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%82%E9%85%8D/" rel="tag">适配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag">集群</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" rel="tag">预加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag">领域驱动设计</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ACID/" style="font-size: 10px;">ACID</a> <a href="/tags/ASCII/" style="font-size: 10px;">ASCII</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/CQRS/" style="font-size: 12.86px;">CQRS</a> <a href="/tags/DNS/" style="font-size: 10px;">DNS</a> <a href="/tags/Event-Sourcing/" style="font-size: 11.43px;">Event Sourcing</a> <a href="/tags/Event-Store/" style="font-size: 10px;">Event Store</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/PDO/" style="font-size: 10px;">PDO</a> <a href="/tags/PHP/" style="font-size: 20px;">PHP</a> <a href="/tags/SVN/" style="font-size: 11.43px;">SVN</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/URL/" style="font-size: 10px;">URL</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Yii/" style="font-size: 17.14px;">Yii</a> <a href="/tags/crypt/" style="font-size: 10px;">crypt</a> <a href="/tags/csrf/" style="font-size: 10px;">csrf</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/ddd/" style="font-size: 12.86px;">ddd</a> <a href="/tags/flash/" style="font-size: 10px;">flash</a> <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/iphone/" style="font-size: 10px;">iphone</a> <a href="/tags/mysql/" style="font-size: 18.57px;">mysql</a> <a href="/tags/pear/" style="font-size: 10px;">pear</a> <a href="/tags/pip/" style="font-size: 10px;">pip</a> <a href="/tags/python/" style="font-size: 12.86px;">python</a> <a href="/tags/retina/" style="font-size: 10px;">retina</a> <a href="/tags/safari/" style="font-size: 10px;">safari</a> <a href="/tags/session/" style="font-size: 10px;">session</a> <a href="/tags/sublime/" style="font-size: 10px;">sublime</a> <a href="/tags/unicode/" style="font-size: 10px;">unicode</a> <a href="/tags/xhprof/" style="font-size: 10px;">xhprof</a> <a href="/tags/xss/" style="font-size: 10px;">xss</a> <a href="/tags/%E4%BA%8B%E4%BB%B6/" style="font-size: 10px;">事件</a> <a href="/tags/%E4%BA%8B%E5%8A%A1/" style="font-size: 12.86px;">事务</a> <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" style="font-size: 10px;">人工智能</a> <a href="/tags/%E4%BC%98%E9%85%B7/" style="font-size: 10px;">优酷</a> <a href="/tags/%E4%BD%93%E9%AA%8C/" style="font-size: 10px;">体验</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 15.71px;">前端</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8E%9F%E7%A0%81/" style="font-size: 10px;">原码</a> <a href="/tags/%E5%8F%8D%E7%A0%81/" style="font-size: 10px;">反码</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" style="font-size: 11.43px;">响应式</a> <a href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" style="font-size: 10px;">存储引擎</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 10px;">并发</a> <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="font-size: 11.43px;">微服务</a> <a href="/tags/%E6%8E%88%E6%9D%83/" style="font-size: 10px;">授权</a> <a href="/tags/%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">数学</a> <a href="/tags/%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">架构</a> <a href="/tags/%E6%A8%A1%E6%9D%BF/" style="font-size: 10px;">模板</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">线程</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 11.43px;">编码</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" style="font-size: 11.43px;">自适应</a> <a href="/tags/%E8%8B%B1%E8%AF%AD/" style="font-size: 10px;">英语</a> <a href="/tags/%E8%8F%9C%E5%8D%95/" style="font-size: 10px;">菜单</a> <a href="/tags/%E8%A1%A5%E7%A0%81/" style="font-size: 10px;">补码</a> <a href="/tags/%E8%A7%84%E8%8C%83/" style="font-size: 10px;">规范</a> <a href="/tags/%E8%AE%A4%E8%AF%81/" style="font-size: 10px;">认证</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.86px;">设计模式</a> <a href="/tags/%E8%B4%9F%E8%BD%BD/" style="font-size: 10px;">负载</a> <a href="/tags/%E8%B7%AF%E5%BE%84/" style="font-size: 10px;">路径</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 17.14px;">转载</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E8%BF%9B%E7%A8%8B/" style="font-size: 10px;">进程</a> <a href="/tags/%E9%80%82%E9%85%8D/" style="font-size: 10px;">适配</a> <a href="/tags/%E9%9B%86%E7%BE%A4/" style="font-size: 10px;">集群</a> <a href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" style="font-size: 10px;">预加载</a> <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" style="font-size: 10px;">领域驱动设计</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/06/593/">什么是SNI？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/584/">微服务模式：Saga</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/580/">微服务模式：一个服务一个数据库</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/577/">CQRS/ES架构下如何保证用户名的唯一性？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/15/576/">编程中的hydration是什么意思</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Veitor<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

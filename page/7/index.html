@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Veitor的技术点滴</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术点滴">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;page&#x2F;7&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Veitor的技术点滴" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Veitor的技术点滴</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://www.veitor.net"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-e5-9b-a2-e9-98-9f-e5-bc-80-e5-8f-91-e4-b8-ad-e7-9a-84-e4-bb-a3-e7-a0-81-e7-bc-96-e5-86-99-e8-a7-84-e8-8c-83" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/03/e5-9b-a2-e9-98-9f-e5-bc-80-e5-8f-91-e4-b8-ad-e7-9a-84-e4-bb-a3-e7-a0-81-e7-bc-96-e5-86-99-e8-a7-84-e8-8c-83/" class="article-date">
+  <time datetime="2014-06-03T06:20:00.000Z" itemprop="datePublished">2014-06-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/03/e5-9b-a2-e9-98-9f-e5-bc-80-e5-8f-91-e4-b8-ad-e7-9a-84-e4-bb-a3-e7-a0-81-e7-bc-96-e5-86-99-e8-a7-84-e8-8c-83/">团队开发中的代码编写规范</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>代码规范问题虽然不影响程序的运行，但是却很可以使代码在管理上变得很容易。</p>
+<h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><p>注释是对于那些容易忘记作用的代码添加简短的介绍性内容。请使用 C 样式的注释“/* */”和标准 C++ 注释“//”。类、方法、函数请使用 phpdoc 格式的注释，在函数及方法的注释中至少要有 @param 和 @return 标签，如：</p>
+<p> /**<br>* 这里是函数说明<br>*<br>* @param int $a 参数1<br>* @param int $b 参数2<br>* @return xxx 参数1与参数2乘积<br>*/<br>public function function_demo_1($a, $b)<br>{<br>    return intval($a) * intval($b);<br>}</p>
+<p>对于 bug 修正时务必写上 bug 修改人、修改时间和修正 bug 的原因。</p>
+<p>// add xxx by <a href="mailto:liuming@leju.sina.com.cn" target="_blank" rel="noopener">liuming@leju.sina.com.cn</a> on 2009-09-01, test<br>// remove xxx by <a href="mailto:guoning@leju.sina.com.cn" target="_blank" rel="noopener">guoning@leju.sina.com.cn</a> on 2009-09-02, test<br>// last modified by <a href="mailto:liuxin@leju.sina.com.cn" target="_blank" rel="noopener">liuxin@leju.sina.com.cn</a> on 2009-09-05, typo<br>// last modified by <a href="mailto:dengwei@leju.sina.com.cn" target="_blank" rel="noopener">dengwei@leju.sina.com.cn</a> on 2009-09-09, typo<br>// fixed memory leak<br>unset($something);</p>
+<p>程序开发中难免留下一些临时代码和调试代码，此类代码必须添加注释，以免日后遗忘。所有临时性、调试性、试验性的代码，必须添加统一的注释标记“//@debug:”并后跟完整的注释信息，这样可以方便在程序发布和最终调试前批量检查程序中是否还存在有疑问的代码。例如：</p>
+<p>$num = 1;<br>$flag = true; // @debug: 测试文件加载<br>if (!$flag)<br>{<br>    // debug statements<br>}</p>
+<h4 id="书写规则"><a href="#书写规则" class="headerlink" title="书写规则"></a>书写规则</h4><p>缩进与换行：每个缩进的单位约定是一个TAB(4个空白字符宽度)，需每个参与项目的开发人员在编辑器中进行强制设定，以防在编写代码时遗忘而造成格式上的不规范。并且所有换行采用 UNIX 格式，既只有 \n 换行。 本缩进规范适用于 HTML、PHP、JS、AS 中的函数、类、逻辑结构、循环等。 大括号 {}、if 和 switch：首括号与关键词同行，尾括号与关键字同列； if 结构中，if 和 elseif 与前后两个圆括号同行，左右各一个空格，所有大括号都单独另起一行。另外，即便if后只有一行语句，仍然需要加入大括号，以保证结构清晰； switch 结构中，通常当一个 case 块处理后，将跳过之后的 case 块处理，因此大多数情况下需要添加 break。break 的位置视程序逻辑，与 case 同在一行，或新起一行均可，但同一 switch 体中，break 的位置格式应当保持一致。 以下是符合上述规范的例子：</p>
+<p>if ($condition)<br>{<br>    switch ($var)<br>    {<br>        case 1:<br>               echo ‘var is 1’;<br>              break;<br>          case 2:<br>              echo ‘var is 2’;<br>              break;<br>            default:<br>        echo ‘var is neither 1 or 2’;<br>            break;<br>    }<br>}<br>else<br>{<br>    switch ($str)<br>     {<br>           case ‘abc’:<br>             $result = ‘abc’;<br>            break;<br>         default:<br>               $result = ‘unknown’;<br>            break;<br>    }<br>}</p>
+<p>例外的，数据库 SQL 语句中，除字符串外所有数据都不得加单引号，但是在进行 SQL 查询之前都必须经过 intval 等相关函数处理；所有字符串都必须加单引号，以避免可能的注入漏洞和SQL错误。正确的写法为：</p>
+<p>$catid = intval($catid); // 当 $catid 只能为 int 时<br>$username = addslashes($username);<br>$username = “SELECT * FROM phpcms_member WHERE username = ‘{$username}’ AND catid = {$catid}”;</p>
+<p>  所有数据在插入数据库之前，均需要进行addslashes()处理，以免特殊字符未经转义在插入数据库的时候出现错误。如果使用基础类 baselib_request_arg 通过 GET、POST、FILE 取得的变量默认情况下已经使用了 addslashes() 进行了转义，不必重复进行。如果数据处理必要(例如用于直接显示)，可以使用 stripslashes() 恢复，但数据在插入数据库之前必须再次进行转义。 缓存文件中，一般对缓存数据的值采用 addcslashes($string, ‘\‘\&#39;) 进行转义。</p>
+<h4 id="命名原则"><a href="#命名原则" class="headerlink" title="命名原则"></a>命名原则</h4><p>命名是程序规划的核心，只要你给事物想到正确的名字，就会给你以及后来的人带来比代码更强的力量。总的来说，只有了解系统的程序员才能为系统取出最合适的名字。如果所有的命名都与其自然相适合，则关系清晰，含义可以推导得出，一般人的推想也能在意料之中。 就一般约定而言，类、函数和变量的名字应该总是能够描述让代码阅读者能够容易的知道这些代码的作用。形式越简单、越有规则，就越容易让人感知和理解。应该避免使用模棱两可，晦涩不标准的命名。 <strong>变量、对象、函数名</strong> 变量、对象、函数名一律为小写格式，单词之间一般使用下划线 “_” 进行分割； 以标准计算机英文为蓝本，杜绝一切拼音、或拼音英文混杂的命名方式； 变量命名只能使用项目中有据可查的英文缩写方式，例如可以使用$data而不可使用$data1、$data2这样容易产生混淆的形式，应当使用 $article_data、$user_data 这样一目了然容易理解的形式； 可以合理的对过长的命名进行缩写，例如 $bio($biography)，$tpp($threadsPerPage)，$uid($userid) 前提是英文中有这样既有的缩写形式，或字母符合英文缩写规范； 必须清楚所使用英文单词的词性，在权限相关的范围内，大多使用$enable<strong><em>、$is</em></strong> 的形式，前者后面接动词，后者后面接形容词。 <strong>常量</strong> 常量应该总是全部使用大写字母命名，少数特别必要的情况下，可使用划线来分隔单词； PHP 的内建值 TRUE、FALSE 和 NULL 必须全部采用大写字母书写。</p>
+<h4 id="变量的初始化与逻辑检查"><a href="#变量的初始化与逻辑检查" class="headerlink" title="变量的初始化与逻辑检查"></a>变量的初始化与逻辑检查</h4><p>任何变量在进行累加、直接显示或存储前必需进行初使化，例如：  </p>
+<p>$number = 0; //数值型初始化<br>$string = ‘’; //字符串初始化<br>$array = array(); //数组初始化</p>
+<p>  判断一个无法确定（不知道是否已被赋值）的变量时，可用 empty() 或 isset()，而不要直接使用 if($switch) 的形式，除非你确切的知道此变量一定已经被初始化并赋值。 判断一个变量是否为数组，请使用is_array()，这种判断尤其适用于对数组进行遍历的操作，例如foreach()，因为如果不事先判断，foreach()会对非数组类型的变量报错； 判断一个数组元素是否存在，可使用isset($array[‘key’])，也可使用empty()，两者异同见上。</p>
+<h4 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h4><p>代码设计应当兼顾 PHP 高低版本的特性。当前应仍然以 PHP 5.2 作为最低通过平台(部分历史遗留项目例外)，尽量不使用高版本 PHP 5.3 新增的函数、常数或者常量。如果使用只在高版本才具备的函数，必须对其进行二次封装，自动判断当前 PHP 版本，并自行编写低版本下的兼容代码； 对于个别函数，参数要求或者代码要求应当以较为严格的PHP版本为准； 除非必要，不要使用 PHP 扩展模块中的函数。使用时应当加入必要的判断，当服务器环境不支持此函数的时候，进行必要的处理。文档和程序中的功能说明中，也应加上兼容性说明。</p>
+<h4 id="包含调用"><a href="#包含调用" class="headerlink" title="包含调用"></a>包含调用</h4><p>包含调用程序文件时，请全部使用 require_once，以避免可能的重复包含问题； 包含调用缓存文件，由于缓存文件无法保证 100% 正确打开，请使用 include_once。在必要时，可以使用 @include_once 的方式，以忽略错误提示；我们仍建议大家把缓存数据放到 LC (Local cache:xcache、eaccelerator、APC) 或 RC (remote cache:memcached、couchdb …)。 包含和调用代码中，须以 APP_ROOT . ‘/‘开头，应避免直接写程序文件名 (例如：require_once ‘x.php’) 的做法； 所有被包含和调用的程序文件，包括但不限于程序、缓存或模板，通常其不能被直接URL请求。通过在 ./config.php 中定义一个标记性常量 APPNAME ，来判断程序是否被合法调用。因此，在除了./config.php 以外的任何一个被包含和调用的程序文件中，需要包含以下内容，以使得访问者无法直接通过URL 请求该文件： defined(‘APPNAME’) or exit(‘Access Denied’); <strong>错误报告级别</strong> 在开发和调试阶段，请使用 error_reporting(E_ALL) 作为默认的错误报告级别，此级别最为严格，能够报告程序中所有的错误、警告和提示信息，以帮助大家检查和核对代码，避免大多数安全性问题和逻辑错误、拼写错误。error_reporting() 可以公共头文件进行设置，或某个指定的文件进行设置，但是请不要在各个文件中都加一个 error_reporting 。 代码部署时，请删除所有 error_reporting 和 ini_set(‘display_errors’, xxx) 设置，php 采用服务器默认配置，此配置由服务器维护人员统一配置。</p>
+<h4 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h4><p><strong>字段</strong> 表和字段命名：表和字段的命名以前面《命名原则》的约定为基本准则。所有数据表名称，只要其名称是可数名词，则必须以复数方式命名，例如：members(用户表)；存储多项内容的字段，或代表数量的字段，也应当以复数方式命名，例如：hits(查看次数)、items(内容数量)。 当几个表间的字段有关连时，要注意表与表之间关联字段命名的统一，如 article_hash_01 表中的 articleid 与 article_data_hash_01 表中的 articleid。 代表id自增量的字段，通常用以下几种形式：</p>
+<ul>
+<li>一般情况下，使用全称的形式，例如 userid、articleid；</li>
+<li>没有功能性作用，只为管理和维护方便而设的id，可以使用全称的形式，也可只将其命名为id。</li>
+</ul>
+<p><strong>字段结构</strong> 允许 NULL 值的字段，数据库在进行比较操作时，会先判断其是否为 NULL，非 NULL 时才进行值的必对。因此基于效率的考虑，建议所有字段均不能为空，即全部 NOT NULL； 预计不会存储非负数的字段，例如各项 id、发帖数等，必须设置为 UNSIGNED 类型。 UNSIGNED 类型比非 UNSIGNED 类型所能存储的正整数范围大一倍，因此能获得更大的数值存储空间； 存储开关、选项数据的字段，通常使用 tinyint(1) 非 UNSIGNED 类型，少数情况也可能使用enum() 结果集的方式。tinyint 作为开关字段时，通常 1 为打开；0 为关闭；-1 为特殊数据，例如 N/A(不可用)；高于 1 的为特殊结果或开关二进制数组合； MEMORY/HEAP 类型的表中，要尤其注意规划节约使用存储空间，这将节约更多内存。例如cdb_sessions 表中，就将 IP 地址的存储拆分为4个 tinyint(3) UNSIGNED 类型的字段，而没有采用 char(15) 的方式； 任何类型的数据表，字段空间应当本着足够用，不浪费的原则。</p>
+<h4 id="SQL语句"><a href="#SQL语句" class="headerlink" title="SQL语句"></a>SQL语句</h4><p>所有 SQL 语句中，除了表名、字段名称以外，全部语句和函数均需大写，应当杜绝小写方式或大小写混杂的写法。例如 select * from members; 是不符合规范的写法。 很长的 SQL 语句应当有适当的断行，依据 JOIN、FROM、ORDER BY等关键字进行界定。 通常情况下，在对多表进行操作时，要根据不同表名称，对每个表指定一个 1 ~ 2 个字母的缩写，以利于语句简洁和可读性。 如下的语句范例，是符合规范的：</p>
+<p>$result = $db-&gt;query(“SELECT m.<em>, i.</em><br>FROM “ . TABLE_MEMBER . “ AS m, “ . TABLE_MEMBERINFO . “ AS i<br>WHERE m.userid = i.userid AND m.userid = ‘$_userid’);</p>
+<p>  原文地址：<a href="http://www.nowamagic.net/librarys/veda/detail/513" target="_blank" rel="noopener">http://www.nowamagic.net/librarys/veda/detail/513</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/06/03/e5-9b-a2-e9-98-9f-e5-bc-80-e5-8f-91-e4-b8-ad-e7-9a-84-e4-bb-a3-e7-a0-81-e7-bc-96-e5-86-99-e8-a7-84-e8-8c-83/" data-id="ck3hcwygn00b01qxi95cd1cbn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%A7%84%E8%8C%83/" rel="tag">规范</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e6-99-ba-e8-83-bd-e8-81-8a-e5-a4-a9-e6-9c-ba-e5-99-a8-e4-ba-ba-e5-b0-8f-e9-bb-84-e9-b8-a1-e5-8f-8a-e5-85-b6-e5-88-b6-e4-bd-9c-e6-96-b9-e6-b3-95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/06/03/e6-99-ba-e8-83-bd-e8-81-8a-e5-a4-a9-e6-9c-ba-e5-99-a8-e4-ba-ba-e5-b0-8f-e9-bb-84-e9-b8-a1-e5-8f-8a-e5-85-b6-e5-88-b6-e4-bd-9c-e6-96-b9-e6-b3-95/" class="article-date">
+  <time datetime="2014-06-03T05:41:58.000Z" itemprop="datePublished">2014-06-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/06/03/e6-99-ba-e8-83-bd-e8-81-8a-e5-a4-a9-e6-9c-ba-e5-99-a8-e4-ba-ba-e5-b0-8f-e9-bb-84-e9-b8-a1-e5-8f-8a-e5-85-b6-e5-88-b6-e4-bd-9c-e6-96-b9-e6-b3-95/">智能聊天机器人小黄鸡及其制作方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>　　 今天很荣幸担任主讲，与大家一起讨论智能聊天机器人小黄鸡<del>讲得不好请见谅，提问请轻虐</del>嘻嘻</p>
+<pre><code>今天的讲座主要分为三个部分，分别是：**1. 什么是小黄鸡 2.小黄鸡的基本原理 3.如何自制小黄鸡。**</code></pre><p><strong>Part 1 什么是小黄鸡</strong></p>
+<pre><code>很多人认识小黄鸡是从人人网开始的，只要@小黄鸡，它就会跑出来跟你聊天。这就是一个典型的人工智能的聊天机器人。
+
+实际上，人人网小黄鸡是华科一位08级的同学，通过人人网接口，调用韩国聊天机器人SimSimi的API，自动回复提问者。</code></pre><p>也就是下图：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/06/1.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/1.png" alt="1"></a></p>
+<p>  SimSimi最早风靡于移动平台。至于它的具体原理以及实现方法我们将在后两部分介绍。也就是说，人人网小黄鸡的原型，就是智能聊天机器人SimSimi。那么什么是聊天机器人呢？</p>
+<pre><code>简单地说，就是基于人工智能原理(Artificial Intelligence，以下简称AI)，通过对聊天文本进行分析后给出应答的一类程序。世界上最早的聊天机器人诞生于20世纪80年代，这款机器人名为“阿尔贝特”，用BASIC语言编写而成。而由于中文对“词”划分的模糊及歧义繁多等等原因，中文聊天机器人发展得相对较慢，目前有赢思的小i，爱博的小A，腾讯也有。</code></pre><p><strong>Part   2 小黄鸡的基本原理</strong></p>
+<pre><code>AI聊天机器人小黄鸡的工作可以被分成两个部分：训练+匹配。（其实很多AI的东西都可以被这么划分，比如人脸识别，语音识别等等）</code></pre><p><strong>2.1 训练</strong></p>
+<pre><code> Simsimi中的“教学”，就是**训练**的过程，目的在于构建或是丰富词库。
+
+ 流程描述如下： **S1：用户通过教学界面向系统提出一个话题与相应应答； S2：系统对该话题进行分词，判断该话题在系统知识库中应存放的位置； S3：在系统知识库中添加该话题及相应应答。**
+
+可以看到，这里涉及到两个问题：**给出一个话题，系统是如何分词的？词库要如何设计才能又快又准地应答？**</code></pre><p><strong>2.1.1分词方法</strong></p>
+<pre><code> 有人认为我教小黄鸡“埃菲尔铁塔上45度角仰望星空”回答是“呵呵”，那下次它再看到“埃菲尔铁塔上45度角仰望星空”整句话的时候才会有相应回答。但实际上，下次只要它看到“埃菲尔铁塔”就会“呵呵”了好嘛。
+
+ 这是因为聊天机器人的存储并不以句子为单位（那样太费时费空间），而是以词。于是，分词，几乎成为聊天机器人的核心。
+
+英文分词好说，人家用空格什么的就搞定了，但中文不一样，对于一句话，人们可以用自己的认识区分词语，而机器人要怎么做，就是中文分词算法的研究范畴了。
+
+中文分词技术俨然是一个重要的研究方向，隶属于自然语言处理。现有的分词算法可以分为三大类：**基于字符串匹配的分词方法**、**基于统计的分词方法**和**基于理解的分词方法**。
+
+用户在聊天时的一个显著特点是所提出的话题一般都是比较短小的，而不是长篇大论，不具有段落篇章结构，绝大多数就是少数几句话。基于统计的分词方法适用于有段落、篇章结构以及上下文关系的文段。基于理解的分词方法目前并不成熟，且时间复杂度高，速度慢。于是，只有基于字符串匹配的分词是比较适合的。
+
+基于字符串匹配的分词方法，又叫做机械分词方法。**按照扫描方向**的不同，机械分词法可以分为正向匹配和逆向匹配。（e.g. 字符串“北京华烟云”，正向匹配为《北京，华烟云》，逆向匹配为《北，京华烟云》）逆向匹配的切分正确率要高于正向匹配法，为了便于发现歧义切分，有时候将两者结合起来形成双向匹配法。**按照不同长度优先匹配**的情况，可以分为最大（最长）匹配和最小（最短）匹配，也就是长词优先和短词优先。**按照匹配不成功时重新切取的策略**，机械分词法可以分为增字法和减字法。 基于词典的“**双向最大匹配**”法是目前中文信息处理中最简单有效的方法，有这样的统计：汉语文本中90％左右的句子，其与双向最大匹配的结果相吻合，而且是正确的分词结果。
+
+ 当正、反向最大匹配算法得出来的切分结果不一样时，就必须对其进行歧义处理，在此不再赘述。</code></pre><p><strong>2.1.2词库设计</strong></p>
+<pre><code>由于中文词的特点：1.中文词是一个开放集，词数在增长；2.以不同字开头的词的数目变化很大，多的达到数百个，少的也有可能只有一个或者没有；3.词的长度变化也很大，有单字词，也有由六、七个字成词的。</code></pre><p>这就要求在设计词典时，除了考虑访问效率外，还得充分考虑存储利用率。</p>
+<p>请看这种数据结构，就能很好地平衡时间与空间。 <a href="http://storage.veitor.net/uploads/2014/06/2.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/2.jpg" alt="2"></a></p>
+<pre><code>首字Hash表通过一次哈希运算就可以直接定位汉字在表中的位置。一个单元包括三项内容：C：存储首字；F标志位：存储以C为首字的最长词条的长度；P：指向词表索引表。
+
+  解释一下哈希：散列表 Hash table，也叫哈希表，顾名思义就是把数据都打散了，再按一定规律存起来，加快访问速度。是根据关键码值Key而直接进行访问的数据结构。
+
+ 举个栗子：我想将\[0,100)做成一个哈希表，选取“模10”作为散列函数，以数组作为存储单元，则得到A\[10\]\[10\]的数组，A\[0\]里依次存着0,10,20…90；A\[1\]里存着1,11,21…91。依次类推。</code></pre><p><strong>现在举一个训练小黄鸡的例子：我教小黄鸡说“大白天的做什么美梦啊？”回答是“哦哈哈哈不用你管”。</strong></p>
+<p><strong>S1：</strong>应用双向最大匹配算法分词：双向分词结果，正向《大白天，的，做什么，美梦，啊》；反向《大白天，的，做什么，美梦，啊》。正向反向都是一样的，所以不需要处理歧义问题。长词优先选择，“大白天”和“做什么”。</p>
+<p><strong>S2：</strong>以“大白天”举例，假设hash函数为f（），并设f（大白天）指向首字hash表项[大，11，P]。于是由该表项指向“3字索引”，再指向对应“词表”。</p>
+<p><strong>S3：</strong>将结构体&lt;大白天，…&gt;插入队尾。体中有一个Ans域，域中某一指针指向“哦哈哈哈不用你管”。</p>
+<p><strong>S4：</strong>完成训练。</p>
+<p><strong>2.2 匹配</strong></p>
+<pre><code>可以被描述成如下流程：S1：用户通过聊天界面向系统提出一个话题；S2：系统对该话题进行分词处理；S3：在系统知识库中寻找与该话题匹配的话语回复用户。
+
+基于词典的分词算法分为**词典加载**、**预处理**、**最大匹配**、**歧义消解**几个阶段。 其具体流程如下：</code></pre><p><strong>S1：预处理阶段</strong>，按照特殊字符(英文字母、数字、标点符号等)将待分析文本进行断句，将待切分的文本切分为只有中文的短句子，这些句子是下一步分词处理的基本单位；</p>
+<p>（举个栗子：输入“asdfadf东北师范大学哈哈哈dfadflakfl(<em>^__^</em>) 嘻嘻……”，simi只会对其中的中文“东北师范大学哈哈哈嘻嘻”做出响应；输入“(<em>^__^</em>)”时，输出“I have no response.”）</p>
+<p><strong>S2：</strong>对断句出来的句子进行<strong>双向最大匹配</strong>（双向匹配，长词优先）分词，分词后的结果作为S3的输入；</p>
+<p>（举个栗子：输入“东京古巴比伦”，正向与反向切词结果均为《东京，古巴比伦》，长词优先，所以simi只对“古巴比伦”做出响应；输入“古巴比伦埃菲尔铁塔”，正向与反向切词结果均为《古巴比伦，埃菲尔铁塔》，此时Simi对“埃菲尔铁塔”做出响应）</p>
+<p><strong>S3：</strong>对上一步分词得到的结果进行比较，判断是否存在歧义，如果存在歧义，就进行一定的<strong>歧义消解</strong>；</p>
+<p><strong>S4：</strong>重复S2、S3，直到处理完步骤一中断句所切分出的所有句子单元。</p>
+<p>算法流程如图所示：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/06/3.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/3.jpg" alt="3"></a></p>
+<p>这里给出与小黄鸡对话的例子：我问小黄鸡：“埃菲尔铁塔上45度角仰望星空”。</p>
+<p><strong>S1：</strong>双向最大匹配分词：正向反向均为《埃菲尔铁塔上，45度角，仰望星空》，没有歧义。长词优先，系统选择了“埃菲尔铁塔上”作为关键词；</p>
+<p><strong>S2：</strong>系统在知识库中用刚才说的哈希函数f（埃菲尔铁塔上），找到比如[埃，11，P] 的表项，顺着指针找到6字词的索引，顺着索引找到6字词表，遍历词表，找到&lt;埃菲尔铁塔上，…&gt;结构体；</p>
+<p><strong>S3：</strong>系统随机选择该结构体Ans域中的一个回答（也有可能是根据频率高低来选择）。比如“两年之后等着你”。</p>
+<p><strong>S4：</strong>输出回答，匹配结束。</p>
+<p><strong>Part 3 如何自制小黄鸡</strong></p>
+<pre><code>根据第二部分所介绍的原理，个人想要真正完成整个小黄鸡的制作是有难度的。如果能做出一个智能较高的聊天机器人，那直接可以去申请专利开公司了~
+
+所以在这里我们介绍两种比较简单易行的方法，跳过对智能算法的研究，直接调用SimSimi的库。</code></pre><p><strong>3.1 通过获取Cookies方法</strong></p>
+<pre><code>首先我们来看人人网小黄鸡是怎么做的。
+
+原作者团队在github上给出了源代码，网址[https://github.com/wong2/xiaohuangji](https://github.com/wong2/xiaohuangji)，他们使用Python语言，获取Cookies，通过人人网的接口，将Simi的库连接到人人上。
+
+也就是说，人人网小黄鸡并没有真正研究第二部分讲到的 AI聊天机器人的算法，而是**通过调用人家****Simi****的库**！这就是人人网小黄鸡跟Simi的关系。</code></pre><p><em>Cookies：指某些网站为了辨别用户身份、进行session跟踪而储存在用户本地终端上的数据（通常经过加密）。利用网页代码中的HTTP头信息进行传递。</em></p>
+<p><em>（举个栗子，我们第一次登录保研论坛时输入用户名与密码，然后选择保存密码，就相当于保存Cookies，下次再打开eeban就不用再登录了~</em></p>
+<pre><code>Cookies作为一个大有用处的存在，同时也极大地危害着网络信息安全。因为是可以通过例如JS脚本等方法窃取Cookies的。想想看，别人获取了你的Cookies，都不用知道你的用户名密码就能以你的身份查看邮件，浏览网页等等……当然这是题外话，有兴趣的我们以后讨论~所以希望大家能经常清理自己的Cookies，不给坏人可乘之机~~）
+
+回到我们的小黄鸡，下图是人人网小黄鸡源代码中关于获取Cookies的一段：</code></pre><p><a href="http://storage.veitor.net/uploads/2014/06/4.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/4.png" alt="4"></a></p>
+<pre><code>我们要自制呢，就不用他们那么麻烦~咱们只要几行小代码就可以了~
+
+ 简单介绍一下核心算法：</code></pre><p><strong>S1：</strong>利用session对象获取本机在<a href="http://www.simsimi.com/talk.htm" target="_blank" rel="noopener">http://www.simsimi.com/talk.htm</a> 上的Cookies</p>
+<p>（session，在网络应用中被称为“会话”。简单地说，它就像在网站顶层的一个盒子，无论网页怎么跳转，都能够保存用户的信息。这里注意！Talk页是Simi免费的聊天页面，这一点很重要！）</p>
+<p><strong>S2：</strong>构造头信息，准备将Cookies添加在HTTP头部信息中</p>
+<p><strong>S3：</strong>从SimSimi API接口中获取本机的响应</p>
+<p>（刚才说过，Cookies利用HTTP头信息进行传递，所以我们将刚才talk页上的Cookies添加在 API页上，相当于是talk页在调用API！！！这一点很重要。</p>
+<p>举个栗子，我们拿着一把锁，去找talk页，talk给了我们一把钥匙，但是我们开锁手法我们不知道，于是我们将锁+钥匙一起送给API，然后它帮我们打开了盒子<del>bling</del>bling~~）</p>
+<p>来，我们看看原理图：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/06/5.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/5.png" alt="5"></a></p>
+<p>下面是我用这个方法做的小黄鸡1号：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/06/6.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/6.jpg" alt="6"></a></p>
+<p>确切的说是这是一只小黄鸡与一只小黄鸭的互掐。哈哈！</p>
+<pre><code>想要做小黄鸡，这是一个省时省力的方法，但是。。。不得不说这是在盗用SimSimi的劳动成果。。。人家指望它的API库卖钱的呢。。。。额额额
+
+所以接下来我们来看正版的制作方法~~</code></pre><p><strong>3.2 通过key调用API接口</strong></p>
+<pre><code>下面这个网址给出了SimSimi的官方API文档：[http://developer.simsimi.com/api](http://developer.simsimi.com/api)</code></pre><p><a href="http://storage.veitor.net/uploads/2014/06/7.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/7.png" alt="7"></a></p>
+<pre><code>文档已经写得非常清晰了，[http://api.simsimi.com/request.p?key=your](http://api.simsimi.com/request.p?key=your) key&amp;lc=en&amp;ft=1.0&amp;text=hi这一行代码就是在调用官方API接口！也就是说，只要你申请到了key，就能调用simi的API，是不是想想就很爽？~最开始我给大家的小黄鸡2号就是正版鸡有木有~现在来讲解一下怎么做。我选择J2EE平台，MVC模式，JSP+JAVA语言。
+
+ 最核心的思想是这样的：我们将从表单中获取的字符串，送去调用官方API接口，用request对象返回结果，再打到屏幕上~~是不是很简单？</code></pre><p>下面介绍详细算法流程：</p>
+<p><strong>S1：</strong>talk.jsp——用户填写表单内容，将参数String text传递给chuil.jsp；</p>
+<p><strong>S2：</strong>chuli.jsp——request对象获取传递来的参数，调用API，用Content类中的getContent(urls)方法获取网页的内容，返回结果String ans，将ans传递给talk.jsp；</p>
+<p><strong>S3：</strong>talk.jsp——request对象获取传递来的参数ans，将ans打印到屏幕上。结束。</p>
+<p>*其中Content类用于获取网页内容，直接上网找的，都不用自己写~hiahia</p>
+<p>这是小黄鸡2号的效果图：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/06/8.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/8.png" alt="8"></a></p>
+<pre><code>正版的方法就是简单~但是因为是正版的，就得付出代价，key是要钱的。我现在用的是试用版，key的有效期限是90天，并且每天只有100次响应，也就是说你一天只能调戏它100次。。。是不是很桑感。</code></pre><p><strong>总结</strong></p>
+<pre><code>经过这么多的介绍，大家是不是对类似小黄鸡（SimSimi）的人工智能聊天机器人有了初步的认识。其实你可以做很多只“小黄鸡”，但它的核心都是Simsimi的库，是人家的东西。所以说偶们新时代的年轻人应该要有自己创新意识~让我们来开发自己的智能算法~做自己的小黄鸡、小黄鸭、小黄狗、小黄瓜吧！~~</code></pre><p>reference：</p>
+<ul>
+<li>[1]李鹏.中文分词在聊天机器人中的应用研究[D].中南大学.2009(05)</li>
+<li>[2] 易顺明,胡振宇. 中文聊天机器人原型系统的设计[J]. 沙洲职业工学院学报. 2007(02)</li>
+<li>[3]查询处理及分词技术.百度</li>
+<li>[4]设计和构造一个自动应答聊天机器人都涉及到哪些技术.知乎</li>
+</ul>
+<p><strong>问答环节</strong></p>
+<p><strong>训练的话玩家调戏它的数据会被录入作为以后回答别人的参考么？还是需要相应权限才能存入库里？</strong></p>
+<p>这个就是教学界面。会的。玩家教给它的话题，会在切词之后，打包它的回答，一起存入词库。别人触发相似的关键词，也有可能回答刚刚你教过的答案。</p>
+<p><strong>那一个问题有不同答案，如何选择呢？</strong></p>
+<p>一个关键词下链接了好几种不同的回答，系统会随机选择一个，比如输入“哈哈”，回答有可能是“呵呵”“笑什么笑”……</p>
+<p><strong>以前的这个词表里面对于每个可能出现的词已经有了确定的答案的意思吗？</strong></p>
+<p>对，构建词库的时候，还有训练的时候都已经写进去了</p>
+<p><strong>但是训练的时候不能随便的吧？万一教他的是错误的知识呢？</strong></p>
+<p>谁都可以~~但是一般会有过滤系统，要审核的，像simi就有做任务这个玩法，任务就是，给你别人的回答，让你判断是否可以给不满16岁的孩子看，也有存进去的时候设置敏感词什么的。</p>
+<p>原文地址：<a href="http://www.cnblogs.com/huj690/archive/2013/01/24/2875114.html" target="_blank" rel="noopener">http://www.cnblogs.com/huj690/archive/2013/01/24/2875114.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/06/03/e6-99-ba-e8-83-bd-e8-81-8a-e5-a4-a9-e6-9c-ba-e5-99-a8-e4-ba-ba-e5-b0-8f-e9-bb-84-e9-b8-a1-e5-8f-8a-e5-85-b6-e5-88-b6-e4-bd-9c-e6-96-b9-e6-b3-95/" data-id="ck3hcwyh600cj1qxib08x4nmx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-bb-80-e4-b9-88-e6-98-af-e5-8f-8c-e6-9c-ba-e7-83-ad-e5-a4-87" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/26/e4-bb-80-e4-b9-88-e6-98-af-e5-8f-8c-e6-9c-ba-e7-83-ad-e5-a4-87/" class="article-date">
+  <time datetime="2014-05-26T23:16:00.000Z" itemprop="datePublished">2014-05-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%9E%B6%E6%9E%84/">架构</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/26/e4-bb-80-e4-b9-88-e6-98-af-e5-8f-8c-e6-9c-ba-e7-83-ad-e5-a4-87/">什么是双机热备 ？</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>什么是双机热备技术？双机热备，英文”Hot Standby“，是一种常见的服务器高可用技术。顾名思义，A，B两台机器互相做备份，A歇菜了B顶上，B歇菜了A顶上。 <img src="http://storage.veitor.net/2016/03/757275038.jpg" alt="showimage-10057963-10009581-c4d4df6cba4fb6fcf79206c9c6fcb774.jpg"> 双机热备典型应用环境就是： 对于关键性的业务系统，需要有两台或两台以上的服务器完成相同的功能，共同执行同一服务，让它们具有相同的配置，彼此互为备用，当一台服务器出现故障时，不需要人工介入，可以由另一台服务器自动接替工作，保证系统持续运转，实现高可用性。 双机热备的工作模式有三种 根据两台服务器的工作方式可以有三种不同的工作模式，即双机主从模式、双机互备模式和双机双工模式。下面分别予以简单介绍： 双机主从模式 最常见的双机热备模式，即目前通常所说的active/standby 方式，active服务器处于工作状态；而standby服务器处于监控准备状态。当active服务器出现故障的时候，通过软件诊测或手工方式将standby机器激活，保证应用在短时间内完全恢复正常使用。典型应用在证券资金服务器或行情服务器。这是目前采用较多的一种模式，但由于另外一台服务器长期处于后备的状态，从计算资源方面考量，就存在一定的浪费。 双机互备模式 两个相对独立的应用在两台机器同时运行，但彼此均设为备机，当某一台服务器出现故障时，另一台服务器可以在短时间内将故障服务器的应用接管过来，从而保证了应用的持续性，但对服务器的性能要求比较高。服务器配置相对要好。 双机双工模式 目前Cluster（集群）的一种形式，active/active两台服务器均为活动状态，同时运行相同的应用，保证整体的性能，也实现了负载均衡和互为备份。WEB服务器或FTP服务器等用此种方式比较多。 双机热备的实现方式有两种 双机热备有两种实现模式，一种是基于共享的存储设备的方式，另一种是没有共享的存储设备的方式，一般称为纯软件方式。 基于存储共享的双机热备是双机热备的最标准方案。这种方式采用两台（或多台）服务器，使用共享的存储设备（磁盘阵列柜或存储区域网SAN）。两台服务器可以采用热备（主从）、互备、双工（并行）等不同的方式。在工作过程中，两台服务器将以一个虚拟的IP地址对外提供服务，依工作方式的不同，将服务请求发送给其中一台服务器承担。同时，服务器通过心跳线（目前往往采用建立私有网络的方式）侦测另一台服务器的工作状况。当一台服务器出现故障时，另一台服务器根据心跳侦测的情况做出判断，并进行切换，接管服务。对于用户而言，这一过程是全自动的，在很短时间内完成，从而对业务不会造成影响。由于使用共享的存储设备，因此两台服务器使用的实际上是一样的数据，由双机或集群软件对其进行管理。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/26/e4-bb-80-e4-b9-88-e6-98-af-e5-8f-8c-e6-9c-ba-e7-83-ad-e5-a4-87/" data-id="ck3hcwyd0003m1qxi7p7n1yys" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-ba-86-e8-a7-a3yii-e4-b8-adlog-e6-97-a5-e5-bf-97-e6-9c-ba-e5-88-b6" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/26/e4-ba-86-e8-a7-a3yii-e4-b8-adlog-e6-97-a5-e5-bf-97-e6-9c-ba-e5-88-b6/" class="article-date">
+  <time datetime="2014-05-26T21:38:20.000Z" itemprop="datePublished">2014-05-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/26/e4-ba-86-e8-a7-a3yii-e4-b8-adlog-e6-97-a5-e5-bf-97-e6-9c-ba-e5-88-b6/">了解Yii中Log日志机制</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>想要知道用户在你的程序中做了些什么，我们可以通过用日志的形式记录下来，前提是用户是做的跟数据库有关的操作。我们可以在任何时候进行的增删改操作都可以记录下来，对于Yii中的AR模型我们可以使用behavior（行为）来达到此目的，这样很容易的就可以把日志功能加到AR类里。 首先我们需要建一张日志表：</p>
+<p>CREATE TABLE ActiveRecordLog (<br>  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,<br>  description VARCHAR(255) NULL,<br>  action VARCHAR(20) NULL,<br>  model VARCHAR(45) NULL,<br>  idModel INTEGER UNSIGNED NULL,<br>  field VARCHAR(45) NULL,<br>  creationdate TIMESTAMP NOT NULL,<br>  userid VARCHAR(45) NULL,<br>  PRIMARY KEY(id)<br>)<br>TYPE=InnoDB;</p>
+<p>接着我们就需要建立相应的model，可以使用gii或者shell工具等。 为了记录用户操作，我们需要创建一个behavior类，一般放在protected/behavior目录下，该类必须继承CActiveRecordBehavior类。</p>
+<p>class ActiveRecordLogableBehavior extends CActiveRecordBehavior<br>{<br>    private $_oldattributes = array();<br>    /**<br>     * save操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     <em>/<br>    public function afterSave($event)<br>    {<br>        //非新记录，即非插入<br>        if (!$this-&gt;Owner-&gt;isNewRecord) {<br>            $newattributes = $this-&gt;Owner-&gt;getAttributes();             //获得AR类中已修改的各字段值<br>            $oldattributes = $this-&gt;getOldAttributes();                 //之前的旧数据<br>            //比较新旧数据<br>            foreach ($newattributes as $name =&gt; $value) {<br>                if (!empty($oldattributes)) {<br>                    $old = $oldattributes[$name];<br>                } else {<br>                    $old = ‘’;<br>                }<br>                //如果该字段旧数据与新数据不一样，则进行记录<br>                if ($value != $old) {<br>                    //$changes = $name . ‘ (‘.$old.’) =&gt; (‘.$value.’), ‘;<br>                    $log=new ActiveRecordLog;                                               //实例log对象<br>                    $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name                    //设置日志内容格式，描述具体操作<br>                                            . ‘ changed ‘ . $name . ‘ for ‘<br>                                            . get_class($this-&gt;Owner)<br>                                            . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>                    $log-&gt;action=       ‘CHANGE’;                                           //设置操作类型为“修改”<br>                    $log-&gt;model=        get_class($this-&gt;Owner);<br>                    $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();                      //获得修改的记录的主键<br>                    $log-&gt;field=        $name;                                              //修改的字段名<br>                    $log-&gt;creationdate= new CDbExpression(‘NOW()’);                         //日志生成时间<br>                    $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;                               //记录用户id<br>                    $log-&gt;save();                                                           //保存日至到数据库<br>                }<br>            }<br>        } else {//新纪录直接保存操作日志入库<br>            $log=new ActiveRecordLog;<br>            $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name<br>                                    . ‘ created ‘ . get_class($this-&gt;Owner)<br>                                    . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>            $log-&gt;action=       ‘CREATE’;<br>            $log-&gt;model=        get_class($this-&gt;Owner);<br>            $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>            $log-&gt;field=        ‘’;<br>            $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>            $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>            $log-&gt;save();<br>        }<br>    }<br>    /*\</em><br>     * 删除操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     */<br>    public function afterDelete($event)<br>    {<br>        $log=new ActiveRecordLog;<br>        $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name . ‘ deleted ‘<br>                                . get_class($this-&gt;Owner)<br>                                . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>        $log-&gt;action=       ‘DELETE’;<br>        $log-&gt;model=        get_class($this-&gt;Owner);<br>        $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>        $log-&gt;field=        ‘’;<br>        $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>        $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>        $log-&gt;save();<br>    }<br>    public function afterFind($event)<br>    {<br>        //保存查询出来的数据<br>        $this-&gt;setOldAttributes($this-&gt;Owner-&gt;getAttributes());<br>    }<br>    public function getOldAttributes()<br>    {<br>        return $this-&gt;_oldattributes;<br>    }<br>    public function setOldAttributes($value)<br>    {<br>        $this-&gt;_oldattributes=$value;<br>    }<br>}</p>
+<p>该behavior行为类中需要使用到ActiveRecordLo类来将日志记录到数据库中，它会为为每次插入、删除记录一条日志，也会为修改的每个字段记录一条日志。 设定的行为已经写好了，那么剩下的就是需要将其绑定到对应的model模型上。我们只需在对应的model里加入以下方法就完成绑定了：</p>
+<p>public function behaviors()<br>{<br>    return array(<br>        // 行为类名 =&gt; 类文件别名路径<br>        ‘ActiveRecordLogableBehavior’=&gt;<br>            ‘application.behaviors.ActiveRecordLogableBehavior’,<br>    );<br>}</p>
+<p>  当然这些都是最基本的简单的记录日志操作，你还可以进行扩展，以满足更高级更多功能的需求。如有问题，留言探讨~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/26/e4-ba-86-e8-a7-a3yii-e4-b8-adlog-e6-97-a5-e5-bf-97-e6-9c-ba-e5-88-b6/" data-id="ck3hcwycy003i1qxi2ck3eflv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-yii-e7-9a-84cdbcriteria-e4-b8-adaddsearchcondition-e4-b8-8ecompare-e7-9a-84-e5-8c-ba-e5-88-ab" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/21/yii-e7-9a-84cdbcriteria-e4-b8-adaddsearchcondition-e4-b8-8ecompare-e7-9a-84-e5-8c-ba-e5-88-ab/" class="article-date">
+  <time datetime="2014-05-21T19:36:27.000Z" itemprop="datePublished">2014-05-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/21/yii-e7-9a-84cdbcriteria-e4-b8-adaddsearchcondition-e4-b8-8ecompare-e7-9a-84-e5-8c-ba-e5-88-ab/">Yii的CDbCriteria中addSearchCondition与compare的区别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在使用Yii过程中发现CDbCriteria类中addSearchCondition与compare的功能似乎都是用于增加搜索条件的，但仔细看其代码之后还是有区别的。 这里我就讲一下使用方法吧，不讲原理了，讲原理要分析其代码涉及很多。</p>
+<h1 id="addSearchCondition第一个参数为搜索的字段名"><a href="#addSearchCondition第一个参数为搜索的字段名" class="headerlink" title="addSearchCondition第一个参数为搜索的字段名"></a>addSearchCondition第一个参数为搜索的字段名</h1><p>第二个参数为搜索关键词 第三个参数是设置是否过滤掉你关键词中的“%”百分号和”_“下划线这两个通配符，默认是true，即过滤这两个通配符，并在关键词前后自动加上”%”以进行匹配。第四个参数就是条件连接符，默认为AND，最后一个是Sql 关键字”LIKE”，还可以设置为“NOT LIKE”。基本上最后两个参数都不需要自己设置，都使用默认值就好了。 <strong>addSearchCondition就大致理解为增加一个LIKE搜索条件即可。</strong></p>
+<h1 id="compare"><a href="#compare" class="headerlink" title="compare"></a>compare</h1><p>第一个参数一样为搜索的字段名 第二个参数也是关键词，但不同点也在于此，你可以在关键词开头加”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”这四个比较符号，组成的sql语句就类似[字段名][比较符号][搜索关键词]，如我搜一个商品价格小于5的东西就这么写：compare(‘price’,’&lt;5’)，查询相当于这样”price &lt; 5”，它会自动提取开头的比较符号，如果你没写比较符号，那默认的就是”=”等于符号，写成这样compare(‘price’,’5’)就相当于’price=5’这种效果。 第三个参数是开启模糊匹配，默认是false关闭的，开启后，会调用上面的addSearchCondition方法，也就又使用了LIKE。compare(‘price’,’5’,true)即price LIKE %5%，compare(‘price’,’&lt;&gt;5’,true)即price NOT LIKE %5%，如果使用其他比较符号如compare(‘price’,’&lt;=5’,true)、compare(‘price’,’&gt;5’,true)等，使不会增加addSearchCondition的。 第四个参数是条件连接符AND，当然可以设置为其他的。 第五个参数是设置addSearchCondition中第三个条件的，当然你前面的参数要确保能调用addSearchCondition这个方法。 <strong>compare可以这么理解，相当于使用”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”来比较值，启用模糊匹配就使用LIKE方式。</strong>   差不多就是这些吧，如果还有不明白的可以提出，我再讲细一点。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/21/yii-e7-9a-84cdbcriteria-e4-b8-adaddsearchcondition-e4-b8-8ecompare-e7-9a-84-e5-8c-ba-e5-88-ab/" data-id="ck3hcwyfh007r1qxi5eaha7rn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-ba-86-e8-a7-a3php-e8-ae-be-e8-ae-a1-e6-a8-a1-e5-bc-8f-e4-b9-8b-e8-a7-82-e5-af-9f-e8-80-85-e6-a8-a1-e5-bc-8f" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/10/e4-ba-86-e8-a7-a3php-e8-ae-be-e8-ae-a1-e6-a8-a1-e5-bc-8f-e4-b9-8b-e8-a7-82-e5-af-9f-e8-80-85-e6-a8-a1-e5-bc-8f/" class="article-date">
+  <time datetime="2014-05-10T20:22:54.000Z" itemprop="datePublished">2014-05-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>►<a class="article-category-link" href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/10/e4-ba-86-e8-a7-a3php-e8-ae-be-e8-ae-a1-e6-a8-a1-e5-bc-8f-e4-b9-8b-e8-a7-82-e5-af-9f-e8-80-85-e6-a8-a1-e5-bc-8f/">了解PHP设计模式之观察者模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>观察者模式是一种事件系统，意味着这一模式允许某个类观察另一个类的状态，当被观察的类状态发生改变的时候，观察类可以收到通知并且做出相应的动作，观察者模式提供了避免组件之间紧密耦合的另一种方式。 在观察者模式中，被观察者称为subject,观察者称为observer,为了表达这些内容，SPL（Standard PHP Libaray）提供了SplSubject(被观察者)和SplObserver(观察者)两个接口。在编写观察者模式时，只要实现这两个接口即可。接口如下：</p>
+<p> //被观察者接口<br>interface SplSubject{<br>   public function attach(SplObserver $observer);//注册观察者（注册的观察者：当我（被观察者）的某个状态改变时，需要通知的对象）<br>   public function detach(SplObserver $observer);//释放观察者<br>   public function notify();//通知所有注册的观察者的方法<br>}<br>  //观察者接口<br>  interface SplObserver{<br>   public function update(SplSubject $subject);//观察者进行更新状态<br>  }</p>
+<p>这一模式的概念是SplSubject类维护了一个特定状态，当这个状态发生变化时，它就会调用notify()方法。调用notify()方法时，所有之前使用attach()方法注册的SplObserver实例的update方法都会被调用。 以下是实现代码：</p>
+  <?php
+//被观察者实现类
+class DemoSubject implements SplSubject {
+  private $observers;    //存放观察者的类
+  private $value;
+  public function __construct() {
+    $this->observers = array();
+  }
+//注册观察者
+  public function attach(SplObserver $observer) {
+    $this->observers\[\] = $observer;
+  }
+ //释放观察者
+  public function detach(SplObserver $observer) {
+    if($idx = array_search($observer,$this->observers,true)) {
+      unset($this->observers\[$idx\]);
+    }
+  }
+ //通知所有观察者，执行观察者类中的update方法
+  public function notify() {
+    foreach($this->observers as $observer) {
+      $observer->update($this);
+    }
+  }
+/*设置状态，当状态发生任何变化时，都会调用notify方法通知所有的观察者，即调用观察者类中的update方法*/
+  public function setState($value) {
+    $this->value = $value;
+    $this->notify();
+  }
+//
+  public function getValue() {
+    return $this->value;
+  }
+}
+//观察者简单类
+class DemoObserver implements SplObserver {
+  //接收被观察者发送的通知
+  public function update(SplSubject $subject) {
+    echo 'The new value is '. $subject->getValue();
+  }
+}
+$subject = new DemoSubject();//初始化被观察者
+$observer = new DemoObserver();//初始化一个观察者
+$subject->attach($observer);//添加一个观察者
+$subject->setState(5);//被观察者修改状态。
+?><p>;</p>
+<p>输出结果为： The new value is 5 观察者模式的优点在于，挂接到被观察者上的观察者可多可少，并且不需要提前知道哪个观察者会响应被观察者发出的响应事件。 这种设计模式在很多PHP框架中都被使用到，如Yii等。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/10/e4-ba-86-e8-a7-a3php-e8-ae-be-e8-ae-a1-e6-a8-a1-e5-bc-8f-e4-b9-8b-e8-a7-82-e5-af-9f-e8-80-85-e6-a8-a1-e5-bc-8f/" data-id="ck3hcwycw003g1qxia77z2o4e" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4-ba-86-e8-a7-a3php-e4-b8-adcrypt-e5-8a-a0-e5-af-86-e5-87-bd-e6-95-b0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/10/e4-ba-86-e8-a7-a3php-e4-b8-adcrypt-e5-8a-a0-e5-af-86-e5-87-bd-e6-95-b0/" class="article-date">
+  <time datetime="2014-05-10T00:33:05.000Z" itemprop="datePublished">2014-05-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/10/e4-ba-86-e8-a7-a3php-e4-b8-adcrypt-e5-8a-a0-e5-af-86-e5-87-bd-e6-95-b0/">了解PHP中crypt加密函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。 crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT_STD_DES 、CRYPT_EXT_DES、CRYPT_MD5、CRYPT_BLOWFISH、CRYPT_SHA256、CRYPT_SHA512。这些常量不是1就是0，也意味着其所对应的算法是否可用。 我们可以看一下下面代码的输出结果：</p>
+<p>if (CRYPT_STD_DES == 1) {<br>    echo ‘Standard DES: ‘ . crypt(‘rasmuslerdorf’, ‘rl’) . “<br>“;<br>}<br>if (CRYPT_EXT_DES == 1) {<br>    echo ‘Extended DES: ‘ . crypt(‘rasmuslerdorf’, ‘_J9..rasm’) . “<br>“;<br>}<br>if (CRYPT_MD5 == 1) {<br>    echo ‘MD5:          ‘ . crypt(‘rasmuslerdorf’, ‘$1$rasmusle$’) . “<br>“;<br>}<br>if (CRYPT_BLOWFISH == 1) {<br>    echo ‘Blowfish:     ‘ . crypt(‘rasmuslerdorf’, ‘$2a$07$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA256 == 1) {<br>    echo ‘SHA-256:      ‘ . crypt(‘rasmuslerdorf’, ‘$5$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA512 == 1) {<br>    echo ‘SHA-512:      ‘ . crypt(‘rasmuslerdorf’, ‘$6$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}</p>
+<p>输出结果：</p>
+<p>Standard DES: rl.3StKT.4T8M<br>Extended DES: _J9..rasmBYk8r9AiWNc<br>MD5: $1$rasmusle$rISCgZzpwk3UhDidwXvin0<br>Blowfish: $2a$07$usesomesillystringfore2uDLvp1Ii2e./U9C8sBjqp8I90dH6hi<br>SHA-256: $5$rounds=5000$usesomesillystri$KqJWpanXZHKq2BOB43TSaYhEWsQ1Lr5QNyPCDH/Tp.6<br>SHA-512: $6$rounds=5000$usesomesillystri$D4IrlXatmP7rx3P3InaxBeoomnAihCKRVQP22JZ6EY47Wc6BkroIuUUBOov1i.S5KPgErtP/EN5mcO.ChWQW21</p>
+<p>第一个结果是基于标准 DES 算法的散列，使用 “./0-9A-Za-z” 字符中的两个字符作为盐值，本例中使用了”rl”，你可以试一下添加更多字符如”rlsdfs”，输出结果还是不变的。手册中说，如果不提供salt，默认使用该算法，但我试过之后发现是使用的下面md5。 第二个结果是扩展的基于 DES 算法的散列。其盐值为 9 个字符的字符串，由 1 个下划线后面跟着 4 字节循环次数和 4 字节盐值组成。它们被编码成可打印字符，每个字符 6 位，有效位最少的优先。0 到 63 被编码为 “./0-9A-Za-z”。 第三个结果就是使用了md5后的散列，使用一个以 $1$ 开始的 12 字符的字符串盐值。 第四个Blowfish 算法使用如下盐值：“$2a$”，一个两位 cost 参数，“$” 以及 64 位由 “./0-9A-Za-z” 中的字符组合而成的字符串。在盐值中使用此范围之外的字符将导致 crypt() 返回一个空字符串。两位 cost 参数是循环次数以 2 为底的对数，它的范围是 04-31，超出这个范围将导致 crypt() 失败。 第五个结果是 SHA-256 算法，使用一个以 $5$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。 第六个是 SHA-512 算法，使用一个以 $6$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。</p>
+<hr>
+<p>大致的了解了一下crypt几种散列类型，但最终如何应用？ 使用crypt加密就是为了即使加密列表落入他人手中，也无法获得其明文，因为该加密是不可逆的。 单纯的使用crypt($input_pwd)会生成不同的随机值。（本人在win系统和centos上获得的都是基于md5的散列值，即$1$开头的随机值） 使用crypt加密方式有很多，你或许可以使用：</p>
+<?php
+$pwd = 'veitor';        //注册密码明文
+crypt($pwd);
+?php
+
+将注册密码明文用crypt随机生成的散列值存入数据库。 验证登陆时：
+
+<?php
+$input_pwd = 'veitor';              //表单输入密码明文
+crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗文
+?>
+
+<p>你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input_pwd, sub_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/10/e4-ba-86-e8-a7-a3php-e4-b8-adcrypt-e5-8a-a0-e5-af-86-e5-87-bd-e6-95-b0/" data-id="ck3hcwycu003d1qxi970tedfw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/crypt/" rel="tag">crypt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag">加密</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e5-86-8d-e8-b0-88javascript-e5-9b-be-e7-89-87-e9-a2-84-e5-8a-a0-e8-bd-bd-e6-8a-80-e6-9c-af" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/05/04/e5-86-8d-e8-b0-88javascript-e5-9b-be-e7-89-87-e9-a2-84-e5-8a-a0-e8-bd-bd-e6-8a-80-e6-9c-af/" class="article-date">
+  <time datetime="2014-05-04T06:22:07.000Z" itemprop="datePublished">2014-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JS/">JS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/05/04/e5-86-8d-e8-b0-88javascript-e5-9b-be-e7-89-87-e9-a2-84-e5-8a-a0-e8-bd-bd-e6-8a-80-e6-9c-af/">再谈javascript图片预加载技术</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>lightbox类效果为了让图片居中显示而使用预加载，需要等待完全加载完毕才能显示，体验不佳（如filick相册的全屏效果）。javascript无法获取img文件头数据，真的是这样吗？本文通过一个巧妙的方法让javascript获取它。 这是大部分人使用预加载获取图片大小的例子：</p>
+<p>var imgLoad = function (url, callback) {<br>    var img = new Image();<br>    img.src = url;<br>    if (img.complete) {<br>        callback(img.width, img.height);<br>    } else {<br>        img.onload = function () {<br>            callback(img.width, img.height);<br>            img.onload = null;<br>        };<br>    };<br>};</p>
+<p>  可以看到上面必须等待图片加载完毕才能获取尺寸，其速度不敢恭维，我们需要改进。 web应用程序区别于桌面应用程序，响应速度才是最好的用户体验。如果想要速度与优雅兼得，那就必须提前获得图片尺寸，如何在图片没有加载完毕就能获取图片尺寸？ 十多年的上网经验告诉我：浏览器在加载图片的时候你会看到图片会先占用一块地然后才慢慢加载完毕，并且不需要预设width与height属性，因为浏览器能够获取图片的头部数据。基于此，只需要使用javascript定时侦测图片的尺寸状态便可得知图片尺寸就绪的状态。 当然实际中会有一些兼容陷阱，如width与height检测各个浏览器的不一致，还有webkit new Image()建立的图片会受以处在加载进程中同url图片影响，经过反复测试后的最佳处理方式：</p>
+<p>// 更新：<br>// 05.27: 1、保证回调执行顺序：error &gt; ready &gt; load；2、回调函数this指向img本身<br>// 04-02: 1、增加图片完全加载后的回调 2、提高性能<br>/**<br> * 图片头数据加载就绪事件 - 更快获取图片尺寸<br> * @version    2011.05.27<br> * @author    TangBin<br> * @see        <a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a><br> * @param    {String}    图片路径<br> * @param    {Function}    尺寸就绪<br> * @param    {Function}    加载完毕 (可选)<br> * @param    {Function}    加载错误 (可选)<br> * @example imgReady(‘<a href="http://www.google.com.hk/intl/zh-CN/images/logo_cn.png&#39;" target="_blank" rel="noopener">http://www.google.com.hk/intl/zh-CN/images/logo_cn.png&#39;</a>, function () {<br>        alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>    });<br> */<br>var imgReady = (function () {<br>    var list = [], intervalId = null,<br>    // 用来执行队列<br>    tick = function () {<br>        var i = 0;<br>        for (; i &lt; list.length; i++) {<br>            list[i].end ? list.splice(i–, 1) : list[i]();<br>        };<br>        !list.length &amp;&amp; stop();<br>    },<br>    // 停止所有定时器队列<br>    stop = function () {<br>        clearInterval(intervalId);<br>        intervalId = null;<br>    };<br>    return function (url, ready, load, error) {<br>        var onready, width, height, newWidth, newHeight,<br>            img = new Image();<br>        img.src = url;<br>        // 如果图片被缓存，则直接返回缓存数据<br>        if (img.complete) {<br>            ready.call(img);<br>            load &amp;&amp; load.call(img);<br>            return;<br>        };<br>        width = img.width;<br>        height = img.height;<br>        // 加载错误后的事件<br>        img.onerror = function () {<br>            error &amp;&amp; error.call(img);<br>            onready.end = true;<br>            img = img.onload = img.onerror = null;<br>        };<br>        // 图片尺寸就绪<br>        onready = function () {<br>            newWidth = img.width;<br>            newHeight = img.height;<br>            if (newWidth !== width || newHeight !== height ||<br>                // 如果图片已经在其他地方加载可使用面积检测<br>                newWidth * newHeight &gt; 1024<br>            ) {<br>                ready.call(img);<br>                onready.end = true;<br>            };<br>        };<br>        onready();<br>        // 完全加载完毕的事件<br>        img.onload = function () {<br>            // onload在定时器时间差范围内可能比onready快<br>            // 这里进行检查并保证onready优先执行<br>            !onready.end &amp;&amp; onready();<br>            load &amp;&amp; load.call(img);<br>            // IE gif动画会循环执行onload，置空onload即可<br>            img = img.onload = img.onerror = null;<br>        };<br>        // 加入队列中定期执行<br>        if (!onready.end) {<br>            list.push(onready);<br>            // 无论何时只允许出现一个定时器，减少浏览器性能损耗<br>            if (intervalId === null) intervalId = setInterval(tick, 40);<br>        };<br>    };<br>})();</p>
+<p>调用例子：</p>
+<p>imgReady(‘<a href="http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;" target="_blank" rel="noopener">http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;</a>, function () {<br>    alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>});</p>
+<p>是不是很简单？这样的方式获取摄影级别照片尺寸的速度往往是onload方式的几十多倍，而对于web普通(800×600内)浏览级别的图片能达到秒杀效果。看了这个再回忆一下你见过的web相册，是否绝大部分都可以重构一下呢？好了，请观赏令人愉悦的 DEMO ： <a href="http://www.planeart.cn/demo/imgReady/" target="_blank" rel="noopener">http://www.planeart.cn/demo/imgReady/</a> （通过测试的浏览器：Chrome、Firefox、Safari、Opera、IE6、IE7、IE8）   原文地址：<a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/05/04/e5-86-8d-e8-b0-88javascript-e5-9b-be-e7-89-87-e9-a2-84-e5-8a-a0-e8-bd-bd-e6-8a-80-e6-9c-af/" data-id="ck3hcwydc00481qxi89az7fr0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" rel="tag">预加载</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-yii-zii-widgets-cmenu-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/04/27/yii-zii-widgets-cmenu-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" class="article-date">
+  <time datetime="2014-04-27T23:21:43.000Z" itemprop="datePublished">2014-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/04/27/yii-zii-widgets-cmenu-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/">Yii：zii.widgets.CMenu使用方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Yii框架中的一个生成菜单的小物件。 先上个示例代码：</p>
+<?php
+$this->widget('zii.widgets.CMenu',array(
+    'activeCssClass'=>'当前热点元素的样式',
+    'firstItemCssClass'=>'第一个元素的样式',
+    'lastItemCssClass'=>'最后一个元素的样式',
+    'encodeLable'=>'false',  //当值为false时，label标签中的html就会将样式显示出来.
+    'htmlOptions'=>array('class'=>'默认样式'),
+    'items'=>array(
+        array('label'=>'网站概况', 'url'=>array('/admin'),'itemOptions'=>array('class'=>'li_status'),'active'=>$this->id=='admin'?true:false),
+        array('label'=>'图片管理', 'url'=>array('/picture'),'template'=>'{menu}<span>this is additional infomation</span>','itemOptions'=>array('class'=>'li_picture'),'active'=>$this->id=='picture'?true:false, 'visible'=>true),
+        array('label'=>'管理员管理', 'url'=>array('/manager'),'itemOptions'=>array('class'=>'li_manager'),'submenuOptions'=>array('class'=>'subclass'),'active'=>($this->id=='manager' && $this->action->id!='changepswd')?true:false, 'visible'=>false),
+        array('label'=>'密码修改', 'url'=>array('/manager/changepswd'),'linkOptions'=>array('target'=>'\_blank'),'itemOptions'=>array('class'=>'li\_changepswd'),'items'=>array(array('label'=>'子栏目'))),'active'=>($this->id=='manager' && $this->action->id=='changepswd')?true:false, 'visible'=>true),
+        array('label'=>'登陆', 'url'=>array('/site/login'),'itemOptions'=>array('class'=>'li_login'), 'visible'=>Yii::app()->user->isGuest),
+        array('label'=>'退出 ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'),'itemOptions'=>array('class'=>'li_login'), 'visible'=>!Yii::app()->user->isGuest)
+    ),
+));
+?>
+
+<p>在模板中使用上面的代码，最终会生成以<ul><li></li></ul>构成的菜单列表，针对item中的每一个数组，可以进行以下设置： <strong>label:</strong>菜单显示的文本，可以加html进行修饰，但要将encodeLabel参数值设为false <strong>url:</strong>链接地址，若是字符串，则是基于网站根地址的绝对路径，比如网站地址为veitor.net，字符串url设置为”article”，则最终生成的地址为veitor.net/article，如果设置类型为数组，则效果与createUrl方法一样，比如网址还是veitor.net，设置的数组url为”array(detail/article)”，则最终生成的地址为veitor.net/?r=detail/article，控制器/方法格式的 <strong>visible:</strong>可见，boolean值，当然可以用函数来取值，决定什么情况下隐藏 <strong>active:</strong>正在访问，boolean值，如果是true，会在相应li中加入active样式，上面代码用到$this-&gt;id是个很好用的方法 <strong>items:</strong>定义子目录，array，通过样式可定义收缩排列或者鼠标经过时显示子目录 <strong>template:</strong>模板，模板中用{menu}来代表替换内容，见上代码 <strong>linkOptions:</strong><a>的属性，可定义class,rel,target等属性，见上代码 <strong>itemOptions:</strong><li>的属性，可定义class等属性，见上代码 <strong>submenuOptions:</strong>子栏目的<ul>属性，<li>和<a>属性还是和上面一样分别对item设置 <strong>activeCssClass：</strong>当前选中菜单的css的Class名称 <strong>firstItemCssClass：</strong>第一个菜单按钮的Css的Class名称 <strong>lastItemCssClass：</strong>最后一个菜单按钮的Css的Class名称 当然可以分别为每个Item菜单元素添加指定的Class，即在对应的Item元素上增加itemOptions设置（看上面代码）   这些就是我用CMenu的一些见解，如果你有更好的方法可以一起交流。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/04/27/yii-zii-widgets-cmenu-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" data-id="ck3hcwyfk007z1qxicw3oexa4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%8F%9C%E5%8D%95/" rel="tag">菜单</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-yii-render-e6-b8-b2-e6-9f-93-e8-a7-86-e5-9b-be-e5-88-86-e6-9e-90" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/04/27/yii-render-e6-b8-b2-e6-9f-93-e8-a7-86-e5-9b-be-e5-88-86-e6-9e-90/" class="article-date">
+  <time datetime="2014-04-27T19:12:42.000Z" itemprop="datePublished">2014-04-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/04/27/yii-render-e6-b8-b2-e6-9f-93-e8-a7-86-e5-9b-be-e5-88-86-e6-9e-90/">Yii：render渲染视图分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一起了解一下render方法的工作原理，先看render代码：</p>
+<p>public function render($view,$data=null,$return=false)<br>    {<br>        if($this-&gt;beforeRender($view))<br>        {<br>            $output=$this-&gt;renderPartial($view,$data,true);<br>            if(($layoutFile=$this-&gt;getLayoutFile($this-&gt;layout))!==false)<br>                $output=$this-&gt;renderFile($layoutFile,array(‘content’=&gt;$output),true);<br>            $this-&gt;afterRender($view,$output);<br>            $output=$this-&gt;processOutput($output);<br>            if($return)<br>                return $output;<br>            else<br>                echo $output;<br>        }<br>    }</p>
+<p>首先是beforeRender：</p>
+<p>protected function beforeRender($view)<br>{<br>    return true;<br>}</p>
+<p>这个封装方法是用在render方法开头，参数是模板文件名称（不带后缀），是用来在渲染视图之前做的一些预处理，我们可以在控制器里重写这个方法来处理，但结果返回的值必须等于true，以便输出视图。 接着执行renderPartial方法：</p>
+<p>public function renderPartial($view,$data=null,$return=false,$processOutput=false)<br>    {<br>        if(($viewFile=$this-&gt;getViewFile($view))!==false)<br>        {<br>            $output=$this-&gt;renderFile($viewFile,$data,true);<br>            if($processOutput)<br>                $output=$this-&gt;processOutput($output);<br>            if($return)<br>                return $output;<br>            else<br>                echo $output;<br>        }<br>        else<br>            throw new CException(Yii::t(‘yii’,’{controller} cannot find the requested view “{view}”.’,<br>                array(‘{controller}’=&gt;get_class($this), ‘{view}’=&gt;$view)));<br>    }</p>
+<p>这个方法是$view为模板文件名（不带后缀，后缀通过配置指定），$data是一个关联数组，它将被extract函数提取成供模板中使用的PHP变量。这个方法与render区别在于，该方法渲染视图时，不会渲染布局也不会加载Yii内置的js\css，而render会一起渲染布局文件和脚本。 其中的getViewFile方法是根据模板名寻找木板文件的方法，如果在main配置文件中指定了主题，那么确定的一个模板将被找到。否则的话将按一下规则寻找： 模块内的视图：直接指定模板文件路径，以单个斜线“\”开始的路径。 应用内的视图：直接指定模板文件路径，以双斜线“\\”开始的路径。 别名路径：以点分割的路径。别名路径alias以后会讲，其实在初始化应用的时候定义了一些路径别名。 这里只需了解getViewFile是寻找模板地址和extract变量即可，接着讲renderPartial，找到模板后继续执行。接着要执行到判断第四个参数processOutput，该函数主要是用于是否加载Yii内置js\css，即上面刚才说的render和renderPartial区别之一，在render中该参数为true即加载，在renderPartial中反之。 然后接着执行到getLayoutFile，刚才是获取了不带布局视图，相当于只执行了renderPartial方法，这里再获取布局文件。getLayoutFile是查找布局模板文件，查找方法和上面的查找模板文件类似。通过在控制器中设置layout变量，加载应用内的布局文件的话设置路径只要以双斜线“\\”开头即可，加载模块内的布局路径以单个斜线“\”开头，另外还有别名路径同样可以设置。 找到布局文件之后，依然使用renderFile方法渲染布局文件，将之前渲染的试图文件插入到布局文件中。 接着执行afterRender方法，也不需要太多解释了，当然是执行渲染之后的一些工作，可以自己定义。 再执行processOutput，因为render是默认加载js\css的，所以这里不需要判断了。 最后再根据render第三个参数判断是否要直接输出，如果为false的话，就是直接看到的页面了，为true只将html代码返回。     render的方法基本就是这样了，主要还是在renderPartial里处理过程比较多。如果有疑问，可以在下面留言给我，一起探讨。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://www.veitor.net/2014/04/27/yii-render-e6-b8-b2-e6-9f-93-e8-a7-86-e5-9b-be-e5-88-86-e6-9e-90/" data-id="ck3hcwyfj007w1qxid4qf0vtw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A8%A1%E6%9D%BF/" rel="tag">模板</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/6/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/8/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/">JS</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/">Mysql</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mysql/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/">PHP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Python/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9E%B6%E6%9E%84/">架构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/">程序与生活</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ACID/" rel="tag">ACID</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ASCII/" rel="tag">ASCII</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CQRS/" rel="tag">CQRS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Sourcing/" rel="tag">Event Sourcing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Store/" rel="tag">Event Store</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDO/" rel="tag">PDO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/URL/" rel="tag">URL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UTF-8/" rel="tag">UTF-8</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unix/" rel="tag">Unix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crypt/" rel="tag">crypt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csrf/" rel="tag">csrf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/" rel="tag">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ddd/" rel="tag">ddd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flash/" rel="tag">flash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iphone/" rel="tag">iphone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pear/" rel="tag">pear</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pip/" rel="tag">pip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retina/" rel="tag">retina</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/safari/" rel="tag">safari</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/session/" rel="tag">session</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sublime/" rel="tag">sublime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unicode/" rel="tag">unicode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xhprof/" rel="tag">xhprof</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xss/" rel="tag">xss</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E4%BB%B6/" rel="tag">事件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag">事务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BC%98%E9%85%B7/" rel="tag">优酷</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%93%E9%AA%8C/" rel="tag">体验</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag">加密</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8E%9F%E7%A0%81/" rel="tag">原码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%8D%E7%A0%81/" rel="tag">反码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" rel="tag">响应式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag">存储引擎</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8E%88%E6%9D%83/" rel="tag">授权</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag">数学</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A8%A1%E6%9D%BF/" rel="tag">模板</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag">线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" rel="tag">自适应</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%B1%E8%AF%AD/" rel="tag">英语</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8F%9C%E5%8D%95/" rel="tag">菜单</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A1%A5%E7%A0%81/" rel="tag">补码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%84%E8%8C%83/" rel="tag">规范</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A4%E8%AF%81/" rel="tag">认证</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD/" rel="tag">负载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E5%BE%84/" rel="tag">路径</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag">转载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag">进程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%82%E9%85%8D/" rel="tag">适配</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag">集群</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" rel="tag">预加载</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag">领域驱动设计</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ACID/" style="font-size: 10px;">ACID</a> <a href="/tags/ASCII/" style="font-size: 10px;">ASCII</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/CQRS/" style="font-size: 12.86px;">CQRS</a> <a href="/tags/DNS/" style="font-size: 10px;">DNS</a> <a href="/tags/Event-Sourcing/" style="font-size: 11.43px;">Event Sourcing</a> <a href="/tags/Event-Store/" style="font-size: 10px;">Event Store</a> <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/PDO/" style="font-size: 10px;">PDO</a> <a href="/tags/PHP/" style="font-size: 20px;">PHP</a> <a href="/tags/SVN/" style="font-size: 11.43px;">SVN</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/URL/" style="font-size: 10px;">URL</a> <a href="/tags/UTF-8/" style="font-size: 10px;">UTF-8</a> <a href="/tags/Unix/" style="font-size: 10px;">Unix</a> <a href="/tags/Yii/" style="font-size: 17.14px;">Yii</a> <a href="/tags/crypt/" style="font-size: 10px;">crypt</a> <a href="/tags/csrf/" style="font-size: 10px;">csrf</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/ddd/" style="font-size: 12.86px;">ddd</a> <a href="/tags/flash/" style="font-size: 10px;">flash</a> <a href="/tags/google/" style="font-size: 10px;">google</a> <a href="/tags/iphone/" style="font-size: 10px;">iphone</a> <a href="/tags/mysql/" style="font-size: 18.57px;">mysql</a> <a href="/tags/pear/" style="font-size: 10px;">pear</a> <a href="/tags/pip/" style="font-size: 10px;">pip</a> <a href="/tags/python/" style="font-size: 12.86px;">python</a> <a href="/tags/retina/" style="font-size: 10px;">retina</a> <a href="/tags/safari/" style="font-size: 10px;">safari</a> <a href="/tags/session/" style="font-size: 10px;">session</a> <a href="/tags/sublime/" style="font-size: 10px;">sublime</a> <a href="/tags/unicode/" style="font-size: 10px;">unicode</a> <a href="/tags/xhprof/" style="font-size: 10px;">xhprof</a> <a href="/tags/xss/" style="font-size: 10px;">xss</a> <a href="/tags/%E4%BA%8B%E4%BB%B6/" style="font-size: 10px;">事件</a> <a href="/tags/%E4%BA%8B%E5%8A%A1/" style="font-size: 12.86px;">事务</a> <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" style="font-size: 10px;">人工智能</a> <a href="/tags/%E4%BC%98%E9%85%B7/" style="font-size: 10px;">优酷</a> <a href="/tags/%E4%BD%93%E9%AA%8C/" style="font-size: 10px;">体验</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 15.71px;">前端</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8E%9F%E7%A0%81/" style="font-size: 10px;">原码</a> <a href="/tags/%E5%8F%8D%E7%A0%81/" style="font-size: 10px;">反码</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" style="font-size: 11.43px;">响应式</a> <a href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" style="font-size: 10px;">存储引擎</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 10px;">并发</a> <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="font-size: 11.43px;">微服务</a> <a href="/tags/%E6%8E%88%E6%9D%83/" style="font-size: 10px;">授权</a> <a href="/tags/%E6%95%B0%E5%AD%A6/" style="font-size: 10px;">数学</a> <a href="/tags/%E6%9E%B6%E6%9E%84/" style="font-size: 10px;">架构</a> <a href="/tags/%E6%A8%A1%E6%9D%BF/" style="font-size: 10px;">模板</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">线程</a> <a href="/tags/%E7%BC%96%E7%A0%81/" style="font-size: 11.43px;">编码</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" style="font-size: 11.43px;">自适应</a> <a href="/tags/%E8%8B%B1%E8%AF%AD/" style="font-size: 10px;">英语</a> <a href="/tags/%E8%8F%9C%E5%8D%95/" style="font-size: 10px;">菜单</a> <a href="/tags/%E8%A1%A5%E7%A0%81/" style="font-size: 10px;">补码</a> <a href="/tags/%E8%A7%84%E8%8C%83/" style="font-size: 10px;">规范</a> <a href="/tags/%E8%AE%A4%E8%AF%81/" style="font-size: 10px;">认证</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12.86px;">设计模式</a> <a href="/tags/%E8%B4%9F%E8%BD%BD/" style="font-size: 10px;">负载</a> <a href="/tags/%E8%B7%AF%E5%BE%84/" style="font-size: 10px;">路径</a> <a href="/tags/%E8%BD%AC%E8%BD%BD/" style="font-size: 17.14px;">转载</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 10px;">运维</a> <a href="/tags/%E8%BF%9B%E7%A8%8B/" style="font-size: 10px;">进程</a> <a href="/tags/%E9%80%82%E9%85%8D/" style="font-size: 10px;">适配</a> <a href="/tags/%E9%9B%86%E7%BE%A4/" style="font-size: 10px;">集群</a> <a href="/tags/%E9%A2%84%E5%8A%A0%E8%BD%BD/" style="font-size: 10px;">预加载</a> <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" style="font-size: 10px;">领域驱动设计</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/05/06/593/">什么是SNI？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/584/">微服务模式：Saga</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/580/">微服务模式：一个服务一个数据库</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/577/">CQRS/ES架构下如何保证用户名的唯一性？</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/15/576/">编程中的hydration是什么意思</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Veitor<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
