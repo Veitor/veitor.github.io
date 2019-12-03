@@ -8,8 +8,8 @@ subtitle: 'PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang'
 description: ''
 keywords: 'php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州'
 author: Veitor
-language: en
-timezone: 'PRC'
+language: zh-CN
+timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -90,7 +90,54 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
+
+#关于主题的配置
+theme_config:
+  social:
+    GitHub: https://github.com/veitor || github
+    #E-Mail: mailto:yourname@gmail.com || envelope
+    Weibo: https://weibo.com/veitor || weibo
+    #Google: https://plus.google.com/yourname || google
+    Twitter: https://twitter.com/Veitor_424 || twitter
+    #FB Page: https://www.facebook.com/yourname || facebook
+    #StackOverflow: https://stackoverflow.com/yourname || stack-overflow
+    #YouTube: https://youtube.com/yourname || youtube
+    #Instagram: https://instagram.com/yourname || instagram
+    #Skype: skype:yourname?call|chat || skype
+    #RSS: /atom.xml || rss
+  avatar:
+    # Replace the default image and set the url here.
+    url: /avatar.jpg
+    # If true, the avatar will be dispalyed in circle.
+    rounded: true
+    # If true, the avatar will be rotated with the cursor.
+    rotated: false
+  scheme: Pisces
+  vendors:
+    # linux上无法通过generate生成字体文件，这里使用外部的
+    fontawesome: //cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css
+    _internal: lib
+  menu:
+    首页: / || home
+    归档: /archives/ || archive
+    标签: /tags/ || tags
+    分类: /categories/ || th
+    关于: /about/ || user
+#    招聘: /hire/ || fire
+  footer:
+    since: 2019
+    icon:
+      name: heart
+      animated: true
+      color: "#ff0000"
+  favicon:
+    small: /favicon.ico
+    medium: /favicon.ico
+  seo: true
+  index_with_subtitle: true
+  baidu_push: true
+  fancybox: true
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

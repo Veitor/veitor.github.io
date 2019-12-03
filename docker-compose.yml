@@ -1,0 +1,10 @@
+version: "3"
+services:
+  hexo:
+    image: registry.cn-hangzhou.aliyuncs.com/hangjia/hexo:latest
+    volumes:
+      - ./:/home
+    working_dir: /home
+    ports:
+      - 80:80
+    command: "server -p 80"
