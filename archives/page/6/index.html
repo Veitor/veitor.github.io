@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术点滴">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;archives&#x2F;page&#x2F;6&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/archives/page/6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: false,
+    isPage: false,
+    isArchive: true
+  };
+</script>
+
+  <title>归档 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  
+  
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        
+        <span class="collection-header">不错! 目前共计 79 篇日志。 继续努力。</span>
+      </div>
+
+      
+    <div class="collection-year">
+      <h2 class="collection-header">2014</h2>
+    </div>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-08-13T12:52:04+08:00"
+              content="2014-08-13">
+          08-13
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/08/13/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/" itemprop="url">
+            <span itemprop="name">用mysql_unbuffered_query函数取大数据</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-08-05T00:35:05+08:00"
+              content="2014-08-05">
+          08-05
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/08/04/php-self-script-name-script-filename-path-info-request-uri-e7-9a-84-e5-8c-ba-e5-88-ab/" itemprop="url">
+            <span itemprop="name">PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-07-30T05:39:14+08:00"
+              content="2014-07-30">
+          07-30
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/07/29/e4-b8-a4-e4-b8-aa-e5-ae-9c-e4-ba-8e-e7-bb-9f-e4-b8-80web-e7-9a-84-e6-96-b9-e6-a1-88-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94/" itemprop="url">
+            <span itemprop="name">两个宜于『统一Web』的方案：响应式与自适应</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-07-17T02:49:25+08:00"
+              content="2014-07-17">
+          07-17
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/07/16/e6-b0-b8-e8-bf-9c-e4-b8-8d-e8-a6-81-e5-9c-a8-linux-e6-89-a7-e8-a1-8c-e7-9a-84-10-e4-b8-aa-e6-9c-80-e5-8d-b1-e9-99-a9-e7-9a-84-e5-91-bd-e4-bb-a4/" itemprop="url">
+            <span itemprop="name">永远不要在 Linux 执行的 10 个最危险的命令</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-07-17T00:59:35+08:00"
+              content="2014-07-17">
+          07-17
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/07/16/url-e7-9b-b8-e4-bc-bc-e5-ba-a6-e8-ae-a1-e7-ae-97-e7-9a-84-e6-80-9d-e8-80-83-2/" itemprop="url">
+            <span itemprop="name">URL相似度计算的思考</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-07-15T00:53:10+08:00"
+              content="2014-07-15">
+          07-15
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/07/14/unix-e7-9b-ae-e5-bd-95-e7-bb-93-e6-9e-84-e7-9a-84-e6-9d-a5-e5-8e-86/" itemprop="url">
+            <span itemprop="name">Unix目录结构的来历</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-07-14T07:05:58+08:00"
+              content="2014-07-14">
+          07-14
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/07/13/svn-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" itemprop="url">
+            <span itemprop="name">SVN使用方法</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-06-26T07:01:17+08:00"
+              content="2014-06-26">
+          06-26
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/06/25/ie678-e4-b8-8b-e9-93-be-e6-8e-a5-e5-9b-be-e7-89-87-e7-82-b9-e4-b8-8d-e4-b8-ad-e9-97-ae-e9-a2-98-e8-ae-a8-e8-ae-ba/" itemprop="url">
+            <span itemprop="name">IE678下链接图片点不中问题讨论</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-06-24T09:09:37+08:00"
+              content="2014-06-24">
+          06-24
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/06/24/php-e4-b8-ad-e6-85-8e-e7-94-a8-e5-8f-8c-e7-ad-89-e4-ba-8e/" itemprop="url">
+            <span itemprop="name">PHP中慎用双等于(==)</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2014-06-24T09:00:32+08:00"
+              content="2014-06-24">
+          06-24
+        </time>
+      </div>
+
+      <h3 class="post-title">
+          <a class="post-title-link" href="/2014/06/24/e8-b0-b7-e6-ad-8c-e6-9c-8d-e5-8a-a1-e8-a2-ab-e5-b0-81-e7-bd-91-e7-ab-99-e5-8a-a0-e8-bd-bd-e5-8f-98-e6-85-a2/" itemprop="url">
+            <span itemprop="name">谷歌服务被“封” 网站加载变慢</span>
+          </a>
+      </h3>
+
+    </header>
+  </article>
+
+
+    </div>
+  </div>
+  
+  
+  
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/archives/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="extend next" rel="next" href="/archives/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
