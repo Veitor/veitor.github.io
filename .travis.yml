@@ -8,6 +8,7 @@ branches:
     - source # 只对source分支做CI
 script:
   - hexo generate # generate static files
+  - cp ./CNAME ./public/CNAME
 deploy:
   provider: pages
   github_token: $GH_TOKEN
