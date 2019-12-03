@@ -5,7 +5,7 @@ node_js:
 cache: npm
 branches:
   only:
-    - master # build master branch only
+    - source # 只对source分支做CI
 script:
   - hexo generate # generate static files
 deploy:
