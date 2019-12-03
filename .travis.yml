@@ -12,7 +12,7 @@ script:
 deploy:
   provider: pages
   github_token: $GH_TOKEN
-  keep_history: true
+  keep_history: false
   skip_cleanup: true
   target_branch: master
   # source分支存放源文件，master分支为发布的分支。由于最初创建githubpage时选的是个人站点，所以默认发布分支是master
