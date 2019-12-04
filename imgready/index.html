@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="img ready demo &amp;lt;!-- &#x2F;*demo style*&#x2F; body { font:12px ‘Microsoft Yahei’, Tahoma, Arial; _font-family:Tahoma, Arial; } a { color:#0259C4; } a:hover { color:#900; } .tips { color:#CCC; } h1 { font-fami">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-03T14:56:03.262Z">
+<meta property="og:updated_time" content="2019-12-04T14:46:27.753Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/imgready/">
@@ -210,6 +210,15 @@
 <p>  显示图片 <a href="#">清空缓存</a><em>（浏览器会缓存加载过后的图片）</em></p>
 <p><strong>通过文件头信息获取尺寸：</strong> <strong>通过加载完毕后获取尺寸：</strong></p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       </div>
       
       
@@ -264,7 +273,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

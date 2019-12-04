@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="1.创建分支的意义 创 建分支的意义，比如我们在一个基础平台上进行开发，每个技术小组负责一个子项目，而基础平台也是有可能会继续更改的，这个时候，如果不创建分支，子项目之 间会相互影响，影响最大的就是后期的测试和版本发布，子项目A已经结束，但测试却受到正在进行的子项目B的影响，测试通不过，就别说版本发布了。所以，我 们需要从目前的项目（主干trunk）中创建分支（branch），隔离子项目间的相互影">
+<meta name="keywords" content="SVN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVN分支与合并透析">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;svn-e5-88-86-e6-94-af-e4-b8-8e-e5-90-88-e5-b9-b6-e9-80-8f-e6-9e-90&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="1.创建分支的意义 创 建分支的意义，比如我们在一个基础平台上进行开发，每个技术小组负责一个子项目，而基础平台也是有可能会继续更改的，这个时候，如果不创建分支，子项目之 间会相互影响，影响最大的就是后期的测试和版本发布，子项目A已经结束，但测试却受到正在进行的子项目B的影响，测试通不过，就别说版本发布了。所以，我 们需要从目前的项目（主干trunk）中创建分支（branch），隔离子项目间的相互影">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-04T14:46:27.749Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/svn-e5-88-86-e6-94-af-e4-b8-8e-e5-90-88-e5-b9-b6-e9-80-8f-e6-9e-90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>SVN分支与合并透析 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/svn-e5-88-86-e6-94-af-e4-b8-8e-e5-90-88-e5-b9-b6-e9-80-8f-e6-9e-90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          SVN分支与合并透析
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-09-05 05:30:52" itemprop="dateCreated datePublished" datetime="2014-09-05T05:30:52+08:00">2014-09-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>1.创建分支的意义</strong> 创 建分支的意义，比如我们在一个基础平台上进行开发，每个技术小组负责一个子项目，而基础平台也是有可能会继续更改的，这个时候，如果不创建分支，子项目之 间会相互影响，影响最大的就是后期的测试和版本发布，子项目A已经结束，但测试却受到正在进行的子项目B的影响，测试通不过，就别说版本发布了。所以，我 们需要从目前的项目（主干trunk）中创建分支（branch），隔离子项目间的相互影响。 <strong>2.svn创建分支原理</strong> 在 svn中，创建分支，实际上就是一个版本拷贝(对应copy to…注意：绝不是简单在客户端上copy一个目录，而是svn仓库中copy，文件版本号会增加。），两边做任何修改发生的版本变化，是一套机制。 举例：目前主干版本是100，分支版本是101，主干中增加一个文件，版本为102，分支中再增加一个文件，版本就为103了。两边的版本号是一套，不会 重复。 <strong>3.svn创建分支的方法</strong> <strong>TortoiseSVN：</strong>右键点击工程目录-&gt;TortoiseSVN-&gt;Branch/tag..菜单，From WC at Url自动为工程svn url，比如<a href="https://localhost:8443/svn/fbysss/prj1/trunk" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/trunk</a>，to Url填写<a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/branches/branch1</a>。点OK按钮，分支就创建好了。 <strong>Subclipse：</strong>Team-&gt;Branch/tag..，跟上面类似. <strong>SVN命令模式：</strong>svn copy trunk_path  branch_path  -m ‘描述’ 举例：svn copy <a href="https://localhost:8443/svn/fbysss/prj1/trunk" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1</a><a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">/trunk </a> <a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/branches/branch1</a> -m “第一个分支” <strong>注意一点：</strong>trunk和branch不能互为子目录，否则就乱套了。 <strong>4.分支合并</strong> <strong>1）从分支合并到主干</strong> 分支开发结束之后，往往需要合并回主干去测试、发布，但分支和主干可能有很多冲突的地方，在合并时经常需要手工解决。 <strong>被操作对象：</strong>主干 <strong>From**</strong>：<strong>主干的打出分支时的版本 **To：</strong>分支的Head版本（最新版本）   怎么理解这个From和To呢?似乎跟我们的想当然不太一样：因为我们理解，把分支合并到主干，肯定是From分支，To主干。怎么搞反了呢？ 实际上，<strong>Svn**</strong>认为，我们要合并的，是从主干的某个版本开始，到分支的某个版本结束。两边的版本号实际上是一套系统，不会有重复。**我们从TortoiseSVN Help中也能找到证据：</p>
+<p>If you are using this method to merge a feature branch back to trunk, you need to ……..<br>In the From: field enter the full folder URL of the trunk. This may sound wrong, but remember that the trunk is the start point to which you want to add the branch changes. You may also click … to browse the repository.<br>In the To: field enter the full folder URL of the feature branch.</p>
+<p>  <strong>2）从主干合并到分支</strong> 试想这样的情况：一个项目里面，要独立出来一个子项目，需要单独发布版本，用到了基础框架代码，而基础框架在主干中不断修改完善，这就需要从主干合并到分支。 <strong>被操作对象：</strong>分支 <strong>From：</strong>分支的第一个版本（最旧版本） <strong>To：</strong>主干的Head版本（最新版本） 相当于从分支的第一个版本开始一直到主干最后一个版本结束合并之后，替换分支。 <strong>3）从分支合并到分支</strong> 有 这样的需求：一个项目中有很多分支，这些分支需要分期上线，有多个工作并行，但每一期之间不能相互影响，这就可以打出几个tag（也是分支），从主干 copy而来。其他主干根据排期分别合并到这些tag中来。比如有prjTag1和prjTag2，model1、model2需要合并到prjTag1 中，model3、model4需要合并到prjTag2中。拿prjTag1举例： 在prjTag1的work copy中，merge   <strong>From**</strong>：<strong>主干的打出分支时的版本 **To：</strong>分支的Head版本（最新版本） <strong>注意：</strong>From不是本Tag的某个版本，而是之前主干打出分支时的版本，最终Merge到prjTag1的work copy，而prjTag1是找不到当初打分支时的版本的。 原文地址：<a href="http://blog.csdn.net/fbysss/article/details/5437157" target="_blank" rel="noopener">http://blog.csdn.net/fbysss/article/details/5437157</a></p>
+
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SVN/" rel="tag"># SVN</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/e7-bd-91-e7-ab-99-e5-a6-82-e4-bd-95-e9-80-82-e9-85-8dretina-e5-b1-8f-e5-b9-95/" rel="prev" title="网站如何适配Retina屏幕">
+      <i class="fa fa-chevron-left"></i> 网站如何适配Retina屏幕
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/mysql-e4-b8-ad-e4-bd-bf-e7-94-a8insert-e6-89-b9-e9-87-8f-e6-9b-b4-e6-96-b0-e6-95-b0-e6-8d-ae/" rel="next" title="Mysql中使用Insert批量更新数据">
+      Mysql中使用Insert批量更新数据 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="背景我们假设你正在使用微服务架构来开发一个在线商城应用。大多数服务需要用某种数据库来持久化数据，如：订单服务存储关于订单的数据，客户服务存储客户相关的数据。">
+<meta name="keywords" content="CQRS,ddd,微服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务模式：一个服务一个数据库">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;microservice-mode-a-service-a-database&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="背景我们假设你正在使用微服务架构来开发一个在线商城应用。大多数服务需要用某种数据库来持久化数据，如：订单服务存储关于订单的数据，客户服务存储客户相关的数据。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;2942027767.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;2427239515.png">
+<meta property="og:updated_time" content="2019-12-04T14:46:27.749Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;2942027767.png">
+
+<link rel="canonical" href="http://www.veitor.net/posts/microservice-mode-a-service-a-database/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>微服务模式：一个服务一个数据库 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/microservice-mode-a-service-a-database/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          微服务模式：一个服务一个数据库
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-05 00:46:00" itemprop="dateCreated datePublished" datetime="2018-12-05T00:46:00+08:00">2018-12-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>我们假设你正在使用微服务架构来开发一个在线商城应用。大多数服务需要用某种数据库来持久化数据，如：订单服务存储关于订单的数据，客户服务存储客户相关的数据。</p>
+<p><img src="http://storage.veitor.net/2018/12/2942027767.png" alt="customersandorders.png" title="customersandorders.png"></p>
+<a id="more"></a>
+
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>微服务中数据库架构是什么样的？</p>
+<h1 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h1><ul>
+<li>服务之间必须松耦合，以使得每个服务可以独立开发、部署和扩展</li>
+<li>一些业务事务必须保障跨多个服务的业务不变量。比如，<code>下单</code>这个用例将会验证新订单是否会超过顾客的信用额度限制。其他业务事务必须通过多个服务更新数据。</li>
+<li>一些业务事务需要能查询分布在多个服务中的数据。比如，<code>查看可用的信用额度</code>必须要先查询客户再去查询其信用额度来计算下单的总额。</li>
+<li>一些查询必须要join分布在多个服务中的数据。比如，查询某个地区的客户和他们的最近订单需要join客户服务数据和订单服务数据。</li>
+<li>数据库必须能被复制和分库来实现扩展。见<a href="https://microservices.io/articles/scalecube.html" target="_blank" rel="noopener">伸缩立方(Scale Cube)</a></li>
+<li>不同服务有不同数据存储要求。对于一些服务，关系数据库是一个好的选择。其他服务可能需要一个像MongoDB的NoSQL数据库，更适合存储复杂、无结构化的数据。</li>
+</ul>
+<h1 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h1><p>保持每个微服务的数据只对其服务访问，并且只能通过服务的API对外访问。一个服务的事务只涉及其对应的数据库。</p>
+<p>下图展示了相关架构：</p>
+<p><img src="http://storage.veitor.net/2018/12/2427239515.png" alt="databaseperservice.png" title="databaseperservice.png"></p>
+<p>服务的数据库实际上是该服务实现的一部分，它不能被其它服务直接访问。</p>
+<p>这有几种方式来保持服务的数据私有，你不需要为每个服务准备数据库。比如，如果你正在使用关系数据库，那么有这么几种选项：</p>
+<ul>
+<li>每个服务多个私有table：每个服务拥有一些只能被该服务访问的私有tables。</li>
+<li>每个服务一个Schema：每个服务拥有一个只能被该服务访问的私有Schema。</li>
+<li>每个服务一个Database：每个服务拥有一个Database Server。</li>
+</ul>
+<p>每个服务多个私有Table和每个服务一个Schema具有最低的开销，使用每个服务一个Schema更吸引人，因为这样会使得权限比较清晰。一些高吞吐量的服务可能需要他们自己的database server。</p>
+<p>创建这种边界来使得模块化是一个好主意。这样以来你就可以为每个服务分配不同的数据库用户和数据库控制权限。如果没有这种边界，开发者将总会绕过服务的API来直接访问数据库获取数据。</p>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p>使用一个服务一个数据库有以下好处：</p>
+<ul>
+<li>确保服务之间松耦合，对一个服务数据库的更改不会影响到其他服务。</li>
+<li>每个服务可以使用更适合的数据库类型。如做全文搜索的服务可以使用ElasticSearch。</li>
+</ul>
+<p>但也有以下缺点：</p>
+<ul>
+<li>实现跨多个服务的事务并不简单，由于CAP定理，最好避免分布式事务，而且许多流行数据库（如NoSQL）不支持分布式事务。最好的解决方案是使用Saga模式，当服务中的数据更新时发布一个事件，其他订阅了该事件的服务更新其数据来响应该事件。</li>
+<li>实现在多个数据库join数据具有挑战性。</li>
+<li>管理多个SQL和NoSQL数据库的复杂性。</li>
+</ul>
+<p>这也有几种方案：</p>
+<ul>
+<li>API组合：由应用程序实现join数据而不是数据库。假设一个服务要获取客户和他最近的订单，则先从客户服务获取该客户数据，再从订单服务查询获取该客户的最近订单信息。</li>
+<li>命令查询职责分离(CQRS)：维护一个或多个来自其他服务的物化视图。服务订阅其他服务的事件，当其他服务发布事件时该服务再更新相关的物化视图。假设一个在线商城要实现查找特定区域的客户和他们最近的订单这个查询，只要通过维护一份join了客户信息和订单信息的物化视图就行了。该视图由该服务通过订阅客户服务和订单服务的事件来进行更新数据。</li>
+</ul>
+
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CQRS/" rel="tag"># CQRS</a>
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/how-to-guarantee-uniqueness-in-CQRS-and-ES/" rel="prev" title="CQRS/ES架构下如何保证用户名的唯一性？">
+      <i class="fa fa-chevron-left"></i> CQRS/ES架构下如何保证用户名的唯一性？
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/microservice-mode-saga/" rel="next" title="微服务模式：Saga">
+      微服务模式：Saga <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#限制"><span class="nav-number">3.</span> <span class="nav-text">限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">4.</span> <span class="nav-text">方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结果"><span class="nav-number">5.</span> <span class="nav-text">结果</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

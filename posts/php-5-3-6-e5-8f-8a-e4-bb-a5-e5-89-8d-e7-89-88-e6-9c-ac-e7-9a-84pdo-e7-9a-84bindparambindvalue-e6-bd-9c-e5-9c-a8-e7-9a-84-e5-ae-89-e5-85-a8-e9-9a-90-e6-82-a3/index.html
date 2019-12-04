@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&amp;gt;bindParam(1, $string); $statement-&amp;gt;bindParam(2, $int, PDO::PARAM_INT); 我">
+<meta name="keywords" content="mysql,转载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&amp;gt;bindParam(1, $string); $statement-&amp;gt;bindParam(2, $int, PDO::PARAM_INT); 我">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-04T14:46:27.749Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-20 02:03:42" itemprop="dateCreated datePublished" datetime="2014-11-20T02:03:42+08:00">2014-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">Mysql</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&gt;bindParam(1, $string); $statement-&gt;bindParam(2, $int, PDO::PARAM_INT); 我在以前的文章中分析介绍过PDO的ATTR_EMULATE_PREPARES属性对PDO底层协议与MySQL Server通讯机制影响： 1. 默认情况下，PDO会使用DSN中指定的字符集对输入参数进行本地转义（PHP手册中称为native prepared statements），然后拼接成完整的SQL语句，发送给MySQL Server。这有些像我们平时程序中拼接变量到SQL再执行查询的形式。 这种情况下，PDO驱动能否正确转义输入参数，是拦截SQL注入的关键。然而PHP 5.3.6及老版本，并不支持在DSN中定义charset属性（会忽略之），这时如果使用PDO的本地转义，仍然可能导致SQL注入，解决办法后面会提到。 2. MySQL Server 5.1开始支持prepare预编译SQL机制，即SQL查询语句与参数分离提交，但这个特性需要客户端协议支持支持，目前所有版本的PHP均支持。 如果PDO客户端使用mysql Server的prepare功能，大致的交互过程是： A. PDO将SQL模板发送给mysql server， SQL模板即包含参数占位符（问号或命名参数）的SQL语句 B. PDO不对输入参数作任何转义处理，将参数的位置，值，类型等等信息发送给MySQL Server C. PDO客户端调用execute statement D. MySQL Server 对B步骤提交的参数进行内部转义，并执行查询,返回结果给客户端。 看到没有，如果使用了mysql server prepare功能，则字符串的转义是由MySQL Server完成的。mysql会根据字符集（set names <charset>）对输入参数转换，确保没有注入产生。   PDO默认情况下使用了本地模拟prepare（并未使用MySQL server的prepare）,如果要禁止PDO本地模拟行为而使用MySQL Server的prepare机制，则需要设置PDO的参数： $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false); 如果你使用了PHP 5.3.6及以前版本，强烈推荐使用上述语句加强安全性。 如果你使用PHP 5.3.6+, 则请在DSN中指定 charset，是否设置上述参数，都是安全的。   好了，现在步入正题，假设有以下代码逻辑：   $pdo = new PDO(“mysql:host=localhost;dbname=test;charset=utf8”,’root’,’’); $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION); $pdo-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC); $pdo-&gt;exec(‘set names utf8’); $id = ‘0 or 1 =1 order by id desc’; $sql = “select * from article where id = ?”; $statement = $pdo-&gt;prepare($sql); $statement-&gt;bindParam(1, $id, PDO::PARAM_INT); $statement-&gt;execute(); 假设$id是外部变量（由其它函数传递，或用户提交），我们也没有使用intval对这两个参数进行强制类型转换（我们认为使用PDO绑定参数时已经指定参数类型为INT, 即PDO::PARAM_INT），期待PDO能使用我们指定的类型对其进行转义，但是事实上呢？却有太多不确定因素： 1. 以上代码实测在PHP 5.2.1造成了SQL注入 2. 以上代码在PHP 5.3.9下，没有造成任何SQL注入 那么，如果使用了存在bug的PHP版本，那么如何从根本上解决这个问题？ 1. 设置PDO不使用本地模拟prepare, 即 $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false);   这样，即使不使用intval对输入进行转换，也可以确保是安全的。如果由于程序员遗忘没有使用intval转换，那么还是存在安全隐患的。   使用这种方式，更彻底，更安全。 原文地址：<a href="http://zhangxugg-163-com.iteye.com/blog/1855088" target="_blank" rel="noopener">http://zhangxugg-163-com.iteye.com/blog/1855088</a></p>
+
+<div id="gitalk-container"></div>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+		<script>
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+	    gitalkConfig.id = md5(location.pathname);
+		var gitalk = new Gitalk(gitalkConfig);
+	    gitalk.render("gitalk-container");
+	    </script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/windows-e4-b8-8b-e5-ae-89-e8-a3-85python-e5-92-8cpip/" rel="prev" title="Windows下安装python和pip">
+      <i class="fa fa-chevron-left"></i> Windows下安装python和pip
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/oauth2-0-e8-ae-a4-e8-af-81-e5-92-8c-e6-8e-88-e6-9d-83-e5-8e-9f-e7-90-86/" rel="next" title="OAuth2.0认证和授权原理">
+      OAuth2.0认证和授权原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
