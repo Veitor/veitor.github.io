@@ -8,7 +8,7 @@ branches:
     - source # 只对source分支做CI
 script:
   - npm install
-  - sed -i 's/\{gitalk-github-client-secret\}/${GITTALK_GITHUB_CLIENT_SECRET}/g' ./_config.yml
+  - sed -i 's/{gitalk-github-client-secret}/${GITTALK_GITHUB_CLIENT_SECRET}/g' ./_config.yml
   - hexo generate # generate static files
   - cp ./CNAME ./public/CNAME
 deploy:
