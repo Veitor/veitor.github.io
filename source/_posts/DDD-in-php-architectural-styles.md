@@ -3,8 +3,6 @@ title: '[译]架构风格 - 《Domain-Driven Design in PHP》第2章'
 tags:
   - ddd
   - 领域驱动设计
-url: 553.html
-id: 553
 categories:
   - PHP
 date: 2018-04-19 13:27:00
