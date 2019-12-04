@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="今天在自己的服务器上运行程序时需要远程请求一个接口，发现此时程序响应特别慢，平均时间都要十几秒。 最后断定问题出现在了curl地方，使用服务器命令（我的是centos）curl一个域名也很慢，但curl一个IP却能得到及时响应。（因此其实本文标题说是PHP中的问题是不严谨的） 这说明问题可能就出现在了DNS设置上，后来改了一下DNS后发现正常了，在此写文记一下。 配置DNS： 输入命令vi &#x2F;et">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-04T14:46:27.749Z">
+<meta property="og:updated_time" content="2019-12-04T15:14:20.148Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/e5-85-b3-e4-ba-8ephp-e4-b8-adcurl-e6-85-a2-e7-9a-84-e9-97-ae-e9-a2-98/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+                <time title="修改时间：2019-12-04 23:14:20" itemprop="dateModified" datetime="2019-12-04T23:14:20+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,7 +255,7 @@
 <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 
 		<script>
-		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":"${GITTALK_GITHUB_CLIENT_SECRET}","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
 	    gitalkConfig.id = md5(location.pathname);
 		var gitalk = new Gitalk(gitalkConfig);
 	    gitalk.render("gitalk-container");

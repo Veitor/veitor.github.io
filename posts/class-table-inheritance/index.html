@@ -44,16 +44,16 @@
   };
 </script>
 
-  <meta name="description" content="表示类的继承层次结构，每个类都对应一张数据表 对象关系阻抗不匹配的一个显著方面是由于关系数据库不支持继承。你想要数据库结构能够清晰的映射到对象，并想要在继承结构中可以任意链接。类表继承通过使用一个数据表对应一个类的方式来实现这样的目的。     		 		var gitalkConfig = {&quot;clientID&quot;:&quot;8fffdd9e888794e7cafb&quot;,&quot;clientSecret&quot;:{&quot;g">
+  <meta name="description" content="表示类的继承层次结构，每个类都对应一张数据表 对象关系阻抗不匹配的一个显著方面是由于关系数据库不支持继承。你想要数据库结构能够清晰的映射到对象，并想要在继承结构中可以任意链接。类表继承通过使用一个数据表对应一个类的方式来实现这样的目的。     		 		var gitalkConfig = {&quot;clientID&quot;:&quot;8fffdd9e888794e7cafb&quot;,&quot;clientSecret&quot;:&quot;${">
 <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
 <meta property="og:type" content="article">
 <meta property="og:title" content="类表继承（Class Table Inheritance）">
 <meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;class-table-inheritance&#x2F;index.html">
 <meta property="og:site_name" content="Veitor的技术点滴">
-<meta property="og:description" content="表示类的继承层次结构，每个类都对应一张数据表 对象关系阻抗不匹配的一个显著方面是由于关系数据库不支持继承。你想要数据库结构能够清晰的映射到对象，并想要在继承结构中可以任意链接。类表继承通过使用一个数据表对应一个类的方式来实现这样的目的。     		 		var gitalkConfig = {&quot;clientID&quot;:&quot;8fffdd9e888794e7cafb&quot;,&quot;clientSecret&quot;:{&quot;g">
+<meta property="og:description" content="表示类的继承层次结构，每个类都对应一张数据表 对象关系阻抗不匹配的一个显著方面是由于关系数据库不支持继承。你想要数据库结构能够清晰的映射到对象，并想要在继承结构中可以任意链接。类表继承通过使用一个数据表对应一个类的方式来实现这样的目的。     		 		var gitalkConfig = {&quot;clientID&quot;:&quot;8fffdd9e888794e7cafb&quot;,&quot;clientSecret&quot;:&quot;${">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;08&#x2F;2165706583.gif">
-<meta property="og:updated_time" content="2019-12-04T14:46:27.749Z">
+<meta property="og:updated_time" content="2019-12-04T15:14:20.148Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;08&#x2F;2165706583.gif">
 
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-04 22:46:27" itemprop="dateModified" datetime="2019-12-04T22:46:27+08:00">2019-12-04</time>
+                <time title="修改时间：2019-12-04 23:14:20" itemprop="dateModified" datetime="2019-12-04T23:14:20+08:00">2019-12-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -249,7 +249,7 @@
 <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 
 		<script>
-		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":{"gitalk-github-client-secret":null},"repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
+		var gitalkConfig = {"clientID":"8fffdd9e888794e7cafb","clientSecret":"${GITTALK_GITHUB_CLIENT_SECRET}","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
 	    gitalkConfig.id = md5(location.pathname);
 		var gitalk = new Gitalk(gitalkConfig);
 	    gitalk.render("gitalk-container");
