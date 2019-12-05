@@ -53,7 +53,7 @@
 <meta property="og:description" content="你大概早就听别人说过我们正处在『后PC时代』。那么它对于Web开发者来说意味着什么呢？它意味着你那网站的30%到50%的流量如今已经来自移动设备。意味着很快，使用台式机和笔记本访问Web的人将逐渐减少。 （那么）我们该如何在用户行为上处理这种结构性转变？我们已经逾越了用M-dot或T-dot来hack的阶段，开始步入一个由响应式与自适应设计 技术统治的时代——即W3C联盟口中的统一化Web来临。W">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;07&#x2F;1377683186626.jpg">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.216Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;07&#x2F;1377683186626.jpg">
 
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,15 +247,6 @@
 <h2 id="客户端自适应"><a href="#客户端自适应" class="headerlink" title="客户端自适应"></a>客户端自适应</h2><p>客户端自适应秉承着『为定制的设备 内容传达响应式设计用户体验』的原则。它采用JavaScript丰富站点的功能和独特性。比如，自适应站点只为Retina显示器（比如新款iPad）提供Retina质量的图片，而标准精度显示器接收低质量图片。 自适应设计有两种方案：一种是在客户端生效，在用户的浏览器上；另一种是由Web服务器负荷来检测设备类型并加载正确模板。客户端自适应类型的网站 案例包括个性T恤Threadless和奢侈品闪购ideeli。自适应模板方案的优势在于其复用HTML和JavaScript的能力，简化了项目管理 和测试的更迭。 客户端响应方案意味着你不必完全重构网站。相反你可以基于已有内容布局移动响应。对于专家级开发者而言，这种方案也可以让你针对指定设备或屏幕分辨 率。例如，对Mobify的大多在线时尚零售客户而言，95%的移动端流量来自iPhone。客户端自适应意味着他们可以专门针对苹果智能手机进行优化。 与响应式设计不同，自适应模板确保客户端设备只加载所需资源。因为对设备和特性的检测已经转移到了移动设备自身，类似Akamai和Edgecast的内容分发网络可以在不影响用户体验的情况下使用他们大部分的缓存功能。 客户端自适应比起响应式设计而言有着更高的壁垒。开发者用这项技术需要熟练掌握JavaScript，也依托于网站现有的模板为基础。最后，因为客户端自适应作为现有底层代码上的覆盖物，你需要在网站迁移时让它们作为一个整体。</p>
 <h2 id="服务器端自适应"><a href="#服务器端自适应" class="headerlink" title="服务器端自适应"></a>服务器端自适应</h2><p>依赖于服务器插件和自定义用户代理检测器我们也可以通过多种途径得到服务器端自适应方案。使用服务器端自适应的网站包括Etsy，One Kings Lane和OnlineShoes.com。 为什么要选择服务器端自适应？它通常针对每个设备提供独特的模板，允许更多的定制。并且这种方案把设备检测逻辑块放在服务器上，使得小型移动页面加载得更快。除此之外，对于像Magneto这种常见的CMS和电子商务系统来说，还有多种多样可用的服务器端插件。 这种方案不适用于小心脏——通常需要你大幅度改变后端系统，实施起来将会是冗长（和昂贵）的。管理多种模板需要有持续不断的维护成本。最后，当服务 器过载时这种方案还会带来性能问题。当服务器上加载移动用户代理检测器的时候，需要关掉许多部署在CDN上的缓存机制，像Akamai一样，这将导致移动 端和桌面访客的用户体验速率降低。 当然，许多公司仍然在跟响应的基本要领角力，显然还没有准备好面对重口味的自适应。然而，随着竞争的加剧和移动通信流量的上涨，越来越多的团队将在所有三个方法上浅尝辄止，（最终）择出一个最适合他们用户的方案。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

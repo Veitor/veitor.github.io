@@ -53,7 +53,7 @@
 <meta property="og:description" content="这个笔记主要用来整理自己的思路。但是，尽量试图写得通俗易懂，希望能对其他朋友有用。毕竟，字符编码是计算机技术的基石，想要熟练使用计算机，就必须懂得一点字符编码的知识。 1. ASCII码 我们知道，在计算机内部，所有的信息最终都表示为一个二进制的字符串。每一个二进制位（bit）有0和1两种状态，因此八个二进制位就可以组合出 256种状态，这被称为一个字节（byte）。也就是说，一个字节一共可以用来">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;11&#x2F;QQ%E6%88%AA%E5%9B%BE20141106170522.jpg">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.216Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;11&#x2F;QQ%E6%88%AA%E5%9B%BE20141106170522.jpg">
 
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,15 +248,6 @@
 </blockquote>
 <p>跟据上表，解读UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。 下面，还是以汉字”严”为例，演示如何实现UTF-8编码。 已知”严”的unicode是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800-0000 FFFF），因此”严”的UTF-8编码需要三个字节，即格式是”1110xxxx 10xxxxxx 10xxxxxx”。然后，从”严”的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，”严”的UTF-8编码 是”11100100 10111000 10100101”，转换成十六进制就是E4B8A5。 <strong>6. Unicode与UTF-8之间的转换</strong> 通过上一节的例子，可以看到”严”的Unicode码是4E25，UTF-8编码是E4B8A5，两者是不一样的。它们之间的转换可以通过程序实现。 在Windows平台下，有一个最简单的转化方法，就是使用内置的记事本小程序Notepad.exe。打开文件后，点击”文件”菜单中的”另存为”命令，会跳出一个对话框，在最底部有一个”编码”的下拉条。 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141106170522.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141106170522.jpg" alt="QQ截图20141106170522"></a> 里面有四个选项：ANSI，Unicode，Unicode big endian 和 UTF-8。 1）ANSI是默认的编码方式。对于英文文件是ASCII编码，对于简体中文文件是GB2312编码（只针对Windows简体中文版，如果是繁体中文版会采用Big5码）。 2）Unicode编码指的是UCS-2编码方式，即直接用两个字节存入字符的Unicode码。这个选项用的little endian格式。 3）Unicode big endian编码与上一个选项相对应。我在下一节会解释little endian和big endian的涵义。 4）UTF-8编码，也就是上一节谈到的编码方法。 选择完”编码方式”后，点击”保存”按钮，文件的编码方式就立刻转换好了。 <strong>7. Little endian和Big endian</strong> 上一节已经提到，Unicode码可以采用UCS-2格式直接存储。以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节 是4E，另一个字节是25。存储的时候，4E在前，25在后，就是Big endian方式；25在前，4E在后，就是Little endian方式。 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中，小人国里爆发了内战，战争起因是人们争论，吃鸡蛋时究竟是从大头(Big- Endian)敲开还是从小头(Little-Endian)敲开。为了这件事情，前后爆发了六次战争，一个皇帝送了命，另一个皇帝丢了王位。 因此，第一个字节在前，就是”大头方式”（Big endian），第二个字节在前就是”小头方式”（Little endian）。 那么很自然的，就会出现一个问题：计算机怎么知道某一个文件到底采用哪一种方式编码？ Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 <strong>8. 实例</strong> 下面，举一个实例。 打开”记事本”程序Notepad.exe，新建一个文本文件，内容就是一个”严”字，依次采用ANSI，Unicode，Unicode big endian 和 UTF-8编码方式保存。 然后，用文本编辑软件<a href="http://www.google.cn/search?aq=t&oq=UltraEdit&complete=1&hl=zh-CN&newwindow=1&rlz=1B3GGGL_zh-CNCN216CN216&q=ultraedit+%E4%B8%8B%E8%BD%BD&btnG=Google+%E6%90%9C%E7%B4%A2&meta=" target="_blank" rel="noopener">UltraEdit中</a>的”十六进制功能”，观察该文件的内部编码方式。 1）ANSI：文件的编码就是两个字节”D1 CF”，这正是”严”的GB2312编码，这也暗示GB2312是采用大头方式存储的。 2）Unicode：编码是四个字节”FF FE 25 4E”，其中”FF FE”表明是小头方式存储，真正的编码是4E25。 3）Unicode big endian：编码是四个字节”FE FF 4E 25”，其中”FE FF”表明是大头方式存储。 4）UTF-8：编码是六个字节”EF BB BF E4 B8 A5”，前三个字节”EF BB BF”表示这是UTF-8编码，后三个”E4B8A5”就是”严”的具体编码，它的存储顺序与编码顺序是一致的。 <strong>9. 延伸阅读</strong> * <a href="http://www.joelonsoftware.com/articles/Unicode.html" target="_blank" rel="noopener">The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets</a>（关于字符集的最基本知识） * <a href="http://www.pconline.com.cn/pcedu/empolder/gj/other/0505/616631.html" target="_blank" rel="noopener">谈谈Unicode编码</a> * <a href="http://www.ietf.org/rfc/rfc3629.txt" target="_blank" rel="noopener">RFC3629：UTF-8, a transformation format of ISO 10646</a>（如果实现UTF-8的规定） （完）   原文地址：<a href="http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

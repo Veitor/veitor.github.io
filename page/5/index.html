@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -295,15 +295,6 @@
 <p>　　3. 打开一个文件以后，系统就以inode号码来识别这个文件，不再考虑文件名。因此，通常来说，系统无法从inode号码得知文件名。</p>
 <pre><code>第3点使得软件更新变得简单，可以在不关闭软件的情况下进行更新，不需要重启。因为系统通过inode号码，识别运行中的文件，不通过文件名。更新的时 候，新版文件以同样的文件名，生成一个新的inode，不会影响到运行中的文件。等到下一次运行这个软件的时候，文件名就自动指向新版文件，旧版文件的 inode则被回收。</code></pre><p>  九 实际问题 在一台配置较低的Linux服务器（内存、硬盘比较小）的/data分区内创建文件时，系统提示磁盘空间不足，用df -h命令查看了一下磁盘使用情况，发现/data分区只使用了66%，还有12G的剩余空间，按理说不会出现这种问题。 后来用df -i查看了一下/data分区的索引节点(inode)，发现已经用满(IUsed=100%)，导致系统无法创建新目录和文件。     查找原因： /data/cache目录中存在数量非常多的小字节缓存文件，占用的Block不多，但是占用了大量的inode。   解决方案： 1、删除/data/cache目录中的部分文件，释放出/data分区的一部分inode。 2、用软连接将空闲分区/opt中的newcache目录连接到/data/cache，使用/opt分区的inode来缓解/data分区inode不足的问题： ln -s /opt/newcache /data/cache   转自： <a href="http://www.ruanyifeng.com/blog/2011/12/inode.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2011/12/inode.html</a> <a href="http://blog.s135.com/post/295/" target="_blank" rel="noopener">http://blog.s135.com/post/295/</a> <a href="http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html" target="_blank" rel="noopener">http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -353,7 +344,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -386,15 +377,6 @@
 
  同余运算里还有稍微复杂一些的性质。比如，同余运算和整数加减法一样满足“等量加等量，其和不变”。小学我们就知道，等式两边可以同时加上一个相等的数。例 如，a=b可以推出a+100=b+100。这样的性质在同余运算中也有：对于同一个模数m，如果a和b同余，x和y同余，那么a+x和b+y也同余。在 我看来，这个结论几乎是显然的。当然，我们也可以严格证明这个定理。这个定理对减法同样有效。 **性质：如果a≡b(mod m)，x≡y(mod m)，则a+x≡b+y(mod m)。** 证 明：条件告诉我们，可以找到p和q使得a-mp = b-mq，也存在r和s使得x-mr = y-ms。于是a-mp + x-mr = b-mq + y-ms，即a+x-m(p+r) = b+y-m(q+s)，这就告诉我们a+x和b+y除以m的余数相同。 容易想到，两个同余式对应相乘，同余式两边仍然相等： **如果a≡b(mod m)，x≡y(mod m)，则ax≡by(mod m)。** 证明：条件告诉我们，a-mp = b-mq，x-mr = y-ms。于是(a-mp)(x-mr) = (b-mq)(y-ms)，等式两边分别展开后必然是ax-m(…) = by-m(…)的形式，这就说明ax≡by(mod m)。 现在你知道为什么有的题要 叫你“输出答案mod xxxxx的结果”了吧，那是为了避免高精度运算，因为这里的结论告诉我们在运算过程中边算边mod和算完后再mod的结果一样。假如a是一个很大的数， 令b=a mod m，那么(a * 100) mod m和(b * 100) mod m的结果是完全一样的，这相当于是在a≡b (mod m)的两边同时乘以100。这些结论其实都很显然，因为同余运算只关心余数（不关心“整的部分”），完全可以每一次运算后都只保留余数。因此，整个运算过 程中参与运算的数都不超过m，避免了高精度的出现。 在证明**_Fermat小定理_**时，我们用到了这样一个定理： **如果ac≡bc(mod m)，且c和m互质，则a≡b(mod m)** （就是说同余式两边可以同时除以一个和模数互质的数）。 证明：条件告诉我们，ac-mp = bc-mq，移项可得ac-bc = mp-mq，也就是说(a-b)c = m(p-q)。这表明，(a-b)c里需要含有因子m，但c和m互质，因此只有可能是a-b被m整除，也即a≡b(mod m)。</code></pre><p>  原文地址：<a href="http://www.matrix67.com/blog/archives/236" target="_blank" rel="noopener">http://www.matrix67.com/blog/archives/236</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -444,7 +426,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -597,15 +579,6 @@
 </blockquote>
 <p>此时, 表盘相当于每128个刻度转一轮. 所以用补码表示的运算结果最小值和最大值应该是[-128, 128]. 但是由于0的特殊情况, 没有办法表示128, 所以补码的取值范围是[-128, 127] 本人一直不善于数学, 所以如果文中有不对的地方请大家多多包含, 多多指点!</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -655,7 +628,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -710,15 +683,6 @@
 <p>#EXTM3U<br>#EXT-X-TARGETDURATION:12<br>#EXT-X-VERSION:3<br>#EXTINF:6.006,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1</a><br>#EXTINF:5.464,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1</a><br>#EXTINF:5.505,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1</a><br>#EXTINF:9.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1</a><br>#EXTINF:11.136,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1</a><br>#EXTINF:8.258,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1</a><br>#EXTINF:9.843,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1</a><br>#EXTINF:10.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1</a></p>
 <p>其中每条url只包含6s左右视频，但是可将url中参数部分去掉即可得到实际的长度。但是每条去掉后需合并一下相同的url，如上述列表可得到url片段 <a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv</a> 将m3u8中所有的url片段全部下载即可大功告成。 <a href="http://storage.veitor.net/uploads/2014/10/QQ截图20141008164115.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/10/QQ%E6%88%AA%E5%9B%BE20141008164115.jpg" alt="QQ截图20141008164115"></a> 原文地址：<a href="http://www.cnblogs.com/zhaojunjie/p/4009192.html" target="_blank" rel="noopener">http://www.cnblogs.com/zhaojunjie/p/4009192.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -768,7 +732,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -809,15 +773,6 @@
 <h2 id="第二类丢失更新"><a href="#第二类丢失更新" class="headerlink" title="第二类丢失更新"></a>第二类丢失更新</h2><p>A事务覆盖B事务已经提交的数据，造成B事务所做操作丢失： <a href="http://storage.veitor.net/uploads/2014/09/15150645_d6yw2.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/09/15150645_d6yw2.jpg" alt="15150645_d6yw"></a>   上面的例子里由于支票转账事务覆盖了取款事务对存款余额所做的更新，导致银行最后损失了100元，相反如果转账事务先提交，那么用户账户将损失100元。</p>
 <h1 id="四种隔离级别"><a href="#四种隔离级别" class="headerlink" title="四种隔离级别"></a>四种隔离级别</h1><p>尽管数据库为用户提供了锁的DML操作方式，但直接使用锁管理是非常麻烦的，因此数据库为用户提供了自动锁机制。只要用户指定会话的事务隔离级别，数据库就会分析事务中的SQL语句，然后自动为事务操作的数据资源添加上适合的锁。此外数据库还会维护这些锁，当一个资源上的锁数目太多时，自动进行锁升级以提高系统的运行性能，而这一过程对用户来说完全是透明的。 ANSI/ISO SQL 92标准定义了4个等级的事务隔离级别： <a href="http://storage.veitor.net/uploads/2014/09/15150645_d6yw3.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/09/15150645_d6yw3.jpg" alt="15150645_d6yw"></a>   事务的隔离级别和数据库并发性是对立的，两者此增彼长。一般来说，使用READ UNCOMMITED隔离级别的数据库拥有最高的并发性和吞吐量，而使用SERIALIZABLE隔离级别的数据库并发性最低。 Mysql的默认隔离级别时Repeatable Read，即可重复读。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -867,7 +822,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -912,15 +867,6 @@
 <p>INSERT INTO t_member (id, name, email) VALUES<br>    (1, ‘nick’, ‘nick@126.com’),<br>    (4, ‘angel’,‘angel@163.com’),<br>    (7, ‘brank’,‘ba198@126.com’)<br>ON DUPLICATE KEY UPDATE name=VALUES(name), email=VALUES(email);</p>
 <p>注意：ON DUPLICATE KEY UPDATE只是MySQL的特有语法，并不是SQL标准语法！ 原文地址：<a href="http://www.crackedzone.com/mysql-muti-sql-not-sugguest-update.html" target="_blank" rel="noopener">http://www.crackedzone.com/mysql-muti-sql-not-sugguest-update.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -970,7 +916,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1005,15 +951,6 @@
 <p>If you are using this method to merge a feature branch back to trunk, you need to ……..<br>In the From: field enter the full folder URL of the trunk. This may sound wrong, but remember that the trunk is the start point to which you want to add the branch changes. You may also click … to browse the repository.<br>In the To: field enter the full folder URL of the feature branch.</p>
 <p>  <strong>2）从主干合并到分支</strong> 试想这样的情况：一个项目里面，要独立出来一个子项目，需要单独发布版本，用到了基础框架代码，而基础框架在主干中不断修改完善，这就需要从主干合并到分支。 <strong>被操作对象：</strong>分支 <strong>From：</strong>分支的第一个版本（最旧版本） <strong>To：</strong>主干的Head版本（最新版本） 相当于从分支的第一个版本开始一直到主干最后一个版本结束合并之后，替换分支。 <strong>3）从分支合并到分支</strong> 有 这样的需求：一个项目中有很多分支，这些分支需要分期上线，有多个工作并行，但每一期之间不能相互影响，这就可以打出几个tag（也是分支），从主干 copy而来。其他主干根据排期分别合并到这些tag中来。比如有prjTag1和prjTag2，model1、model2需要合并到prjTag1 中，model3、model4需要合并到prjTag2中。拿prjTag1举例： 在prjTag1的work copy中，merge   <strong>From**</strong>：<strong>主干的打出分支时的版本 **To：</strong>分支的Head版本（最新版本） <strong>注意：</strong>From不是本Tag的某个版本，而是之前主干打出分支时的版本，最终Merge到prjTag1的work copy，而prjTag1是找不到当初打分支时的版本的。 原文地址：<a href="http://blog.csdn.net/fbysss/article/details/5437157" target="_blank" rel="noopener">http://blog.csdn.net/fbysss/article/details/5437157</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1063,7 +1000,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1128,15 +1065,6 @@ background-size: 100px auto;
 }
 }</code></pre><p>使用这个的确定就是IE6、7、8不支持@media，所以无效。但是如果你只是支持苹果的RMBP的话，不存在兼容问题，因为MacOS X上压根没有IE！哈哈哈！ <strong>OK，本文到这里就结束了，介绍了上面的三个办法大家可以各有取舍的使用吧~</strong> 附件：<a href="http://storage.veitor.net/uploads/2014/08/76757.1946.zip" target="_blank" rel="noopener">附件</a> 原文地址：<a href="http://www.ui.cn/project.php?id=24556" target="_blank" rel="noopener">http://www.ui.cn/project.php?id=24556</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1186,7 +1114,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1376,15 +1304,6 @@ background-size: 100px auto;
 <p>（前提，网站没有XSS漏洞，攻击者不能通过脚本获取用户的Cookie）</p>
 <p>原文地址：<a href="http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html" target="_blank" rel="noopener">http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1434,7 +1353,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1461,15 +1380,6 @@ background-size: 100px auto;
       
           <p>Linux系统中的wget是一个下载文件的工具，它用在命令行下。对于Linux用户是必不可少的工具，我们经常要下载一些软件或从远程服务器恢复备份到本地服务器。wget支持HTTP，HTTPS和FTP协议，可以使用HTTP代理。所谓的自动下载是指，wget可以在用户退出系统的之后在后台执行。这意味这你可以登录系统，启动一个wget下载任务，然后退出系统，wget将在后台执行直到任务完成，相对于其它大部分浏览器在下载大量数据时需要用户一直的参与，这省去了极大的麻烦。 wget 可 以跟踪HTML页面上的链接依次下载来创建远程服务器的本地版本，完全重建原始站点的目录结构。这又常被称作”递归下载”。在递归下载的时 候，wget 遵循Robot Exclusion标准(/robots.txt). wget可以在下载的同时，将链接转换成指向本地文件，以方便离线 浏览。 wget 非常稳定，它在带宽很窄的情况下和不稳定网络中有很强的适应性.如果是由于网络的原因下载失败，wget会不断的尝试，直到整个文件下载完毕。如果是服务器打断下载过程，它会再次联到服务器上从停止的地方继续下载。这对从那些限定了链接时间的服务器上下载大文件非常有用。 1．命令格式： wget [参数] [URL地址] 2．命令功能： 用于从网络上下载资源，没有指定目录，下载资源回默认为当前目录。wget虽然功能强大，但是使用起来还是比较简单： 1）支持断点下传功能；这一点，也是网络蚂蚁和FlashGet当年最大的卖点，现在，Wget也可以使用此功能，那些网络不是太好的用户可以放心了； 2）同时支持FTP和HTTP下载方式；尽管现在大部分软件可以使用HTTP方式下载，但是，有些时候，仍然需要使用FTP方式下载软件； 3）支持代理服务器；对安全强度很高的系统而言，一般不会将自己的系统直接暴露在互联网上，所以，支持代理是下载软件必须有的功能； 4）设置方便简单；可能，习惯图形界面的用户已经不是太习惯命令行了，但是，命令行在设置上其实有更多的优点，最少，鼠标可以少点很多次，也不要担心是否错点鼠标； 5）程序小，完全免费；程序小可以考虑不计，因为现在的硬盘实在太大了；完全免费就不得不考虑了，即使网络上有很多所谓的免费软件，但是，这些软件的广告却不是我们喜欢的。 3．命令参数： 启动参数： -V, –version 显示wget的版本后退出 -h, –help 打印语法帮助 -b, –background 启动后转入后台执行 -e, –execute=COMMAND 执行<code>.wgetrc’格式的命令，wgetrc格式参见/etc/wgetrc或~/.wgetrc 记录和输入文件参数： -o, –output-file=FILE 把记录写到FILE文件中 -a, –append-output=FILE 把记录追加到FILE文件中 -d, –debug 打印调试输出 -q, –quiet 安静模式(没有输出) -v, –verbose 冗长模式(这是缺省设置) -nv, –non-verbose 关掉冗长模式，但不是安静模式 -i, –input-file=FILE 下载在FILE文件中出现的URLs -F, –force-html 把输入文件当作HTML格式文件对待 -B, –base=URL 将URL作为在-F -i参数指定的文件中出现的相对链接的前缀 –sslcertfile=FILE 可选客户端证书 –sslcertkey=KEYFILE 可选客户端证书的KEYFILE –egd-file=FILE 指定EGD socket的文件名 下载参数： –bind-address=ADDRESS 指定本地使用地址(主机名或IP，当本地有多个IP或名字时使用) -t, –tries=NUMBER 设定最大尝试链接次数(0 表示无限制). -O –output-document=FILE 把文档写到FILE文件中 -nc, –no-clobber 不要覆盖存在的文件或使用.#前缀 -c, –continue 接着下载没下载完的文件 –progress=TYPE 设定进程条标记 -N, –timestamping 不要重新下载文件除非比本地文件新 -S, –server-response 打印服务器的回应 –spider 不下载任何东西 -T, –timeout=SECONDS 设定响应超时的秒数 -w, –wait=SECONDS 两次尝试之间间隔SECONDS秒 –waitretry=SECONDS 在重新链接之间等待1…SECONDS秒 –random-wait 在下载之间等待0…2*WAIT秒 -Y, –proxy=on/off 打开或关闭代理 -Q, –quota=NUMBER 设置下载的容量限制 –limit-rate=RATE 限定下载输率 目录参数： -nd –no-directories 不创建目录 -x, –force-directories 强制创建目录 -nH, –no-host-directories 不创建主机目录 -P, –directory-prefix=PREFIX 将文件保存到目录 PREFIX/… –cut-dirs=NUMBER 忽略 NUMBER层远程目录 HTTP 选项参数： –http-user=USER 设定HTTP用户名为 USER. –http-passwd=PASS 设定http密码为 PASS -C, –cache=on/off 允许/不允许服务器端的数据缓存 (一般情况下允许) -E, –html-extension 将所有text/html文档以.html扩展名保存 –ignore-length 忽略 \</code>Content-Length’头域 –header=STRING 在headers中插入字符串 STRING –proxy-user=USER 设定代理的用户名为 USER –proxy-passwd=PASS 设定代理的密码为 PASS –referer=URL 在HTTP请求中包含 `Referer: URL’头 -s, –save-headers 保存HTTP头到文件 -U, –user-agent=AGENT 设定代理的名称为 AGENT而不是 Wget/VERSION –no-http-keep-alive 关闭 HTTP活动链接 (永远链接) –cookies=off 不使用 cookies –load-cookies=FILE 在开始会话前从文件 FILE中加载cookie –save-cookies=FILE 在会话结束后将 cookies保存到 FILE文件中 FTP 选项参数： -nr, –dont-remove-listing 不移走 <code>.listing’文件 -g, –glob=on/off 打开或关闭文件名的 globbing机制 –passive-ftp 使用被动传输模式 (缺省值). –active-ftp 使用主动传输模式 –retr-symlinks 在递归的时候，将链接指向文件(而不是目录) 递归下载参数： -r, –recursive 递归下载－－慎用! -l, –level=NUMBER 最大递归深度 (inf 或 0 代表无穷) –delete-after 在现在完毕后局部删除文件 -k, –convert-links 转换非相对链接为相对链接 -K, –backup-converted 在转换文件X之前，将之备份为 X.orig -m, –mirror 等价于 -r -N -l inf -nr -p, –page-requisites 下载显示HTML文件的所有图片 递归下载中的包含和不包含(accept/reject)： -A, –accept=LIST 分号分隔的被接受扩展名的列表 -R, –reject=LIST 分号分隔的不被接受的扩展名的列表 -D, –domains=LIST 分号分隔的被接受域的列表 –exclude-domains=LIST 分号分隔的不被接受的域的列表 –follow-ftp 跟踪HTML文档中的FTP链接 –follow-tags=LIST 分号分隔的被跟踪的HTML标签的列表 -G, –ignore-tags=LIST 分号分隔的被忽略的HTML标签的列表 -H, –span-hosts 当递归时转到外部主机 -L, –relative 仅仅跟踪相对链接 -I, –include-directories=LIST 允许目录的列表 -X, –exclude-directories=LIST 不被包含目录的列表 -np, –no-parent 不要追溯到父目录 wget -S –spider url 不下载只显示过程 4．使用实例： 实例1：使用wget下载单个文件 命令： wget http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 以下的例子是从网络下载一个文件并保存在当前目录，在下载的过程中会显示进度条，包含（下载完成百分比，已经下载的字节，当前下载速度，剩余下载时间）。 实例2：使用wget -O下载并以不同的文件名保存 命令： : wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080 说明： wget默认会以最后一个符合”/”的后面的字符来命令，对于动态链接的下载通常文件名会不正确。 错误：下面的例子会下载一个文件并以名称download.aspx?id=1080保存 wget http://www.minjieren.com/download?id=1 即使下载的文件是zip格式，它仍然以download.php?id=1080命令。 正确：为了解决这个问题，我们可以使用参数-O来指定一个文件名： wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080 实例3：使用wget –limit -rate限速下载 命令： wget --limit-rate=300k http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 当你执行wget的时候，它默认会占用全部可能的宽带下载。但是当你准备下载一个大文件，而你还需要下载其它文件时就有必要限速了。 实例4：使用wget -c断点续传 命令： wget -c http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 使用wget -c重新启动下载中断的文件，对于我们下载大文件时突然由于网络等原因中断非常有帮助，我们可以继续接着下载而不是重新下载一个文件。需要继续中断的下载时可以使用-c参数。 实例5：使用wget -b后台下载 命令： wget -b http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 对于下载非常大的文件的时候，我们可以使用参数-b进行后台下载。 wget -b http://www.minjieren.com/wordpress-3.1-zh\_CN.zip Continuing in background, pid 1840. Output will be written to</code>wget-log’. 你可以使用以下命令来察看下载进度： tail -f wget-log 实例6：伪装代理名称下载 命令： wget –user-agent=”Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16” <a href="http://www.minjieren.com/wordpress-3.1-zh\_CN.zip" target="_blank" rel="noopener">http://www.minjieren.com/wordpress-3.1-zh\_CN.zip</a> 说明： 有些网站能通过根据判断代理名称不是浏览器而拒绝你的下载请求。不过你可以通过–user-agent参数伪装。 实例7：使用wget –spider测试下载链接 命令： wget –spider URL 说明： 当你打算进行定时下载，你应该在预定时间测试下载链接是否有效。我们可以增加–spider参数进行检查。 wget –spider URL 如果下载链接正确，将会显示 wget –spider URL Spider mode enabled. Check if remote file exists. HTTP request sent, awaiting response… 200 OK Length: unspecified [text/html] Remote file exists and could contain further links, but recursion is disabled – not retrieving. 这保证了下载能在预定的时间进行，但当你给错了一个链接，将会显示如下错误 wget –spider url Spider mode enabled. Check if remote file exists. HTTP request sent, awaiting response… 404 Not Found Remote file does not exist – broken link!!! 你可以在以下几种情况下使用spider参数： 定时下载之前进行检查 间隔检测网站是否可用 检查网站页面的死链接 实例8：使用wget –tries增加重试次数 命令： wget –tries=40 URL 说明： 如果网络有问题或下载一个大文件也有可能失败。wget默认重试20次连接下载文件。如果需要，你可以使用–tries增加重试次数。 实例9：使用wget -i下载多个文件 命令： wget -i filelist.txt 说明： 首先，保存一份下载链接文件 cat &gt; filelist.txt url1 url2 url3 url4 接着使用这个文件和参数-i下载 实例10：使用wget –mirror镜像网站 命令： wget –mirror -p –convert-links -P ./LOCAL URL 说明： 下载整个网站到本地。 –miror:开户镜像下载 -p:下载所有为了html页面显示正常的文件 –convert-links:下载后，转换成本地的链接 -P ./LOCAL：保存所有文件和目录到本地指定目录 实例11：使用wget –reject过滤指定格式下载 命令： wget –reject=gif ur 说明： 下载一个网站，但你不希望下载图片，可以使用以下命令。 实例12：使用wget -o把下载信息存入日志文件 命令： wget -o download.log URL 说明： 不希望下载信息直接显示在终端而是在一个日志文件，可以使用 实例13：使用wget -Q限制总下载文件大小 命令： wget -Q5m -i filelist.txt 说明： 当你想要下载的文件超过5M而退出下载，你可以使用。注意：这个参数对单个文件下载不起作用，只能递归下载时才有效。 实例14：使用wget -r -A下载指定格式文件 命令： wget -r -A.pdf url 说明： 可以在以下情况使用该功能： 下载一个网站的所有图片 下载一个网站的所有视频 下载一个网站的所有PDF文件 实例15：使用wget FTP下载 命令： wget ftp-url wget –ftp-user=USERNAME –ftp-password=PASSWORD url 说明： 可以使用wget来完成ftp链接的下载。 使用wget匿名ftp下载： wget ftp-url 使用wget用户名和密码认证的ftp下载 wget –ftp-user=USERNAME –ftp-password=PASSWORD url 备注：编译安装 使用如下命令编译安装： # tar zxvf wget-1.9.1.tar.gz # cd wget-1.9.1 # ./configure # make # make install</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 

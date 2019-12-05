@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -240,15 +240,6 @@
       
           <p><a href="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" alt="1402017825583"></a> 从5月27号左右开始，谷歌(Google)在华的几乎所有的服务都处于无法使用的状态，谷歌官网域名Google.com、谷歌香港 Google.com.hk所有服务都打不开。ping出来的IP均显示为“美国”，也就是说谷歌香港的服务器，已经由香港转移至美国，所以链接实际会很 长，甚至断断续续出现请求超时的情况。 当时我的博客所在的SAE也有点小故障，所以那几天我的博客一直访问很慢，我以为是SAE的问题，结果后来终于发现博客的几个页面加载了google的字体资源，所以导致网站加载特别缓慢，现在终于解决了。 360网站卫士的解决方案： 修改方法如下： 打开wordpress代码中的文件wp-includes/script-loader.php文件，搜索：fonts.googleapis.com找到这行代码： $open_sans_font_url = “//fonts.googleapis.com/css?family1=Open+Sans:300italic,400italic,600italic,300,400,600&amp;subset=$subsets”; 把fonts.googleapis.com替换为fonts.useso.com 修改完保存，再次刷新，大家就可以发现，自己的网站速度已经比以前快了很多，几乎瞬间就可以拿到Google字体了。原因就是本来需要从美国服务器才能拿到的google字体，现在已经遍布360全国的机房了。 醒妹网的解决方案： 既然是关于Google字体，那解除字体问题就可以了。如果网页中设定的字体无法加载，那么网页会按照浏览器默认的字体显示。但浏览器并不知道Google字体服务被屏蔽了，还那么二的一直加载，直到加载失败。但这个过程会耗费十几秒的时间。 **　　WordPress网站解决Google字体的办法：** 第一种方法：安装Disable Google Font插件，但经过测试之后，没有明显效果。 第二种方法：注释或删除掉style.css和function.php有关加载Google字体的代码fonts.googleapis.com即可。 当然以上两种方法可以同时使用。 如果在更改style.css或function.php文件之后，wordpress网站报错，无法打开，或者新建文章时上传图片失败。一定是将wordpress文件的编码保存为非ANSI编码，用记事本打开，保存时选择编码ANSI替换掉原来的文件即可。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -298,7 +289,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -351,15 +342,6 @@
 <p>$result = $db-&gt;query(“SELECT m.<em>, i.</em><br>FROM “ . TABLE_MEMBER . “ AS m, “ . TABLE_MEMBERINFO . “ AS i<br>WHERE m.userid = i.userid AND m.userid = ‘$_userid’);</p>
 <p>  原文地址：<a href="http://www.nowamagic.net/librarys/veda/detail/513" target="_blank" rel="noopener">http://www.nowamagic.net/librarys/veda/detail/513</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -409,7 +391,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -546,15 +528,6 @@
 <p>谁都可以~~但是一般会有过滤系统，要审核的，像simi就有做任务这个玩法，任务就是，给你别人的回答，让你判断是否可以给不满16岁的孩子看，也有存进去的时候设置敏感词什么的。</p>
 <p>原文地址：<a href="http://www.cnblogs.com/huj690/archive/2013/01/24/2875114.html" target="_blank" rel="noopener">http://www.cnblogs.com/huj690/archive/2013/01/24/2875114.html</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -604,7 +577,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -631,15 +604,6 @@
       
           <p>什么是双机热备技术？双机热备，英文”Hot Standby“，是一种常见的服务器高可用技术。顾名思义，A，B两台机器互相做备份，A歇菜了B顶上，B歇菜了A顶上。 <img src="http://storage.veitor.net/2016/03/757275038.jpg" alt="showimage-10057963-10009581-c4d4df6cba4fb6fcf79206c9c6fcb774.jpg"> 双机热备典型应用环境就是： 对于关键性的业务系统，需要有两台或两台以上的服务器完成相同的功能，共同执行同一服务，让它们具有相同的配置，彼此互为备用，当一台服务器出现故障时，不需要人工介入，可以由另一台服务器自动接替工作，保证系统持续运转，实现高可用性。 双机热备的工作模式有三种 根据两台服务器的工作方式可以有三种不同的工作模式，即双机主从模式、双机互备模式和双机双工模式。下面分别予以简单介绍： 双机主从模式 最常见的双机热备模式，即目前通常所说的active/standby 方式，active服务器处于工作状态；而standby服务器处于监控准备状态。当active服务器出现故障的时候，通过软件诊测或手工方式将standby机器激活，保证应用在短时间内完全恢复正常使用。典型应用在证券资金服务器或行情服务器。这是目前采用较多的一种模式，但由于另外一台服务器长期处于后备的状态，从计算资源方面考量，就存在一定的浪费。 双机互备模式 两个相对独立的应用在两台机器同时运行，但彼此均设为备机，当某一台服务器出现故障时，另一台服务器可以在短时间内将故障服务器的应用接管过来，从而保证了应用的持续性，但对服务器的性能要求比较高。服务器配置相对要好。 双机双工模式 目前Cluster（集群）的一种形式，active/active两台服务器均为活动状态，同时运行相同的应用，保证整体的性能，也实现了负载均衡和互为备份。WEB服务器或FTP服务器等用此种方式比较多。 双机热备的实现方式有两种 双机热备有两种实现模式，一种是基于共享的存储设备的方式，另一种是没有共享的存储设备的方式，一般称为纯软件方式。 基于存储共享的双机热备是双机热备的最标准方案。这种方式采用两台（或多台）服务器，使用共享的存储设备（磁盘阵列柜或存储区域网SAN）。两台服务器可以采用热备（主从）、互备、双工（并行）等不同的方式。在工作过程中，两台服务器将以一个虚拟的IP地址对外提供服务，依工作方式的不同，将服务请求发送给其中一台服务器承担。同时，服务器通过心跳线（目前往往采用建立私有网络的方式）侦测另一台服务器的工作状况。当一台服务器出现故障时，另一台服务器根据心跳侦测的情况做出判断，并进行切换，接管服务。对于用户而言，这一过程是全自动的，在很短时间内完成，从而对业务不会造成影响。由于使用共享的存储设备，因此两台服务器使用的实际上是一样的数据，由双机或集群软件对其进行管理。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -689,7 +653,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -722,15 +686,6 @@
 <p>public function behaviors()<br>{<br>    return array(<br>        // 行为类名 =&gt; 类文件别名路径<br>        ‘ActiveRecordLogableBehavior’=&gt;<br>            ‘application.behaviors.ActiveRecordLogableBehavior’,<br>    );<br>}</p>
 <p>  当然这些都是最基本的简单的记录日志操作，你还可以进行扩展，以满足更高级更多功能的需求。如有问题，留言探讨~</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -780,7 +735,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -809,15 +764,6 @@
 <h1 id="addSearchCondition第一个参数为搜索的字段名"><a href="#addSearchCondition第一个参数为搜索的字段名" class="headerlink" title="addSearchCondition第一个参数为搜索的字段名"></a>addSearchCondition第一个参数为搜索的字段名</h1><p>第二个参数为搜索关键词 第三个参数是设置是否过滤掉你关键词中的“%”百分号和”_“下划线这两个通配符，默认是true，即过滤这两个通配符，并在关键词前后自动加上”%”以进行匹配。第四个参数就是条件连接符，默认为AND，最后一个是Sql 关键字”LIKE”，还可以设置为“NOT LIKE”。基本上最后两个参数都不需要自己设置，都使用默认值就好了。 <strong>addSearchCondition就大致理解为增加一个LIKE搜索条件即可。</strong></p>
 <h1 id="compare"><a href="#compare" class="headerlink" title="compare"></a>compare</h1><p>第一个参数一样为搜索的字段名 第二个参数也是关键词，但不同点也在于此，你可以在关键词开头加”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”这四个比较符号，组成的sql语句就类似[字段名][比较符号][搜索关键词]，如我搜一个商品价格小于5的东西就这么写：compare(‘price’,’&lt;5’)，查询相当于这样”price &lt; 5”，它会自动提取开头的比较符号，如果你没写比较符号，那默认的就是”=”等于符号，写成这样compare(‘price’,’5’)就相当于’price=5’这种效果。 第三个参数是开启模糊匹配，默认是false关闭的，开启后，会调用上面的addSearchCondition方法，也就又使用了LIKE。compare(‘price’,’5’,true)即price LIKE %5%，compare(‘price’,’&lt;&gt;5’,true)即price NOT LIKE %5%，如果使用其他比较符号如compare(‘price’,’&lt;=5’,true)、compare(‘price’,’&gt;5’,true)等，使不会增加addSearchCondition的。 第四个参数是条件连接符AND，当然可以设置为其他的。 第五个参数是设置addSearchCondition中第三个条件的，当然你前面的参数要确保能调用addSearchCondition这个方法。 <strong>compare可以这么理解，相当于使用”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”来比较值，启用模糊匹配就使用LIKE方式。</strong>   差不多就是这些吧，如果还有不明白的可以提出，我再讲细一点。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -867,7 +813,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -949,15 +895,6 @@ $subject->setState(5);//被观察者修改状态。
 ?><p>;</p>
 <p>输出结果为： The new value is 5 观察者模式的优点在于，挂接到被观察者上的观察者可多可少，并且不需要提前知道哪个观察者会响应被观察者发出的响应事件。 这种设计模式在很多PHP框架中都被使用到，如Yii等。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1007,7 +944,7 @@ $subject->setState(5);//被观察者修改状态。
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1053,15 +990,6 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
 
 <p>你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input_pwd, sub_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1111,7 +1039,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1144,15 +1072,6 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
 <p>imgReady(‘<a href="http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;" target="_blank" rel="noopener">http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;</a>, function () {<br>    alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>});</p>
 <p>是不是很简单？这样的方式获取摄影级别照片尺寸的速度往往是onload方式的几十多倍，而对于web普通(800×600内)浏览级别的图片能达到秒杀效果。看了这个再回忆一下你见过的web相册，是否绝大部分都可以重构一下呢？好了，请观赏令人愉悦的 DEMO ： <a href="http://www.planeart.cn/demo/imgReady/" target="_blank" rel="noopener">http://www.planeart.cn/demo/imgReady/</a> （通过测试的浏览器：Chrome、Firefox、Safari、Opera、IE6、IE7、IE8）   原文地址：<a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1202,7 +1121,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1248,15 +1167,6 @@ $this->widget('zii.widgets.CMenu',array(
 
 <p>在模板中使用上面的代码，最终会生成以<ul><li></li></ul>构成的菜单列表，针对item中的每一个数组，可以进行以下设置： <strong>label:</strong>菜单显示的文本，可以加html进行修饰，但要将encodeLabel参数值设为false <strong>url:</strong>链接地址，若是字符串，则是基于网站根地址的绝对路径，比如网站地址为veitor.net，字符串url设置为”article”，则最终生成的地址为veitor.net/article，如果设置类型为数组，则效果与createUrl方法一样，比如网址还是veitor.net，设置的数组url为”array(detail/article)”，则最终生成的地址为veitor.net/?r=detail/article，控制器/方法格式的 <strong>visible:</strong>可见，boolean值，当然可以用函数来取值，决定什么情况下隐藏 <strong>active:</strong>正在访问，boolean值，如果是true，会在相应li中加入active样式，上面代码用到$this-&gt;id是个很好用的方法 <strong>items:</strong>定义子目录，array，通过样式可定义收缩排列或者鼠标经过时显示子目录 <strong>template:</strong>模板，模板中用{menu}来代表替换内容，见上代码 <strong>linkOptions:</strong><a>的属性，可定义class,rel,target等属性，见上代码 <strong>itemOptions:</strong><li>的属性，可定义class等属性，见上代码 <strong>submenuOptions:</strong>子栏目的<ul>属性，<li>和<a>属性还是和上面一样分别对item设置 <strong>activeCssClass：</strong>当前选中菜单的css的Class名称 <strong>firstItemCssClass：</strong>第一个菜单按钮的Css的Class名称 <strong>lastItemCssClass：</strong>最后一个菜单按钮的Css的Class名称 当然可以分别为每个Item菜单元素添加指定的Class，即在对应的Item元素上增加itemOptions设置（看上面代码）   这些就是我用CMenu的一些见解，如果你有更好的方法可以一起交流。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 

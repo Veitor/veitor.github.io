@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="问题重现步骤：有两个不同域名的页面a.com&#x2F;a.php和b.com&#x2F;a.php两个域名，其中b.com&#x2F;a.php会在其b.com下设置cookie，a.com&#x2F;a.php页面中通过iframe或script src等方式嵌入b.com&#x2F;a.php页面。保持b.com下的cookie为空，正常chrome等浏览器访问a.com&#x2F;a.php时，嵌入的b.com&#x2F;a.php可以正常对b.com域名下">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.753Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.216Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/an-problem-about-non-cross-domain-in-safari/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,15 +247,6 @@
 <p>我主要是在iphone上进行的测试，后经查也有人反馈在pc上的safari也有这问题，那最后基本可以定位这问题的原因了。<br>试过通过在b.com下设置各种cors header头，加各种P3P header均没有效果。<br>这估计还是因为safari的cookie策略导致的。。最后。。只能根据问题现象，使用很屎的中转办法了，提前在b.com下设置任意一个cookie来确保该域名下至少有cookie，后续才能设置成功。</p>
 <p>查找过的相关文章：<br><a href="https://blog.csdn.net/zhx19920405/article/details/51417250" target="_blank" rel="noopener">https://blog.csdn.net/zhx19920405/article/details/51417250</a><br><a href="https://stackoverflow.com/questions/32713992/safari-does-not-allowed-cross-domain-cookies-in-iframe" target="_blank" rel="noopener">https://stackoverflow.com/questions/32713992/safari-does-not-allowed-cross-domain-cookies-in-iframe</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="Yii框架中的一个生成菜单的小物件。 先上个示例代码： widget(&amp;apos;zii.widgets.CMenu&amp;apos;,array(     &amp;apos;activeCssClass&amp;apos;=&amp;gt;&amp;apos;当前热点元素的样式&amp;apos;,     &amp;apos;firstItemCssClass&amp;apos;=&amp;gt;&amp;apos;第一个元素的样式&amp;apos;,     &amp;apos;lastItemCssClass&amp;apos;=&amp;gt;&amp;apos;最后一个元素的样式&amp;apos;,     &amp;apos;encodeLable&amp;apos;=&amp;gt;&amp;apos;false&amp;apos;,">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.761Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/yii-zii-widgets-cmenu-e4-bd-bf-e7-94-a8-e6-96-b9-e6-b3-95/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,15 +261,6 @@ $this->widget('zii.widgets.CMenu',array(
 
 <p>在模板中使用上面的代码，最终会生成以<ul><li></li></ul>构成的菜单列表，针对item中的每一个数组，可以进行以下设置： <strong>label:</strong>菜单显示的文本，可以加html进行修饰，但要将encodeLabel参数值设为false <strong>url:</strong>链接地址，若是字符串，则是基于网站根地址的绝对路径，比如网站地址为veitor.net，字符串url设置为”article”，则最终生成的地址为veitor.net/article，如果设置类型为数组，则效果与createUrl方法一样，比如网址还是veitor.net，设置的数组url为”array(detail/article)”，则最终生成的地址为veitor.net/?r=detail/article，控制器/方法格式的 <strong>visible:</strong>可见，boolean值，当然可以用函数来取值，决定什么情况下隐藏 <strong>active:</strong>正在访问，boolean值，如果是true，会在相应li中加入active样式，上面代码用到$this-&gt;id是个很好用的方法 <strong>items:</strong>定义子目录，array，通过样式可定义收缩排列或者鼠标经过时显示子目录 <strong>template:</strong>模板，模板中用{menu}来代表替换内容，见上代码 <strong>linkOptions:</strong><a>的属性，可定义class,rel,target等属性，见上代码 <strong>itemOptions:</strong><li>的属性，可定义class等属性，见上代码 <strong>submenuOptions:</strong>子栏目的<ul>属性，<li>和<a>属性还是和上面一样分别对item设置 <strong>activeCssClass：</strong>当前选中菜单的css的Class名称 <strong>firstItemCssClass：</strong>第一个菜单按钮的Css的Class名称 <strong>lastItemCssClass：</strong>最后一个菜单按钮的Css的Class名称 当然可以分别为每个Item菜单元素添加指定的Class，即在对应的Item元素上增加itemOptions设置（看上面代码）   这些就是我用CMenu的一些见解，如果你有更好的方法可以一起交流。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

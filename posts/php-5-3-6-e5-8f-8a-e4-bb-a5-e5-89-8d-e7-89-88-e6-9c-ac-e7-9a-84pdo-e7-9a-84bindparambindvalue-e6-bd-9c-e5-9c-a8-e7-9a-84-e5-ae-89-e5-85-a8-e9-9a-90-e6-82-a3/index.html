@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&amp;gt;bindParam(1, $string); $statement-&amp;gt;bindParam(2, $int, PDO::PARAM_INT); 我">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/php-5-3-6-e5-8f-8a-e4-bb-a5-e5-89-8d-e7-89-88-e6-9c-ac-e7-9a-84pdo-e7-9a-84bindparambindvalue-e6-bd-9c-e5-9c-a8-e7-9a-84-e5-ae-89-e5-85-a8-e9-9a-90-e6-82-a3/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -242,15 +242,6 @@
       
         <p>PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&gt;bindParam(1, $string); $statement-&gt;bindParam(2, $int, PDO::PARAM_INT); 我在以前的文章中分析介绍过PDO的ATTR_EMULATE_PREPARES属性对PDO底层协议与MySQL Server通讯机制影响： 1. 默认情况下，PDO会使用DSN中指定的字符集对输入参数进行本地转义（PHP手册中称为native prepared statements），然后拼接成完整的SQL语句，发送给MySQL Server。这有些像我们平时程序中拼接变量到SQL再执行查询的形式。 这种情况下，PDO驱动能否正确转义输入参数，是拦截SQL注入的关键。然而PHP 5.3.6及老版本，并不支持在DSN中定义charset属性（会忽略之），这时如果使用PDO的本地转义，仍然可能导致SQL注入，解决办法后面会提到。 2. MySQL Server 5.1开始支持prepare预编译SQL机制，即SQL查询语句与参数分离提交，但这个特性需要客户端协议支持支持，目前所有版本的PHP均支持。 如果PDO客户端使用mysql Server的prepare功能，大致的交互过程是： A. PDO将SQL模板发送给mysql server， SQL模板即包含参数占位符（问号或命名参数）的SQL语句 B. PDO不对输入参数作任何转义处理，将参数的位置，值，类型等等信息发送给MySQL Server C. PDO客户端调用execute statement D. MySQL Server 对B步骤提交的参数进行内部转义，并执行查询,返回结果给客户端。 看到没有，如果使用了mysql server prepare功能，则字符串的转义是由MySQL Server完成的。mysql会根据字符集（set names <charset>）对输入参数转换，确保没有注入产生。   PDO默认情况下使用了本地模拟prepare（并未使用MySQL server的prepare）,如果要禁止PDO本地模拟行为而使用MySQL Server的prepare机制，则需要设置PDO的参数： $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false); 如果你使用了PHP 5.3.6及以前版本，强烈推荐使用上述语句加强安全性。 如果你使用PHP 5.3.6+, 则请在DSN中指定 charset，是否设置上述参数，都是安全的。   好了，现在步入正题，假设有以下代码逻辑：   $pdo = new PDO(“mysql:host=localhost;dbname=test;charset=utf8”,’root’,’’); $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION); $pdo-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC); $pdo-&gt;exec(‘set names utf8’); $id = ‘0 or 1 =1 order by id desc’; $sql = “select * from article where id = ?”; $statement = $pdo-&gt;prepare($sql); $statement-&gt;bindParam(1, $id, PDO::PARAM_INT); $statement-&gt;execute(); 假设$id是外部变量（由其它函数传递，或用户提交），我们也没有使用intval对这两个参数进行强制类型转换（我们认为使用PDO绑定参数时已经指定参数类型为INT, 即PDO::PARAM_INT），期待PDO能使用我们指定的类型对其进行转义，但是事实上呢？却有太多不确定因素： 1. 以上代码实测在PHP 5.2.1造成了SQL注入 2. 以上代码在PHP 5.3.9下，没有造成任何SQL注入 那么，如果使用了存在bug的PHP版本，那么如何从根本上解决这个问题？ 1. 设置PDO不使用本地模拟prepare, 即 $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false);   这样，即使不使用intval对输入进行转换，也可以确保是安全的。如果由于程序员遗忘没有使用intval转换，那么还是存在安全隐患的。   使用这种方式，更彻底，更安全。 原文地址：<a href="http://zhangxugg-163-com.iteye.com/blog/1855088" target="_blank" rel="noopener">http://zhangxugg-163-com.iteye.com/blog/1855088</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

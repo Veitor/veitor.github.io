@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,15 +246,6 @@
 <p>public function renderPartial($view,$data=null,$return=false,$processOutput=false)<br>    {<br>        if(($viewFile=$this-&gt;getViewFile($view))!==false)<br>        {<br>            $output=$this-&gt;renderFile($viewFile,$data,true);<br>            if($processOutput)<br>                $output=$this-&gt;processOutput($output);<br>            if($return)<br>                return $output;<br>            else<br>                echo $output;<br>        }<br>        else<br>            throw new CException(Yii::t(‘yii’,’{controller} cannot find the requested view “{view}”.’,<br>                array(‘{controller}’=&gt;get_class($this), ‘{view}’=&gt;$view)));<br>    }</p>
 <p>这个方法是$view为模板文件名（不带后缀，后缀通过配置指定），$data是一个关联数组，它将被extract函数提取成供模板中使用的PHP变量。这个方法与render区别在于，该方法渲染视图时，不会渲染布局也不会加载Yii内置的js\css，而render会一起渲染布局文件和脚本。 其中的getViewFile方法是根据模板名寻找木板文件的方法，如果在main配置文件中指定了主题，那么确定的一个模板将被找到。否则的话将按一下规则寻找： 模块内的视图：直接指定模板文件路径，以单个斜线“\”开始的路径。 应用内的视图：直接指定模板文件路径，以双斜线“\\”开始的路径。 别名路径：以点分割的路径。别名路径alias以后会讲，其实在初始化应用的时候定义了一些路径别名。 这里只需了解getViewFile是寻找模板地址和extract变量即可，接着讲renderPartial，找到模板后继续执行。接着要执行到判断第四个参数processOutput，该函数主要是用于是否加载Yii内置js\css，即上面刚才说的render和renderPartial区别之一，在render中该参数为true即加载，在renderPartial中反之。 然后接着执行到getLayoutFile，刚才是获取了不带布局视图，相当于只执行了renderPartial方法，这里再获取布局文件。getLayoutFile是查找布局模板文件，查找方法和上面的查找模板文件类似。通过在控制器中设置layout变量，加载应用内的布局文件的话设置路径只要以双斜线“\\”开头即可，加载模块内的布局路径以单个斜线“\”开头，另外还有别名路径同样可以设置。 找到布局文件之后，依然使用renderFile方法渲染布局文件，将之前渲染的试图文件插入到布局文件中。 接着执行afterRender方法，也不需要太多解释了，当然是执行渲染之后的一些工作，可以自己定义。 再执行processOutput，因为render是默认加载js\css的，所以这里不需要判断了。 最后再根据render第三个参数判断是否要直接输出，如果为false的话，就是直接看到的页面了，为true只将html代码返回。     render的方法基本就是这样了，主要还是在renderPartial里处理过程比较多。如果有疑问，可以在下面留言给我，一起探讨。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -304,7 +295,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -331,15 +322,6 @@
       
           <p><strong>大部分人想去做Web编程的原因是，他们不够聪明，因此也做不了别的事。</strong>他们不懂编译器、并发性、3D或类继承。他们根本不明白我为什么要使用接口或者抽象类。他们不理解虚函数、指针、引用、垃圾回收、终结器、传引用与传值的区别、C++的虚拟析构函数、或者C#的结构体与类之间的差别。他们对进程也一无所知。更别提瀑布、螺旋、敏捷了！他们从来没看过需求文档，也从来没写过设计文档；他们从没画过一张UML图，甚至听都没听说过有“顺序图”这种东西。 　　不过，他们确实有些手段：他们知道怎样匆匆拼凑一个ASP.NET网页，向数据库发一些（写得很糟糕的）SQL指令，填上一个数据集，然后用网格控件展示出来。他们也就会这些了吧。而且，他们在弄明白这些东西的时候，很可能也没费多长时间。 　　因此，请恕我冒犯——我才不想当Web程序员呢！我有两个理由。第一，那对我太没有挑战性了。第二，因为绝大多数互联网公司的工程师都很糟糕，更准确地说，因为你不必去琢磨深奥的东西就能成为一个Web开发者。在我看来，互联网正让我们变得越来越弱智。拼凑出一个网页真的不需要你有那么聪明。 　　我真心希望大家都错了，希望不必所有的东西都“转向Web”。因为如果真这样的话，将来的某一天，我要么会不情愿地接受这种无聊的转变，要么只能换一个职业了。 Web开发没有挑战性，所以吸引了不够格的软件开发者？让我们姑且不讨论这种荒谬的观点。即使过去真是这样，如今的情况也已经不同了。 我其实不想在Michael面前扮演“坏人”，告诉他这个坏消息：对于越来越多的用户来说，桌面应用软件已经完蛋了。几年来，大部分桌面应用软件都被Web应用代替了。随着网络浏览器进化得越来越强大和健壮，每天都有更多的桌面应用被取代。 你希望不必所有的东西都“转向Web”？醒醒吧！这已经发生了！ 任何学习计算机历史的学生都可以告诉你，Web应用成为主流正是“最不强大原则”（<a href="http://blog.codinghorror.com/the-principle-of-least-power/" target="_blank" rel="noopener">The Principle of Least Power</a>）所预示的： 　计算机科学界过去花了40年的时间，致力于让语言尽可能地强大。时至今日，我们必须感激那些让我们选择不是最强大的解决方案（而选择最不强大的方案）的原因。计算机语言越不强大，你对用那种语言存储的数据能做的事情就越多。如果你以一种简单的陈述形式来书写，任何人都可以写一个程序去分析它。比方说，一个呈现天气信息的网页使用RDF（译者注：资源描述框架，一种用于描述Web资源的标记语言）来描述数据，用户可以把它装进一个表格，也许再做一下平均计算，绘制图表，然后结合其他信息做出某种推断。另一种极端的做法是，天气信息通过巧妙的Java小程序描绘出来。尽管这种方式可能做出很酷的用户界面，但它完全不能被分析。找到这个页面的搜索引擎将无法判断那是什么数据或者那些数据有什么用。要想知道一个Java小程序是做什么的，唯一的办法是亲眼目睹它运行起来。 互联网恰恰是做最简单（或者说最傻）而靠谱之事的具体表现。如果这吓到了你（让你感到不安了），那么我要小声地告诉你，你没有理由成为一名程序员。 所有应用都应该成为Web应用吗？当然不是。总有一些重要的例外，有些种类的软件跟网络也毫无关系。但是，这些是少数情况，是一些特殊应用。它们固然是重要的小生态环境，但不管怎么说，就只是“小生态”。 如果你希望尽可能多的用户来使用你的软件，绝没有比把它做成Web应用更好的方法了。对于现存软件来说，互联网是最高效、最普遍、最直接的分发网络。任何用户只要能连上网，有一个浏览器，不管他身处世界的任何一个角落，只须点两下鼠标就能与你写的软件开始交互了。哪怕是最蹩脚的Web应用，它的受众面和传播度都是令人震惊的；而且还在每天扩大着……我也曾因此杜撰了“<a href="http://baike.baidu.com/view/10384969.htm" target="_blank" rel="noopener">阿特伍德定律</a>”：<strong>任何可以用JavaScript来写的应用，最终都将用JavaScript来写。</strong> 从工程的角度来看，用JavaScript来写Photoshop、Word或Excel毫无意义。但是，这是不可避免的。这事会发生的。实际上，这事已经在发生了。环顾一下你的四周吧。 作为一名软件开发者，最让我开心的是编写有人使用的软件。如果你的软件委身于一个二进制的EXE文件，它必须被购买、授权、运送、下载、安装、维护和升级，你的技艺又有什么意义呢？考虑到程序员与用户之间的所有这些传统障碍，软件行业居然还能生存下来，这真是一个奇迹！然而，在华丽而崭新的Web应用世界里，那些制约已经不复存在。边界没有了。软件可以无处不在！ Web编程还远远没有达到完美的境地。其实，还有点乱！没错，随便会写点代码的人就能三下两下地搞出一个糟糕的Web应用；也确实，99%的Web应用都似狗屎一堆。但是，这也意味着，相当“聪明”的程序员们正在将他们的成果展现在成百上千（或者成千上万，甚至几百万）的用户面前，而这在互联网盛行之前是绝无可能的。在我看来，让代码遭受冷落、让它们就此孤独终老，没什么比这更让人感到悲哀的了！把软件按照Web应用的形式重整一下，即使软件本身并不怎么样，这也使得程序员们能够把他们的软件展现在某个地方的某人面前。 如果受众面和技艺方面的观点不足以说服你，那就从商业的角度来考虑一下吧。<a href="http://www.skrenta.com/2007/07/fletchers_angry_list_of_startu.html" target="_blank" rel="noopener">Mark Fletcher曾经给出过一份创业规则</a>，其中就有这么一条： 　你在做一个Web应用，对吧？这不是20世纪80年代了！纵然你的竞争对手把（桌面）应用软件做得别致优雅，你那简陋而寒酸的Web应用也仍然会比它更加成功。 要不了多久，所有编程都将是Web编程。对于普通的在职程序员来说，如果你不认为这是一个值得庆贺的理由，你也许应该转行了。 原文地址：<a href="http://blog.codinghorror.com/all-programming-is-web-programming/" target="_blank" rel="noopener">http://blog.codinghorror.com/all-programming-is-web-programming/</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -389,7 +371,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -418,15 +400,6 @@
 <hr>
 <p>  当然，从不同角度看，可能理解也有偏差。主要还是集群的概念比较重要。我个人认为集群除了实现高可用性，还有高并发和高性能。这可能要涉及负载均衡了，比如访问一个网站的一个业务，对应的有一个集群，前面放着相应服务器，后面几台服务器负责处理这个业务，当有业务访问的时候，相应服务器会根据哪台服务器负载情况，将业务交给负载不是很重的服务器去完成</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -476,7 +449,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -503,15 +476,6 @@
       
           <p>先明确我所指的<strong>PHP</strong>工程师，是指毕业工作后，主要以PHP进行WEB系统的开发，没有使用其他语言工作过。工作经验大概在3<del>4年，普通的WEB系统（百万级访问，千成级数据以内或业务逻辑不是特别复杂）开发起基本得心应手，没有什么问题。但他们会这样的物点： 除了PHP不使用其它的语言,可能会点shell 脚本。 对PHP的掌握不精（很多PHP手册都没有看完,库除外） 知识面比较窄（面对需求，除开使用PHP和mysql ，不知道其它的解决办法） PHP代码以过程为主，认为面向对象的实现太绕，看不懂 这些PHPer 在遇到需要高性能，处理高并发，大量数据的项目或业务逻辑比较复杂（系统需要解决多领域业务的问题）时，缺少思路。不能分析问题的本质，技术判断力比较差，对于问题较快能找出临时的解决办法，但常常在不断临时性的解决办法中，系统和自己一步步走向崩溃。那怎么提高自己呢？怎么可以挑战难度更高的系统？ <strong>更高的挑战在那里？</strong> 结合我自己的经验，我列出一些具体挑战，让大家先有个感性的认识。 <strong>高性能系统的挑战在哪里？</strong> 如何选择WEB服务器？要不要使用fast-cgi 模式 要不要使用反向代理服务？选择全内存缓存还是硬盘缓存？ 是否需要负载均衡？是基于应用层，还是网络层？ 如何保证高可靠性？ 你的PHP代码性能如何，使用优化工具后怎么样？ 性能瓶颈在那里？ 是否需要写成C的扩展？ 用户访问有什么特点,是读多还是写多？是否需要读写分离？ 数据如何存储？写入速度和读出速度如何？ 数据增涨访问速读如何变化？ 如何使用缓存？ 怎么样考虑失效？数据的一致性怎么保证？ <strong>高复杂性系统的挑战在哪里？</strong> 能否识别业务所对应的领域？是一个还是多个？ 能否合理对业务进行抽象，在业务规则变化能以很小的代价实现？ 数据的一致性、安全性可否保证？ 是否撑握了面向对象的分析和设计的方法 当我所列出的问题，你都能肯定的回答，我想在技术上你基本已经可能成为架构师了。如何你还不能回答，你需要在以下几个方向加强。 <strong>怎么样提高，突破瓶颈</strong> 如何你还不能回答，你需要在以下几个方向加强： 分析你所使用的技术其原理和背后运行的机制，这样可以提高你的技术判断力，提高你技术方案选择的正确性; 学习大学期间重要的知识, 操作系统原理，数据结构和算法。知道你以前学习都是为了考试，但现在你需要为自己学习，让自己知其所以然。 重新开始学习C语言，虽然你在大学已经学过。这不仅是因为你可能需要写PHP扩展，而且还因为，在做C的应用中，有一个时刻关心性能、内存控制、变量生命周期、数据结构和算法的环境。 学习面向对象的分析与设计，它是解决复杂问题的有效的方法。学习抽象，它是解决复杂问题的唯一之道。 “这么多的东西怎么学，这得学多久呀” ？ 如果你努力的话，有较好的规划，估计需要1</del>2年的时间，怎么学习的问题，我们后续再谈。 （注：下面是原文作者左文建分享的学习方法） <strong>学习建议</strong> 如何有效的学习是一个大问题。 自己有些实践但很零散，不好总结。昨天晚上睡觉前，突然想到了RUP的核心，“以架构为中心，用例驱动，迭代开发”，借用这个思想，关于有效的学习的方法，可以这样来表述: 以原理、模型或机制为中心，任务驱动，迭代学习 有点抽象， 举个例子来说明如何学习。 目的： 学习如何提高处理性能。 可迭代驱动的任务： 通过IP找到所在地域。 这是WEB应用常见的任务，IP数据库是10左右万行的记录。 <strong>第一次迭代： 不考虑性能的情况下实现功能（通过PHP来实现）</strong> 因为无法直接通过KEY(IP)进行查找地域，所以直接放到数据或通过关联数组这种简单的方法都是不行的。思路还是先把数据进行排序，然后再进行查找 1. 如何通过IP查找？ 已序的数据，二分查找是最快的。 2. 如何排序？用库函数sort当然 是可以，但是即然是学习，那还是自己实现快速排序吧。 学习目标： 排序算法，查找算法 PHPer 数据结构和算法基础比较差，平时也没有这方面的任务，自己也不学习，因此这方面的知识很缺乏。但是，编程解决的问题，最终都会归结到数据结构和对这种数据结构操作的算法。如果数据结构算法常在心中，那遇到问题就能清晰认识到它内在的结构，解决方法就会自然产生。 <strong>第二次迭代：优化数据的加载与排序</strong> 如果做到第一步，那基本上还是不可用，因为数据每次都需要的加载和排序，这样太耗时间。 解决的思路是，数据一次加载排序后，放到每个PHP进程能访问到的地方。 放到memcache 这是大家容易想到问题。其实放到共享内存(EA等加速器都支持)中是更快的方式，因为memcache还多了网络操作。 数据是整体放入到共享内存，还是分块放入，如何测试性能? 如何分析瓶颈所在(xdebug)? 在这些问题的驱动下你会学习到 学习目标： 检测、定位、优化PHP性能的方法; PHP实现结构对性能的影响。 <strong>第三次迭代： 编写PHP的扩展</strong> 性能还是上不去，不得不进入C/C++的世界了，不过从此你将不只是PHPer 而服务端的全能型工程师，当然这对没有做过C/C++的同学挑战是巨大的。 我这里无法再简单来说如何学习C/C++ ，可以参看 《PHP程序员学习C++》 学习目标：C/C++的学习，PHP扩展的编写 怎么确定需要学习的机制和原理呢？ 怎么找到驱动学习任务呢？ 我对需要学习的东西，都没有什么概念，怎么回答以上的两个问题？ 从这个技术的定位来找出需要学习的重点，即它怎么做到(机制）的和它为什么能这样做到 （模型或原理） 列出这个技术最常见的应用，做为学习的任务，从简到难进行实践。 假如我需要学习Javascript ，我对于HTML，CSS有点感性认识 首要我了解到，JS 是WEB领域的动态语言，主要解决网页的动态交互的。 那我要学习的要点如下： JS如何与HTML 进行交互 （机制） JS的动态特性在那里，与其它动态语言有何区别？（语言模型） 如果完全自学，找到需要学习的要点（机制、模型、原理） 设定学习任务的确不是那么容易把握。如果找到一个有经验的人来指导你或加一个学习型的团队，那学习的速度的确会大大提高。 最后，我想说的是： PHP因为简单而使用，但不能因为它的简单而限制我们成长！</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -561,7 +525,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -620,15 +584,6 @@ echo "<br>";
 <p>E:\project\test1.php<br>E:/project/index.php<br>E:/project/index.php<br>E:\project\test\test2.php<br>E:/project/index.php<br>E:/project/index.php<br>E:\project\index.php<br>E:/project/index.php<br>E:/projectt/index.php</p>
 <p>你会发现结果第5行有个不同处，该行就是输出的__FILE__，并且代码是在子目录test中test2.php文件里的。也就是说明__FILE__写在哪个文件里，输出结果就是显示哪个文件。而其他两个全局变量$_SERVER输出的结果都是最终包含的文件，在这个示例中也就是index.php文件（如果不明白这句话意思，看前面红色的文字，意思就是和它相反的）。 如果对本文有疑问，欢迎留言，一起探讨。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -678,7 +633,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -714,15 +669,6 @@ echo "<br>";
 </li>
 </ol>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -772,7 +718,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -805,15 +751,6 @@ echo "<br>";
 <h2 id="2-2-分类"><a href="#2-2-分类" class="headerlink" title=" 2.2 分类"></a> 2.2 分类</h2><p>根据进程与线程的设置，操作系统大致分为如下类型： (1) 单进程、单线程，MS-DOS大致是这种操作系统； (2) 多进程、单线程，多数UNIX(及类UNIX的LINUX)是这种操作系统； (3) 多进程、多线程，Win32(Windows NT/2000/XP等)、Solaris 2.x和OS/2都是这种操作系统； (4) 单进程、多线程，VxWorks是这种操作系统。</p>
 <h2 id="2-3-引入线程带来的主要好处："><a href="#2-3-引入线程带来的主要好处：" class="headerlink" title="2.3 引入线程带来的主要好处："></a>2.3 引入线程带来的主要好处：</h2><p>(1) 在进程内创建、终止线程比创建、终止进程要快； (2) 同一进程内的线程间切换比进程间的切换要快,尤其是用户级线程间的切换。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -863,7 +800,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -890,15 +827,6 @@ echo "<br>";
       
           <p>在SNS的网站中，最核心的功能就是Feed功能，Feed就是一条twitter或一条好友动态。该功能面临的挑战是：每天产生成千上万条数据，数据推送的需要实时性等，做网站其实最大的难点就是对海量数据和高并发的处理。本人通过对Twitter和新浪微博架构的一些资料的学习，大致了解了如何实现一个Feed功能。一个Feed功能往往有多种实现方式，最常见的是这3种：推模式、拉模式、推拉结合模式。 <strong>推模式：</strong> 推就是把自己的发的feed推送到每个粉丝那里，就是一条feed在数据库中存储多份，做法就将feed表按userId分库，对应粉丝Id的库中插一条记录。这种做法的缺点就是数据量大，数据冗余太严重，如一个明星用户有1000万粉丝，那么他发一条feed,就要产生1000万条记录。Feed的推送需要异步队列，队列的好处就是降并发，推送是需要时间的，所以一个明星发了一条feed后，当最后那个粉丝看到这条feed可能已经是几分钟后的事情了。这种模式的优点是用户查看Feed就很容易了，根据userId查询就可以了。这种做法是牺牲大量储存空间来换取网站的查看性能。 <strong>拉模式：</strong> 拉就是用户要查看动态时就去每个关注者那边找，然后聚合并展现。Feed数据只储存一份，省了很多空间。这种模式在用户量较小的网站就很容易实现，展示只要一条SQL语句。但是当用户多了以后就会遇到问题，比如我关注了2000个用户，而这2000个用户都是活跃用户，每天都会产生很多feed。我查看 feed时就要去2000个关注者那里找最新的几条，合并和按时间排序，每次查看一条查询语句就快把数据库搞得累死，而且合并和排序这些feed计算量太大。拉模式在用户关注人数很多的网站不太适合。 <strong>推拉结合：</strong> 顾名思义就是两种模式的结合，将两者的优点结合。不活跃的用户（偶偶上线，关注人数又少的僵死用户等）推送的时候就不要推送给他们，省点资源，当他们上线查看时就直接拉，因为他们关注的人比较少，拉也不是很耗性能。 最后，不管采用什么方法实现，少不了异步队列，nosql等工具。比如发表feed的时候就往队列里一扔，前端马上返回，异步慢慢处理，而用户一点也察觉不出来。Nosql缓存，比如一些计数（关注数、粉丝数神马的）直接用redis、TT等储存，还有feed列表可以存储在memcached或redis 中，redis的list功能很适合这种情形，但是一些大网站还不敢这么做。 以上借鉴于新浪微博架构PPT。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -948,7 +876,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1005,15 +933,6 @@ echo "<br>";
 <p>解决方法三：</p>
 <p>function eventListener(list, index){<br>    list.onmouseover = function(){<br>        alert(index);<br>    };<br>}<br>var lists = document.getElementsByTagName(‘li’);<br>for(var i = 0 , len = lists.length ; i &lt; len ; i++){<br>    eventListener(lists[ i ] , i);<br>}</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 
@@ -1063,7 +982,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1090,15 +1009,6 @@ echo "<br>";
       
           <p><strong>phper刚入门的思考以下问题</strong>： 修改过别人的开源代码没？ oop熟悉吗，class自省ok？ mvc知道吗？设计过吗？ framework你知道几个？代码研究过没？ js库用过几个？ sql掌握得怎样了？ <strong>phper 一两年的思考以下问题：</strong> php安全你研究透了？ 分布式应用你懂吗？ 缓存你懂得多少？ soap你也用过了？ unix，linux系统你能拿几分，简单shell你也ok了？ mysql你真懂了吗？ sql优化你也在行了？ js你写吗？水平怎样了？………… <strong>3年以上的：</strong> c语言懂吗？ php 内核研究过没？ 写php拓展没问题吗？ webservice ok吗？ 你有带队的能力吗？…………</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
       
     </div>
 

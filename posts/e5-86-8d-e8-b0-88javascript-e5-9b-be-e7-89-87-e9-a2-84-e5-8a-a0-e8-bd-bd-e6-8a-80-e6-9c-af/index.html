@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="lightbox类效果为了让图片居中显示而使用预加载，需要等待完全加载完毕才能显示，体验不佳（如filick相册的全屏效果）。javascript无法获取img文件头数据，真的是这样吗？本文通过一个巧妙的方法让javascript获取它。 这是大部分人使用预加载获取图片大小的例子： var imgLoad = function (url, callback) {    var img = new">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.216Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/e5-86-8d-e8-b0-88javascript-e5-9b-be-e7-89-87-e9-a2-84-e5-8a-a0-e8-bd-bd-e6-8a-80-e6-9c-af/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,15 +248,6 @@
 <p>imgReady(‘<a href="http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;" target="_blank" rel="noopener">http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;</a>, function () {<br>    alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>});</p>
 <p>是不是很简单？这样的方式获取摄影级别照片尺寸的速度往往是onload方式的几十多倍，而对于web普通(800×600内)浏览级别的图片能达到秒杀效果。看了这个再回忆一下你见过的web相册，是否绝大部分都可以重构一下呢？好了，请观赏令人愉悦的 DEMO ： <a href="http://www.planeart.cn/demo/imgReady/" target="_blank" rel="noopener">http://www.planeart.cn/demo/imgReady/</a> （通过测试的浏览器：Chrome、Firefox、Safari、Opera、IE6、IE7、IE8）   原文地址：<a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a></p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

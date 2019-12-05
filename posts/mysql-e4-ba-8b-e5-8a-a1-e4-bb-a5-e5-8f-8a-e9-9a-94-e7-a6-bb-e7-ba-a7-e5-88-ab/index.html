@@ -58,7 +58,7 @@
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;09&#x2F;15150645_d6yw1.jpg">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;09&#x2F;15150645_d6yw2.jpg">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;09&#x2F;15150645_d6yw3.jpg">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;09&#x2F;15150645_B8Se.jpg">
 
@@ -222,7 +222,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,15 +263,6 @@
 <h2 id="第二类丢失更新"><a href="#第二类丢失更新" class="headerlink" title="第二类丢失更新"></a>第二类丢失更新</h2><p>A事务覆盖B事务已经提交的数据，造成B事务所做操作丢失： <a href="http://storage.veitor.net/uploads/2014/09/15150645_d6yw2.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/09/15150645_d6yw2.jpg" alt="15150645_d6yw"></a>   上面的例子里由于支票转账事务覆盖了取款事务对存款余额所做的更新，导致银行最后损失了100元，相反如果转账事务先提交，那么用户账户将损失100元。</p>
 <h1 id="四种隔离级别"><a href="#四种隔离级别" class="headerlink" title="四种隔离级别"></a>四种隔离级别</h1><p>尽管数据库为用户提供了锁的DML操作方式，但直接使用锁管理是非常麻烦的，因此数据库为用户提供了自动锁机制。只要用户指定会话的事务隔离级别，数据库就会分析事务中的SQL语句，然后自动为事务操作的数据资源添加上适合的锁。此外数据库还会维护这些锁，当一个资源上的锁数目太多时，自动进行锁升级以提高系统的运行性能，而这一过程对用户来说完全是透明的。 ANSI/ISO SQL 92标准定义了4个等级的事务隔离级别： <a href="http://storage.veitor.net/uploads/2014/09/15150645_d6yw3.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/09/15150645_d6yw3.jpg" alt="15150645_d6yw"></a>   事务的隔离级别和数据库并发性是对立的，两者此增彼长。一般来说，使用READ UNCOMMITED隔离级别的数据库拥有最高的并发性和吞吐量，而使用SERIALIZABLE隔离级别的数据库并发性最低。 Mysql的默认隔离级别时Repeatable Read，即可重复读。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

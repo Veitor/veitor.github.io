@@ -54,7 +54,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;08&#x2F;1392117921664.jpg">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;08&#x2F;QQ%E6%88%AA%E5%9B%BE20140818215404.jpg">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.761Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;08&#x2F;1392117921664.jpg">
 
@@ -218,7 +218,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -301,15 +301,6 @@
 <p>function post_to_sina_weibo($post_ID) {<br>  if( wp_is_post_revision($post_ID) ) return;<br>    $get_post_info = get_post($post_ID);<br>    //发布的文章内容，带所有标签格式<br>    $get_post_centent = get_post($post_ID)-&gt;post_content;<br>    //用正则表达式抠图<br>    preg_match_all(‘/&lt;img.<em>?(?: |\\t|\\r|\\n)?src=[\‘“]?(.+?)[\‘“]?(?:(?: |\\t|\\r|\\n)+.</em>?)?&gt;/sim’, $get_post_centent, $strResult, PREG_PATTERN_ORDER);<br>   if(count($strResult[1]) &gt; 0)<br>        $imgUrl = $strResult[1][0];//获得第一张图url地址<br>   else<br>        $imgUrl = null;<br>    //去掉文章内的html编码的空格、换行、tab等符号<br>    $get_post_centent = str_replace(“\t”, “ “, str_replace(“\n”, “ “, str_replace(“&nbsp;”, “ “, $get_post_centent)));<br>    //获取文章标题<br>    $get_post_title = get_post($post_ID)-&gt;post_title;<br>    if ( $get_post_info-&gt;post_status == ‘publish’ &amp;&amp; $_POST[‘original_post_status’] != ‘publish’ ) {<br>    //使用wordpress内置request请求类，在wp_includes/wp_http.php里<br>    $request = new WP_Http;<br>    //微博文字，格式为“【文章标题】文章摘要132字，全文地址：XXXX”<br>    $status = ‘【’ . strip_tags( $get_post_title ) . ‘】 ‘ . mb_strimwidth(strip_tags( apply_filters(‘the_content’, $get_post_centent)),0, 132,’…’) . ‘ 全文地址:’ . get_permalink($post_ID) ;<br>    //如果没图片则请求这个api<br>    $api_url = ‘<a href="https://api.weibo.com/2/statuses/update.json&#39;" target="_blank" rel="noopener">https://api.weibo.com/2/statuses/update.json&#39;</a>;<br>    //body内容，source参数为你的appkey，详情见wordpress的WP_http类<br>    $body = array( ‘status’ =&gt; $status, ‘source’=&gt;’706960568’);<br>    //请将xxxxxxxxx替换成你的，xxxxxxxxxx为“用户名：密码”的base64编码<br>    $headers = array( ‘Authorization’ =&gt; ‘Basic ‘ . ‘xxxxxxxxxxxxxxxx’ );<br>    //重要步骤，如果文章有图片则构造发送数据包<br>    if($imgUrl!==null)<br>    {<br>        $body[‘pic’] = $imgUrl;<br>        uksort($body, ‘strcmp’);<br>        $str_b=uniqid(‘——————‘);<br>        $str_m=’–’.$str_b;<br>        $str_e=$str_m. ‘–’;<br>        $tmpbody=’’;<br>        //对参数遍历，进行构造内容，仔细阅读，你会发现和上面讲的类似<br>        foreach($body as $k=&gt;$v){<br>            if($k==’pic’){<br>                $img_c=file_get_contents($imgUrl);<br>                $url_a=explode(‘?’, basename($imgUrl));<br>                $img_n=$url_a[0];<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.’”; filename=”‘.$img_n.’”‘.”\r\n”;<br>                $tmpbody.=”Content-Type: image/unknown\r\n\r\n”;<br>                $tmpbody.=$img_c.”\r\n”;<br>            }else{<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.”\“\r\n\r\n”;<br>                $tmpbody.=$v.”\r\n”;<br>            }<br>        }<br>        $tmpbody.=$str_e;<br>        $body = $tmpbody;<br>        //图片处理结束，使用uploade API<br>        $api_url = ‘<a href="https://upload.api.weibo.com/2/statuses/upload.json&#39;" target="_blank" rel="noopener">https://upload.api.weibo.com/2/statuses/upload.json&#39;</a>;<br>        //设置Content-Type编码为multipart/form-data<br>        $headers[‘Content-Type’] = ‘multipart/form-data; boundary=’.$str_b;<br>    }<br>    //请求接口发送数据，详见wordpress自带的WP_http类<br>    $result = $request-&gt;post( $api_url , array( ‘body’ =&gt; $body, ‘headers’ =&gt; $headers ) );<br>}<br>//最后将这个函数挂到pulish_post钩子上，发表文章后就会触发这个函数<br>add_action(‘publish_post’, ‘post_to_sina_weibo’, 0);</p>
 <p>  这段代码理论上来说你可以拿去直接用了，只需按注释上说的修改几个参数为自己的就行了。 这也是我研究琢磨出来的，有任何疑问可以一起探讨。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="一起了解一下render方法的工作原理，先看render代码： public function render($view,$data=null,$return=false)    {        if($this-&amp;gt;beforeRender($view))        {            $output=$this-&amp;gt;renderPartial($view,$data,tru">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.761Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/yii-render-e6-b8-b2-e6-9f-93-e8-a7-86-e5-9b-be-e5-88-86-e6-9e-90/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,15 +248,6 @@
 <p>public function renderPartial($view,$data=null,$return=false,$processOutput=false)<br>    {<br>        if(($viewFile=$this-&gt;getViewFile($view))!==false)<br>        {<br>            $output=$this-&gt;renderFile($viewFile,$data,true);<br>            if($processOutput)<br>                $output=$this-&gt;processOutput($output);<br>            if($return)<br>                return $output;<br>            else<br>                echo $output;<br>        }<br>        else<br>            throw new CException(Yii::t(‘yii’,’{controller} cannot find the requested view “{view}”.’,<br>                array(‘{controller}’=&gt;get_class($this), ‘{view}’=&gt;$view)));<br>    }</p>
 <p>这个方法是$view为模板文件名（不带后缀，后缀通过配置指定），$data是一个关联数组，它将被extract函数提取成供模板中使用的PHP变量。这个方法与render区别在于，该方法渲染视图时，不会渲染布局也不会加载Yii内置的js\css，而render会一起渲染布局文件和脚本。 其中的getViewFile方法是根据模板名寻找木板文件的方法，如果在main配置文件中指定了主题，那么确定的一个模板将被找到。否则的话将按一下规则寻找： 模块内的视图：直接指定模板文件路径，以单个斜线“\”开始的路径。 应用内的视图：直接指定模板文件路径，以双斜线“\\”开始的路径。 别名路径：以点分割的路径。别名路径alias以后会讲，其实在初始化应用的时候定义了一些路径别名。 这里只需了解getViewFile是寻找模板地址和extract变量即可，接着讲renderPartial，找到模板后继续执行。接着要执行到判断第四个参数processOutput，该函数主要是用于是否加载Yii内置js\css，即上面刚才说的render和renderPartial区别之一，在render中该参数为true即加载，在renderPartial中反之。 然后接着执行到getLayoutFile，刚才是获取了不带布局视图，相当于只执行了renderPartial方法，这里再获取布局文件。getLayoutFile是查找布局模板文件，查找方法和上面的查找模板文件类似。通过在控制器中设置layout变量，加载应用内的布局文件的话设置路径只要以双斜线“\\”开头即可，加载模块内的布局路径以单个斜线“\”开头，另外还有别名路径同样可以设置。 找到布局文件之后，依然使用renderFile方法渲染布局文件，将之前渲染的试图文件插入到布局文件中。 接着执行afterRender方法，也不需要太多解释了，当然是执行渲染之后的一些工作，可以自己定义。 再执行processOutput，因为render是默认加载js\css的，所以这里不需要判断了。 最后再根据render第三个参数判断是否要直接输出，如果为false的话，就是直接看到的页面了，为true只将html代码返回。     render的方法基本就是这样了，主要还是在renderPartial里处理过程比较多。如果有疑问，可以在下面留言给我，一起探讨。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

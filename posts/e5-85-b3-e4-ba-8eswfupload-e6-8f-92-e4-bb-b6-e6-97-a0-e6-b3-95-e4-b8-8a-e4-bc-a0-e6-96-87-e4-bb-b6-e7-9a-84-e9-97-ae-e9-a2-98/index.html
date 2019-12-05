@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="因为项目上所使用的flash上传图片插件名叫swfupload，但里面的js写法好像另一个上传插件sapload，所以我也搞不清到底是哪个，但最终了解到这两个插件都是有共同的一个问题，就是对需要进行身份才能上传文件的方式会失效。 我们都知道服务器端要对识别当前用户登录状态需要客户端cookie的支持，请求URL时会带着cookie，服务器端才能找到对应的session。而使用这个flash插件上传">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.216Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/e5-85-b3-e4-ba-8eswfupload-e6-8f-92-e4-bb-b6-e6-97-a0-e6-b3-95-e4-b8-8a-e4-bc-a0-e6-96-87-e4-bb-b6-e7-9a-84-e9-97-ae-e9-a2-98/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -256,15 +256,6 @@
 <p>if(isset($_POST[‘PHPSESSID’])){<br>    session_id($_POST[‘PHPSESSID’]);<br>    session_start()<br>}</p>
 <p>这样就可以使用当前登录正确的session id进行一系列操作了。 2、取消上传URL接口的登陆验证。（有点蛋疼，非必要情况下还是使用第一种方法吧）     附（这是给我自己看的，swfupload好像格式有所不同，如本文开头提到的，不知道是不是同一个插件）： <strong>flash 接口文档：</strong> upUrl ：后台文件的地址，必须要绝对路径 etmsg：每次文件上传成功后需不需要回调函数（0|1），默认回调函数为sapLoadMsg(x)函数。 ltmsg：最后一个文件上传成功后需不需要回调函数（0|1），默认回调函数为sapLoadMsg(x)函数。 types：上传文件的类型（如<em>.apk;</em>.jpg）用分号分隔各个类型 args：需要传递的参数（如apkName=123;apkName1=1234)用分号分隔各个类型 fileName：此参数可选，允许你自定义文件域名称，默认是Filedata。 maxNum：当最大上传数为1的时候自动切换到单文件上传模式，用户将不能在使用多选选取文件。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     

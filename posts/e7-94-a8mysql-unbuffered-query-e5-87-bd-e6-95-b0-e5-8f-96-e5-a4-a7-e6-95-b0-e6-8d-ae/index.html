@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="昨天在做项目的时候，因为涉及到数据表结构的改动，需要进行大量数据的导入，那么如何高效的进行是我比较关注的。本文暂且从使用PHP脚本层面上来说，因为使用其他语言或其他方式也可以进行数据的重导。 在讨论这个问题的时候，前辈给我的意见就是单独做一个脚本，如果能拿python做更好，当然，python我还不是很会，所以拿php也能完成。既然这样，就采用最原生的方式来进行数据的重导。 整个过程中要先从一张表">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-05T14:55:43.757Z">
+<meta property="og:updated_time" content="2019-12-05T15:18:31.220Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/e7-94-a8mysql-unbuffered-query-e5-87-bd-e6-95-b0-e5-8f-96-e5-a4-a7-e6-95-b0-e6-8d-ae/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-05 22:55:43" itemprop="dateModified" datetime="2019-12-05T22:55:43+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-05 23:18:31" itemprop="dateModified" datetime="2019-12-05T23:18:31+08:00">2019-12-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -244,15 +244,6 @@
 <p>   $link = mysql_con nect(‘localhost’,’root’,’root’);<br>   mysql_select_ db(‘phpcms’);<br>   $sql = “SEL ECT * FROM `phpcms_content`“;<br>   //$result = mysql_unbuffered_query($sql,$link);<br>   $result = mysql_query($sql,$link);<br>   while ($row = mysql_fe tch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>   mysql_data_seek($result,0);<br>   echo “<br/>“;<br>   while ($row = mysql_fetch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>    mysql_free_result($result);</p>
 <p>你会发现使用mysql_query会输出两次，而mysql_unbuffered_query只输出一次，说明使用mysql_query查询结果必定被缓存了，而使用mysql_unbuffered_query则边进行查询边给出结果。 最后再说明，使用mysql_unbuffered_query的话，不能使用mysql_num_rows()和mysql_data_seek()这也正因为它的特性方式决定了这样。还有比较重要的一点，如果你只是单单获取大数据量使用这个函数可以，<strong>但是，如果你在取得大数据的时候，使用while($row = mysql_fetch_assoc($result))方式进行执行新的sql语句的话，会出错。手册上也写明了，在执行一条心的sql之前，要提取所有未缓存的sql查询所产生的行。</strong>所以只使用mysql_unbuffered_query取数据可以，但期间还要执行其他sql就不行了。 以上只是我对这个函数的初步认识，如果理解有误，也希望能指正交流。</p>
 
-<div id="gitalk-container"></div>
-<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script><link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"><script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-
-		<script>
-		var gitalkConfig = {"enable":false,"clientID":"8fffdd9e888794e7cafb","clientSecret":"0872a3a09ec34237e75dea75b447b71bde06c873","repo":"veitor.github.io","owner":"Veitor","admin":["Veitor"],"distractionFreeMode":false};
-	    gitalkConfig.id = md5(location.pathname);
-		var gitalk = new Gitalk(gitalkConfig);
-	    gitalk.render("gitalk-container");
-	    </script>
     </div>
 
     
