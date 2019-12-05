@@ -142,6 +142,7 @@ theme_config:
 
 plugins:
   gitalk:
+    enable: false
     clientID: 8fffdd9e888794e7cafb
     clientSecret: gitalk-github-client-secret
     repo: veitor.github.io
