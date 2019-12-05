@@ -140,17 +140,6 @@ theme_config:
   fancybox: true
 
 
-plugins:
-  gitalk:
-    enable: false
-    clientID: 8fffdd9e888794e7cafb
-    clientSecret: gitalk-github-client-secret
-    repo: veitor.github.io
-    owner: Veitor
-    admin:
-      - Veitor
-    distractionFreeMode: false
-
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
