@@ -147,7 +147,7 @@ theme_config:
     small: /favicon.ico
     medium: /favicon.ico
   seo: true
-  index_with_subtitle: true
+  index_with_subtitle: false
   baidu_push: true
   fancybox: true
 
