@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="如果安装时出现这个错误 [UnexpectedValueException]Could not parse version constraint &amp;lt;=2.: Invalid version string “2.“ 很有可能是composer Asset插件版本的问题 官网说明使用“composer global require “fxp&#x2F;composer-asset-plugin:~1.0.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-11T15:06:32.886Z">
+<meta property="og:updated_time" content="2019-12-15T12:30:19.063Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/could-not-parse-version-when-install-Yii2-with-composer/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-11 23:06:32" itemprop="dateModified" datetime="2019-12-11T23:06:32+08:00">2019-12-11</time>
+                <time title="修改时间：2019-12-15 20:30:19" itemprop="dateModified" datetime="2019-12-15T20:30:19+08:00">2019-12-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -284,6 +284,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
         </div>
           
@@ -429,6 +430,24 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '8fffdd9e888794e7cafb',
+      clientSecret: '0872a3a09ec34237e75dea75b447b71bde06c873',
+      repo: 'veitor.github.io',
+      owner: 'veitor',
+      admin: ['veitor'],
+      id: '37899681966df875b34645fcb4688ff1',
+        language: '',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
 
 </body>
 </html>

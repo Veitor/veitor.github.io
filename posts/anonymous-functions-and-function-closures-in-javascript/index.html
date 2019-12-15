@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="1、匿名函数函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。 1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式第一种：这也是最常规的一种 function double(x){    return 2 * x;} 第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。 va">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-11T15:06:32.886Z">
+<meta property="og:updated_time" content="2019-12-15T12:30:19.063Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-11 23:06:32" itemprop="dateModified" datetime="2019-12-11T23:06:32+08:00">2019-12-11</time>
+                <time title="修改时间：2019-12-15 20:30:19" itemprop="dateModified" datetime="2019-12-15T20:30:19+08:00">2019-12-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,6 +306,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
         </div>
           
@@ -452,6 +453,24 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '8fffdd9e888794e7cafb',
+      clientSecret: '0872a3a09ec34237e75dea75b447b71bde06c873',
+      repo: 'veitor.github.io',
+      owner: 'veitor',
+      admin: ['veitor'],
+      id: '8260b26f9961b9f4586ef50776855130',
+        language: '',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
 
 </body>
 </html>

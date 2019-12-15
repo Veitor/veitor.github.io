@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="img ready demo &amp;lt;!-- &#x2F;*demo style*&#x2F; body { font:12px ‘Microsoft Yahei’, Tahoma, Arial; _font-family:Tahoma, Arial; } a { color:#0259C4; } a:hover { color:#900; } .tips { color:#CCC; } h1 { font-fami">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-11T15:06:32.890Z">
+<meta property="og:updated_time" content="2019-12-15T12:30:19.067Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/imgready/">
@@ -225,6 +225,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
         </div>
           
@@ -371,6 +372,24 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '8fffdd9e888794e7cafb',
+      clientSecret: '0872a3a09ec34237e75dea75b447b71bde06c873',
+      repo: 'veitor.github.io',
+      owner: 'veitor',
+      admin: ['veitor'],
+      id: '1c7110753afd30a17745aa250acf5dcd',
+        language: '',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
 
 </body>
 </html>

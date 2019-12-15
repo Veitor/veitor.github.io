@@ -53,7 +53,7 @@
 <meta property="og:description" content="序：优酷之前更新了次算法(很久之前了，呵呵。。。)，故此很多博客的解析算法已经无法使用。很多大牛也已经更新了新的解析方法。我也在此写篇解析过程的文章。(本文使用语言为C#) 由于优酷视频地址时间限制，在你访问本篇文章时，下面所属链接有可能已经失效，望见谅。 例：http:&#x2F;&#x2F;v.youku.com&#x2F;v_show&#x2F;id_XNzk2NTI0MzMy.html 1:获取视频vid在视频url中标红部分。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;10&#x2F;QQ%E6%88%AA%E5%9B%BE20141008164115.jpg">
-<meta property="og:updated_time" content="2019-12-11T15:06:32.886Z">
+<meta property="og:updated_time" content="2019-12-15T12:30:19.067Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;uploads&#x2F;2014&#x2F;10&#x2F;QQ%E6%88%AA%E5%9B%BE20141008164115.jpg">
 
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-11 23:06:32" itemprop="dateModified" datetime="2019-12-11T23:06:32+08:00">2019-12-11</time>
+                <time title="修改时间：2019-12-15 20:30:19" itemprop="dateModified" datetime="2019-12-15T20:30:19+08:00">2019-12-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,6 +309,7 @@
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
         </div>
           
@@ -455,6 +456,24 @@
   
 
   
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '8fffdd9e888794e7cafb',
+      clientSecret: '0872a3a09ec34237e75dea75b447b71bde06c873',
+      repo: 'veitor.github.io',
+      owner: 'veitor',
+      admin: ['veitor'],
+      id: '0a79f7215d8e5cd99ec969ccc7d08563',
+        language: '',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
 
 </body>
 </html>
