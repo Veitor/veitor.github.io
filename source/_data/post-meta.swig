@@ -1,0 +1,1 @@
+{% block title %}{{ page.title }}{% endblock %}

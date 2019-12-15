@@ -94,6 +94,11 @@ theme: next
 
 #关于主题的配置
 theme_config:
+  custom_file_path:
+    postMeta: source/_data/post-meta.swig
+  cnzz_siteid: 1253040939
+  reading_progress:
+    enable: true
   gitalk:
     enable: true
     github_id: veitor # GitHub repo owner
@@ -138,6 +143,9 @@ theme_config:
     关于: /about/ || user
 #    招聘: /hire/ || fire
   footer:
+    beian:
+      enable: true
+      icp:  苏ICP备14016154号-1
     since: 2019
     icon:
       name: heart
@@ -146,7 +154,7 @@ theme_config:
   favicon:
     small: /favicon.ico
     medium: /favicon.ico
-  seo: false
+  seo: true
   baidu_push: true
   fancybox: true
 
