@@ -94,8 +94,8 @@ theme: next
 
 #关于主题的配置
 theme_config:
-  custom_file_path:
-    postMeta: source/_data/post-meta.swig
+#  custom_file_path:
+#    postMeta: source/_data/post-meta.swig
   cnzz_siteid: 1253040939
   reading_progress:
     enable: true
