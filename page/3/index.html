@@ -183,6 +183,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/front-and-back-separation-development/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/front-and-back-separation-development/" class="post-title-link" itemprop="url">Web前后端分离开发思路</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-02-01 14:36:04" itemprop="dateCreated datePublished" datetime="2015-02-01T14:36:04+08:00">2015-02-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="1-问题的提出"><a href="#1-问题的提出" class="headerlink" title="1. 问题的提出"></a>1. 问题的提出</h2><p>开发一个Web应用的时候我们一般都会简单地分为前端工程师和后端工程师（注：在一些比较复杂的系统中，前端可以细分为外观和逻辑，后端可以分为CGI和Server）。前端工程师负责浏览器端用户交互界面和逻辑等，后端负责数据的处理和存储等。前后端的关系可以浅显地概括为：后端提供数据，前端负责显示数据。 在这种前后端的分工下，会经常有一些疑惑：<strong>既然前端数据是由后端提供，那么后端数据接口还没有完成，前端是否就无法进行编码？怎么样才能做到前后端独立开发？</strong> 考虑这么一个场景：Alex和Bob是一对好基友，他们有个可以颠覆世界的idea，准备把它实现出来，但是他们不需要程序员，因为他们就是程序员。说干就干，两个就干上了。Alex写前端，Bob写后端。 Alex和Bob都经过良好的训练，按部就班地把产品的主要功能设计，交互原型，视觉设计做好了，然后他们根据产品功能和交互制定了一堆叼炸天的前后端交互的API，这套API就类似于一套前后端开发的“协议”，Alex和Bob开发的时候都需要遵守。例如其中一个发表评论的功能：</p>
+<pre><code>// API: Create New Comment v2
+// Ajax, JSON, RESTful
+url: /comments
+type: POST
+request: {content: &quot;comment content.&quot;, userId: 123456}
+response:
+    - status: 200
+        data: {result: &quot;SUCCESS&quot;, msg: &quot;The comment has been created.&quot;}
+    - status: 404
+        data: {result: &quot;failed&quot;, msg: &quot;User is not found.&quot;}</code></pre><p>Alex的前端需要向/comments这个url以POST的方式发送类似于{content: “comment content.”, userId: 123456}这样的JSON请求数据；Bob的服务端识别后以后，操作成功则返回200状态和上面的JSON的数据，不同的操作状态有不同的响应数据（为了简单起见只列出了两种，200和404）。 API制定完以后，Alex和Bob就开始编码了。Alex把评论都外观和交互写完了，但是写到发表评论功能就纳闷了：Alex现在需要发Ajax过去，但是只能把Ajax代码写好，因为是本地服务器，却无法获取到数据：</p>
+<pre><code>// jQuery Ajax
+$.ajax({ // 这个ajax直接报错，因为这个是Alex的前端服务器，请求无法获取数据；
+    url: &quot;/comments&quot;,
+    type: &quot;POST&quot;,
+    data: {content: content, userId: userId},
+    success: funtion(data) {
+        // 这里不会被执行
+    }
+})</code></pre><p>相比起来Bob就没有这个烦恼，因为后端是基于测试驱动开发，且后端可以轻易地模拟前端发送请求，可以对前端没有依赖地进行开发和测试。 Alex把这种情况和Bob说了，Bob就说，要不我们把代码弄到你本地前后端连接一下，这不就可以测试了吗。Alex觉得Bob简直是天才。 他们把前后端代码代码都部署到Alex的本地服务器以后，经过一系列的测试，调试，终于把这个API连接成功了。但是他们发现这个方法简直不科学：难道每写一个API都要把前后端链接测试一遍吗？而且，Alex的如果需要测试某个API，而Bob的这个API还没写好，Alex这个功能模块的进度就“阻塞”了。 后面还有168个API需要写，不能这么做。Alex和Bob就开始思考这个问题的解决方案。</p>
+<h2 id="2-解决思路"><a href="#2-解决思路" class="headerlink" title="2. 解决思路"></a>2. 解决思路</h2><p>在这个场景下，前后端是有比较强的数据依赖的关系，后端依赖前端的请求，前端依赖后端的响应。而后端可以轻松模拟前端请求（基本上能写后端的语言都可以直接发送HTTP请求），前端没有一个比较明显的方案来可以做到模拟响应，所以这里的需要解决的点就是：<strong>如何给前端模拟的响应数据</strong>。 先来一句非常形而上的话：如果两个对象具有强耦合的关系，我们一般只要引入第三个对象就可以打破这种强耦合的关系。</p>
+<p><a href="http://storage.veitor.net/uploads/2015/02/QQ截图20150201223003.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2015/02/QQ%E6%88%AA%E5%9B%BE20150201223003.jpg" alt="QQ截图20150201223003"></a></p>
+<p>在我们上述开发的过程中，前后端的耦合性太强了，我们需要借助额外的东西来打破它们的耦合性。所以，在前后端接口定下来以后，<strong>我们根据接口构建另外一个Server，这个Server会一一响应前端的请求，并且根据接口返回数据</strong>。当然这些数据都是假数据。我们把这个Server叫做_Mock Server_，而Bob真正在开发的Server叫做_Real Server_。</p>
+<p><a href="http://storage.veitor.net/uploads/2015/02/QQ截图20150201223038.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2015/02/QQ%E6%88%AA%E5%9B%BE20150201223038.jpg" alt="QQ截图20150201223038"></a></p>
+<p>Mock Server是根据API实现的，但是是没有数据逻辑的，只是非常简单地返回数据。例如上面Alex和Bob的发表评论的接口在Mock Server上是这样的：</p>
+<pre><code>// Mock Server
+// Create New Comment API
+route.post(&quot;/comments&quot;, function(req, res) {
+    res.send(200, {result: &quot;Success&quot;});
+})</code></pre><p>Alex在开发的时候向Mock Server发出请求，而不是向Bob的服务器发出请求：</p>
+<pre><code>// Sending Request to Mock Server
+// jQuery Ajax
+$.ajax({
+    url: config.HOST + &quot;/comments&quot;,
+    type: &quot;POST&quot;,
+    data: {content: content, userId: userId},
+    success: funtion(data) {
+        // OK
+    }
+})</code></pre><p>注意上面的<code>config.HOST</code>，我们把服务器配置放在一个全局共用的模块当中：</p>
+<pre><code>// Front-end Configuration Module
+var config = modules.exports;
+config.HOST = &quot;http://192.169.10.20&quot; // Mock Server IP</code></pre><p>那么上面我们其实是向IP为<code>http://192.169.10.20</code>的Mock Server发出请求<code>http://192.169.10.20/comments</code>发出POST的请求。 当Alex和Bob都代码写好了以后，需要连接调试了，Alex只要简单地改一下配置文件即可把所有的请求都转向Bob所开发的Real Server：</p>
+<pre><code>// Front-end Configuration Module
+var config = module.exports;
+// config.HOST = &quot;http://192.169.10.20&quot; // Mock Server IP
+config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</code></pre><p>然后Alex和Bob就可以愉快地分离独立开发，而最后只需要联合调试就可以了。 总结一下基本上前后端分离开发包括下面几个步骤：</p>
+<ol>
+<li>根据功能制定前后端接口（API）。</li>
+<li>根据接口构建Mock Server工程及其部署。</li>
+<li>前后端独立开发，前端向Mock Server发送请求，获取模拟的数据进行开发和测试。</li>
+<li>前后端都完成后，前后端连接调试（前端修改配置向Real Server而不是Mock Server发送请求）。</li>
+</ol>
+<p>当然要注意，如果接口修改了，Mock Server要同步修改。</p>
+<h2 id="3-实现方案"><a href="#3-实现方案" class="headerlink" title="3. 实现方案"></a>3. 实现方案</h2><p>Mock Server具体应该如何构建？应该存放在哪里？应该怎么维护？ 前后端是不同的两个工程，它们各自占用一个仓库。Mock Server应该和它们分离出来，独立进行开发和维护，也就是说会有三个仓库，Mock Server是一个单独的工程。 Mock Server可以部署在本地，也可以部署到远程服务器，两者之间各有优劣。</p>
+<hr>
+<h3 id="3-1-远程Mock-Server"><a href="#3-1-远程Mock-Server" class="headerlink" title="3.1 远程Mock Server"></a>3.1 远程Mock Server</h3><p><strong>做法</strong>：把Mock Server工程部署到一个远程的always on的远程服务器上，前端开发的时候向该服务器发请求。 <strong>优点</strong>：</p>
+<ol>
+<li>没有给原有的前后端工程增加负担。</li>
+<li>每个前端开发人员向同一个Mock Server服务器发送请求，保持所有人获取响应请求的一致性。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>有跨域问题（思考：locahost如何向192.169.10.20发请求？）。</li>
+<li>需要额外的远程服务器支持。</li>
+</ol>
+<p>（在写这篇博客的时候，逛<a href="https://news.ycombinator.com/" target="_blank" rel="noopener">Hacker News</a>，刚好看到有人做了一个开发辅助工具（<a href="http://reqr.es/" target="_blank" rel="noopener">http://reqr.es/</a>），可以用于开发时响应前端请求，其实也就是这里所说的远程Mock Server。真是不能再巧更多。）</p>
+<h3 id="3-2-本地Mock-Server"><a href="#3-2-本地Mock-Server" class="headerlink" title="3.2 本地Mock Server"></a>3.2 本地Mock Server</h3><p><strong>做法</strong>：前端把Mock Server克隆到本地，开发的时候，开启前端工程服务器和Mock Server，所有的请求都发向本地服务器，获取到Mock数据。 <strong>优点</strong>：</p>
+<ol>
+<li>节约资源，不需要依赖远程服务器。环保节能。</li>
+<li>没有跨域问题。</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>增加前端工程开发流程复杂程度。</li>
+<li>每个前端开发人员自己部署服务器在本地，可能会有仓库没有及时更新导致API不一致的情况。</li>
+</ol>
+<hr>
+<p>Mock Server工程一般可以由后端开发人员来维护。因为在开发的过程中，后端因为各种原因可能需要修改API，后端人员是最熟悉请求的响应数据和格式的人，可以同步维护Mock Server和Real Server，更好保证数据的一致。Mock Server维护起来并不复杂，对于比较大多工程来说，这样的前期准备和过程的维护是非常值得的。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>所以要点就是：<strong>根据API构建可以模拟服务器响应的Mock Server，用于前端请求模拟数据进行测试</strong>。 再重复总结一下前后端分离开发包括下面几个步骤：</p>
+<ol>
+<li>根据功能制定前后端接口。</li>
+<li>根据接口构建Mock Server工程及其部署。</li>
+<li>前后端独立开发，前端向Mock Server发送请求，获取模拟的数据进行开发和测试。</li>
+<li>前后端都完成后，前后端连接调试。</li>
+</ol>
+<p>当开发只有我一个人的时候，我更喜欢后端独立开发，开发前端的时候开个Real Server来做响应。又爽又快。其实如果团队的人是full-stack的话，完全可以按照功能模块来划分任务，而不是分为前端工程师和后端工程师。 但一般来说还是会选择前后端职能划分，对于这种情况下的多人开发的工程来说，前后端分离开发的方式确实需要考虑和构建的，可以更好帮助我们构建一个高效，规范化，流程化的开发流程。 还是那句话，没有银弹，所有的东西都需要根据实际情况来构建独特的流程。 <strong>原文链接：<a href="http://segmentfault.com/blog/livoras/1190000002413526" target="_blank" rel="noopener">http://segmentfault.com/blog/livoras/1190000002413526</a></strong></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/issue-of-slow-curl-in-php/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +382,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -299,7 +467,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -389,7 +557,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -491,7 +659,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -648,7 +816,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -756,7 +924,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -838,7 +1006,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -925,7 +1093,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1015,7 +1183,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1058,98 +1226,6 @@
 <p>数据量不大的话，这样做工作的很好。如果数量很大，则可以考虑做分批处理，针对每一段数据执行事务提交操作，以避免大事务产生过多的undo。假设有主键字段id，重复运行以下语句（最小值x和最大值y进行相应的替换）将数据导入到新表：</p>
 <p>mysql&gt; START TRANSACTION;<br>mysql&gt; INSERT INTO `innodb_table` SELECT * FROM `myisam_tale` BETWEEN x AND y;<br>mysql&gt; COMMIT;</p>
 <p>这样操作完成以后，新表示原表的一个全量复制，原表还在，如果需要可以删除原表，如果有表要，可以在执行的过程中对原表加锁，以确保新表和原表的数据一致。   Percona Tolkit提供了一个pt-online-schema-change的工具（基于Facebook的在线schema变更技术），可以比较简单、方便的执行上述过程，避免手工操作可能导致的失误和繁琐。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/understanding-multiversion-concurrency-control-in-mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/understanding-multiversion-concurrency-control-in-mysql/" class="post-title-link" itemprop="url">了解mysql中多版本并发控制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-12-07 13:27:10" itemprop="dateCreated datePublished" datetime="2014-12-07T13:27:10+08:00">2014-12-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">Mysql</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>前面写的一篇《<a href="http://www.veitor.net/article/427.html" title="了解mysql的并发控制">了解mysql的并发控制</a>》中了解了mysql的并发控制，主要是通过锁机制来控制并发的。控制严格的锁会影响性能，反之则影响数据安全性。而mysql的大多数事务性存储引擎实现的都不是简单的行级锁。基于提升并发性能的考虑，它们一般都同时实现了多版本并发控制（MVCC）。 <strong>可以认为MVCC是行级锁的一个变种，但是它在很多情况下避免了加锁操作，因此开销更低。虽然实现机制有所不同，但大都实现了非阻塞的读操作，写操作也只锁定必要的行。</strong> MVCC的实现，是通过保存数据在某个时间点的快照来实现的。也就是说，不管需要执行多长时间，每个事务看到的数据都是一致的。下面就通过InnoDB的简化版行为说明MVCC是如何工作的： InnoDB的MVCC，是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（也叫删除时间）。当然存储的并不是实际的时间值，而是系统的版本号。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号作为事务的版本号，用来和查询到的每行记录的版本号进行比较。下面看一下在REPEATABLE READ（可重复读）隔离级别下，MVCC具体是如何操作的。</p>
-<blockquote>
-<p>SELECT</p>
-</blockquote>
-<p>InnoDB会根据以下两个条件检查每行记录： a.InnoDB只查找版本早于当前事务版本的数据行（也就是，行的系统版本号小于或等于事务的系统版本号），这样可以确保事务的读取的行，要么是在事务开始前已经存在的，要么是事务自身插入或者修改过的。 b.行的删除版本要么未定义，要么大于当前事务版本号。这可以确保事务读取到的行，在事务开始之前未被删除。</p>
-<blockquote>
-<p>INSERT</p>
-</blockquote>
-<p>InnoDB为新插入的每一行保存当前系统版本号作为行版本号。</p>
-<blockquote>
-<p>DELETE</p>
-</blockquote>
-<p>InnoDB为删除的每一行保存保存当前系统版本号作为行删除标识。</p>
-<blockquote>
-<p>UPDATE</p>
-</blockquote>
-<p>InnoDB为插入一行新记录，保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行作为删除标识。   保存这两个额外系统版本号，使大多数读操作都都可以不用加锁。这样设计使得读数据操作很简单，性能很好，并且也能保证只会读取到符合标准的行。不足之处是每行记录都会需要额外的存储空间，需要做更多的行检查工作，以及一些额外的维护工作。 MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。因为READ UNCOMMITTED总是读取到最新的数据行（脏读），而不是符合当前事务版本的数据行。而SERIALIZABLE则会对所有读取的行都加锁。（这段内容需要了解mysql隔离级别，请看<a href="http://www.veitor.net/article/319.html" title="Mysql事务以及隔离级别">这篇文章</a>） 如果有疑问，欢迎留言探讨。</p>
 
       
     </div>
@@ -1214,7 +1290,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

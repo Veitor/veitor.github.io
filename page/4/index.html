@@ -183,6 +183,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/understanding-multiversion-concurrency-control-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/understanding-multiversion-concurrency-control-in-mysql/" class="post-title-link" itemprop="url">了解mysql中多版本并发控制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-12-07 13:27:10" itemprop="dateCreated datePublished" datetime="2014-12-07T13:27:10+08:00">2014-12-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">Mysql</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前面写的一篇《<a href="http://www.veitor.net/article/427.html" title="了解mysql的并发控制">了解mysql的并发控制</a>》中了解了mysql的并发控制，主要是通过锁机制来控制并发的。控制严格的锁会影响性能，反之则影响数据安全性。而mysql的大多数事务性存储引擎实现的都不是简单的行级锁。基于提升并发性能的考虑，它们一般都同时实现了多版本并发控制（MVCC）。 <strong>可以认为MVCC是行级锁的一个变种，但是它在很多情况下避免了加锁操作，因此开销更低。虽然实现机制有所不同，但大都实现了非阻塞的读操作，写操作也只锁定必要的行。</strong> MVCC的实现，是通过保存数据在某个时间点的快照来实现的。也就是说，不管需要执行多长时间，每个事务看到的数据都是一致的。下面就通过InnoDB的简化版行为说明MVCC是如何工作的： InnoDB的MVCC，是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存行的过期时间（也叫删除时间）。当然存储的并不是实际的时间值，而是系统的版本号。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号作为事务的版本号，用来和查询到的每行记录的版本号进行比较。下面看一下在REPEATABLE READ（可重复读）隔离级别下，MVCC具体是如何操作的。</p>
+<blockquote>
+<p>SELECT</p>
+</blockquote>
+<p>InnoDB会根据以下两个条件检查每行记录： a.InnoDB只查找版本早于当前事务版本的数据行（也就是，行的系统版本号小于或等于事务的系统版本号），这样可以确保事务的读取的行，要么是在事务开始前已经存在的，要么是事务自身插入或者修改过的。 b.行的删除版本要么未定义，要么大于当前事务版本号。这可以确保事务读取到的行，在事务开始之前未被删除。</p>
+<blockquote>
+<p>INSERT</p>
+</blockquote>
+<p>InnoDB为新插入的每一行保存当前系统版本号作为行版本号。</p>
+<blockquote>
+<p>DELETE</p>
+</blockquote>
+<p>InnoDB为删除的每一行保存保存当前系统版本号作为行删除标识。</p>
+<blockquote>
+<p>UPDATE</p>
+</blockquote>
+<p>InnoDB为插入一行新记录，保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行作为删除标识。   保存这两个额外系统版本号，使大多数读操作都都可以不用加锁。这样设计使得读数据操作很简单，性能很好，并且也能保证只会读取到符合标准的行。不足之处是每行记录都会需要额外的存储空间，需要做更多的行检查工作，以及一些额外的维护工作。 MVCC只在REPEATABLE READ和READ COMMITTED两个隔离级别下工作。其他两个隔离级别都和MVCC不兼容。因为READ UNCOMMITTED总是读取到最新的数据行（脏读），而不是符合当前事务版本的数据行。而SERIALIZABLE则会对所有读取的行都加锁。（这段内容需要了解mysql隔离级别，请看<a href="http://www.veitor.net/article/319.html" title="Mysql事务以及隔离级别">这篇文章</a>） 如果有疑问，欢迎留言探讨。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/learning-mysql-transaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +306,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -310,7 +402,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -395,7 +487,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -485,7 +577,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -578,7 +670,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -797,7 +889,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -873,7 +965,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -953,7 +1045,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1041,7 +1133,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
+                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1071,94 +1163,6 @@
 <p>Unicode符号范围 | UTF-8编码方式 (十六进制) | （二进制） ——————–+——————————————— 0000 0000-0000 007F | 0xxxxxxx 0000 0080-0000 07FF | 110xxxxx 10xxxxxx 0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx 0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</p>
 </blockquote>
 <p>跟据上表，解读UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。 下面，还是以汉字”严”为例，演示如何实现UTF-8编码。 已知”严”的unicode是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800-0000 FFFF），因此”严”的UTF-8编码需要三个字节，即格式是”1110xxxx 10xxxxxx 10xxxxxx”。然后，从”严”的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，”严”的UTF-8编码 是”11100100 10111000 10100101”，转换成十六进制就是E4B8A5。 <strong>6. Unicode与UTF-8之间的转换</strong> 通过上一节的例子，可以看到”严”的Unicode码是4E25，UTF-8编码是E4B8A5，两者是不一样的。它们之间的转换可以通过程序实现。 在Windows平台下，有一个最简单的转化方法，就是使用内置的记事本小程序Notepad.exe。打开文件后，点击”文件”菜单中的”另存为”命令，会跳出一个对话框，在最底部有一个”编码”的下拉条。 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141106170522.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141106170522.jpg" alt="QQ截图20141106170522"></a> 里面有四个选项：ANSI，Unicode，Unicode big endian 和 UTF-8。 1）ANSI是默认的编码方式。对于英文文件是ASCII编码，对于简体中文文件是GB2312编码（只针对Windows简体中文版，如果是繁体中文版会采用Big5码）。 2）Unicode编码指的是UCS-2编码方式，即直接用两个字节存入字符的Unicode码。这个选项用的little endian格式。 3）Unicode big endian编码与上一个选项相对应。我在下一节会解释little endian和big endian的涵义。 4）UTF-8编码，也就是上一节谈到的编码方法。 选择完”编码方式”后，点击”保存”按钮，文件的编码方式就立刻转换好了。 <strong>7. Little endian和Big endian</strong> 上一节已经提到，Unicode码可以采用UCS-2格式直接存储。以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节 是4E，另一个字节是25。存储的时候，4E在前，25在后，就是Big endian方式；25在前，4E在后，就是Little endian方式。 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中，小人国里爆发了内战，战争起因是人们争论，吃鸡蛋时究竟是从大头(Big- Endian)敲开还是从小头(Little-Endian)敲开。为了这件事情，前后爆发了六次战争，一个皇帝送了命，另一个皇帝丢了王位。 因此，第一个字节在前，就是”大头方式”（Big endian），第二个字节在前就是”小头方式”（Little endian）。 那么很自然的，就会出现一个问题：计算机怎么知道某一个文件到底采用哪一种方式编码？ Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 <strong>8. 实例</strong> 下面，举一个实例。 打开”记事本”程序Notepad.exe，新建一个文本文件，内容就是一个”严”字，依次采用ANSI，Unicode，Unicode big endian 和 UTF-8编码方式保存。 然后，用文本编辑软件<a href="http://www.google.cn/search?aq=t&oq=UltraEdit&complete=1&hl=zh-CN&newwindow=1&rlz=1B3GGGL_zh-CNCN216CN216&q=ultraedit+%E4%B8%8B%E8%BD%BD&btnG=Google+%E6%90%9C%E7%B4%A2&meta=" target="_blank" rel="noopener">UltraEdit中</a>的”十六进制功能”，观察该文件的内部编码方式。 1）ANSI：文件的编码就是两个字节”D1 CF”，这正是”严”的GB2312编码，这也暗示GB2312是采用大头方式存储的。 2）Unicode：编码是四个字节”FF FE 25 4E”，其中”FF FE”表明是小头方式存储，真正的编码是4E25。 3）Unicode big endian：编码是四个字节”FE FF 4E 25”，其中”FE FF”表明是大头方式存储。 4）UTF-8：编码是六个字节”EF BB BF E4 B8 A5”，前三个字节”EF BB BF”表示这是UTF-8编码，后三个”E4B8A5”就是”严”的具体编码，它的存储顺序与编码顺序是一致的。 <strong>9. 延伸阅读</strong> * <a href="http://www.joelonsoftware.com/articles/Unicode.html" target="_blank" rel="noopener">The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets</a>（关于字符集的最基本知识） * <a href="http://www.pconline.com.cn/pcedu/empolder/gj/other/0505/616631.html" target="_blank" rel="noopener">谈谈Unicode编码</a> * <a href="http://www.ietf.org/rfc/rfc3629.txt" target="_blank" rel="noopener">RFC3629：UTF-8, a transformation format of ISO 10646</a>（如果实现UTF-8的规定） （完）   原文地址：<a href="http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/the-difference-between-responsive-and-adaptive/" class="post-title-link" itemprop="url">响应式与自适应的区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-11-06 08:14:09" itemprop="dateCreated datePublished" datetime="2014-11-06T08:14:09+08:00">2014-11-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 22:53:48" itemprop="dateModified" datetime="2020-05-24T22:53:48+08:00">2020-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" alt="6310d41cjw1em0lsear2xg20b408cn22"></a></p>
-<p>起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式<strong>宽度自适应布局</strong>。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：</p>
-<ul>
-<li>百分比宽度布局</li>
-<li>流式布局</li>
-</ul>
-<p>题主说的是第一派，宽度使用百分比，文字使用em。第二派的布局以 iGoogle 为代表（已经停止）。 再后来，浏览器大战 时代，firefox、Oparo、Chrome …… 出现，结束了 IE 一统江湖的局面，N 年没有更新的 IE6 发布了新版本，以前已 IE 为标准的 CSS 向 W3C 标准趋近，随后各种针对浏览器的 <a href="http://baike.baidu.com/view/1119452.htm" target="_blank" rel="noopener">css hack</a> 技术出现。 虽然浏览器这么多，但是<strong>响应式布局</strong>依然不是主流，人们还在使用 css hack 技术。注意我的用词——「不是主流」，虽然不是主流，不代表当时不被使用。 比如一向超前的伟大的 Google。当时没有响应式布局这个词语，但是慢慢出现了一个词——<strong>渐进增强</strong>，新词的出现总是伴随的旧词一起出现。就好比 3G 出现之前，没人管自己的手机叫 2G，所以，3G 和 2G 两个词是一起出现的（技术上当然2G技术先出现）。同理，渐进增强出现后，另一个词「优雅降级」也随之出现了。 词的意思可以自己看 wiki、Google，我只在这儿举一个例子，gmail 和 qqmail。 他俩的宽度都是 100%，都是自适应。但是： qqmail 就是 css hack 的完美体现，你用任何一个浏览器，几乎可以看到同一个样子的邮箱，腾讯的前端工程师们用各种 css hack 技术来展示邮箱页面，为的是<strong>统一的用户体验</strong>。 而 gmail 使用了<strong>渐进增强</strong>，你的浏览器越强，你看到的效果就越好，用户体验就越好。 再后来，就是大家都熟知的 Google 发布了 android，于是互联网大战从 PC 打到了手机。还有 HTML5 标准的发布。 手机虽然屏幕变小了，但是却提供了更丰富的功能。还记得以前用诺基亚上 QQ 的事儿吗？我们访问的是 3g.qq.com，当时我使用的是中兴的手机，访问 wap.qq.com，在后来的职能手机都是访问 m.qq.com。 不禁有人问「真的需要为每个手机分别设计一个网页吗？」、「真的需要为手机和电脑设计不同的网页吗？」，解决方法当然有很多种，可以看看 <a href="http://www.csszengarden.com/" target="_blank" rel="noopener">css zen garden</a> 相信做过前端的都看过这个网站，一个神奇的网站。 最终的解决方案胜出者是<strong>响应式布局</strong>。 响应式布局被大家熟知的一个重要原因就是 twitter 开源了 bootstrap。Google 第一次完成了<strong>从先驱到烈士</strong>。 好了，上面介绍的是从从“自适应”到“响应式”，以下 Responsive design ＝ RWD，Adaptive design ＝ AWD。 先说共同点，两者都是因为越来越多的 移动设备（ mobile, tablet device ）加入到互联网中来而出现的为移动设备提供更好的体验的技术。用技术来使网页适应从小到大（现在到超大）的不同分辨率的屏幕。有人说，RWD 是 AWD 包含的一个子集。 RWD：Ethan Marcote 的文章是大家认为 RWD 的起源。他提出的 RWD 是采用 CSS 的 media query 技术，配合流体布局（ fluid grids ）和同样可以自适应的图片/视频等资源素材。以上所说，都是通过 HTML 和 CSS 就能完成的。一般来说，RWD 倾向于只改变元素的外观布局，而不大幅度改变内容。Jeffrey Zeldman 总结说，我们就把 RWD 定义为一切能用来为各种分辨率和设备性能优化<strong>视觉体验</strong>的技术吧。 AWD：Adaptive Design 是 Aaron Gustafson 的书的标题。他认为 AWD 在包括 RWD 的 CSS media query 技术以外，也要用 Javascript 来操作 HTML 来更适应移动设备的能力。AWD 有可能会针对移动端用户减去内容，减去功能。AWD 可以在服务器端就进行优化，把优化过的内容送到终端上。AWD 通常会牵扯到另外一个词 “progressive enhancement” 。 progressive enhancement（渐进增强）：从针对最低端的，最低分辨率的设备的设计做起，逐步逐步为更高阶的设备增加功能和效果的做法。（换个角度说，也就是相当于为移动设备减去功能） RWD 和 AWD 在断点（ break point ）的区别： RWD 采用流体＋断点，在断点之间，页面依然会随窗口大小自动缩放（通过 fluid grid ），直到遇到断点改变界面样式。相对的，AWD 只在针对几种分辨率（如1280，800，640，320px）进行优化，在断点之间的自动过渡比较少。 还有一种说法： RWD 一般来说需要在网页设计初期就开始（通常采用 mobile first 策略），所以旧的网站要做 RWD 很可能要完全重建。而 AWD 则采用保留现有桌面网站（ desktop version ）而对于更小的分辨率做针对性的优化（适应），这点对于很多老的网站来说很重要，因为重构成本太大。 另外，对于 mobile 用户的优化到底应该怎么做，有两方的说法各不相让。有人说，不应该因为用户使用的是 mobile device 就删去内容，限制他们的功能，应该平等对待。也有人说，正因为是移动设备，有其流量，性能，网速的局限性，用移动设备登录网站的目的也会更有针对性，要为 用户精简文字，精简最常用的功能放在首页，服务器端的优化才是真的针对 mobile 的优化。 最后： 在网上的各种说法里确实是有很多相互干扰相互矛盾的地方，但是其实技术都是摆在那里的。其实可以认为，AWD 在针对布局的优化中，可以采用 RWD 的策略，但是AWD 着力于更多其他的 JS 或者服务器上的优化，来强化移动端体验。 不用纠结于词汇，根据网站功能复杂度，预算和资源等，选择要使用的技术，从客户端的展现，到 JS，到服务器的优化等等。</p>
 
       
     </div>
@@ -1223,7 +1227,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">82</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
