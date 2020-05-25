@@ -183,6 +183,137 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/observer-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/observer-mode/" class="post-title-link" itemprop="url">了解PHP设计模式之观察者模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-11 04:22:54" itemprop="dateCreated datePublished" datetime="2014-05-11T04:22:54+08:00">2014-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>观察者模式是一种事件系统，意味着这一模式允许某个类观察另一个类的状态，当被观察的类状态发生改变的时候，观察类可以收到通知并且做出相应的动作，观察者模式提供了避免组件之间紧密耦合的另一种方式。 在观察者模式中，被观察者称为subject,观察者称为observer,为了表达这些内容，SPL（Standard PHP Libaray）提供了SplSubject(被观察者)和SplObserver(观察者)两个接口。在编写观察者模式时，只要实现这两个接口即可。接口如下：</p>
+<p> //被观察者接口<br>interface SplSubject{<br>   public function attach(SplObserver $observer);//注册观察者（注册的观察者：当我（被观察者）的某个状态改变时，需要通知的对象）<br>   public function detach(SplObserver $observer);//释放观察者<br>   public function notify();//通知所有注册的观察者的方法<br>}<br>  //观察者接口<br>  interface SplObserver{<br>   public function update(SplSubject $subject);//观察者进行更新状态<br>  }</p>
+<p>这一模式的概念是SplSubject类维护了一个特定状态，当这个状态发生变化时，它就会调用notify()方法。调用notify()方法时，所有之前使用attach()方法注册的SplObserver实例的update方法都会被调用。 以下是实现代码：</p>
+  <?php
+//被观察者实现类
+class DemoSubject implements SplSubject {
+  private $observers;    //存放观察者的类
+  private $value;
+  public function __construct() {
+    $this->observers = array();
+  }
+//注册观察者
+  public function attach(SplObserver $observer) {
+    $this->observers\[\] = $observer;
+  }
+ //释放观察者
+  public function detach(SplObserver $observer) {
+    if($idx = array_search($observer,$this->observers,true)) {
+      unset($this->observers\[$idx\]);
+    }
+  }
+ //通知所有观察者，执行观察者类中的update方法
+  public function notify() {
+    foreach($this->observers as $observer) {
+      $observer->update($this);
+    }
+  }
+/*设置状态，当状态发生任何变化时，都会调用notify方法通知所有的观察者，即调用观察者类中的update方法*/
+  public function setState($value) {
+    $this->value = $value;
+    $this->notify();
+  }
+//
+  public function getValue() {
+    return $this->value;
+  }
+}
+//观察者简单类
+class DemoObserver implements SplObserver {
+  //接收被观察者发送的通知
+  public function update(SplSubject $subject) {
+    echo 'The new value is '. $subject->getValue();
+  }
+}
+$subject = new DemoSubject();//初始化被观察者
+$observer = new DemoObserver();//初始化一个观察者
+$subject->attach($observer);//添加一个观察者
+$subject->setState(5);//被观察者修改状态。
+?><p>;</p>
+<p>输出结果为： The new value is 5 观察者模式的优点在于，挂接到被观察者上的观察者可多可少，并且不需要提前知道哪个观察者会响应被观察者发出的响应事件。 这种设计模式在很多PHP框架中都被使用到，如Yii等。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/crypt-encryption-functions-in-PHP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +345,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,7 +440,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -391,7 +522,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -486,7 +617,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -568,7 +699,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -644,7 +775,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -722,7 +853,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -807,7 +938,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -915,7 +1046,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 22:57:30" itemprop="dateModified" datetime="2020-05-25T22:57:30+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -950,88 +1081,6 @@ echo "<br>";
 <p>其他可以参考一下PHP手册， __DIR__：文件所在的目录。如果用在被包括文件中，则返回被包括的文件所在的目录。它等价于<em>dirname(__FILE_\</em>)_。除非是根目录，否则目录中名不包括末尾的斜杠。</p>
 </li>
 </ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-processes-and-threads/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/the-difference-between-processes-and-threads/" class="post-title-link" itemprop="url">进程与线程及其区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-04-13 05:15:28" itemprop="dateCreated datePublished" datetime="2014-04-13T05:15:28+08:00">2014-04-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机系统</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>1.进程和线程</strong></p>
-<h2 id="1-1-概述"><a href="#1-1-概述" class="headerlink" title="1.1 概述:"></a>1.1 概述:</h2><p>进程是具有一定独立功能的程序关于某个数据集合上的一次运行活动,进程是系统进行资源分配和调度的一个独立单位. 线程是进程的一个实体,是CPU调度和分派的基本单位,它是比进程更小的能独立运行的基本单位.线程自己基本上不拥有系统资源,只拥有一点在运行中必不可少的资源(如程序计数器,一组寄存器和栈),但是它可与同属一个进程的其他的线程共享进程所拥有的全部资源. 一个线程可以创建和撤销另一个线程;同一个进程中的多个线程之间可以并发执行. 相对进程而言，线程是一个更加接近于执行体的概念，它可以与同进程中的其他线程共享数据，但拥有自己的栈空间，拥有独立的执行序列。 在串行程序基础上引入线程和进程是为了提高程序的并发度，从而提高程序运行效率和响应时间。</p>
-<h2 id="1-2-区别"><a href="#1-2-区别" class="headerlink" title="1.2 区别:"></a>1.2 区别:</h2><p>进程和线程的主要差别在于它们是不同的操作系统资源管理方式。进程有独立的地址空间，一个进程崩溃后，在保护模式下不会对其它进程产生影响，而线程只是一个进程中的不同执行路径。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉就等于整个进程死掉，所以多进程的程序要比多线程的程序健壮，但在进程切换时，耗费资源较大，效率要差一些。<strong>但对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程。</strong> <strong>1) **</strong>简而言之<strong><strong>,</strong></strong>一个程序至少有一个进程<strong><strong>,</strong></strong>一个进程至少有一个线程<strong>**.</strong> 2) 线程的划分尺度小于进程，使得多线程程序的并发性高。 3) 另外，进程在执行过程中拥有独立的内存单元，而多个线程共享内存，从而极大地提高了程序的运行效率。 4) 线程在执行过程中与进程还是有区别的。每个独立的线程有一个程序运行的入口、顺序执行序列和程序的出口。<strong>但是线程不能够独立执行，</strong>必须依存在应用程序中，由应用程序提供多个线程执行控制。 5) 从逻辑角度来看，多线程的意义在于一个应用程序中，有多个执行部分可以同时执行。但操作系统并没有将多个线程看做多个独立的应用，来实现进程的调度和管理以及资源分配。<strong>这就是进程和线程的重要区别。</strong></p>
-<h2 id="1-3-优缺点"><a href="#1-3-优缺点" class="headerlink" title="1.3 优缺点:"></a>1.3 优缺点:</h2><p>线程和进程在使用上各有优缺点：线程执行开销小，但不利于资源的管理和保护；而进程正相反。同时，线程适合于在SMP机器上运行，而进程则可以跨机器迁移。 <strong>2.多进程，多线程</strong></p>
-<h2 id="2-1-概述"><a href="#2-1-概述" class="headerlink" title="2.1 概述:"></a>2.1 概述:</h2><p>进程就是一个程序运行的时候被CPU抽象出来的，一个程序运行后被抽象为一个进程，但是线程是从一个进程里面分割出来的，由于CPU处理进程的时候是采用时间片轮转的方式，所以要把一个大个进程给分割成多个线程，例如：网际快车中文件分成100部分 10个线程 文件就被分成了10份来同时下载 1-10 占一个线程 11-20占一个线程,依次类推,线程越多,文件就被分的越多,同时下载 当然速度也就越快 <strong>进程是程序在计算机上的一次执行活动。</strong>当你运行一个程序，你就启动了一个进程。显然，程序只是一组指令的有序集合，它本身没有任何运行的含义，只是一个静态实体。而进程则不同，它是程序在某个数据集上的执行，是一个动态实体。它因创建而产生，因调度而运行，因等待资源或事件而被处于等待状态，因完成任务而被撤消，反映了一个程序在一定的数据集上运行的全部动态过程。<strong>进程是操作系统分配资源的单位。</strong>在Windows下，进程又被细化为线程，也就是一个进程下有多个能独立运行的更小的单位。<strong>线程**</strong>(Thread)<strong><strong>是进程的一个实体，是</strong></strong>CPU<strong>**调度和分派的基本单位。</strong>线程不能够独立执行，必须依存在应用程序中，由应用程序提供多个线程执行控制。 <strong>线程和进程的关系是：</strong>线程是属于进程的，线程运行在进程空间内，同一进程所产生的线程共享同一内存空间，当进程退出时该进程所产生的线程都会被强制退出并清除。线程可与属于同一进程的其它线程共享进程所拥有的全部资源，但是其本身基本上不拥有系统资源，只拥有一点在运行中必不可少的信息(如程序计数器、一组寄存器和栈)。 在同一个时间里，同一个计算机系统中如果允许两个或两个以上的进程处于运行状态，这便是多任务。现代的操作系统几乎都是多任务操作系统，能够同时管理多个进程的运行。 多任务带来的好处是明显的，比如你可以边听mp3边上网，与此同时甚至可以将下载的文档打印出来，而这些任务之间丝毫不会相互干扰。那么这里就涉及到并行的问题，俗话说，一心不能二用，这对计算机也一样，原则上一个CPU只能分配给一个进程，以便运行这个进程。我们通常使用的计算机中只有一个CPU，也就是说只有一颗心，要让它一心多用，同时运行多个进程，就必须使用并发技术。实现并发技术相当复杂，<strong>最容易理解的是“时间片轮转进程调度算法”，</strong>它的思想简单介绍如下：在操作系统的管理下，所有正在运行的进程轮流使用CPU，每个进程允许占用CPU的时间非常短(比如10毫秒)，这样用户根本感觉不出来CPU是在轮流为多个进程服务，就好象所有的进程都在不间断地运行一样。但实际上在任何一个时间内有且仅有一个进程占有CPU。 如果一台计算机有多个CPU，情况就不同了，如果进程数小于CPU数，则不同的进程可以分配给不同的CPU来运行，这样，多个进程就是真正同时运行的，这便是并行。但如果进程数大于CPU数，则仍然需要使用并发技术。 <strong>在**</strong>Windows<strong><strong>中，进行</strong></strong>CPU<strong>**分配是以线程为单位的，</strong>一个进程可能由多个线程组成，这时情况更加复杂，但简单地说，有如下关系： 总线程数&lt;= CPU数量：并行运行 总线程数&gt; CPU数量：并发运行 并行运行的效率显然高于并发运行，所以在多CPU的计算机中，多任务的效率比较高。但是，如果在多CPU计算机中只运行一个进程(线程)，就不能发挥多CPU的优势。  多任务操作系统(如Windows)的基本原理是:操作系统将CPU的时间片分配给多个线程,每个线程在操作系统指定的时间片内完成(注意,这里的多个线程是分属于不同进程的).操作系统不断的从一个线程的执行切换到另一个线程的执行,如此往复,宏观上看来,就好像是多个线程在一起执行.由于这多个线程分属于不同的进程,因此在我们看来,就好像是多个进程在同时执行,这样就实现了多任务.</p>
-<h2 id="2-2-分类"><a href="#2-2-分类" class="headerlink" title=" 2.2 分类"></a> 2.2 分类</h2><p>根据进程与线程的设置，操作系统大致分为如下类型： (1) 单进程、单线程，MS-DOS大致是这种操作系统； (2) 多进程、单线程，多数UNIX(及类UNIX的LINUX)是这种操作系统； (3) 多进程、多线程，Win32(Windows NT/2000/XP等)、Solaris 2.x和OS/2都是这种操作系统； (4) 单进程、多线程，VxWorks是这种操作系统。</p>
-<h2 id="2-3-引入线程带来的主要好处："><a href="#2-3-引入线程带来的主要好处：" class="headerlink" title="2.3 引入线程带来的主要好处："></a>2.3 引入线程带来的主要好处：</h2><p>(1) 在进程内创建、终止线程比创建、终止进程要快； (2) 同一进程内的线程间切换比进程间的切换要快,尤其是用户级线程间的切换。</p>
 
       
     </div>
@@ -1096,7 +1145,7 @@ echo "<br>";
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-count">84</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
