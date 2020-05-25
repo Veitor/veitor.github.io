@@ -1,5 +1,5 @@
 ---
-title: '[译]值对象 - 《Domain-Driven Design in PHP》第2章'
+title: '[译]值对象 - 《Domain-Driven Design in PHP》第3章'
 tags:
   - ddd
   - 领域驱动设计
@@ -419,4 +419,137 @@ class MoneyTest extends FrameworkTestCase
 持久化值对象
 ---
 
-值对象不是自己独立持久化的，它们通常在一个聚合(Aggregate)中被持久化。值对象不应该被作为一个记录持久化，即使在某些情况下这是一种选择。
+值对象不是自己独立持久化的，它们通常在一个聚合(Aggregate)中被持久化。值对象不应该被作为一个记录持久化，即使在某些情况下这是一种选择。相反，最好使用Embedded Value（译者注：映射一个对象的值到一条记录的字段上）或者Serialize LOB（译者注：序列化single large object）模式。这两种模式可以在使用ORM（如Doctrine）持久化对象时可以实现。由于值对象很小，所以Embedded Value通常是最佳选择，因为这样可以通过值对象拥有的任一个属性值来查询实体(Entity)。如果值对象的属性字段查询对你来说并不重要，则序列化的方式更容易来实现持久化。
+
+思考一下下面带有id、name、price（Money值对象）属性的Product实体。我们故意简化了这个示例，使用了字符串作为id而不是值对象：
+
+```php
+class Product
+{
+	private $productId;
+
+	private $name;
+
+	private $price;
+	
+	public function __construct(
+		$aProductId,
+		$aName,
+		Money $aPrice
+	) {
+		$this->setProductId($aProductId);
+		$this->setName($aName);
+		$this->setPrice($aPrice);
+	}
+	// ...
+}
+```
+
+假设你使用Repository（第10章内容）仓储来持久化Product实体，一个创建并持久化新的Product的实现会是这样：
+
+```php
+$product = new Product(
+	$productRepository->nextIdentity(),
+	'Domain-Driven Design in PHP',
+	new Money(999, new Currency('USD'))
+);
+$productRepository−>persist(product);
+```
+
+现在让我们来看一下使用特性的ORM和Doctrine两个实现方式来持久化包含值对象的Product实体。我们将重点介绍Embedded Value和Serialized LOB模式的使用，以及介绍持久化单个值对象与多个值对象集合的不同之处。
+
+> **为什么选择Doctrine？**
+
+> Doctrine是一个非常棒的ORM。它可以解决PHP应用所面临的80%的需求，它拥有一个非常好的社区生态。进行正确适当的配置，可以达到与定制ORM相同或者更好的性能（且不会失去可维护性）。我们推荐在处理大多数的Entity和业务逻辑时使用Doctrine，它将节约你许多时间和头疼的事情。
+
+#### 持久化单个值对象
+
+持久化单个值对象有许多做法。从使用Serialize LOB到Embedded Values，从选择使用定制ORM到选择开源项目（如Doctrine）。我们看一下你的公司为了持久化实体到数据库中而开发的定制的ORM，在我们的场景中，定制ORM代码使用了`DBAL`库（译者注：详见Doctrine项目中的DBAL库）来实现的。（译者注：省略翻译夸赞DBAL的内容，具体还是去亲自看一下DBAL的文档即可）。
+
+#### 使用定制ORM和Embedded Value
+
+如果我们使用Embedded Value模式和定制ORM来处理持久化问题，那我们需要在每个Entity表中为值对象的每个属性创建一个字段。这种情况下，当持久化Product实体时我们需要创建额外的两个字段——一个是值对象数量amount，另一个是货币ISO代码：
+
+```php
+CREATE TABLE `products` (
+	id INT NOT NULL,
+	name VARCHAR( 255) NOT NULL,
+	price_amount INT NOT NULL,
+	price_currency VARCHAR( 3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+我们第10章中，对于在数据库中持久化Entity，Repository需要映射Entity和Money值对象的每个字段。
+
+如果你正在使用基于DBAL的定制ORM（下文我们称之为DbalProductRepository），你必须注意`INSERT`语句的创建、参数的绑定和执行语句：
+
+```php
+class DbalProductRepository
+extends DbalRepository
+implements ProductRepository
+{
+	public function add(Product $aProduct)
+	{
+		$sql = 'INSERT INTO products VALUES (?, ?, ?, ?)' ;
+		$stmt = $this->connection()->prepare($sql);
+		$stmt->bindValue(1, $aProduct->id());
+		$stmt->bindValue(2, $aProduct->name());
+		$stmt->bindValue(3, $aProduct->price()->amount());
+		$stmt->bindValue(4, $aProduct->price()->currency()->isoCode());
+		$stmt->execute();
+		// ...
+	}
+}
+```
+
+在执行了这个代码片段将`Product`实体持久化到数据库之后，数据库每个字段都将被填充我们所期望的数据内容：
+
+```mysql
+mysql> select * from products \G
+*************************** 1. row ***************************
+id: 1
+name: Domain-Driven Design in PHP
+price_amount: 999
+price_currency: USD
+1 row in set (0.00 sec)
+```
+
+如你所看到的，你可以为了持久化值对而在定制ORM中手工映射你的值对象和查询参数。但并不是所有的事情看起来这么简单。让我们尝试从数据库中获取Product和关联的Money值对象。一个通用方式是执行`SELECT`语句并返回一个新的Entity：
+
+```php
+class DbalProductRepository
+extends DbalRepository
+implements ProductRepository
+{
+	public function productOfId($anId)
+	{
+		$sql = 'SELECT * FROM products WHERE id = ?';
+		$stmt = $this->connection()->prepare($sql);
+		$stmt->bindValue(1, $anId);
+		$res = $stmt->execute();
+		// ...
+		return new Product(
+			$row['id'],
+			$row['name'],
+			new Money(
+				$row['price_amount'],
+				new Currency($row['price_currency'])
+			)
+		);
+	}
+}
+```
+这么做有一些好处，首先，你可以方便的了解对象的持久化和后续的创建过程。其次，你可以基于值对象的任何属性进行查询。最后，持久化实体所需要的空间就那么大，不多不少。
+
+但是，使用定制ORM方式也有其缺点。正如第6章Domain-Events(领域事件)中解释到的，如果你的领域对创建Aggregate关注，则实体（以Aggregate聚合形式的）应该在构造函数中发起一个Event事件。如果你使用了new语句，则发起的事件将会和从数据库取出的Aggregate一样多。（译者注：因为从数据库取数据后并使用new关键字实例化对象，会发起事件）
+
+这也正是为什么Doctrine不使用构造函数，而是使用内部代理以及序列化、反序列化方法来重建一个特定状态的对象的原因，一个Entity实体在其生命周期中仅使用一次new关键词来创建：
+
+> **构造函数**
+> 
+> 构造函数不需要为对象中的每个属性都包含一个参数，想一下博客文章，其构造函数可能只需要一个id和title，但是在对象内部也能使它的状态属性设置成draft(草稿)，当发布文章时，publish方法会被调用，来修改文章的状态和发布时间。
+
+如果你仍然打算使用自己定制的ORM，需要准备解决一些问题。例如Event事件、不同的构造函数、值对象、懒加载关联数据等等，这就是为什么我们推荐使用Doctrine来开发DDD应用。
+
+此外，你需要创建一个继承了Product实体的DbalProduct实体，该实体能够当从数据库获取时不使用new关键字来重建对象，也不需要使用工厂方法。
+
+（未完待续）
