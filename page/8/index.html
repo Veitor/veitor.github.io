@@ -183,6 +183,101 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/crypt-encryption-functions-in-PHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/crypt-encryption-functions-in-PHP/" class="post-title-link" itemprop="url">了解PHP中crypt加密函数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-10 08:33:05" itemprop="dateCreated datePublished" datetime="2014-05-10T08:33:05+08:00">2014-05-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。 crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT_STD_DES 、CRYPT_EXT_DES、CRYPT_MD5、CRYPT_BLOWFISH、CRYPT_SHA256、CRYPT_SHA512。这些常量不是1就是0，也意味着其所对应的算法是否可用。 我们可以看一下下面代码的输出结果：</p>
+<p>if (CRYPT_STD_DES == 1) {<br>    echo ‘Standard DES: ‘ . crypt(‘rasmuslerdorf’, ‘rl’) . “<br>“;<br>}<br>if (CRYPT_EXT_DES == 1) {<br>    echo ‘Extended DES: ‘ . crypt(‘rasmuslerdorf’, ‘_J9..rasm’) . “<br>“;<br>}<br>if (CRYPT_MD5 == 1) {<br>    echo ‘MD5:          ‘ . crypt(‘rasmuslerdorf’, ‘$1$rasmusle$’) . “<br>“;<br>}<br>if (CRYPT_BLOWFISH == 1) {<br>    echo ‘Blowfish:     ‘ . crypt(‘rasmuslerdorf’, ‘$2a$07$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA256 == 1) {<br>    echo ‘SHA-256:      ‘ . crypt(‘rasmuslerdorf’, ‘$5$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA512 == 1) {<br>    echo ‘SHA-512:      ‘ . crypt(‘rasmuslerdorf’, ‘$6$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}</p>
+<p>输出结果：</p>
+<p>Standard DES: rl.3StKT.4T8M<br>Extended DES: _J9..rasmBYk8r9AiWNc<br>MD5: $1$rasmusle$rISCgZzpwk3UhDidwXvin0<br>Blowfish: $2a$07$usesomesillystringfore2uDLvp1Ii2e./U9C8sBjqp8I90dH6hi<br>SHA-256: $5$rounds=5000$usesomesillystri$KqJWpanXZHKq2BOB43TSaYhEWsQ1Lr5QNyPCDH/Tp.6<br>SHA-512: $6$rounds=5000$usesomesillystri$D4IrlXatmP7rx3P3InaxBeoomnAihCKRVQP22JZ6EY47Wc6BkroIuUUBOov1i.S5KPgErtP/EN5mcO.ChWQW21</p>
+<p>第一个结果是基于标准 DES 算法的散列，使用 “./0-9A-Za-z” 字符中的两个字符作为盐值，本例中使用了”rl”，你可以试一下添加更多字符如”rlsdfs”，输出结果还是不变的。手册中说，如果不提供salt，默认使用该算法，但我试过之后发现是使用的下面md5。 第二个结果是扩展的基于 DES 算法的散列。其盐值为 9 个字符的字符串，由 1 个下划线后面跟着 4 字节循环次数和 4 字节盐值组成。它们被编码成可打印字符，每个字符 6 位，有效位最少的优先。0 到 63 被编码为 “./0-9A-Za-z”。 第三个结果就是使用了md5后的散列，使用一个以 $1$ 开始的 12 字符的字符串盐值。 第四个Blowfish 算法使用如下盐值：“$2a$”，一个两位 cost 参数，“$” 以及 64 位由 “./0-9A-Za-z” 中的字符组合而成的字符串。在盐值中使用此范围之外的字符将导致 crypt() 返回一个空字符串。两位 cost 参数是循环次数以 2 为底的对数，它的范围是 04-31，超出这个范围将导致 crypt() 失败。 第五个结果是 SHA-256 算法，使用一个以 $5$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。 第六个是 SHA-512 算法，使用一个以 $6$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。</p>
+<hr>
+<p>大致的了解了一下crypt几种散列类型，但最终如何应用？ 使用crypt加密就是为了即使加密列表落入他人手中，也无法获得其明文，因为该加密是不可逆的。 单纯的使用crypt($input_pwd)会生成不同的随机值。（本人在win系统和centos上获得的都是基于md5的散列值，即$1$开头的随机值） 使用crypt加密方式有很多，你或许可以使用：</p>
+<?php
+$pwd = 'veitor';        //注册密码明文
+crypt($pwd);
+?php
+
+将注册密码明文用crypt随机生成的散列值存入数据库。 验证登陆时：
+
+<?php
+$input_pwd = 'veitor';              //表单输入密码明文
+crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗文
+?>
+
+<p>你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input_pwd, sub_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/javascript-image-preloading-technology/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +309,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -296,7 +391,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -391,7 +486,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -473,7 +568,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -549,7 +644,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -627,7 +722,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -712,7 +807,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -820,7 +915,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -905,7 +1000,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -937,82 +1032,6 @@ echo "<br>";
 <h2 id="2-1-概述"><a href="#2-1-概述" class="headerlink" title="2.1 概述:"></a>2.1 概述:</h2><p>进程就是一个程序运行的时候被CPU抽象出来的，一个程序运行后被抽象为一个进程，但是线程是从一个进程里面分割出来的，由于CPU处理进程的时候是采用时间片轮转的方式，所以要把一个大个进程给分割成多个线程，例如：网际快车中文件分成100部分 10个线程 文件就被分成了10份来同时下载 1-10 占一个线程 11-20占一个线程,依次类推,线程越多,文件就被分的越多,同时下载 当然速度也就越快 <strong>进程是程序在计算机上的一次执行活动。</strong>当你运行一个程序，你就启动了一个进程。显然，程序只是一组指令的有序集合，它本身没有任何运行的含义，只是一个静态实体。而进程则不同，它是程序在某个数据集上的执行，是一个动态实体。它因创建而产生，因调度而运行，因等待资源或事件而被处于等待状态，因完成任务而被撤消，反映了一个程序在一定的数据集上运行的全部动态过程。<strong>进程是操作系统分配资源的单位。</strong>在Windows下，进程又被细化为线程，也就是一个进程下有多个能独立运行的更小的单位。<strong>线程**</strong>(Thread)<strong><strong>是进程的一个实体，是</strong></strong>CPU<strong>**调度和分派的基本单位。</strong>线程不能够独立执行，必须依存在应用程序中，由应用程序提供多个线程执行控制。 <strong>线程和进程的关系是：</strong>线程是属于进程的，线程运行在进程空间内，同一进程所产生的线程共享同一内存空间，当进程退出时该进程所产生的线程都会被强制退出并清除。线程可与属于同一进程的其它线程共享进程所拥有的全部资源，但是其本身基本上不拥有系统资源，只拥有一点在运行中必不可少的信息(如程序计数器、一组寄存器和栈)。 在同一个时间里，同一个计算机系统中如果允许两个或两个以上的进程处于运行状态，这便是多任务。现代的操作系统几乎都是多任务操作系统，能够同时管理多个进程的运行。 多任务带来的好处是明显的，比如你可以边听mp3边上网，与此同时甚至可以将下载的文档打印出来，而这些任务之间丝毫不会相互干扰。那么这里就涉及到并行的问题，俗话说，一心不能二用，这对计算机也一样，原则上一个CPU只能分配给一个进程，以便运行这个进程。我们通常使用的计算机中只有一个CPU，也就是说只有一颗心，要让它一心多用，同时运行多个进程，就必须使用并发技术。实现并发技术相当复杂，<strong>最容易理解的是“时间片轮转进程调度算法”，</strong>它的思想简单介绍如下：在操作系统的管理下，所有正在运行的进程轮流使用CPU，每个进程允许占用CPU的时间非常短(比如10毫秒)，这样用户根本感觉不出来CPU是在轮流为多个进程服务，就好象所有的进程都在不间断地运行一样。但实际上在任何一个时间内有且仅有一个进程占有CPU。 如果一台计算机有多个CPU，情况就不同了，如果进程数小于CPU数，则不同的进程可以分配给不同的CPU来运行，这样，多个进程就是真正同时运行的，这便是并行。但如果进程数大于CPU数，则仍然需要使用并发技术。 <strong>在**</strong>Windows<strong><strong>中，进行</strong></strong>CPU<strong>**分配是以线程为单位的，</strong>一个进程可能由多个线程组成，这时情况更加复杂，但简单地说，有如下关系： 总线程数&lt;= CPU数量：并行运行 总线程数&gt; CPU数量：并发运行 并行运行的效率显然高于并发运行，所以在多CPU的计算机中，多任务的效率比较高。但是，如果在多CPU计算机中只运行一个进程(线程)，就不能发挥多CPU的优势。  多任务操作系统(如Windows)的基本原理是:操作系统将CPU的时间片分配给多个线程,每个线程在操作系统指定的时间片内完成(注意,这里的多个线程是分属于不同进程的).操作系统不断的从一个线程的执行切换到另一个线程的执行,如此往复,宏观上看来,就好像是多个线程在一起执行.由于这多个线程分属于不同的进程,因此在我们看来,就好像是多个进程在同时执行,这样就实现了多任务.</p>
 <h2 id="2-2-分类"><a href="#2-2-分类" class="headerlink" title=" 2.2 分类"></a> 2.2 分类</h2><p>根据进程与线程的设置，操作系统大致分为如下类型： (1) 单进程、单线程，MS-DOS大致是这种操作系统； (2) 多进程、单线程，多数UNIX(及类UNIX的LINUX)是这种操作系统； (3) 多进程、多线程，Win32(Windows NT/2000/XP等)、Solaris 2.x和OS/2都是这种操作系统； (4) 单进程、多线程，VxWorks是这种操作系统。</p>
 <h2 id="2-3-引入线程带来的主要好处："><a href="#2-3-引入线程带来的主要好处：" class="headerlink" title="2.3 引入线程带来的主要好处："></a>2.3 引入线程带来的主要好处：</h2><p>(1) 在进程内创建、终止线程比创建、终止进程要快； (2) 同一进程内的线程间切换比进程间的切换要快,尤其是用户级线程间的切换。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/SNS-website-feed-design/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/SNS-website-feed-design/" class="post-title-link" itemprop="url">SNS网站Feed功能设计</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-04-11 08:00:56" itemprop="dateCreated datePublished" datetime="2014-04-11T08:00:56+08:00">2014-04-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
-                    <span itemprop="name">设计模式</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在SNS的网站中，最核心的功能就是Feed功能，Feed就是一条twitter或一条好友动态。该功能面临的挑战是：每天产生成千上万条数据，数据推送的需要实时性等，做网站其实最大的难点就是对海量数据和高并发的处理。本人通过对Twitter和新浪微博架构的一些资料的学习，大致了解了如何实现一个Feed功能。一个Feed功能往往有多种实现方式，最常见的是这3种：推模式、拉模式、推拉结合模式。 <strong>推模式：</strong> 推就是把自己的发的feed推送到每个粉丝那里，就是一条feed在数据库中存储多份，做法就将feed表按userId分库，对应粉丝Id的库中插一条记录。这种做法的缺点就是数据量大，数据冗余太严重，如一个明星用户有1000万粉丝，那么他发一条feed,就要产生1000万条记录。Feed的推送需要异步队列，队列的好处就是降并发，推送是需要时间的，所以一个明星发了一条feed后，当最后那个粉丝看到这条feed可能已经是几分钟后的事情了。这种模式的优点是用户查看Feed就很容易了，根据userId查询就可以了。这种做法是牺牲大量储存空间来换取网站的查看性能。 <strong>拉模式：</strong> 拉就是用户要查看动态时就去每个关注者那边找，然后聚合并展现。Feed数据只储存一份，省了很多空间。这种模式在用户量较小的网站就很容易实现，展示只要一条SQL语句。但是当用户多了以后就会遇到问题，比如我关注了2000个用户，而这2000个用户都是活跃用户，每天都会产生很多feed。我查看 feed时就要去2000个关注者那里找最新的几条，合并和按时间排序，每次查看一条查询语句就快把数据库搞得累死，而且合并和排序这些feed计算量太大。拉模式在用户关注人数很多的网站不太适合。 <strong>推拉结合：</strong> 顾名思义就是两种模式的结合，将两者的优点结合。不活跃的用户（偶偶上线，关注人数又少的僵死用户等）推送的时候就不要推送给他们，省点资源，当他们上线查看时就直接拉，因为他们关注的人比较少，拉也不是很耗性能。 最后，不管采用什么方法实现，少不了异步队列，nosql等工具。比如发表feed的时候就往队列里一扔，前端马上返回，异步慢慢处理，而用户一点也察觉不出来。Nosql缓存，比如一些计数（关注数、粉丝数神马的）直接用redis、TT等储存，还有feed列表可以存储在memcached或redis 中，redis的list功能很适合这种情形，但是一些大网站还不敢这么做。 以上借鉴于新浪微博架构PPT。</p>
 
       
     </div>
@@ -1077,7 +1096,7 @@ echo "<br>";
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-count">83</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

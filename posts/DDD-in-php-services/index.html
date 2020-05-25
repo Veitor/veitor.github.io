@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Soft">
+<meta name="keywords" content="ddd,领域驱动设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]服务 - 《Domain-Driven Design in PHP》第5章">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;DDD-in-php-services&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Soft">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-05-25T09:55:33.285Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-services/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>[译]服务 - 《Domain-Driven Design in PHP》第5章 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-services/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          [译]服务 - 《Domain-Driven Design in PHP》第5章
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-25 09:58:39 / 修改时间：17:55:33" itemprop="dateCreated datePublished" datetime="2020-05-25T09:58:39+08:00">2020-05-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Software:》书中说的话：</p>
+<blockquote>
+<p>当领域中的一个重要过程或转化不是实体或者值对象的自然职责时，增加一个操作作为一个单独的接口，此时该接口被声明为Service领域服务。根据模型的通用语言定义接口，并确保名称是通用语言中的一部分，是服务成为无状态。</p>
+</blockquote>
+<p>因此，当有一些操作，并且实体和值对象不是最佳的选择时，你应该考虑将这些操作建模为领域服务。在领域驱动设计中，通常会遇到三种不同类型的服务：</p>
+<ul>
+<li><p>应用服务（Application Services）：对标量类型进行操作，并将该类型数据转换为领域类型。一个标量类型可以被视为领域模型中的任一未知类型。这包含了原始类型和不属于领域的类型。我们也会在本章中提供简单概述，但如果要深入了解请查看第11章内容Application。</p>
+</li>
+<li><p>领域服务（Domain Service）：只对属于领域的类型进行操作。它们包含了通用语言中的有意义的概念。它们持有不适合在值对象和实体中出现的操作。</p>
+</li>
+<li><p>基础设施服务（Infrastructure Service）：满足基础架构问题的操作。例如发送邮件、记录日志数据等。就六边形架构而言，它们位于领域层之外。</p>
+</li>
+</ul>
+<h2 id="应用服务"><a href="#应用服务" class="headerlink" title="应用服务"></a>应用服务</h2><p>应用服务是位于外部世界和领域逻辑的中间者。其目的是将外部世界的命令转换为有意义的领域中的指令。</p>
+<p>让我们思考一下<code>用户在我们平台中注册</code>的用例。由外部到内部来看：从分发机制（delivery mechanism）开始，我们需要为领域操作编写输入请求。使用Symfony之类的框架作为分发机制，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">signUpAction</span><span class="params">(Request $request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $signUpService = <span class="keyword">new</span> SignUpUserService(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;get(<span class="string">'user_repository'</span>)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            $response = $signUpService-&gt;execute(<span class="keyword">new</span> SignUpUserRequest(</span><br><span class="line">                $request-&gt;request-&gt;get(<span class="string">'email'</span>),</span><br><span class="line">                $request-&gt;request-&gt;get(<span class="string">'password'</span>)</span><br><span class="line">            ));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UserAlreadyExistsException $e) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;render(<span class="string">'error.html.twig'</span>, $response);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;render(<span class="string">'success.html.twig'</span>, $response);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如你所见，我们创建了应用服务的一个新实例，传入所有依赖的信息，在这个用例中，是一个<code>UserRepository</code>。<code>UserRepository</code>是一个可以使用任何技术（如Mysql、redis、Elasticsearch等）实现的interface。然后，我们为应用服务创建一个请求对象，为了从业务逻辑中抽象出分发机制。在这例子中，是一个web请求。最后，我们执行应用服务，获取响应，并使用响应来渲染结果。在领域方面，让我们看一下应用服务可能的实现，该实现协调了满足用户注册用例的逻辑：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpUserService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserRepository $userRepository)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">(SignUpUserRequest $request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = <span class="keyword">$this</span>-&gt;userRepository-&gt;userOfEmail($request-&gt;email);</span><br><span class="line">        <span class="keyword">if</span> ($user) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UserAlreadyExistsException();</span><br><span class="line">        &#125;</span><br><span class="line">        $user = <span class="keyword">new</span> User(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;userRepository-&gt;nextIdentity(),</span><br><span class="line">            $request-&gt;email,</span><br><span class="line">            $request-&gt;password</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository-&gt;add($user);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SignUpUserResponse($user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码中的所有东西都是与我们想要解决的领域问题相关，而不是与我们想要解决问题时使用的特定技术有关。利用这一点，我们可以将高级策略和低级实现细节分开。承载分发机制与领域之间联系信息的数据结构被称之为<code>DTO</code>，我们在第2章架构风格中介绍过：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpUserRequest</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $email;</span><br><span class="line">    <span class="keyword">public</span> $password;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($email, $password)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;email = $email;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;password = $password;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于返回的内容有许多的不同策略。但是现在，我们不应该return我们的实体，以至于不让它们在应用服务的外部被修改。这就是为啥通常都返回另一个DTO，而不是整个实体。看一下简单示例：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpUserResponse</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $id;</span><br><span class="line">    <span class="keyword">public</span> $email;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(User $user)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;id = $user-&gt;id();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;email = $user-&gt;email();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于创建你的响应，你可以使用getter方法或者直接公开对象实例的属性。应用服务应该注意事务范围和安全性。但是你将在第11章“应用程序”中深入了解与应用服务有关的更多内容。</p>
+<h2 id="领域服务"><a href="#领域服务" class="headerlink" title="领域服务"></a>领域服务</h2><p>在与领域专家的整个对话中，你会遇到通用语言中的概念。这些概念不能被巧妙的表示为实体或值对象，例如：</p>
+<ul>
+<li>用户可以自己登录系统</li>
+<li>一个购物车能够自己成为一个订单</li>
+</ul>
+<p>这是两个具体概念，它们都不能自然的以实体或者值对象的形式来表示。为了进一步强调这一点，我们尝试这样建模：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">signUp</span><span class="params">($aUsername, $aPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cart</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">createOrder</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一个用例的实现，我们不知道给定的用户名和密码与被调用的user实例是否有关。显然，此操作不适合这个实体；相反，应将其提取到一个单独的类中，使其意图明确。</p>
+<p>有了这一点，我们可以创建一个完全负责验证用户身份的领域服务：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUp</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($aUsername, $aPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样，第二个例子我们可以一个领域服务专门用于从提供的购物车中创建订单：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CreateOrderFromCart</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">(Cart $aCart)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>领域服务被定义为一个操作，这些操作不适合在实体或值对象中表示。作为领域中操作的概念，由客户端使用领域服务，而不用管其之前的历史记录，因为领域本身不拥有任何状态，所以领域服务是无状态的。</p>
+<h2 id="领域服务和基础设施服务"><a href="#领域服务和基础设施服务" class="headerlink" title="领域服务和基础设施服务"></a>领域服务和基础设施服务</h2><p>在对领域服务建模时，通常会遇到基础设施依赖的问题。例如，在需要处理哈希密码的情况下，你可以使用<a href="https://martinfowler.com/eaaCatalog/separatedInterface.html" target="_blank" rel="noopener">Separated Interface</a>，这允许接口定义多种哈希机制。使用此模式仍然可以为你提供领域和基础设施之间关注点的分离：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Domain</span>\<span class="title">Model</span>;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">SignUp</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($aUsername, $aPassword)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用上面领域中定义的接口，我们可以在Infrastructure层中创建一个实现：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Infrastructure</span>\<span class="title">Authentication</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DefaultHashingSignUp</span> <span class="keyword">implements</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">SignUp</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserRepository $userRepository)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($aUsername, $aPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;userRepository-&gt;has($aUsername)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> UserDoesNotExistException::fromUsername($aUsername);</span><br><span class="line">        &#125;</span><br><span class="line">        $aUser = <span class="keyword">$this</span>-&gt;userRepository-&gt;byUsername($aUsername);</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isPasswordValidForUser($aUser, $aPassword)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BadCredentialsException($aUser, $aPassword);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $aUser;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">isPasswordValidForUser</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        User $aUser, $anUnencryptedPassword</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> password_verify($anUnencryptedPassword,$aUser-&gt;hash());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是我们另一个基于MD5算法的实现：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Infrastructure</span>\<span class="title">Authentication</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">SignUp</span></span><br><span class="line"><span class="title">class</span> <span class="title">Md5HashingSignUp</span> <span class="title">implements</span> <span class="title">SignUp</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="title">const</span> <span class="title">SALT</span> = '<span class="title">S0m3S4lT</span>' ;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserRepository $userRepository)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($aUsername, $aPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;userRepository-&gt;has($aUsername)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InvalidArgumentException(</span><br><span class="line">            sprintf(<span class="string">'The user "%s" does not exist.'</span>, $aUsername)</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">        $aUser = <span class="keyword">$this</span>-&gt;userRepository-&gt;byUsername($aUsername);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isPasswordInvalidFor($aUser, $aPassword)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BadCredentialsException($aUser, $aPassword);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $aUser;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">salt</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> md5(<span class="keyword">self</span>::SALT);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">isPasswordInvalidFor</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        User $aUser, $anUnencryptedPassword</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        $encryptedPassword = md5(</span><br><span class="line">            $anUnencryptedPassword . <span class="string">'_'</span> .<span class="keyword">$this</span>-&gt;salt()</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span> $aUser-&gt;hash() !== $encryptedPassword;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样我们可以在Infrastructure层允许对领域服务的interface有多种实现。每个基础设施服务将会负责处理一种不同的哈希机制。根据实现，其用法可以通过ID容器轻松管理，例如Symfony的依赖注入组件（译者注：这里建议大家可以先去了解一下<code>依赖注入</code>相关的概念）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">container</span></span></span><br><span class="line"><span class="tag"><span class="attr">xmlns</span>=<span class="string">"http://symfony.com/schema/dic/services"</span></span></span><br><span class="line"><span class="tag"><span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag"><span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">http://symfony.com/schema/dic/services</span></span></span><br><span class="line"><span class="tag"><span class="string">http://symfony.com/schema/dic/services/services-1.0.xsd"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">services</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">id</span>=<span class="string">"sign_in"</span> <span class="attr">alias</span>=<span class="string">"sign_in.default"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">id</span>=<span class="string">"sign_in.default"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"Ddd\Auth\Infrastructure\Authentication</span></span></span><br><span class="line"><span class="tag"><span class="string">        \DefaultHashingSignUp"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">argument</span> <span class="attr">type</span>=<span class="string">"service"</span> <span class="attr">id</span>=<span class="string">"user_repository"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">id</span>=<span class="string">"sign_in.md5"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"Ddd\Auth\Infrastructure\Authentication</span></span></span><br><span class="line"><span class="tag"><span class="string">        \Md5HashingSignUp"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">argument</span> <span class="attr">type</span>=<span class="string">"service"</span> <span class="attr">id</span>=<span class="string">"user_repository"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">services</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">container</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果未来我们希望处理新的哈希机制，我们可以简单的去实现领域服务接口。然后在依赖注入容器中声明领域服务，然后用新创建的服务别名替换之前用的服务别名。</p>
+<h4 id="代码重用问题"><a href="#代码重用问题" class="headerlink" title="代码重用问题"></a>代码重用问题</h4><p>尽管之前描述的实现明确定义了关注点分离，但每次我们希望实现新的哈希机制时，都需要重复密码验证算法。解决此问题的另一种方法是分离这两个职责，从而提高代码的复用性。相反，我们可以对已有的哈希算法使用策略模式，将密码哈希逻辑提取到专门的类里：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Ddd</span>\<span class="title">Auth</span>\<span class="title">Domain</span>\<span class="title">Model</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUp</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    <span class="keyword">private</span> $passwordHashing;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        UserRepository $userRepository, PasswordHashing $passwordHashing</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;passwordHashing = $passwordHashing;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($aUsername, $aPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;userRepository-&gt;has($aUsername)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InvalidArgumentException(</span><br><span class="line">                sprintf(<span class="string">'The user "%s" does not exist.'</span>, $aUsername)</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">        $aUser = <span class="keyword">$this</span>-&gt;userRepository-&gt;byUsername($aUsername);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isPasswordInvalidFor($aUser, $aPassword)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BadCredentialsException($aUser, $aPassword);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $aUser;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">isPasswordInvalidFor</span><span class="params">(User $aUser, $plainPassword)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> !<span class="keyword">$this</span>-&gt;passwordHashing-&gt;verify(</span><br><span class="line">            $plainPassword,</span><br><span class="line">            $aUser-&gt;hash()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PasswordHashing</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> string $password</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> string $hash</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> boolean</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">verify</span><span class="params">($plainPassword, hash)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义不同的哈希策略如同实现<code>PasswordHashing</code>接口一样简单：</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/DDD-in-php-value-objects/" rel="prev" title="[译]值对象 - 《Domain-Driven Design in PHP》第3章">
+      <i class="fa fa-chevron-left"></i> [译]值对象 - 《Domain-Driven Design in PHP》第3章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/DDD-in-php-entities/" rel="next" title="[译]实体 - 《Domain-Driven Design in PHP》第4章">
+      [译]实体 - 《Domain-Driven Design in PHP》第4章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#应用服务"><span class="nav-number">1.</span> <span class="nav-text">应用服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#领域服务"><span class="nav-number">2.</span> <span class="nav-text">领域服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#领域服务和基础设施服务"><span class="nav-number">3.</span> <span class="nav-text">领域服务和基础设施服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码重用问题"><span class="nav-number">3.0.1.</span> <span class="nav-text">代码重用问题</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: '8fffdd9e888794e7cafb',
+      clientSecret: '0872a3a09ec34237e75dea75b447b71bde06c873',
+      repo: 'veitor.github.io',
+      owner: 'veitor',
+      admin: ['veitor'],
+      id: 'c41dfa1b5ba941b4a0b2df43494c158d',
+        language: '',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

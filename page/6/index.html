@@ -183,6 +183,120 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/how-websites-fit-Retina-screens/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/how-websites-fit-Retina-screens/" class="post-title-link" itemprop="url">网站如何适配Retina屏幕</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-08-28 00:37:21" itemprop="dateCreated datePublished" datetime="2014-08-28T00:37:21+08:00">2014-08-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h1><p>随着2012年苹果发布第一款Retina Macbook Pro（以下简称RMBP），Retina屏幕开始进入笔记本行业。两年过去了，RMBP的市场占有率越来越高，且获得了一大批设计师朋友的青睐，网站对于Retina屏幕的适配越来越重要。 如果大家对于Retina适配的重要性不是特别清楚，请看我的两个截图： <a href="http://storage.veitor.net/uploads/2014/08/QQ20140827-1@2x.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ20140827-1@2x.jpg" alt="QQ20140827-1@2x"></a> 上图是Google的首页LOGO，我们对比下图SOSO的LOGO： <a href="http://storage.veitor.net/uploads/2014/08/QQ20140827-2@2x.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ20140827-2@2x.jpg" alt="QQ20140827-2@2x"></a> 如果大家还是看不出来，请自行访问这两个网站或者下载附件的截图对比。 那么说完了重要性，适配Retina的原理又是什么呢？我们知道，当一个图像在标准设备下全屏显示时，一位图像素对应的就是一设备像素，导致一个完全保 真的显示，因为一个位置像素不能进一步分裂。而当在Retina屏幕下时，他要放大四倍来保持相同的物理像素的大小，这样就会丢失很多细节，造成失真的情 形。换句话说，每一位图像素被乘以四填补相同的物理表面在视网膜屏幕下显示。（摘自《走向视网膜（Retina）的Web时代》） 那么，解决方法相信大家也都听过，就是通过手动制图或以编程的方式制作两种不同的图形，一张是普通屏幕的图片，另外一种是Retina屏幕的图形，而且Retina屏幕下的图片是普通屏幕的两倍像素。 原理虽然简单，在现实中要实现就不仅仅如此，需综合考虑加载速度，浏览器适配等多方面因素，本文就是教大家如何对Retina的屏幕进行适配。</p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h3 id="1-直接加载2倍大小的图片。"><a href="#1-直接加载2倍大小的图片。" class="headerlink" title="1.直接加载2倍大小的图片。"></a><strong>1.直接加载2倍大小的图片。</strong></h3><p>假如要显示的图片大小为200px*300px，你准备的实际图片大小应该为400px*600px，并且使用以下代码控制即可：</p>
+<img src="pic.png" height="200px" width="300px" />
+
+<p>这种方法就解决了Retina显示不清楚的问题，但是在普通屏幕下，这种图片要经过浏览器的压缩，在IE6和IE7上有十分差得显示效果，同时，两倍大小的图片势必会导致页面加载时间加长，用户体验下降，此时，我们可以通过Retina.js（<a href="http://retinajs.com/" target="_blank" rel="noopener">http://retinajs.com/</a>）文件解决：</p>
+<pre><code>&lt;img class=&quot;pic&quot; src=&quot;pic.png&quot; height=&quot;200px&quot; width=&quot;300px&quot;/&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+$(document).ready(function () {
+if (window.devicePixelRatio &gt; 1) {
+var images = $(&quot;img.pic&quot;);
+images.each(function(i) {
+var x1 = $(this).attr(&apos;src&apos;);
+var x2 = x1.replace(/(.*)(.w+)/, &quot;$1@2x$2&quot;);
+$(this).attr(&apos;src&apos;, x2);
+});
+}
+});
+&lt;/script&gt;</code></pre><h3 id="2-Image-set控制"><a href="#2-Image-set控制" class="headerlink" title="2.Image-set控制"></a>2.Image-set控制</h3><p>假如要显示的图片大小为200px*300px，你准备的图片应有两张：一张大小为200px*300px，命名为pic.png；另一张大小为 400px*600px，命名为<a href="mailto:pic@2x.png" target="_blank" rel="noopener">pic@2x.png</a>（@2x是Retina图标的标准命名方式），然后使用以下css代码控制：</p>
+<pre><code>#logo {
+background: url(pic.png) 0 0 no-repeat;
+background-image: -webkit-image-set(url(pic.png) 1x, url(pic@2x.png) 2x);
+background-image: -moz-image-set(url(pic.png) 1x,url(images/pic@2x.png) 2x);
+background-image: -ms-image-set(url(pic.png) 1x,url(images/pic@2x.png) 2x);
+background-image: -o-image-set(url(url(pic.png) 1x,url(images/pic@2x.png) 2x);
+}</code></pre><p>或者使用HTML代码控制亦可：</p>
+<img src="pic.png" srcset="pic@2x.png 2x" />
+
+
+
+<h3 id="3-使用-media控制"><a href="#3-使用-media控制" class="headerlink" title="3.使用@media控制"></a>3.使用@media控制</h3><p>实际是判断屏幕的像素比来取舍是否显示高分辨率图像，代码如下：</p>
+<pre><code>@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+       only screen and (min--moz-device-pixel-ratio: 1.5), /* 注意这里的写法比较特殊 */
+       only screen and (-o-min-device-pixel-ratio: 3/2),
+       only screen and (min-device-pixel-ratio: 1.5) {
+#logo {
+background-image: url(pic@2x.png);
+background-size: 100px auto;
+}
+}</code></pre><p>使用这个的确定就是IE6、7、8不支持@media，所以无效。但是如果你只是支持苹果的RMBP的话，不存在兼容问题，因为MacOS X上压根没有IE！哈哈哈！ <strong>OK，本文到这里就结束了，介绍了上面的三个办法大家可以各有取舍的使用吧~</strong> 附件：<a href="http://storage.veitor.net/uploads/2014/08/76757.1946.zip" target="_blank" rel="noopener">附件</a> 原文地址：<a href="http://www.ui.cn/project.php?id=24556" target="_blank" rel="noopener">http://www.ui.cn/project.php?id=24556</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/taling-about-XSS-and-CSRF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +328,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -453,7 +567,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -529,7 +643,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -661,7 +775,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -739,7 +853,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -871,7 +985,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -950,7 +1064,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1037,7 +1151,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1128,7 +1242,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
+                <time title="修改时间：2020-05-25 17:55:33" itemprop="dateModified" datetime="2020-05-25T17:55:33+08:00">2020-05-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1154,82 +1268,6 @@
 
       
           <p>Unix（包含Linux）的初学者，常常会很困惑，不明白目录结构的含义何在。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" alt="bg2012020601"></a> 举例来说，根目录下面有一个子目录/bin，用于存放二进制程序。但是，/usr子目录下面还有/usr/bin，以及/usr/local/bin，也用于存放二进制程序；某些系统甚至还有/opt/bin。它们有何区别？ 长久以来，我也感到很费解，不明白为什么这样设计。像大多数人一样，我只是根据<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html" target="_blank" rel="noopener">《Unix文件系统结构标准》</a>（Filesystem Hierarchy Standard），死记硬背不同目录的区别。 昨天，我读到了Rob Landley的<a href="http://lists.busybox.net/pipermail/busybox/2010-December/074114.html" target="_blank" rel="noopener">简短解释</a>，这才恍然大悟，原来Unix目录结构是历史造成的。 话说1969年，<a href="http://www.ruanyifeng.com/blog/2009/06/unix_turns_40.html" target="_blank" rel="noopener">Ken Thompson</a>和<a href="http://www.ruanyifeng.com/blog/2011/10/dennis_ritchie.html" target="_blank" rel="noopener">Dennis Ritchie</a>在小型机PDP-7上发明了Unix。1971年，他们将主机升级到了PDP-11。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" alt="bg2012020602"></a>当时，他们使用一种叫做RK05的储存盘，一盘的容量大约是1.5MB。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" alt="bg2012020603"></a> 没过多久，操作系统（根目录）变得越来越大，一块盘已经装不下了。于是，他们加上了第二盘RK05，并且规定第一块盘专门放系统程序，第二块盘专门 放用户自己的程序，因此挂载的目录点取名为/usr。也就是说，根目录”/“挂载在第一块盘，”/usr”目录挂载在第二块盘。除此之外，两块盘的目录结 构完全相同，第一块盘的目录（/bin, /sbin, /lib, /tmp…）都在/usr目录下重新出现一次。 后来，第二块盘也满了，他们只好又加了第三盘RK05，挂载的目录点取名为/home，并且规定/usr用于存放用户的程序，/home用于存放用户的数据。 从此，这种目录结构就延续了下来。随着硬盘容量越来越大，各个目录的含义进一步得到明确。 <strong>/</strong>：存放系统程序，也就是At&amp;t开发的Unix程序。 <strong>/usr</strong>：存放Unix系统商（比如IBM和HP）开发的程序。 <strong>/usr/local</strong>：存放用户自己安装的程序。 <strong>/opt</strong>：在某些系统，用于存放第三方厂商开发的程序，所以取名为option，意为”选装”。 （完）</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/usage-of-SVN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/usage-of-SVN/" class="post-title-link" itemprop="url">SVN使用方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-07-14 07:05:58" itemprop="dateCreated datePublished" datetime="2014-07-14T07:05:58+08:00">2014-07-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-25 15:22:06" itemprop="dateModified" datetime="2020-05-25T15:22:06+08:00">2020-05-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>问题一：Revert changes from this revision 跟Revert to this</strong> 譬如有个文件，有十个版本，假定版本号是1，2，3，4，5，6，7，8，9，10。 (1)Revert to this revision： 如果是在版本6这里点击“Revert to this revision”，表示7～10的修改全部作废，历史倒退到了版本6那个年代。 (2)Revert changes from this revision：如果是在版本6这里点击“Revert changes from this revision”，表示版本6这个历史事件被抹杀了，只剩下除版本6外的9个历史事件了。 如果俺是同时选择了6，7，8三个历史时期并点击“Revert changes from this revision”，表示抹杀6~8这仨历史时期。 同理，如果同时选择7～10，然后点击“Revert changes from this revision”，则效果跟在版本6这里点击“Revert to this revision”是一样的。 TortoiseSVN是windows下其中一个非常优秀的SVN客户端工具。通过使用它，我们可以可视化的管理我们的版本库。不过由于它只是一个客户端，所以它不能对版本库进行权限管理。 TortoiseSVN不是一个独立的窗口程序，而是集成在windows右键菜单中，使用起来比较方便。 01、SVN Checkout(SVN取出) 点击SVN Checkout，弹出检出提示框，在URL of repository输入框中输入服务器仓库地址，在Checkout directory输入框中输入本地工作拷贝的路径，点击确定，即可检出服务器上的配置库。 02、SVN Update(SVN更新) 如果配置库在本地已有工作拷贝，则取得最新版本只是执行SVN Update即可，点击SVN Update，系统弹出更新提示框，点击确定，则把服务器是最新版本更新下来 03、Import（导入） 选择要提交到服务器的目录，右键选择TortoiseSVN—-Import，系统弹出导入提示框，在URL of repository输入框中输入服务器仓库地址，在Import Message输入框中输入导入日志信息，点击确定，则文件导入到服务器仓库中。 04、Add(加入) 如果有多个文件及文件夹要提交到服务器，我们可以先把这些要提交的文件加入到提交列表中，要执行提交操作，一次性把所有文件提交，如图，可以选择要提交的文件，然后点击执行提交（SVN Commit）,即可把所有文件一次性提交到服务器上 05、Resolving Conflicts(解决冲突) 有时你从档案库更新文件会有冲突。冲突产生于两人都修改文件的某一部分。解决冲突只能靠人而不是机器。当产生冲突时，你应该打开冲突的文件，查找以&lt;&lt;&lt;&lt;&lt;&lt;&lt;开始的行。冲突部分被标记： &lt;&lt;&lt;&lt;&lt;&lt;&lt; filename your changes ======= code merged from repository &gt;&gt;&gt;&gt;&gt;&gt;&gt; revision Subversion为每个冲突文件产生三个附加文件： filename.ext.mine 更新前的本地文件。 filename.ext.rOLDREV 你作改动的基础版本。 filename.ext.rNEWREV 更新时从档案库得到的最新版本。 使 用快捷菜单的编辑冲突Edit Conflict命令来解决冲突。然后从快捷菜单中执行已解决Resolved命令，将改动送交到档案库。请注意，解决命令并不解决冲突，而仅仅是删除 filename.ext.mineandfilename.ext.r<em>文件并允许你送交。 06、Check for Modifications（检查更新） 点击Check for Modifications,系统列表所以待更新的文件及文件夹的状态. 07、Revision Graph(版本分支图) 查看文件的分支,版本结构,可以点击Revision Graph,系统以图形化形式显示版本分支. 08、Rename(改名) SVN支持文件改名,点击Rename,弹出文件名称输入框,输入新的文件名称,点击确定,再把修改提交,即可完成文件改名 09、Delete(删除) SVN支持文件删除,而且操作简单,方便,选择要删除的文件,点击Delete,再把删除操作提交到服务器 10、Moving(移动) 选择待移动的文件和文件夹；按住右键拖动right-drag文件（夹）到跟踪拷贝内的新地方；松开左键；在弹出菜单中选择move files in Subversion to here 11、Revert(还原) 还原操作,如刚才对文件做了删除操作,现在把它还原回来,点击删除后,再点击提交,会出现如上的提示框,点击删除后,再点击Revert,即已撤销删除操作,如果这时候点击提交,则系统弹出提示框:没有文件被修改或增加,不能提交 12、Branch/Tag(分支/标记) 当需要创建分支，点击Branch/Tag，在弹出的提示框中，输入分支文件名，输入日志信息，点击确定，分支创建成功，然后可查看文件的版本分支情况 13、Switch(切换) 文件创建分支后，你可以选择在主干工作，还是在分支工作，这时候你可以通过Switch来切换。 14、Merge(合并) 主干和分支的版本进行合并，在源和目的各输入文件的路径，版本号，点击确定。系统即对文件进行合并，如果存在冲突，请参考冲突解决。 15、Export(导出) 把整个工作拷贝导出到本地目录下,导出的文件将不带svn文件标志,文件及文件夹没有绿色的”√”符号标志。 16、Relocate(重新定位) 当服务器上的文件库目录已经改变，我们可以把工作拷贝重新定位，在To URL输入框中输入新的地址 17、Add to Ignore List(添加到忽略列表) 大多数项目会有一些文件（夹）不需要版本控制，如编译产生的</em>.obj, *.lst,等。每次送交，TortoiseSVN提示那些文件不需要控制，挺烦的。这时候可以把这些文件加入忽略列表。 18、SVN其它相关功能 客户端修改用户密码: 打开浏览器,在地址栏内输入<a href="http://192.168.1.250/cgi-bin/ChangePasswd" target="_blank" rel="noopener">http://192.168.1.250/cgi-bin/ChangePasswd</a>,启动客户端修改用户密码的界面,输入正确的用户名,旧密码,新密码(注意密码的位数应该不小于6,尽量使用安全的密码),点击修改即可. 19、SVN Commit（版本提交） 把自己工作拷贝所做的修改提交到版本库中，这样别人在获取最新版本(Update)的时候就可以看到你的修改了。 20、Show log（显示日志） 显示当前文件(夹)的所有修改历史。SVN支持文件以及文件夹独立的版本追溯。 21、Repo-Browser（查看当前版本库） 查看当前版本库，这是TortoiseSVN查看版本库的入口，通过这个菜单项，我们就可以进入配置库的资源管理器，然后就可以对配置库的文件夹进行各种管理，相当于我们打开我的电脑进行文件管理一样。 22、Revision Graph（版本图形） 查看当前项目或文件的修订历史图示。如果项目比较大型的话，一般会建多个分支，并且多个里程碑（稳定版本发布），通过这里，我们就可以看到项目的全貌。 23、Resolved（解决冲突） 如果当前工作拷贝和版本库上的有冲突，不能自动合并到一起，那么当你提交修改的时 候，tortoisesvn就会提示你存在冲突，这时候你就可以通过这个菜单项来解决冲突。冲突的解决有两种，一种是保留某一份拷贝，例如使用配置库覆盖 当前工作拷贝，或者反过来。还有一种是手动解决冲突，对于文本文件，可以使用tortoiseSVN自带的工具，它会列出存在冲突的地方，然后你就可以和 提交者讨论怎么解决这个冲突。同时它也对Word有很好的支持 24、Update to Revision(更新至版本) 从版本库中获取某一个历史版本。这个功能主要是方便查看历史版本用，而 不是回滚版本。注意：获取下来之后，对这个文件不建议进行任何操作。如果你做了修改，那么当你提交的时候SVN会提示你，当前版本已失效（即不是最新版 本），无法提交，需要先update一下。这样你所做的修改也就白费了。 25、Revert（回滚） 如果你对工作拷贝做了一些修改，但是你又不想要了，那么你可以使用这个选项把所做的修改撤销 26、Cleanup（清除状态） 如果当前工作拷贝有任何问题的话，可以使用这个选项进行修正。例如，有些文件原来是版本控制的， 但是你没有通过tortoiseSVN就直接删除了，但是tortoiseSVN还是保留着原来的信息（每个文件夹下都有一个.svn的隐藏文件夹，存放 着当前文件夹下所有文件夹的版本信息）所以这就会产生一些冲突。可以使用cleanup来清理一下。 27、GetLock/ReleaseLock（加锁/解锁） 如果你不想别人修改某个文件的话，那么你就可以把这个文件进行加锁，这样可以保证只有你对这个文件有修改权。除非你释放了锁，否则别人不可能提交任何修改到配置库中 28、Branch/tag（分支/标签） Branch是分支的意思。例如当在设计一个东西的时候，不同的人有不同的实现，但是没有经过实践检验，谁也不想直接覆盖掉其他人的设计，所以可以引出不同的分支。将来如果需要，可以将这些分支进行合并。 tag是打标签的意思。通常当项目开发到一定程度，已经可以稳定运行的时候，可以对其打上一个标签，作为稳定版。将来可以方便的找到某个特定的版本（当然我们也可以使用版本号来查找，但是数字毕竟不方便） SVN对于分支和标签都是采用类似Linux下硬链接的方式（同一个文件可以存在两个地方，删除一个不会影响另一个，所做修改会影响另一个），来管理文件的，而不是简单的复制一份文件的拷贝，所以不会有浪费存储空间的问题存在。 29、Export（导出） 这个功能是方便我们部署用。当我们需要发布一个稳定版本时，就可以使用这个功能将整个工程导出到某个文件夹，新的文件夹将不会包含任何版本信息了。 30、Relocate（版本库转移） 当我们版本库发生转移的时候就需要用到这个功能了。例如我原先的版本库是建在U盘上的，现在转移到（复制整个配置库文件夹）开发服务器上，使用https代替文件系统的访问。因此就需要将原来的工作拷贝的目标版本库重新定位到开发服务器上。 31、create patch（创建补丁） 创建补丁。如果管理员不想让任何人都随便提交修改，而是都要经过审核才能做出修改，那么其他人就可以通过创建补丁的方式，把修改信息（补丁文件）发送给管理员，管理员审核通过之后就可以使用apply patch提交这次修改了。 32、diff (比较修改部分) 如果你修改了一个文件，又不确定改了那些地方，这时你可以在相应文件上点右键，选择diff查看，与服务器上最新版的差异</p>
 
       
     </div>
@@ -1294,7 +1332,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-count">83</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
