@@ -322,3 +322,315 @@ interface PasswordHashing
 ```
 定义不同的哈希策略如同实现`PasswordHashing`接口一样简单：
 
+```php
+namespace Ddd\Auth\Infrastructure\Authentication;
+class BasicPasswordHashing
+implements \Ddd\Auth\Domain\Model\PasswordHashing
+{
+    public function verify($plainPassword, $hash)
+    {
+        return password_verify($plainPassword, $hash);
+    }
+}
+class Md5PasswordHashing
+implements Ddd\Auth\Domain\Model\PasswordHashing
+{
+    const SALT = 'S0m3S4lT' ;
+    public function verify($plainPassword, $hash)
+    {
+        return $hash === $this-> calculateHash($plainPassword);
+    }
+    private function calculateHash($plainPassword)
+    {
+        return md5($plainPassword . '_' .$this-> salt());
+    }
+    private function salt()
+    {
+        return md5(self::SALT);
+    }
+}
+```
+
+测试领域服务
+---
+
+前面的多个领域服务用户认证示例，能够轻松被测试。但是，通常测试`Template Method`实现有些棘手，我们使用原生密码哈希实现来进行测试：
+
+```php
+class PlainPasswordHashing implements PasswordHashing
+{
+    public function verify($plainPassword, $hash)
+    {
+        return $plainPassword === $hash;
+    }
+}
+```
+
+现在我们可以在领域服务中测试所有的用例了：
+
+```php
+class SignUpTest extends PHPUnit_Framework_TestCase
+{
+    private $signUp;
+    private $userRepository;
+    protected function setUp()
+    {
+        $this->userRepository = new InMemoryUserRepository();
+        $this->signUp = new SignUp(
+            $this->userRepository,
+            new PlainPasswordHashing()
+        );
+    }
+    /**
+    * @test
+    * @expectedException InvalidArgumentException
+    */
+    public function itShouldComplainIfTheUserDoesNotExist()
+    {
+        $this->signUp->execute('test-username', 'test-password');
+    }
+    /**
+    * @test
+    * @expectedException BadCredentialsException
+    */
+    public function itShouldTellIfThePasswordDoesNotMatch()
+    {
+        $this->userRepository->add(
+        new User(
+            'test-username',
+            'test-password'
+        )
+    );
+    $this->signUp->execute('test-username', 'no-matching-password')
+    }
+    /**
+    * @test
+    */
+    public function itShouldTellIfTheUserMatchesProvidedPassword()
+    {
+        $this->userRepository->add(
+            new User(
+                'test-username',
+                'test-password'
+            )
+        );
+        $this->assertInstanceOf(
+            'Ddd\Domain\Model\User\User',
+            $this->signUp->execute('test-username', 'test-password')
+        );
+    }
+}
+```
+
+贫血模型 Vs. 充血模型
+---
+
+你必须要注意不要在你的系统中过度使用领域服务。这么做会导致实体与值对象被剥离出所有行为而成了纯粹的数据容器。这与面向对象编程的目标是相反的，该目标可以被认为是将数据和行为组合到成为对象的语义化单元中，目的是表达现实世界中的概念和问题。领域服务的过度使用会被认为是反模式，称为贫血领域模型。
+
+通常，在开始一个新项目或功能时，很容易陷入对数据建模的陷阱。通常这包括认为数据表与展现形式是直接一对一的关系。但是，这种想法并非始终都是正确的。
+
+假设我们的任务是为订单处理系统建模，如果我们先对数据进行建模，我们可能会得到一个如下的SQL语句：
+
+```sql
+CREATE TABLE `orders` (
+    `ID` INTEGER NOT NULL AUTO_INCREMENT,
+    `CUSTOMER_ID` INTEGER NOT NULL,
+    `AMOUNT` DECIMAL(17, 2) NOT NULL DEFAULT '0.00',
+    `STATUS` TINYINT NOT NULL DEFAULT 0,
+    `CREATED_AT` DATETIME NOT NULL,
+    `UPDATED_AT` DATETIME NOT NULL,
+    PRIMARY KEY (`ID`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+基于此，创建Order类展现形式相对容易，此表现形式包括必要的访问方法，可以被用于从底层订单数据表中获取或设置数据。
+
+```php
+class Order
+{
+    const STATUS_CREATED = 10;
+    const STATUS_ACCEPTED = 20;
+    const STATUS_PAID = 30;
+    const STATUS_PROCESSED = 40;
+    
+    private $id;
+    private $customerId;
+    private $amount;
+    private $status;
+    private $createdAt;
+    private $updatedAt;
+    
+    public function __construct(
+        $customerId,
+        $amount,
+        $status,
+        DateTimeInterface $createdAt,
+        DateTimeInterface $updatedAt
+    ) {
+        $this->customerId = $customerId;
+        $this->amount = $amount;
+        $this->status = $status;
+        $this->createdAt = $createdAt;
+        $this->updatedAt = $updatedAt;
+    }
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+    }
+    public function getCustomerId()
+    {
+        return $this->customerId;
+    }
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+    }
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    public function setCreatedAt(DateTimeInterface $createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+    public function setUpdatedAt(DateTimeInterface $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+}
+```
+
+这个示例用例将可能是这样来更新订单状态的：
+
+```php
+// Fetch an order from the database
+$anOrder = $orderRepository->find( 1 );
+// Update order status
+$anOrder->setStatus(Order::STATUS_ACCEPTED);
+// Update updatedAt field
+$anOrder->setUpdatedAt(new DateTimeImmutable());
+// Save the order to the database
+$orderRepository->save($anOrder);
+```
+关于代码重用，这个代码有着类似与初始用户身份认证方案的问题。为了解决这问题，建议使用服务层，从而使得操作明确且可重用。现在可以将之前的实现封装到单独的类中：
+
+```php
+class ChangeOrderStatusService
+{
+    private $orderRepository;
+    
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
+    public function execute($anOrderId, $anOrderStatus)
+    {
+        // Fetch an order from the database
+        $anOrder = $this->orderRepository->find($anOrderId);
+        // Update order status
+        $anOrder->setStatus($anOrderStatus);
+        // Update updatedAt field
+        $anOrder->setUpdatedAt(new DateTimeImmutable());
+        // Save the order to the database
+        $this->orderRepository->save($anOrder);
+    }
+}
+```
+
+或者是像这样更新订单数量：
+
+```php
+class UpdateOrderAmountService
+{
+    private $orderRepository;
+    
+    public function __construct(OrderRepository $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
+    public function execute( $orderId, $amount)
+    {
+        $anOrder = $this->orderRepository->find(1);
+        $anOrder->setAmount($amount);
+        $anOrder->setUpdatedAt(new DateTimeImmutable());
+        $this->orderRepository->save($anOrder);
+    }
+}
+```
+
+客户端代码将大大减少：
+
+```php
+$updateOrderAmountService = new UpdateOrderAmountService(
+    $orderRepository
+);
+$updateOrderAmountService->execute(1, 20.5);
+```
+实现此方法可以让代码很大程度上可以重用。那些希望更新订单数量的人只需要获取`UpdateOrderAmountService`的实例并使用适当的参数调用execute方法即可。
+
+但是，选择此方式会破坏面向对象设计原则，并且在没有任何优势的情况下会产生构建领域模型的成本。
+
+#### 贫血领域模型破坏了封装性
+
+如果我们重新使用用于在Service层中定义服务的代码，我们可以看到，作为Order实体的客户端，我们需要了解其内部展现形式的每个细节。这一发现违反了面向对象编程的基本原则，即数据与后续行为结合在一起。
+
+#### 贫血领域模型给代码重用带来了错觉
+
+假设有一个实例，其中客户端绕过了`UpdateOrderAmountService`，而是直接获取该实例，更新后并直接持久化保存到了`OrderRepository`。然后将不会执行`UpdateOrderAmountService`中可能已经执行的所有其他业务逻辑。这可能导致订单以不一致的状态存储。要想不变性得到保障，最佳的方法是让真正的领域模型来处理它。在此示例中，Order实体是确保这一点的最佳位置：
+
+```php
+class Order
+{
+    // ...
+    public function changeAmount($amount)
+    {
+        $this->amount = $amount;
+        $this->setUpdatedAt(new DateTimeImmutable());
+    }
+}
+```
+注意将该方法放入实体并使用通用语言来对该方法进行命名，系统实现很好的代码重用。现在希望更改订单金额的任何人都可以直接调用`Order::changeAmount`方法。
+
+这使得类变得很丰富，对于代码的重用来说，类中具有行为就是我们的目标。这通常被称之为充血领域模型。
+
+#### 如何去避免贫血领域模型
+
+避免陷入贫血领域模型的方式是，当开始新项目或功能时，先考虑行为。数据库、ORM等都只是实现的细节，我们应尽可能的在开发过程的最后阶段再做出使用这些工具的决定，通过这样，我们可以专注于一个重要的真实属性：行为。
+
+与实体一样，领域服务也可以触发领域事件（第6章的内容）。但是，当事件由领域服务触发而非实体触发时，它再次表明你可能正在创建一个贫血领域模型。
+
+总结
+---
+
+如我们所见，服务代表了我们系统内的操作，并且我们可以区分它们的三个版本：
+
+- 应用服务：帮助将外边真实世界的请求协调到领域中。这些服务不应该包含领域逻辑。事务在应用层级进行处理。将你的服务放入事务修饰器中将会让你的代码对事务无感知。
+- 领域服务：仅使用领域概念进行操作。记住要尽量晚点再考虑实现细节，先考虑行为，因为领域服务的滥用将导致贫血领域模型和不良的面向对象设计。
+- 基础设施服务：在基础设施层进行操作，做一些如发送邮件或记录日志的事情。
+
+我们最重要的建议是，在你决定创建领域服务之前，应该考虑所有的做法。首先尝试将业务逻辑移到实体或值对象内，和同事一次又一次的检查，如果在此之后，如果认为创建领域服务是最佳选择时再去这么做。
+
