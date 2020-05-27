@@ -183,6 +183,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/log-mechanism-in-Yii1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/log-mechanism-in-Yii1/" class="post-title-link" itemprop="url">了解Yii中Log日志机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-27 05:38:20" itemprop="dateCreated datePublished" datetime="2014-05-27T05:38:20+08:00">2014-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>想要知道用户在你的程序中做了些什么，我们可以通过用日志的形式记录下来，前提是用户是做的跟数据库有关的操作。我们可以在任何时候进行的增删改操作都可以记录下来，对于Yii中的AR模型我们可以使用behavior（行为）来达到此目的，这样很容易的就可以把日志功能加到AR类里。 首先我们需要建一张日志表：</p>
+<p>CREATE TABLE ActiveRecordLog (<br>  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,<br>  description VARCHAR(255) NULL,<br>  action VARCHAR(20) NULL,<br>  model VARCHAR(45) NULL,<br>  idModel INTEGER UNSIGNED NULL,<br>  field VARCHAR(45) NULL,<br>  creationdate TIMESTAMP NOT NULL,<br>  userid VARCHAR(45) NULL,<br>  PRIMARY KEY(id)<br>)<br>TYPE=InnoDB;</p>
+<p>接着我们就需要建立相应的model，可以使用gii或者shell工具等。 为了记录用户操作，我们需要创建一个behavior类，一般放在protected/behavior目录下，该类必须继承CActiveRecordBehavior类。</p>
+<p>class ActiveRecordLogableBehavior extends CActiveRecordBehavior<br>{<br>    private $_oldattributes = array();<br>    /**<br>     * save操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     <em>/<br>    public function afterSave($event)<br>    {<br>        //非新记录，即非插入<br>        if (!$this-&gt;Owner-&gt;isNewRecord) {<br>            $newattributes = $this-&gt;Owner-&gt;getAttributes();             //获得AR类中已修改的各字段值<br>            $oldattributes = $this-&gt;getOldAttributes();                 //之前的旧数据<br>            //比较新旧数据<br>            foreach ($newattributes as $name =&gt; $value) {<br>                if (!empty($oldattributes)) {<br>                    $old = $oldattributes[$name];<br>                } else {<br>                    $old = ‘’;<br>                }<br>                //如果该字段旧数据与新数据不一样，则进行记录<br>                if ($value != $old) {<br>                    //$changes = $name . ‘ (‘.$old.’) =&gt; (‘.$value.’), ‘;<br>                    $log=new ActiveRecordLog;                                               //实例log对象<br>                    $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name                    //设置日志内容格式，描述具体操作<br>                                            . ‘ changed ‘ . $name . ‘ for ‘<br>                                            . get_class($this-&gt;Owner)<br>                                            . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>                    $log-&gt;action=       ‘CHANGE’;                                           //设置操作类型为“修改”<br>                    $log-&gt;model=        get_class($this-&gt;Owner);<br>                    $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();                      //获得修改的记录的主键<br>                    $log-&gt;field=        $name;                                              //修改的字段名<br>                    $log-&gt;creationdate= new CDbExpression(‘NOW()’);                         //日志生成时间<br>                    $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;                               //记录用户id<br>                    $log-&gt;save();                                                           //保存日至到数据库<br>                }<br>            }<br>        } else {//新纪录直接保存操作日志入库<br>            $log=new ActiveRecordLog;<br>            $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name<br>                                    . ‘ created ‘ . get_class($this-&gt;Owner)<br>                                    . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>            $log-&gt;action=       ‘CREATE’;<br>            $log-&gt;model=        get_class($this-&gt;Owner);<br>            $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>            $log-&gt;field=        ‘’;<br>            $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>            $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>            $log-&gt;save();<br>        }<br>    }<br>    /*\</em><br>     * 删除操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     */<br>    public function afterDelete($event)<br>    {<br>        $log=new ActiveRecordLog;<br>        $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name . ‘ deleted ‘<br>                                . get_class($this-&gt;Owner)<br>                                . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>        $log-&gt;action=       ‘DELETE’;<br>        $log-&gt;model=        get_class($this-&gt;Owner);<br>        $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>        $log-&gt;field=        ‘’;<br>        $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>        $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>        $log-&gt;save();<br>    }<br>    public function afterFind($event)<br>    {<br>        //保存查询出来的数据<br>        $this-&gt;setOldAttributes($this-&gt;Owner-&gt;getAttributes());<br>    }<br>    public function getOldAttributes()<br>    {<br>        return $this-&gt;_oldattributes;<br>    }<br>    public function setOldAttributes($value)<br>    {<br>        $this-&gt;_oldattributes=$value;<br>    }<br>}</p>
+<p>该behavior行为类中需要使用到ActiveRecordLo类来将日志记录到数据库中，它会为为每次插入、删除记录一条日志，也会为修改的每个字段记录一条日志。 设定的行为已经写好了，那么剩下的就是需要将其绑定到对应的model模型上。我们只需在对应的model里加入以下方法就完成绑定了：</p>
+<p>public function behaviors()<br>{<br>    return array(<br>        // 行为类名 =&gt; 类文件别名路径<br>        ‘ActiveRecordLogableBehavior’=&gt;<br>            ‘application.behaviors.ActiveRecordLogableBehavior’,<br>    );<br>}</p>
+<p>  当然这些都是最基本的简单的记录日志操作，你还可以进行扩展，以满足更高级更多功能的需求。如有问题，留言探讨~</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-addSearchCondition-and-compare-in-Yii/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +296,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -292,7 +374,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -423,7 +505,7 @@ $subject->setState(5);//被观察者修改状态。
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -518,7 +600,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -600,7 +682,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -695,7 +777,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -777,7 +859,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -853,7 +935,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -931,7 +1013,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-27 15:33:29" itemprop="dateModified" datetime="2020-05-27T15:33:29+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -966,114 +1048,6 @@ $this->widget('zii.widgets.CMenu',array(
 <p> ** 因为无法直接通过KEY(IP)进行查找地域，所以直接放到数据或通过关联数组这种简单的方法都是不行的。思路还是先把数据进行排序，然后再进行查找 1. 如何通过IP查找？ 已序的数据，二分查找是最快的。 2. 如何排序？用库函数sort当然 是可以，但是即然是学习，那还是自己实现快速排序吧。 学习目标： 排序算法，查找算法 PHPer 数据结构和算法基础比较差，平时也没有这方面的任务，自己也不学习，因此这方面的知识很缺乏。但是，编程解决的问题，最终都会归结到数据结构和对这种数据结构操作的算法。如果数据结构算法常在心中，那遇到问题就能清晰认识到它内在的结构，解决方法就会自然产生。 </p>
 <p> <strong>第二次迭代：优化数据的加载与排序</strong> 如果做到第一步，那基本上还是不可用，因为数据每次都需要的加载和排序，这样太耗时间。 解决的思路是，数据一次加载排序后，放到每个PHP进程能访问到的地方。 放到memcache 这是大家容易想到问题。其实放到共享内存(EA等加速器都支持)中是更快的方式，因为memcache还多了网络操作。 数据是整体放入到共享内存，还是分块放入，如何测试性能? 如何分析瓶颈所在(xdebug)? 在这些问题的驱动下你会学习到 学习目标： 检测、定位、优化PHP性能的方法; PHP实现结构对性能的影响。 </p>
 <p> <strong>第三次迭代： 编写PHP的扩展</strong> 性能还是上不去，不得不进入C/C++的世界了，不过从此你将不只是PHPer 而服务端的全能型工程师，当然这对没有做过C/C++的同学挑战是巨大的。 我这里无法再简单来说如何学习C/C++ ，可以参看 《PHP程序员学习C++》 学习目标：C/C++的学习，PHP扩展的编写 怎么确定需要学习的机制和原理呢？ 怎么找到驱动学习任务呢？ 我对需要学习的东西，都没有什么概念，怎么回答以上的两个问题？ 从这个技术的定位来找出需要学习的重点，即它怎么做到(机制）的和它为什么能这样做到 （模型或原理） 列出这个技术最常见的应用，做为学习的任务，从简到难进行实践。 假如我需要学习Javascript ，我对于HTML，CSS有点感性认识 首要我了解到，JS 是WEB领域的动态语言，主要解决网页的动态交互的。 那我要学习的要点如下： JS如何与HTML 进行交互 （机制） JS的动态特性在那里，与其它动态语言有何区别？（语言模型） 如果完全自学，找到需要学习的要点（机制、模型、原理） 设定学习任务的确不是那么容易把握。如果找到一个有经验的人来指导你或加一个学习型的团队，那学习的速度的确会大大提高。 最后，我想说的是： PHP因为简单而使用，但不能因为它的简单而限制我们成长！</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/some-methods-to-get-PHP-script-file-path/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/some-methods-to-get-PHP-script-file-path/" class="post-title-link" itemprop="url">获取PHP脚本文件路径的几个方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-04-21 05:23:12" itemprop="dateCreated datePublished" datetime="2014-04-21T05:23:12+08:00">2014-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>别的不扯，直接正题。 在PHP中获得所执行脚本文件路径有以下几个方法：</p>
-<ol>
-<li>魔术常量__FILE__：这个魔术常量使用率非常高，经常在定义目录的绝对路径时用dirname(__FILE__)这种形式。另一种绝对路径定义见这篇博文<a href="http://www.veitor.net/article/37.html" title="魔术常量__DIR__和__FILE__的用法区别">《魔术常量__DIR__和__FILE__的用法区别》</a>，但是使用场合与下面两种有区别，使用该常量最终返回的都是包含的文件（这句话的意思就看下面的示例代码吧）。</li>
-<li>使用两个全局变量字符串连接$_SERVER[‘DOCUMENT_ROOT’] . $SERVER[‘PHP_SELF’]：两个变量拼接而成，前一个变量是获取根目录完整路径，后一个变量是获取从网站根目录到该执行文件的绝对路径。拼接后即是所需要的脚本文件完整路径。</li>
-<li>依然是全局变量$_SERVER[‘SCRIPT_FILENAME’]：这个变量效果和第2种类似</li>
-</ol>
-<p>示例代码： index.php文件，存放在e:/project/文件夹下，其中include了同级目录中的test1.php和子目录test中的test2.php</p>
-<?php
-include './test1.php';
-include './test/test2.php';
-echo "<br>";
-echo \_\_FILE\_\_;
-echo "<br>";
-echo $\_SERVER\['DOCUMENT\_ROOT'\].$\_SERVER\['PHP\_SELF'\];
-echo "<br>";
-echo $\_SERVER\['SCRIPT\_FILENAME'\];
-echo "<br>";
-?>
-
-<p>./test.1php和./test/test2.php文件代码相同。</p>
-<?php
-echo "<br>";
-echo \_\_FILE\_\_;
-echo "<br>";
-echo $\_SERVER\['DOCUMENT\_ROOT'\].$\_SERVER\['PHP\_SELF'\];
-echo "<br>";
-echo $\_SERVER\['SCRIPT\_FILENAME'\];
-echo "<br>";
-?>
-
-<p>接下来看一下结果：</p>
-<p>E:\project\test1.php<br>E:/project/index.php<br>E:/project/index.php<br>E:\project\test\test2.php<br>E:/project/index.php<br>E:/project/index.php<br>E:\project\index.php<br>E:/project/index.php<br>E:/projectt/index.php</p>
-<p>你会发现结果第5行有个不同处，该行就是输出的__FILE__，并且代码是在子目录test中test2.php文件里的。也就是说明__FILE__写在哪个文件里，输出结果就是显示哪个文件。而其他两个全局变量$_SERVER输出的结果都是最终包含的文件，在这个示例中也就是index.php文件（如果不明白这句话意思，看前面红色的文字，意思就是和它相反的）。 如果对本文有疑问，欢迎留言，一起探讨。</p>
 
       
     </div>
@@ -1138,7 +1112,7 @@ echo "<br>";
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">85</span>
+          <span class="site-state-item-count">86</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
