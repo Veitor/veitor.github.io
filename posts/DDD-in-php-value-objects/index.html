@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  通过使用self关键字，我们不会将”值对象”作为领域驱动设计的基本构建块，而是在代码中将它们作为你通用语言的概念。一个值对象在你的领域中不仅仅是一个东西，它能够度量、量化或者描述一些信息。值对象可以看作是小的简单对象（如金钱或者日期范围），它们不像实体（Entity）通过身份标识来进行区分，而是根据其所">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-26T07:43:00.951Z">
+<meta property="og:updated_time" content="2020-05-27T01:41:08.325Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-value-objects/">
@@ -216,7 +216,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -245,6 +245,8 @@
 <p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
 </blockquote>
 <p>通过使用<code>self</code>关键字，我们不会将”值对象”作为领域驱动设计的基本构建块，而是在代码中将它们作为你通用语言的概念。一个值对象在你的领域中不仅仅是一个东西，它能够度量、量化或者描述一些信息。值对象可以看作是小的简单对象（如金钱或者日期范围），它们不像实体（Entity）通过身份标识来进行区分，而是根据其所持有的内容来做区分。</p>
+<a id="more"></a>
+
 <p>例如，一个产品价格可以用值对象来表示。此时，该值对象不代表一个东西，而是能够让我们衡量这个产品价值多少钱的一个值。这些对象的内存占用非常容易确定（根据其组成的部分计算），并且开销很少。因此，即使想用一个值对象来代表同一个值，人们还是更喜欢新创建一个值对象实例也不去重复引用之前的值对象。然后根据两个实例的字段内容来检查这两个实例是否相等。</p>
 <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Ward Cunningham对值对象的定义：</p>
 <p>某个事物的量或者描述。值对象的例子有数字、日期、金钱、字符串。通常他们是被使用最多的小对象。它们的身份是基于它们的状态而不是它们的对象标识。你可以拥有相同概念值对象的多个副本。每张5元的钞票都有其自己的标识（该钞票上印的标记号码），但是在使用上每张5元钞票与其他的5元钞票都具有相同的价值。</p>
@@ -459,7 +461,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

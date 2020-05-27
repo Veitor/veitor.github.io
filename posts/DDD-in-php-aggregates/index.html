@@ -44,15 +44,15 @@
   };
 </script>
 
-  <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  聚合可能是领域驱动设计中最困难的构建块。它们很难理解，甚至难以正确设计。但是不用担心，我们在这里给你提供帮助。在进入聚合之前，我们需要先了解一些关键概念：事务和并发策略。 介绍如果你的工作与电子商务应用有关，你可能会遇到过与你数据库数据不一致有关的问题。例如，一个购物订单的总金额为99.99美元，但该订">
+  <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  聚合可能是领域驱动设计中最困难的构建块。它们很难理解，甚至难以正确设计。但是不用担心，我们在这里给你提供帮助。在进入聚合之前，我们需要先了解一些关键概念：事务和并发策略。">
 <meta name="keywords" content="ddd,领域驱动设计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[译]聚合 - 《Domain-Driven Design in PHP》第8章">
 <meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;DDD-in-php-aggregates&#x2F;index.html">
 <meta property="og:site_name" content="Veitor的技术点滴">
-<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  聚合可能是领域驱动设计中最困难的构建块。它们很难理解，甚至难以正确设计。但是不用担心，我们在这里给你提供帮助。在进入聚合之前，我们需要先了解一些关键概念：事务和并发策略。 介绍如果你的工作与电子商务应用有关，你可能会遇到过与你数据库数据不一致有关的问题。例如，一个购物订单的总金额为99.99美元，但该订">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  聚合可能是领域驱动设计中最困难的构建块。它们很难理解，甚至难以正确设计。但是不用担心，我们在这里给你提供帮助。在进入聚合之前，我们需要先了解一些关键概念：事务和并发策略。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-26T07:43:00.947Z">
+<meta property="og:updated_time" content="2020-05-27T01:41:08.321Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-aggregates/">
@@ -208,10 +208,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-26 15:41:43 / 修改时间：15:43:00" itemprop="dateCreated datePublished" datetime="2020-05-26T15:41:43+08:00">2020-05-26</time>
+              <time title="创建时间：2020-05-26 15:41:43" itemprop="dateCreated datePublished" datetime="2020-05-26T15:41:43+08:00">2020-05-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -239,6 +245,8 @@
 <p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
 </blockquote>
 <p>聚合可能是领域驱动设计中最困难的构建块。它们很难理解，甚至难以正确设计。但是不用担心，我们在这里给你提供帮助。在进入聚合之前，我们需要先了解一些关键概念：事务和并发策略。</p>
+<a id="more"></a>
+
 <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>如果你的工作与电子商务应用有关，你可能会遇到过与你数据库数据不一致有关的问题。例如，一个购物订单的总金额为99.99美元，但该订单总金额与订单中每项金额之和89.99美元不匹配，那额外的10美元从哪里来的？</p>
 <p>或者，思考一个影院售票网站的例子。有一个拥有100个座位的电影院，在电影上映时每个人都在网站上等待购买电影票，一旦你开始进行销售，电影票会迅速一抢而空，但最终你以某种方式售卖出了102张座位。你可能指定了只有100个座位，但由于某种原因还是超过了这个阈值。</p>
 <p>你可能有过使用JIRA或Redmine等协作系统的经验。考虑一下由开发人员、QA人员和产品负责人组成的团队，如果每个人都在对User Story进行分类和拖动转移，然后再保存，会发生什么？最终的User story优先级将是团队成员中最后保存那个人的。</p>
@@ -435,7 +443,10 @@
     <a href="/posts/DDD-in-php-entities/" rel="prev" title="[译]实体 - 《Domain-Driven Design in PHP》第4章">
       <i class="fa fa-chevron-left"></i> [译]实体 - 《Domain-Driven Design in PHP》第4章
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/posts/DDD-in-php-factories/" rel="next" title="[译]工厂 - 《Domain-Driven Design in PHP》第9章">
+      [译]工厂 - 《Domain-Driven Design in PHP》第9章 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -489,7 +500,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

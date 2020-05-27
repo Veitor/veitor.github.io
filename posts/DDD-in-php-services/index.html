@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Soft">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-26T07:43:00.951Z">
+<meta property="og:updated_time" content="2020-05-27T01:41:08.325Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-services/">
@@ -216,7 +216,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,6 +248,8 @@
 <blockquote>
 <p>当领域中的一个重要过程或转化不是实体或者值对象的自然职责时，增加一个操作作为一个单独的接口，此时该接口被声明为Service领域服务。根据模型的通用语言定义接口，并确保名称是通用语言中的一部分，是服务成为无状态。</p>
 </blockquote>
+<a id="more"></a>
+
 <p>因此，当有一些操作，并且实体和值对象不是最佳的选择时，你应该考虑将这些操作建模为领域服务。在领域驱动设计中，通常会遇到三种不同类型的服务：</p>
 <ul>
 <li><p>应用服务（Application Services）：对标量类型进行操作，并将该类型数据转换为领域类型。一个标量类型可以被视为领域模型中的任一未知类型。这包含了原始类型和不属于领域的类型。我们也会在本章中提供简单概述，但如果要深入了解请查看第11章内容Application。</p>
@@ -420,7 +422,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

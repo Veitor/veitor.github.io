@@ -183,6 +183,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/compile-and-run-C-programs-under-sublime/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/compile-and-run-C-programs-under-sublime/" class="post-title-link" itemprop="url">sublime下配置编译和运行C程序</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-12-19 07:26:45" itemprop="dateCreated datePublished" datetime="2014-12-19T07:26:45+08:00">2014-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>我使用的是sublime3，首先下载MinGW，别问我是啥，我也不怎么了解，网上说 MinGW 提供了一套简单方便的Windows下的基于GCC 程序开发环境，提供了GNU工具集。在这里我就理解它提供了gcc、g++、make等编译器吧。具体自行了解。 你可以上minGW官网<a href="http://www.mingw.org/或其他地方可以下载到，可视化安装界面，自行选择目录安装。比如我安装到了D:\\minGW" target="_blank" rel="noopener">http://www.mingw.org/或其他地方可以下载到，可视化安装界面，自行选择目录安装。比如我安装到了D:\\minGW</a> 安装完毕后，将minGW安装目录下的bin目录添加到环境变量，如下图，我将D:\minGW\bin添加到环境变量</p>
+<p><a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219150247.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219150247.jpg" alt="QQ图片20141219150247"></a></p>
+<p>接着配置sublime，工具栏选择工具（tools）-编译系统，然后新建一个编译系统</p>
+<p><a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219150736.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219150736.jpg" alt="QQ图片20141219150736"></a>输入以下配置：</p>
+<p>{<br>    “shell_cmd”: “gcc \“${file}\“ -o \“${file_path}/${file_base_name}\“ -std=c11 -O2 -Wall -lm –static”,<br>    “file_regex”: “^(..[^:]<em>):([0-9]+):?([0-9]+)?:? (.</em>)$”,<br>    “working_dir”: “${file_path}”,<br>    “selector”: “source.c, source.c++”,<br>    “variants”:<br>    [<br>        {<br>            “name”: “Run”,<br>            “shell_cmd”: “gcc -std=c11 -O2 -Wall -lm –static \“${file}\“ -o \“${file_path}/${file_base_name}\“ &amp;&amp; \“${file_path}/${file_base_name}\“”<br>        }<br>    ]<br>}</p>
+<p>保存在Sublime Text的Packages目录下即可。 然后敲一段C程序然后保存为.c文件，按ctrl+B会在这文件旁生成exe程序，按ctrl+shift+B会在sublime控制台中显示运行结果（如下图） <a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219152044.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219152044.jpg" alt="QQ图片20141219152044"></a>   至此大功告成。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/unable-to-perform-two-queries-using-PDO/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +301,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -304,7 +391,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -397,7 +484,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -489,7 +576,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -585,7 +672,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -670,7 +757,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -760,7 +847,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -853,7 +940,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1072,7 +1159,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1098,86 +1185,6 @@
 
       
           <p>PHP 5.3.6及以前版本的PDO的bindParam,bindValue潜在的安全隐患 使用PDO的参数化查询时，可以使用bindParam,bindValue为占位符绑定相应的参数或变量， 我们往往使用如下格式： $statement-&gt;bindParam(1, $string); $statement-&gt;bindParam(2, $int, PDO::PARAM_INT); 我在以前的文章中分析介绍过PDO的ATTR_EMULATE_PREPARES属性对PDO底层协议与MySQL Server通讯机制影响： 1. 默认情况下，PDO会使用DSN中指定的字符集对输入参数进行本地转义（PHP手册中称为native prepared statements），然后拼接成完整的SQL语句，发送给MySQL Server。这有些像我们平时程序中拼接变量到SQL再执行查询的形式。 这种情况下，PDO驱动能否正确转义输入参数，是拦截SQL注入的关键。然而PHP 5.3.6及老版本，并不支持在DSN中定义charset属性（会忽略之），这时如果使用PDO的本地转义，仍然可能导致SQL注入，解决办法后面会提到。 2. MySQL Server 5.1开始支持prepare预编译SQL机制，即SQL查询语句与参数分离提交，但这个特性需要客户端协议支持支持，目前所有版本的PHP均支持。 如果PDO客户端使用mysql Server的prepare功能，大致的交互过程是： A. PDO将SQL模板发送给mysql server， SQL模板即包含参数占位符（问号或命名参数）的SQL语句 B. PDO不对输入参数作任何转义处理，将参数的位置，值，类型等等信息发送给MySQL Server C. PDO客户端调用execute statement D. MySQL Server 对B步骤提交的参数进行内部转义，并执行查询,返回结果给客户端。 看到没有，如果使用了mysql server prepare功能，则字符串的转义是由MySQL Server完成的。mysql会根据字符集（set names <charset>）对输入参数转换，确保没有注入产生。   PDO默认情况下使用了本地模拟prepare（并未使用MySQL server的prepare）,如果要禁止PDO本地模拟行为而使用MySQL Server的prepare机制，则需要设置PDO的参数： $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false); 如果你使用了PHP 5.3.6及以前版本，强烈推荐使用上述语句加强安全性。 如果你使用PHP 5.3.6+, 则请在DSN中指定 charset，是否设置上述参数，都是安全的。   好了，现在步入正题，假设有以下代码逻辑：   $pdo = new PDO(“mysql:host=localhost;dbname=test;charset=utf8”,’root’,’’); $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION); $pdo-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC); $pdo-&gt;exec(‘set names utf8’); $id = ‘0 or 1 =1 order by id desc’; $sql = “select * from article where id = ?”; $statement = $pdo-&gt;prepare($sql); $statement-&gt;bindParam(1, $id, PDO::PARAM_INT); $statement-&gt;execute(); 假设$id是外部变量（由其它函数传递，或用户提交），我们也没有使用intval对这两个参数进行强制类型转换（我们认为使用PDO绑定参数时已经指定参数类型为INT, 即PDO::PARAM_INT），期待PDO能使用我们指定的类型对其进行转义，但是事实上呢？却有太多不确定因素： 1. 以上代码实测在PHP 5.2.1造成了SQL注入 2. 以上代码在PHP 5.3.9下，没有造成任何SQL注入 那么，如果使用了存在bug的PHP版本，那么如何从根本上解决这个问题？ 1. 设置PDO不使用本地模拟prepare, 即 $pdo-&gt;setAttribute(PDO::ATTR_EMULATE_PREPARES,false);   这样，即使不使用intval对输入进行转换，也可以确保是安全的。如果由于程序员遗忘没有使用intval转换，那么还是存在安全隐患的。   使用这种方式，更彻底，更安全。 原文地址：<a href="http://zhangxugg-163-com.iteye.com/blog/1855088" target="_blank" rel="noopener">http://zhangxugg-163-com.iteye.com/blog/1855088</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/installation-of-python-and-pip-under-windows/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/installation-of-python-and-pip-under-windows/" class="post-title-link" itemprop="url">Windows下安装python和pip</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-11-18 08:11:43" itemprop="dateCreated datePublished" datetime="2014-11-18T08:11:43+08:00">2014-11-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index">
-                    <span itemprop="name">编程语言</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>此前安装过python，但因为安装pip过程中遇到了问题，所以把python也一起卸载了。现在重新安装一下这两个。 这里选择了python2.7.8版本进行安装，因为我需要使用sqlmap这个工具，而这个工具对python版本有要求，最新版本的python会出错，所以我选择了2.7.8的版本。 首先上官网<a href="https://www.python.org/downloads" target="_blank" rel="noopener">https://www.python.org/downloads</a> 下载</p>
-<p><a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118141425.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118141425.jpg" alt="QQ截图20141118141425"></a></p>
-<p>下载的是msi文件，直接打开像安装普通软件一样安装就行。<strong>但有一点一定要注意，如果你要使用pip，则安装python时选择的安装路径目录中不要有空格，如果安装到了Program Files这样的目录下，那么接下来安装的pip将无法正常运行，会报错。</strong>所以这里我直接选择了D盘下，安装前记得选择将python.exe添加到系统环境变量。 <a href="http://storage.veitor.net/uploads/2014/11/QQ图片20141118142038.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E5%9B%BE%E7%89%8720141118142038.jpg" alt="QQ图片20141118142038"></a>   安装完之后在CMD中输入python命令会看到欢迎界面。 接下来安装pip，上<a href="https://pip.pypa.io/en/latest/installing.html下载" target="_blank" rel="noopener">https://pip.pypa.io/en/latest/installing.html下载</a> get-pip.py脚本 在CMD下找到该文件目录并运行下列命令（需要管理员权限）： python get-pip.py <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118142644.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118142644.jpg" alt="QQ截图20141118142644"></a> 安装好之后，会发现python安装目录下会多出一个Scripts目录（若之前没有）。 这时我们直接在命令行输入pip，会显示‘pip’不是内部命令，也不是可运行的程序。因为我们还没有添加环境变量。 只要在PATH变量中添加：D:\Python27\Scripts;（路径自己更换）就好了，输入pip list 查看安装情况 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141118143306.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141118143306.jpg" alt="QQ截图20141118143306"></a>   如果出现下列错误，那么原因可能就是上面我所说的python安装路径目录名中有空格了  </p>
-<p>Fatal error in launcher: Unable to create process using ‘“D:\Program Files\Python27\python.exe” “D:\Program Files\Python27\Scripts\pip.exe” ‘</p>
-<p>  （完）</p>
 
       
     </div>
@@ -1242,7 +1249,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -183,6 +183,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-and-usage-of-constants-DIR-and-FILE-in-PHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/difference-and-usage-of-constants-DIR-and-FILE-in-PHP/" class="post-title-link" itemprop="url">魔术常量__DIR__和__FILE__的用法区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-04-21 03:28:31" itemprop="dateCreated datePublished" datetime="2014-04-21T03:28:31+08:00">2014-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在写PHP脚本的时候，要定义一个文件目录的绝对路径，通常会使用这两种PHP内置的魔术方法：__DIR__和dirname(__FILE__) 我们可以用var_dump把这两个方法显示结果打印出来看一下</p>
+<p>string ‘E:\project\newapp’ (length=17)</p>
+<p>你会发现，两个打印结果一样。 但其实他们至少有两处区别：</p>
+<ol>
+<li><p>__DIR__只能用于PHP &gt;= 5.3 版本，这也是为什么大多数你看到的代码中都是使用的dirname(__FILE__)这种写法</p>
+</li>
+<li><p>__DIR__在编译时运算的，而dirname(__FILE__)要调用函数且在执行时运算</p>
+<p>其他可以参考一下PHP手册， __DIR__：文件所在的目录。如果用在被包括文件中，则返回被包括的文件所在的目录。它等价于<em>dirname(__FILE_\</em>)_。除非是根目录，否则目录中名不包括末尾的斜杠。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-processes-and-threads/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +299,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -296,7 +381,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -372,7 +457,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -478,7 +563,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -568,7 +653,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -183,6 +183,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-between-state-and-status-in-programming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/difference-between-state-and-status-in-programming/" class="post-title-link" itemprop="url">编程中英语单词state和status的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-02-28 01:24:19" itemprop="dateCreated datePublished" datetime="2015-02-28T01:24:19+08:00">2015-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>state：比较常用，各种状态都可以用它，但是它更着重于一种心理状态或者物理状态。 Status：用在人的身上一般是其身份和地位，作“状态，情形”讲时，多指政治和商业。 state倾向于condition，是一种延续性的状态。status常用于描述一个过程中的某阶段（phase），类似于C语言中枚举型变量某一个固定的值，这个值属于一个已知的集合。 比如淘宝买家问卖家“我的网购现在是什么状况？” 这个问题的背景是讲话双方都清楚，交易状态有“买家选购”“买家已付款”“卖家已发货”“买家已签收”或者有“买家已 投诉”等等状态。这些状态描述一件事情发展过程中的不同阶段。而且，这些阶段的先后顺序也是双方默许的。 所以在这里可以问“What’s the status of my purchase?”，此处用state不太贴切，如果硬用上去从语感上可能听着别扭。 说物态变化用state再恰当不过。如果说一个物质的四种状态，可以说“solid state”，但如果你说“solid status”，第 一，这两个词的组合不像是描述物态，更像是在说“确定的状况（solid产生歧义‘确定的/确凿的’）”；第二，这个说法即 使不被误解，也需要事先约定一组物态变化顺序，比如把这个物质从固态开始加热然后电离，可能先后经历固态、液态、气态、等离子态这四个阶段。类似先定义枚举，然后引用的方式。   扩展： ajax中readyState，statusText，onreadystatechange，window.status怎么一会state一会是status都晕乎了 state所指的状态，一般都是有限的、可列举的，status则是不可确定的。 比如 readyState – 就那么四五种值 statusText – 描述性的文字，可以任意 onreadystatechange – 那么四五种值之间发生变化 window.status – 描述性的文字，可以任意 来个形象的比方，你体重多少公斤，属于status，但说你体重属于偏瘦、正常还是偏胖，那就是state.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/analysis-of-Yii-event-mechanism/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +296,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,7 +395,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -453,7 +535,7 @@ echo \_\_line\_\_;    //输出3
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -621,7 +703,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -706,7 +788,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -796,7 +878,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -898,7 +980,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1055,7 +1137,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1163,7 +1245,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
+                <time title="修改时间：2020-05-27 09:41:08" itemprop="dateModified" datetime="2020-05-27T09:41:08+08:00">2020-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1195,93 +1277,6 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
 
       
           <p>本篇只介绍对于本机环境下问题的解决方案。我的系统是Win7 64位，并且安装的是64位的python2.7.6版本 当提示“no module named win32api”该信息时，需要安装pywin32模块，原本我是想通过pip安装的，但有问题。 于是上网找了对应的安装包，对应于我的python版本的，如果你也是用的2.7.6 64位的，可以下载我提供的这个附件：<a href="http://www.veitor.net/article/452.html/pywin32-218-win-amd64-py2-7">pywin32-218.win-amd64-py2.7</a> 然后进行安装，如果打开程序安装报错的话，很有可能是找不到python的注册表信息，我的解决方法是重新安装python（当然也有写个脚本进行注册的方法），重装时选择只对本机用户，而不是所有用户。完成后就能成功安装pywin32了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/compile-and-run-C-programs-under-sublime/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/compile-and-run-C-programs-under-sublime/" class="post-title-link" itemprop="url">sublime下配置编译和运行C程序</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-12-19 07:26:45" itemprop="dateCreated datePublished" datetime="2014-12-19T07:26:45+08:00">2014-12-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:43:00" itemprop="dateModified" datetime="2020-05-26T15:43:00+08:00">2020-05-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我使用的是sublime3，首先下载MinGW，别问我是啥，我也不怎么了解，网上说 MinGW 提供了一套简单方便的Windows下的基于GCC 程序开发环境，提供了GNU工具集。在这里我就理解它提供了gcc、g++、make等编译器吧。具体自行了解。 你可以上minGW官网<a href="http://www.mingw.org/或其他地方可以下载到，可视化安装界面，自行选择目录安装。比如我安装到了D:\\minGW" target="_blank" rel="noopener">http://www.mingw.org/或其他地方可以下载到，可视化安装界面，自行选择目录安装。比如我安装到了D:\\minGW</a> 安装完毕后，将minGW安装目录下的bin目录添加到环境变量，如下图，我将D:\minGW\bin添加到环境变量</p>
-<p><a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219150247.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219150247.jpg" alt="QQ图片20141219150247"></a></p>
-<p>接着配置sublime，工具栏选择工具（tools）-编译系统，然后新建一个编译系统</p>
-<p><a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219150736.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219150736.jpg" alt="QQ图片20141219150736"></a>输入以下配置：</p>
-<p>{<br>    “shell_cmd”: “gcc \“${file}\“ -o \“${file_path}/${file_base_name}\“ -std=c11 -O2 -Wall -lm –static”,<br>    “file_regex”: “^(..[^:]<em>):([0-9]+):?([0-9]+)?:? (.</em>)$”,<br>    “working_dir”: “${file_path}”,<br>    “selector”: “source.c, source.c++”,<br>    “variants”:<br>    [<br>        {<br>            “name”: “Run”,<br>            “shell_cmd”: “gcc -std=c11 -O2 -Wall -lm –static \“${file}\“ -o \“${file_path}/${file_base_name}\“ &amp;&amp; \“${file_path}/${file_base_name}\“”<br>        }<br>    ]<br>}</p>
-<p>保存在Sublime Text的Packages目录下即可。 然后敲一段C程序然后保存为.c文件，按ctrl+B会在这文件旁生成exe程序，按ctrl+shift+B会在sublime控制台中显示运行结果（如下图） <a href="http://storage.veitor.net/uploads/2014/12/QQ图片20141219152044.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/12/QQ%E5%9B%BE%E7%89%8720141219152044.jpg" alt="QQ图片20141219152044"></a>   至此大功告成。</p>
 
       
     </div>
@@ -1346,7 +1341,7 @@ config.HOST = &quot;http://changing-world-app.com&quot; // Real Server Domain</c
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
