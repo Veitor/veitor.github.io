@@ -12,6 +12,8 @@ date: 2020-05-28 08:19:43
 
 应用层是将领域模型与查询或修改其状态的客户端分离的地方。Application Service是这一层的构建块。正如Vaughn Vernon所说：“Application Service是领域模型的直接客户端”。你可以将Application Service看作为外部世界（HTML表单、API客户端、命令行、框架、UI等）与领域模型之间的联系点。思考一下你系统中向人们展示的最上层的use cases，这会对你有所帮助，例如：“以游客身份进行注册”、“以登陆者的身份购买产品”等等。
 
+<!-- more -->
+
 在这一章，我们将会探索如何实现Application Service，理解Command pattern的作用以及确定Application Service的职责。为此，让我们思考一下`注册新用户`的用例。
 
 为了注册新用户，我们需要：
