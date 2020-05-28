@@ -183,6 +183,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/youku-real-video-address-resolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/youku-real-video-address-resolution/" class="post-title-link" itemprop="url">优酷真实视频地址解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-10-08 08:41:55" itemprop="dateCreated datePublished" datetime="2014-10-08T08:41:55+08:00">2014-10-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>序：优酷之前更新了次算法(很久之前了，呵呵。。。)，故此很多博客的解析算法已经无法使用。很多大牛也已经更新了新的解析方法。我也在此写篇解析过程的文章。(本文使用语言为C#) 由于优酷视频地址时间限制，在你访问本篇文章时，下面所属链接有可能已经失效，望见谅。 例：<a href="http://v.youku.com/v_show/id_XNzk2NTI0MzMy.html" target="_blank" rel="noopener">http://v.youku.com/v_show/id_<strong>XNzk2NTI0MzMy</strong>.html</a></p>
+<h1 id="1-获取视频vid"><a href="#1-获取视频vid" class="headerlink" title="1:获取视频vid"></a>1:获取视频vid</h1><p>在视频url中标红部分。一个<a href="http://www.cnblogs.com/zhaojunjie/p/3344909.html" target="_blank" rel="noopener">正则表达式</a>即可获取。</p>
+<p>string getVid(string url)<br>{<br>    string strRegex = “(?&lt;=id_)(\\w+)”;<br>    Regex reg = new Regex(strRegex);<br>    Match match = reg.Match(url);<br>    return match.ToString();<br>}</p>
+<h1 id="2-获取视频元信息"><a href="#2-获取视频元信息" class="headerlink" title="2:获取视频元信息"></a>2:获取视频元信息</h1><p><a href="http://v.youku.com/player/getPlayList/VideoIDS/XNzk2NTI0MzMy/Pf/4/ctype/12/ev/1" target="_blank" rel="noopener">http://v.youku.com/player/getPlayList/VideoIDS/</a><a href="http://v.youku.com/player/getPlayList/VideoIDS/XNzk2NTI0MzMy/Pf/4/ctype/12/ev/1" target="_blank" rel="noopener"><strong>XNzk2NTI0MzMy</strong>/Pf/4/ctype/12/ev/1</a> 将前述vid嵌入到上面url中访问即可得到视频信息文件。由于视频信息过长不在此贴出全部内容。下面是部分重要内容的展示。(获取文件为json文件，可直接解析)</p>
+<p>{ “data”: [ {<br>            “ip”: 996949050,<br>            “ep”: “NQXRTAodIbrd1vnC8+JxB4emuRs41w7DWho=”,<br>            “segs”: {<br>                “hd2”: [<br>                    {<br>                        “no”: “0”,<br>                        “size”: “34602810”,<br>                        “seconds”: 205,<br>                        “k”: “248fe14b4c1b37302411f67a”,<br>                        “k2”: “1c8e113cecad924c5”<br>                    },<br>                    {<br>                        “no”: “1”,<br>                    },] }, } ],}</p>
+<p>上面显示的内容后面都会使用到。其中<strong>segs包含hd3,hd2,flv,mp4,3gp</strong>等各种格式，并且每种格式下均分为若干段。本次选用清晰度较高的hd2(视频格式为flv)</p>
+<h1 id="3-拼接m3u8地址"><a href="#3-拼接m3u8地址" class="headerlink" title="3:拼接m3u8地址"></a><strong>3:拼接m3u8地址</strong></h1><p><a href="http://pl.youku.com/playlist/m3u8?ctype=12&ep=%7b0%7d&ev=1&keyframe=1&oip=%7b1%7d&sid=%7b2%7d&token=%7b3%7d&type=%7b4%7d&vid=%7b5%7d" target="_blank" rel="noopener">http://pl.youku.com/playlist/m3u8?ctype=12&amp;ep={0}&amp;ev=1&amp;keyframe=1&amp;oip={1}&amp;sid={2}&amp;token={3}&amp;type={4}&amp;vid={5}</a> 以上共有6个参数，其中vid和oip已经得到，分别之前的vid和json文件中的ip字段，即(<strong>XNzk2NTI0MzMy</strong>和<strong>1991941296</strong>)，但是ep,sid,token需要重新计算(json文件中的ep值不能直接使用)。type即为之前选择的segs。</p>
+<h2 id="3-1计算ep-sid-token"><a href="#3-1计算ep-sid-token" class="headerlink" title="3.1计算ep,sid,token"></a>3.1计算ep,sid,token</h2><p>计算方法单纯的为数学计算，下面给出计算的函数。三个参数可一次性计算得到。其中涉及到Base64编码解码知识，<a href="http://www.cnblogs.com/zhaojunjie/p/3946427.html" target="_blank" rel="noopener">点击查看</a>。</p>
+<p>private static string myEncoder(string a, byte[] c, bool isToBase64)<br>        {<br>            string result = “”;<br>            List<Byte> bytesR = new List<byte>();<br>            int f = 0, h = 0, q = 0;<br>            int[] b = new int[256];<br>            for (int i = 0; i &lt; 256; i++)<br>                    b[i] = i;<br>            while (h &lt; 256)<br>            {<br>                f = (f + b[h] + a[h % a.Length]) % 256;<br>                int temp = b[h];<br>                b[h] = b[f];<br>                b[f] = temp;<br>                h++;<br>            }<br>            f = 0; h = 0; q = 0;<br>            while (q &lt; c.Length)<br>            {<br>                h = (h + 1) % 256;<br>                f = (f + b[h]) % 256;<br>                int temp = b[h];<br>                b[h] = b[f];<br>                b[f] = temp;<br>                byte[] bytes = new byte[] { (byte)(c[q] ^ b[(b[h] + b[f]) % 256]) };<br>                bytesR.Add(bytes[0]);<br>                result += System.Text.ASCIIEncoding.ASCII.GetString(bytes);<br>                q++;<br>            }<br>            if (isToBase64)<br>            {<br>                Byte[] byteR = bytesR.ToArray();<br>                result = Convert.ToBase64String(byteR);<br>            }<br>            return result;<br>        }<br>        public static void getEp(string vid, string ep, ref string pNew, ref string token, ref string sid)<br>        {<br>            string template1 = “becaf9be”;<br>            string template2 = “bf7e5f01”;<br>            byte[] bytes = Convert.FromBase64String(ep);<br>            ep = ystem.Text.ASCIIEncoding.ASCII.GetString(bytes);<br>            string temp = myEncoder(template1, bytes, false);<br>            string[] part = temp.Split(‘<em>‘);<br>            sid = part[0];<br>            token = part[1];<br>            string whole = string.Format(“{0}</em>{1}_{2}”, sid, vid, token);<br>            byte[] newbytes = System.Text.ASCIIEncoding.ASCII.GetBytes(whole);<br>            epNew = myEncoder(template2, newbytes, true);<br>        }</p>
+<p>计算得到ep,token,sid分别为cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH/7YbAMZuNaHQmjbTwg==, 3825, 241273717793612e7b085。注意，此时ep并不能直接拼接到url中，需要对此做一下url编码ToUrlEncode(ep)。最终ep为cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d</p>
+<h2 id="3-2视频格式及清晰度"><a href="#3-2视频格式及清晰度" class="headerlink" title="3.2视频格式及清晰度"></a>3.2视频格式及清晰度</h2><p>视频格式和选择的segs有密切关系。如本文选择的hd2，格式即为flv，下面是segs,视频格式和清晰度的对照。之前对此部分理解有些偏差，多谢<a href="http://home.cnblogs.com/u/xzpgzl/" target="_blank" rel="noopener">削着苹果走路</a>提醒。<a href="http://www.cnblogs.com/xzpgzl/" target="_blank" rel="noopener"></a></p>
+<p>“segs”,”视频格式”,”清晰度”<br>“hd3”, “flv”, “1080P”<br>“hd2”, “flv”, “超清”<br>“mp4”, “mp4”, “高清”<br>“flvhd”, “flv”, “高清”<br>“flv”, “flv”, “标清”<br>“3gphd”, “3gp”, “高清”</p>
+<h2 id="3-3拼接地址"><a href="#3-3拼接地址" class="headerlink" title="3.3拼接地址"></a>3.3拼接地址</h2><p>　　最后的m3u8地址为</p>
+<p><a href="http://pl.youku.com/playlist/m3u8?ctype=12&ep=cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d&ev=1&keyframe=1&oip=996949050&sid=241273717793612e7b085&token=3825&type=hd2&vid=XNzk2NTI0MzMy" target="_blank" rel="noopener">http://pl.youku.com/playlist/m3u8?ctype=12&amp;ep=cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d&amp;ev=1&amp;keyframe=1&amp;oip=996949050&amp;sid=241273717793612e7b085&amp;token=3825&amp;type=hd2&amp;vid=XNzk2NTI0MzMy</a></p>
+<h1 id="4-获取视频地址"><a href="#4-获取视频地址" class="headerlink" title="4:获取视频地址"></a>4:获取视频地址</h1><p>将上述m3u8文件下载后，其中内容即为真实地址，不过还需要稍微处理一下。部分内容如下：</p>
+<p>#EXTM3U<br>#EXT-X-TARGETDURATION:12<br>#EXT-X-VERSION:3<br>#EXTINF:6.006,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1</a><br>#EXTINF:5.464,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1</a><br>#EXTINF:5.505,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1</a><br>#EXTINF:9.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1</a><br>#EXTINF:11.136,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1</a><br>#EXTINF:8.258,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1</a><br>#EXTINF:9.843,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1</a><br>#EXTINF:10.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1</a></p>
+<p>其中每条url只包含6s左右视频，但是可将url中参数部分去掉即可得到实际的长度。但是每条去掉后需合并一下相同的url，如上述列表可得到url片段 <a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv</a> 将m3u8中所有的url片段全部下载即可大功告成。 <a href="http://storage.veitor.net/uploads/2014/10/QQ截图20141008164115.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/10/QQ%E6%88%AA%E5%9B%BE20141008164115.jpg" alt="QQ截图20141008164115"></a> 原文地址：<a href="http://www.cnblogs.com/zhaojunjie/p/4009192.html" target="_blank" rel="noopener">http://www.cnblogs.com/zhaojunjie/p/4009192.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/Mysql-transaction-and-isolation-level/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +318,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -304,7 +408,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -398,7 +502,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -482,7 +586,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -596,7 +700,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -835,7 +939,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -911,7 +1015,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1043,7 +1147,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1121,7 +1225,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1218,85 +1322,6 @@ background-size: 100px auto;
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/responsive-and-adaptive/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/responsive-and-adaptive/" class="post-title-link" itemprop="url">两个宜于『统一Web』的方案：响应式与自适应</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-07-30 05:39:14" itemprop="dateCreated datePublished" datetime="2014-07-30T05:39:14+08:00">2014-07-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/" itemprop="url" rel="index">
-                    <span itemprop="name">JS</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" alt="1377683186626"></a>你大概早就听别人说过我们正处在『后PC时代』。那么它对于Web开发者来说意味着什么呢？它意味着你那网站的30%到50%的流量如今已经来自移动设备。意味着很快，使用台式机和笔记本访问Web的人将逐渐减少。 （那么）我们该如何在用户行为上处理这种结构性转变？我们已经逾越了用M-dot或T-dot来hack的阶段，开始步入一个由响应式与自适应设计 技术统治的时代——即W3C联盟口中的统一化Web来临。W3C议案的关键部分在于『统一化Web意味着，在合理条件下，无论用户使用什么设备，要将相同 的信息与服务传达给他们。』 对于开发者来说，那就意味着统一化Web方案要确保你的站点不仅工作在今天的智能手机和平板电脑上，也要能应付未来那遥未可知的屏幕画面。 目前有三种流行性方案来开发网站：使用<a href="http://www.webmonkey.com/2013/01/take-responsive-design-beyond-media-queries/" target="_blank" rel="noopener">响应式设计</a>、 客户端自适应、服务器端自适应。 这三种方案难分高下，每种都有其自身的优缺点。明智的Web开发者会在实施下一个项目之前权衡各自的利弊。</p>
-<h2 id="响应式Web设计"><a href="#响应式Web设计" class="headerlink" title="响应式Web设计"></a>响应式Web设计</h2><p>响应式Web设计是最常见的统一化Web方案。它使用<a href="http://www.webmonkey.com/2012/01/building-a-responsive-future-friendly-web-for-everyone/" target="_blank" rel="noopener">CSS Media Queries</a>根据设备显示器的规格来调整网站的呈现方式。从<a href="http://www.webmonkey.com/2011/09/the-boston-globe-embraces-responsive-design/" target="_blank" rel="noopener">波士顿环球报</a>到迪斯尼站点到Indochino西服网站，响应式站点的数量正在飞速增长。 这种方案的核心优势在于设计者可以为所有设备使用同一模板，仅用CSS来定制不同大小屏幕上内容的呈现方式即可。 然而，一个良好的响应式设计没什么捷径可言。要迈向响应式，团队通常需要进行完全的站点重建。 在设计和测试阶段会非常繁琐，保证为每种可能的设备或内容定制用户体验很困难。我们都见过那样一堆看起来一点儿都不吻合的碎片拼图站点。在移动用户优先考虑的开发过程中，响应式站点设计可以与设备结合得很融洽。对于平板和手提电脑来说，（响应式设计）则<a href="http://www.webmonkey.com/2012/03/video-progressive-enhancement-2-0/" target="_blank" rel="noopener">更有优势</a>。 对响应式站点来说，性能也很可怕。在Mobify公司，我们近期完成了一项对15个流行的响应式电子商务站点的分析。在这些站点中，主页平均加载87个资源、1.9MB的数据量。一些响应式页面可以大到15MB。 之所以数据量这么大是因为响应式方案需考虑到所有设备。你的用户只使用一种设备，但是不得不在使用前等待所有的页面元素和资源加载才行。简单来说，性能影响你的底线。在智能手机端，当用户不得不等上一秒时，转化率会<a href="http://www.webperformancetoday.com/2011/11/23/case-study-slow-page-load-mobile-business-metrics/" target="_blank" rel="noopener">额外降低3.5%</a>。若是达到3秒大关，<a href="http://www.strangeloopnetworks.com/resources/infographics/web-performance-and-user-expectations/website-abandonment-happens-after-3-seconds/" target="_blank" rel="noopener">57%的用户</a>会彻底离开你的站点。 当响应式设计迅速成为普遍的标准时，也为在线电商带来了新的挑战，包括怎样处理图片、怎样优化移动端性能，并且当采用移动优先的方案时，通常意味着网站必须推倒重建。</p>
-<h2 id="客户端自适应"><a href="#客户端自适应" class="headerlink" title="客户端自适应"></a>客户端自适应</h2><p>客户端自适应秉承着『为定制的设备 内容传达响应式设计用户体验』的原则。它采用JavaScript丰富站点的功能和独特性。比如，自适应站点只为Retina显示器（比如新款iPad）提供Retina质量的图片，而标准精度显示器接收低质量图片。 自适应设计有两种方案：一种是在客户端生效，在用户的浏览器上；另一种是由Web服务器负荷来检测设备类型并加载正确模板。客户端自适应类型的网站 案例包括个性T恤Threadless和奢侈品闪购ideeli。自适应模板方案的优势在于其复用HTML和JavaScript的能力，简化了项目管理 和测试的更迭。 客户端响应方案意味着你不必完全重构网站。相反你可以基于已有内容布局移动响应。对于专家级开发者而言，这种方案也可以让你针对指定设备或屏幕分辨 率。例如，对Mobify的大多在线时尚零售客户而言，95%的移动端流量来自iPhone。客户端自适应意味着他们可以专门针对苹果智能手机进行优化。 与响应式设计不同，自适应模板确保客户端设备只加载所需资源。因为对设备和特性的检测已经转移到了移动设备自身，类似Akamai和Edgecast的内容分发网络可以在不影响用户体验的情况下使用他们大部分的缓存功能。 客户端自适应比起响应式设计而言有着更高的壁垒。开发者用这项技术需要熟练掌握JavaScript，也依托于网站现有的模板为基础。最后，因为客户端自适应作为现有底层代码上的覆盖物，你需要在网站迁移时让它们作为一个整体。</p>
-<h2 id="服务器端自适应"><a href="#服务器端自适应" class="headerlink" title="服务器端自适应"></a>服务器端自适应</h2><p>依赖于服务器插件和自定义用户代理检测器我们也可以通过多种途径得到服务器端自适应方案。使用服务器端自适应的网站包括Etsy，One Kings Lane和OnlineShoes.com。 为什么要选择服务器端自适应？它通常针对每个设备提供独特的模板，允许更多的定制。并且这种方案把设备检测逻辑块放在服务器上，使得小型移动页面加载得更快。除此之外，对于像Magneto这种常见的CMS和电子商务系统来说，还有多种多样可用的服务器端插件。 这种方案不适用于小心脏——通常需要你大幅度改变后端系统，实施起来将会是冗长（和昂贵）的。管理多种模板需要有持续不断的维护成本。最后，当服务 器过载时这种方案还会带来性能问题。当服务器上加载移动用户代理检测器的时候，需要关掉许多部署在CDN上的缓存机制，像Akamai一样，这将导致移动 端和桌面访客的用户体验速率降低。 当然，许多公司仍然在跟响应的基本要领角力，显然还没有准备好面对重口味的自适应。然而，随着竞争的加剧和移动通信流量的上涨，越来越多的团队将在所有三个方法上浅尝辄止，（最终）择出一个最适合他们用户的方案。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1346,7 +1371,7 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

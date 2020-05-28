@@ -183,6 +183,85 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/responsive-and-adaptive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/responsive-and-adaptive/" class="post-title-link" itemprop="url">两个宜于『统一Web』的方案：响应式与自适应</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-30 05:39:14" itemprop="dateCreated datePublished" datetime="2014-07-30T05:39:14+08:00">2014-07-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" alt="1377683186626"></a>你大概早就听别人说过我们正处在『后PC时代』。那么它对于Web开发者来说意味着什么呢？它意味着你那网站的30%到50%的流量如今已经来自移动设备。意味着很快，使用台式机和笔记本访问Web的人将逐渐减少。 （那么）我们该如何在用户行为上处理这种结构性转变？我们已经逾越了用M-dot或T-dot来hack的阶段，开始步入一个由响应式与自适应设计 技术统治的时代——即W3C联盟口中的统一化Web来临。W3C议案的关键部分在于『统一化Web意味着，在合理条件下，无论用户使用什么设备，要将相同 的信息与服务传达给他们。』 对于开发者来说，那就意味着统一化Web方案要确保你的站点不仅工作在今天的智能手机和平板电脑上，也要能应付未来那遥未可知的屏幕画面。 目前有三种流行性方案来开发网站：使用<a href="http://www.webmonkey.com/2013/01/take-responsive-design-beyond-media-queries/" target="_blank" rel="noopener">响应式设计</a>、 客户端自适应、服务器端自适应。 这三种方案难分高下，每种都有其自身的优缺点。明智的Web开发者会在实施下一个项目之前权衡各自的利弊。</p>
+<h2 id="响应式Web设计"><a href="#响应式Web设计" class="headerlink" title="响应式Web设计"></a>响应式Web设计</h2><p>响应式Web设计是最常见的统一化Web方案。它使用<a href="http://www.webmonkey.com/2012/01/building-a-responsive-future-friendly-web-for-everyone/" target="_blank" rel="noopener">CSS Media Queries</a>根据设备显示器的规格来调整网站的呈现方式。从<a href="http://www.webmonkey.com/2011/09/the-boston-globe-embraces-responsive-design/" target="_blank" rel="noopener">波士顿环球报</a>到迪斯尼站点到Indochino西服网站，响应式站点的数量正在飞速增长。 这种方案的核心优势在于设计者可以为所有设备使用同一模板，仅用CSS来定制不同大小屏幕上内容的呈现方式即可。 然而，一个良好的响应式设计没什么捷径可言。要迈向响应式，团队通常需要进行完全的站点重建。 在设计和测试阶段会非常繁琐，保证为每种可能的设备或内容定制用户体验很困难。我们都见过那样一堆看起来一点儿都不吻合的碎片拼图站点。在移动用户优先考虑的开发过程中，响应式站点设计可以与设备结合得很融洽。对于平板和手提电脑来说，（响应式设计）则<a href="http://www.webmonkey.com/2012/03/video-progressive-enhancement-2-0/" target="_blank" rel="noopener">更有优势</a>。 对响应式站点来说，性能也很可怕。在Mobify公司，我们近期完成了一项对15个流行的响应式电子商务站点的分析。在这些站点中，主页平均加载87个资源、1.9MB的数据量。一些响应式页面可以大到15MB。 之所以数据量这么大是因为响应式方案需考虑到所有设备。你的用户只使用一种设备，但是不得不在使用前等待所有的页面元素和资源加载才行。简单来说，性能影响你的底线。在智能手机端，当用户不得不等上一秒时，转化率会<a href="http://www.webperformancetoday.com/2011/11/23/case-study-slow-page-load-mobile-business-metrics/" target="_blank" rel="noopener">额外降低3.5%</a>。若是达到3秒大关，<a href="http://www.strangeloopnetworks.com/resources/infographics/web-performance-and-user-expectations/website-abandonment-happens-after-3-seconds/" target="_blank" rel="noopener">57%的用户</a>会彻底离开你的站点。 当响应式设计迅速成为普遍的标准时，也为在线电商带来了新的挑战，包括怎样处理图片、怎样优化移动端性能，并且当采用移动优先的方案时，通常意味着网站必须推倒重建。</p>
+<h2 id="客户端自适应"><a href="#客户端自适应" class="headerlink" title="客户端自适应"></a>客户端自适应</h2><p>客户端自适应秉承着『为定制的设备 内容传达响应式设计用户体验』的原则。它采用JavaScript丰富站点的功能和独特性。比如，自适应站点只为Retina显示器（比如新款iPad）提供Retina质量的图片，而标准精度显示器接收低质量图片。 自适应设计有两种方案：一种是在客户端生效，在用户的浏览器上；另一种是由Web服务器负荷来检测设备类型并加载正确模板。客户端自适应类型的网站 案例包括个性T恤Threadless和奢侈品闪购ideeli。自适应模板方案的优势在于其复用HTML和JavaScript的能力，简化了项目管理 和测试的更迭。 客户端响应方案意味着你不必完全重构网站。相反你可以基于已有内容布局移动响应。对于专家级开发者而言，这种方案也可以让你针对指定设备或屏幕分辨 率。例如，对Mobify的大多在线时尚零售客户而言，95%的移动端流量来自iPhone。客户端自适应意味着他们可以专门针对苹果智能手机进行优化。 与响应式设计不同，自适应模板确保客户端设备只加载所需资源。因为对设备和特性的检测已经转移到了移动设备自身，类似Akamai和Edgecast的内容分发网络可以在不影响用户体验的情况下使用他们大部分的缓存功能。 客户端自适应比起响应式设计而言有着更高的壁垒。开发者用这项技术需要熟练掌握JavaScript，也依托于网站现有的模板为基础。最后，因为客户端自适应作为现有底层代码上的覆盖物，你需要在网站迁移时让它们作为一个整体。</p>
+<h2 id="服务器端自适应"><a href="#服务器端自适应" class="headerlink" title="服务器端自适应"></a>服务器端自适应</h2><p>依赖于服务器插件和自定义用户代理检测器我们也可以通过多种途径得到服务器端自适应方案。使用服务器端自适应的网站包括Etsy，One Kings Lane和OnlineShoes.com。 为什么要选择服务器端自适应？它通常针对每个设备提供独特的模板，允许更多的定制。并且这种方案把设备检测逻辑块放在服务器上，使得小型移动页面加载得更快。除此之外，对于像Magneto这种常见的CMS和电子商务系统来说，还有多种多样可用的服务器端插件。 这种方案不适用于小心脏——通常需要你大幅度改变后端系统，实施起来将会是冗长（和昂贵）的。管理多种模板需要有持续不断的维护成本。最后，当服务 器过载时这种方案还会带来性能问题。当服务器上加载移动用户代理检测器的时候，需要关掉许多部署在CDN上的缓存机制，像Akamai一样，这将导致移动 端和桌面访客的用户体验速率降低。 当然，许多公司仍然在跟响应的基本要领角力，显然还没有准备好面对重口味的自适应。然而，随着竞争的加剧和移动通信流量的上涨，越来越多的团队将在所有三个方法上浅尝辄止，（最终）择出一个最适合他们用户的方案。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/10-most-dangerous-commands-to-never-execute-in-Linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +293,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -301,7 +380,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -392,7 +471,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -468,7 +547,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -544,7 +623,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -620,7 +699,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -696,7 +775,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -772,7 +851,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -874,7 +953,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1025,82 +1104,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/what-is-hot-standby/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/what-is-hot-standby/" class="post-title-link" itemprop="url">什么是双机热备 ？</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-05-27 07:16:00" itemprop="dateCreated datePublished" datetime="2014-05-27T07:16:00+08:00">2014-05-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>什么是双机热备技术？双机热备，英文”Hot Standby“，是一种常见的服务器高可用技术。顾名思义，A，B两台机器互相做备份，A歇菜了B顶上，B歇菜了A顶上。 <img src="http://storage.veitor.net/2016/03/757275038.jpg" alt="showimage-10057963-10009581-c4d4df6cba4fb6fcf79206c9c6fcb774.jpg"> 双机热备典型应用环境就是： 对于关键性的业务系统，需要有两台或两台以上的服务器完成相同的功能，共同执行同一服务，让它们具有相同的配置，彼此互为备用，当一台服务器出现故障时，不需要人工介入，可以由另一台服务器自动接替工作，保证系统持续运转，实现高可用性。 双机热备的工作模式有三种 根据两台服务器的工作方式可以有三种不同的工作模式，即双机主从模式、双机互备模式和双机双工模式。下面分别予以简单介绍： 双机主从模式 最常见的双机热备模式，即目前通常所说的active/standby 方式，active服务器处于工作状态；而standby服务器处于监控准备状态。当active服务器出现故障的时候，通过软件诊测或手工方式将standby机器激活，保证应用在短时间内完全恢复正常使用。典型应用在证券资金服务器或行情服务器。这是目前采用较多的一种模式，但由于另外一台服务器长期处于后备的状态，从计算资源方面考量，就存在一定的浪费。 双机互备模式 两个相对独立的应用在两台机器同时运行，但彼此均设为备机，当某一台服务器出现故障时，另一台服务器可以在短时间内将故障服务器的应用接管过来，从而保证了应用的持续性，但对服务器的性能要求比较高。服务器配置相对要好。 双机双工模式 目前Cluster（集群）的一种形式，active/active两台服务器均为活动状态，同时运行相同的应用，保证整体的性能，也实现了负载均衡和互为备份。WEB服务器或FTP服务器等用此种方式比较多。 双机热备的实现方式有两种 双机热备有两种实现模式，一种是基于共享的存储设备的方式，另一种是没有共享的存储设备的方式，一般称为纯软件方式。 基于存储共享的双机热备是双机热备的最标准方案。这种方式采用两台（或多台）服务器，使用共享的存储设备（磁盘阵列柜或存储区域网SAN）。两台服务器可以采用热备（主从）、互备、双工（并行）等不同的方式。在工作过程中，两台服务器将以一个虚拟的IP地址对外提供服务，依工作方式的不同，将服务请求发送给其中一台服务器承担。同时，服务器通过心跳线（目前往往采用建立私有网络的方式）侦测另一台服务器的工作状况。当一台服务器出现故障时，另一台服务器根据心跳侦测的情况做出判断，并进行切换，接管服务。对于用户而言，这一过程是全自动的，在很短时间内完成，从而对业务不会造成影响。由于使用共享的存储设备，因此两台服务器使用的实际上是一样的数据，由双机或集群软件对其进行管理。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1150,7 +1153,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

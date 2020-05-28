@@ -183,6 +183,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/what-is-hot-standby/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/what-is-hot-standby/" class="post-title-link" itemprop="url">什么是双机热备 ？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-27 07:16:00" itemprop="dateCreated datePublished" datetime="2014-05-27T07:16:00+08:00">2014-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>什么是双机热备技术？双机热备，英文”Hot Standby“，是一种常见的服务器高可用技术。顾名思义，A，B两台机器互相做备份，A歇菜了B顶上，B歇菜了A顶上。 <img src="http://storage.veitor.net/2016/03/757275038.jpg" alt="showimage-10057963-10009581-c4d4df6cba4fb6fcf79206c9c6fcb774.jpg"> 双机热备典型应用环境就是： 对于关键性的业务系统，需要有两台或两台以上的服务器完成相同的功能，共同执行同一服务，让它们具有相同的配置，彼此互为备用，当一台服务器出现故障时，不需要人工介入，可以由另一台服务器自动接替工作，保证系统持续运转，实现高可用性。 双机热备的工作模式有三种 根据两台服务器的工作方式可以有三种不同的工作模式，即双机主从模式、双机互备模式和双机双工模式。下面分别予以简单介绍： 双机主从模式 最常见的双机热备模式，即目前通常所说的active/standby 方式，active服务器处于工作状态；而standby服务器处于监控准备状态。当active服务器出现故障的时候，通过软件诊测或手工方式将standby机器激活，保证应用在短时间内完全恢复正常使用。典型应用在证券资金服务器或行情服务器。这是目前采用较多的一种模式，但由于另外一台服务器长期处于后备的状态，从计算资源方面考量，就存在一定的浪费。 双机互备模式 两个相对独立的应用在两台机器同时运行，但彼此均设为备机，当某一台服务器出现故障时，另一台服务器可以在短时间内将故障服务器的应用接管过来，从而保证了应用的持续性，但对服务器的性能要求比较高。服务器配置相对要好。 双机双工模式 目前Cluster（集群）的一种形式，active/active两台服务器均为活动状态，同时运行相同的应用，保证整体的性能，也实现了负载均衡和互为备份。WEB服务器或FTP服务器等用此种方式比较多。 双机热备的实现方式有两种 双机热备有两种实现模式，一种是基于共享的存储设备的方式，另一种是没有共享的存储设备的方式，一般称为纯软件方式。 基于存储共享的双机热备是双机热备的最标准方案。这种方式采用两台（或多台）服务器，使用共享的存储设备（磁盘阵列柜或存储区域网SAN）。两台服务器可以采用热备（主从）、互备、双工（并行）等不同的方式。在工作过程中，两台服务器将以一个虚拟的IP地址对外提供服务，依工作方式的不同，将服务请求发送给其中一台服务器承担。同时，服务器通过心跳线（目前往往采用建立私有网络的方式）侦测另一台服务器的工作状况。当一台服务器出现故障时，另一台服务器根据心跳侦测的情况做出判断，并进行切换，接管服务。对于用户而言，这一过程是全自动的，在很短时间内完成，从而对业务不会造成影响。由于使用共享的存储设备，因此两台服务器使用的实际上是一样的数据，由双机或集群软件对其进行管理。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/log-mechanism-in-Yii1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +290,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -296,7 +372,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -374,7 +450,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -505,7 +581,7 @@ $subject->setState(5);//被观察者修改状态。
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -600,7 +676,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -682,7 +758,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -777,7 +853,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -859,7 +935,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -935,7 +1011,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -963,91 +1039,6 @@ $this->widget('zii.widgets.CMenu',array(
           <p>之前一直对集群与分布式的概念不是很清楚，认为两个名词概念都差不多，那到底区别在哪呢，我也在网上找了很多解释，但似乎都没有言简意赅的讲清区别，或者说没有很形象的讲明每个名词是什么意思，到底有何用。那么我就依我的看法来讲一下，首先是分别讲解，再来合起来讲一下： 【集群】 处理同一个业务，目的是实现高可用性，可用性顾名思义，就是要让用户能用，并且随时能访问。一个集群针对一个业务并且有着多台服务器，当一个服务器挂掉，剩下的几台能顶替着继续工作（当然这几台服务器在那台服务器没挂的时候也不是闲着的，他们都是在同时处理大量请求的业务，那台服务器挂掉后，它的一些任务只好让这几台来顺带帮着完成了），这样用户能继续访问网站的某一业务。举个例子，比如我有发布日志的业务，如果我只有一台服务器支撑着这个业务，当服务器因某种原因挂掉后，那么用户也就无法发日志，这一业务也就无法使用。然而如果我有着服务器集群，其中一台挂掉，用户仍然能发日志。 【分布式】 将不同的业务放在不同的地方（节点），换句话说，每个分布式节点都处理不同的任务（一个节点处理一个业务），举个例子，有一个节点的业务是处理上传图片，还有一个节点的业务是处理发布文章，就这样把每个业务放在不同的地方（节点）。 【分布式与集群的关系】 每一个分布式节点都可以看做一个集群，上面说了，分布式的每一个节点都处理一种业务，而集群是处理同一业务，那么分布式的节点可以做一个集群。</p>
 <hr>
 <p>  当然，从不同角度看，可能理解也有偏差。主要还是集群的概念比较重要。我个人认为集群除了实现高可用性，还有高并发和高性能。这可能要涉及负载均衡了，比如访问一个网站的一个业务，对应的有一个集群，前面放着相应服务器，后面几台服务器负责处理这个业务，当有业务访问的时候，相应服务器会根据哪台服务器负载情况，将业务交给负载不是很重的服务器去完成</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/PHPer-break-through-growth-bottlenecks/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/PHPer-break-through-growth-bottlenecks/" class="post-title-link" itemprop="url">PHP程序员突破成长瓶颈</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-04-23 12:37:40" itemprop="dateCreated datePublished" datetime="2014-04-23T12:37:40+08:00">2014-04-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>先明确我所指的<strong>PHP</strong>工程师，是指毕业工作后，主要以PHP进行WEB系统的开发，没有使用其他语言工作过。工作经验大概在3~4年，普通的WEB系统（百万级访问，千成级数据以内或业务逻辑不是特别复杂）开发起基本得心应手，没有什么问题。但他们会这样的物点： 除了PHP不使用其它的语言,可能会点shell 脚本。 对PHP的掌握不精（很多PHP手册都没有看完,库除外） 知识面比较窄（面对需求，除开使用PHP和mysql ，不知道其它的解决办法） PHP代码以过程为主，认为面向对象的实现太绕，看不懂 这些PHPer 在遇到需要高性能，处理高并发，大量数据的项目或业务逻辑比较复杂（系统需要解决多领域业务的问题）时，缺少思路。不能分析问题的本质，技术判断力比较差，对于问题较快能找出临时的解决办法，但常常在不断临时性的解决办法中，系统和自己一步步走向崩溃。那怎么提高自己呢？怎么可以挑战难度更高的系统？ </p>
-<p><strong>更高的挑战在那里？</strong> 结合我自己的经验，我列出一些具体挑战，让大家先有个感性的认识。 </p>
-<p><strong>高性能系统的挑战在哪里？</strong> 如何选择WEB服务器？要不要使用fast-cgi 模式 要不要使用反向代理服务？选择全内存缓存还是硬盘缓存？ 是否需要负载均衡？是基于应用层，还是网络层？ 如何保证高可靠性？ 你的PHP代码性能如何，使用优化工具后怎么样？ 性能瓶颈在那里？ 是否需要写成C的扩展？ 用户访问有什么特点,是读多还是写多？是否需要读写分离？ 数据如何存储？写入速度和读出速度如何？ 数据增涨访问速读如何变化？ 如何使用缓存？ 怎么样考虑失效？数据的一致性怎么保证？ </p>
-<p><strong>高复杂性系统的挑战在哪里？</strong> 能否识别业务所对应的领域？是一个还是多个？ 能否合理对业务进行抽象，在业务规则变化能以很小的代价实现？ 数据的一致性、安全性可否保证？ 是否撑握了面向对象的分析和设计的方法 当我所列出的问题，你都能肯定的回答，我想在技术上你基本已经可能成为架构师了。如何你还不能回答，你需要在以下几个方向加强。 </p>
-<p><strong>怎么样提高，突破瓶颈</strong> 如何你还不能回答，你需要在以下几个方向加强： 分析你所使用的技术其原理和背后运行的机制，这样可以提高你的技术判断力，提高你技术方案选择的正确性; 学习大学期间重要的知识, 操作系统原理，数据结构和算法。知道你以前学习都是为了考试，但现在你需要为自己学习，让自己知其所以然。 重新开始学习C语言，虽然你在大学已经学过。这不仅是因为你可能需要写PHP扩展，而且还因为，在做C的应用中，有一个时刻关心性能、内存控制、变量生命周期、数据结构和算法的环境。 学习面向对象的分析与设计，它是解决复杂问题的有效的方法。学习抽象，它是解决复杂问题的唯一之道。 “这么多的东西怎么学，这得学多久呀” ？ 如果你努力的话，有较好的规划，估计需要1~2年的时间，怎么学习的问题，我们后续再谈。 （注：下面是原文作者左文建分享的学习方法）</p>
-<p> <strong>学习建议</strong> 如何有效的学习是一个大问题。 自己有些实践但很零散，不好总结。昨天晚上睡觉前，突然想到了RUP的核心，“以架构为中心，用例驱动，迭代开发”，借用这个思想，关于有效的学习的方法，可以这样来表述: 以原理、模型或机制为中心，任务驱动，迭代学习 有点抽象， 举个例子来说明如何学习。 目的： 学习如何提高处理性能。 可迭代驱动的任务： 通过IP找到所在地域。 这是WEB应用常见的任务，IP数据库是10左右万行的记录。 </p>
-<p> **第一次迭代： 不考虑性能的情况下实现功能（通过PHP来实现）</p>
-<p> ** 因为无法直接通过KEY(IP)进行查找地域，所以直接放到数据或通过关联数组这种简单的方法都是不行的。思路还是先把数据进行排序，然后再进行查找 1. 如何通过IP查找？ 已序的数据，二分查找是最快的。 2. 如何排序？用库函数sort当然 是可以，但是即然是学习，那还是自己实现快速排序吧。 学习目标： 排序算法，查找算法 PHPer 数据结构和算法基础比较差，平时也没有这方面的任务，自己也不学习，因此这方面的知识很缺乏。但是，编程解决的问题，最终都会归结到数据结构和对这种数据结构操作的算法。如果数据结构算法常在心中，那遇到问题就能清晰认识到它内在的结构，解决方法就会自然产生。 </p>
-<p> <strong>第二次迭代：优化数据的加载与排序</strong> 如果做到第一步，那基本上还是不可用，因为数据每次都需要的加载和排序，这样太耗时间。 解决的思路是，数据一次加载排序后，放到每个PHP进程能访问到的地方。 放到memcache 这是大家容易想到问题。其实放到共享内存(EA等加速器都支持)中是更快的方式，因为memcache还多了网络操作。 数据是整体放入到共享内存，还是分块放入，如何测试性能? 如何分析瓶颈所在(xdebug)? 在这些问题的驱动下你会学习到 学习目标： 检测、定位、优化PHP性能的方法; PHP实现结构对性能的影响。 </p>
-<p> <strong>第三次迭代： 编写PHP的扩展</strong> 性能还是上不去，不得不进入C/C++的世界了，不过从此你将不只是PHPer 而服务端的全能型工程师，当然这对没有做过C/C++的同学挑战是巨大的。 我这里无法再简单来说如何学习C/C++ ，可以参看 《PHP程序员学习C++》 学习目标：C/C++的学习，PHP扩展的编写 怎么确定需要学习的机制和原理呢？ 怎么找到驱动学习任务呢？ 我对需要学习的东西，都没有什么概念，怎么回答以上的两个问题？ 从这个技术的定位来找出需要学习的重点，即它怎么做到(机制）的和它为什么能这样做到 （模型或原理） 列出这个技术最常见的应用，做为学习的任务，从简到难进行实践。 假如我需要学习Javascript ，我对于HTML，CSS有点感性认识 首要我了解到，JS 是WEB领域的动态语言，主要解决网页的动态交互的。 那我要学习的要点如下： JS如何与HTML 进行交互 （机制） JS的动态特性在那里，与其它动态语言有何区别？（语言模型） 如果完全自学，找到需要学习的要点（机制、模型、原理） 设定学习任务的确不是那么容易把握。如果找到一个有经验的人来指导你或加一个学习型的团队，那学习的速度的确会大大提高。 最后，我想说的是： PHP因为简单而使用，但不能因为它的简单而限制我们成长！</p>
 
       
     </div>
@@ -1112,7 +1103,7 @@ $this->widget('zii.widgets.CMenu',array(
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

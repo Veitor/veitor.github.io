@@ -183,6 +183,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/how-to-guarantee-uniqueness-in-CQRS-and-ES/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/how-to-guarantee-uniqueness-in-CQRS-and-ES/" class="post-title-link" itemprop="url">CQRS/ES架构下如何保证用户名的唯一性？</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-04 08:11:00" itemprop="dateCreated datePublished" datetime="2018-12-04T08:11:00+08:00">2018-12-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>CQRS/ES下，许多开发者不了解如何在系统中处理这样的场景：</p>
+<blockquote>
+<p>在用户创建的时候，我们想要去验证用户名在数据库中是否是唯一的。我应该使用<code>Event Store</code>还是使用<code>读数据库</code>查询？我该在哪执行这个查询？</p>
+</blockquote>
+<p>这个问题是StackOverflow上与CQRS话题有关的最受关注的话题。因此在这篇文章中，我们将尝试针对这个问题寻找出最佳解决方案。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/how-to-guarantee-uniqueness-in-CQRS-and-ES/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/what-is-meaning-of-hydration-in-programming/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +301,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,7 +381,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -372,7 +459,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -449,7 +536,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -537,7 +624,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -623,7 +710,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -706,7 +793,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -796,7 +883,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -885,7 +972,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
+                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -920,82 +1007,6 @@
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/blog-moved-to-aliyun/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/blog-moved-to-aliyun/" class="post-title-link" itemprop="url">博客上阿里云了</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2015-11-06 17:01:00" itemprop="dateCreated datePublished" datetime="2015-11-06T17:01:00+08:00">2015-11-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-27 17:48:46" itemprop="dateModified" datetime="2020-05-27T17:48:46+08:00">2020-05-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>好久没收拾博客了，折腾了好几天终于迁移到了阿里云上了，同时将SAE环境改成自己搭建的LNMP，完成了从wordpress数据的迁移转换。<br>接下来继续完善，自己写插件支持七牛云存储。<br>这篇文章就当是测试的吧。。测试评论、测试分享、测试新的编辑器等等等</p>
-
       
     </div>
 
@@ -1059,7 +1070,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
