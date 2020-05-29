@@ -54,7 +54,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;04&#x2F;1535675639.jpg">
 <meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;04&#x2F;3390319868.jpg">
-<meta property="og:updated_time" content="2020-05-28T04:02:21.588Z">
+<meta property="og:updated_time" content="2020-05-29T03:01:37.947Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;04&#x2F;1535675639.jpg">
 
@@ -219,7 +219,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-28 12:02:21" itemprop="dateModified" datetime="2020-05-28T12:02:21+08:00">2020-05-28</time>
+                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,7 +252,7 @@
 <p>本章将介绍PHP相关的每种架构风格，从传统PHP代码演变为复杂的架构。请注意虽然还有很多其他现有的架构如Data Fabric和SOA，我们发现他们其中一些从PHP角度来介绍太过于复杂。</p>
 <a id="more"></a>
 
-<h2 id="曾经的美好时光"><a href="#曾经的美好时光" class="headerlink" title="曾经的美好时光"></a>曾经的美好时光</h2><p>在PHP4发布之前，该语言还不支持面向对象。那时，写程序的通用做法是使用过程式编程和全局状态。在PHP社区中像关注点分离(Separation of Concerns,SoC)和MVC这些概念还是比较陌生的。</p>
+<h1 id="曾经的美好时光"><a href="#曾经的美好时光" class="headerlink" title="曾经的美好时光"></a>曾经的美好时光</h1><p>在PHP4发布之前，该语言还不支持面向对象。那时，写程序的通用做法是使用过程式编程和全局状态。在PHP社区中像关注点分离(Separation of Concerns,SoC)和MVC这些概念还是比较陌生的。</p>
 <p>下面的例子是以这种传统方式编写的应用程序，由许多与HTML代码混合的前端控制器组成。在这时，基础设施、UI和领域层代码混在一起：</p>
 <pre><code>&lt;?php
 include __DIR__ . &apos;/bootstrap.php&apos;;
@@ -358,7 +358,7 @@ Bravo! Post was created successfully!
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;?php include __DIR__ . &apos;/footer.php&apos;; ?&gt;</code></pre><p>如今，尽管这样非常的不推荐，但仍然有这种过程式编程的程序存在。这种架构风格的主要缺点就是没有做到关注点分离，用这种方式开发的程序在维护成本上比我们现在所知道并经过验证的架构高多了。</p>
-<h2 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h2><p>从代码可维护性和复用性角度来看，让代码更容易维护的最好方法就是分解概念，也就是为每个不同的关注点创建一个层。在我们前面的例子中，很容易形成不同的分层：一个用于封装数据访问和操作，另一个处理基础设施问题，还有最后一个负责前两者的协调调用。分层架构的一个基本规则就是每一层必须与其下一层紧密耦合，如下图所示：</p>
+<h1 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h1><p>从代码可维护性和复用性角度来看，让代码更容易维护的最好方法就是分解概念，也就是为每个不同的关注点创建一个层。在我们前面的例子中，很容易形成不同的分层：一个用于封装数据访问和操作，另一个处理基础设施问题，还有最后一个负责前两者的协调调用。分层架构的一个基本规则就是每一层必须与其下一层紧密耦合，如下图所示：</p>
 <p><img src="http://storage.veitor.net/2018/04/1535675639.jpg" alt="QQ截图20180419221418.jpg" title="QQ截图20180419221418.jpg"></p>
 <p>分层架构真正寻求的是分离应用程序的不同组件。比如前一个例子，一篇博文的展现必须与这篇博文的概念实体完全分离。一个博文实体可以与多个展现相关联，而不是与特定的展现紧耦合。这通常被称为关注点分离(Separation of Concerns)。</p>
 <p>另一个寻求相同目的的架构模式是MVC模式。它最初被认为广泛用于构建桌面GUI应用程序的，现在主要用于web应用程序，这要归功于像Symfony、Yii、CodeIgniter等这样的流行web框架。</p>
@@ -842,7 +842,7 @@ class DoctrinePostRepository implements PostRepository {
 <blockquote>
 <p>使用ORM还是不使用ORM？<br>在实现CQRS时最常见的一个问题是：是否真的需要使用ORM？我们坚信在写模型中使用ORM是非常好的，并且具有使用工具的所有有点，这有助于我们使用关系数据库的情况下节省大量的工作。但是我们不应该忘记，我们仍然需要在关系数据库中持久化和检索写模型的状态。</p>
 </blockquote>
-<h2 id="事件溯源"><a href="#事件溯源" class="headerlink" title="事件溯源"></a>事件溯源</h2><p>CQRS是一个强大而灵活的架构，在收集和保存领域事件（在聚合操作中发生的）方面有一个额外的好处，可以让你详细的了解领域中发生的事情。因为领域事件描述了过去所发生的事情，这在领域中是具有重要意义的，所以领域事件是战术模式的关键点之一，</p>
+<h1 id="事件溯源"><a href="#事件溯源" class="headerlink" title="事件溯源"></a>事件溯源</h1><p>CQRS是一个强大而灵活的架构，在收集和保存领域事件（在聚合操作中发生的）方面有一个额外的好处，可以让你详细的了解领域中发生的事情。因为领域事件描述了过去所发生的事情，这在领域中是具有重要意义的，所以领域事件是战术模式的关键点之一，</p>
 <blockquote>
 <p>小心记录太多的事件<br>越来越多的事件意味着在领域中大量使用事件，这很可能是由业务来激发的。但作为一个经验法则，记住保持简单为好。</p>
 </blockquote>
@@ -961,7 +961,7 @@ class EventStorePostRepository implements PostRepository {
 }</code></pre><blockquote>
 <p>使用ORM还是不使用ORM？<br>从这种架构风格的用例我们可以清楚的看到，使用ORM来持久和获取事件会过度设计。即使我们使用关系数据库来存储事件，我们也只需从数据库中持久化和获取事件。</p>
 </blockquote>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于可选的架构风格有很多，因此你可能会对于本章节的内容感到困惑。你需要在众多选择中去权衡优缺点，来做出正确的选择。有一点很清楚：大泥球的方式不应该选择，因为代码会很快烂掉。分层架构是一个更好的选择，但是它也存在一些缺点，如各层之间的紧耦合。可以说，最均衡的选择是六边形架构，因为它可以用作基础架构，并且可以促进程序内部和外部高度解耦和对称性。这是我们为大多数场景下推荐的选择。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于可选的架构风格有很多，因此你可能会对于本章节的内容感到困惑。你需要在众多选择中去权衡优缺点，来做出正确的选择。有一点很清楚：大泥球的方式不应该选择，因为代码会很快烂掉。分层架构是一个更好的选择，但是它也存在一些缺点，如各层之间的紧耦合。可以说，最均衡的选择是六边形架构，因为它可以用作基础架构，并且可以促进程序内部和外部高度解耦和对称性。这是我们为大多数场景下推荐的选择。</p>
 <p>我们也看到CQRS和事件溯源是相对灵活的架构，可以帮助你应对复杂性。CQRS和事件溯源都有自己的定位，但也不要让这个因素来分散你的注意你。因为它们都有一些开销，你应该有一个来使用它们的技术理由。这些架构确实非常有用，可以在CQRS的Repository仓储的finder方法的数量上和事件溯源触发的事件数量上得到启发。如果finder方法开始增加，并且仓储变得难以维护，那么是时候考虑CQRS，以便拆分读写问题。如果每个聚合的事件数量趋于增长，并且业务对更细粒度的信息关注，那么可以考虑的一个选择是事件溯源。</p>
 <p>从Brian Foote和Joseph Yoder论文中提取的：大泥球（BIG BALL OF MUD）是一个杂乱的结构、蔓延无序的、胶带似的、下水管道似的、意大利面条似的代码丛林。（译者注：只可意会）</p>
 
@@ -1028,7 +1028,7 @@ class EventStorePostRepository implements PostRepository {
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#曾经的美好时光"><span class="nav-number">1.</span> <span class="nav-text">曾经的美好时光</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分层架构"><span class="nav-number">2.</span> <span class="nav-text">分层架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Model-View-Controller"><span class="nav-number">2.1.</span> <span class="nav-text">Model-View-Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层架构示例"><span class="nav-number">2.2.</span> <span class="nav-text">分层架构示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模型"><span class="nav-number">2.2.1.</span> <span class="nav-text">模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视图"><span class="nav-number">2.2.2.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#控制器"><span class="nav-number">2.2.3.</span> <span class="nav-text">控制器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反转依赖：六边形架构"><span class="nav-number">2.3.</span> <span class="nav-text">反转依赖：六边形架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#依赖倒置原则（The-Dependency-Inversion-Principle，DIP）"><span class="nav-number">2.3.1.</span> <span class="nav-text">依赖倒置原则（The Dependency Inversion Principle，DIP）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#应用六边形架构"><span class="nav-number">2.3.2.</span> <span class="nav-text">应用六边形架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令查询责任分离（Command-Query-Responsibility-Segregation，CQRS）"><span class="nav-number">2.4.</span> <span class="nav-text">命令查询责任分离（Command Query Responsibility Segregation，CQRS）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#写模型"><span class="nav-number">2.4.1.</span> <span class="nav-text">写模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读模型"><span class="nav-number">2.4.2.</span> <span class="nav-text">读模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同步写模型和读模型"><span class="nav-number">2.4.3.</span> <span class="nav-text">同步写模型和读模型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件溯源"><span class="nav-number">3.</span> <span class="nav-text">事件溯源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#曾经的美好时光"><span class="nav-number">1.</span> <span class="nav-text">曾经的美好时光</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分层架构"><span class="nav-number">2.</span> <span class="nav-text">分层架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Model-View-Controller"><span class="nav-number">2.0.1.</span> <span class="nav-text">Model-View-Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分层架构示例"><span class="nav-number">2.0.2.</span> <span class="nav-text">分层架构示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模型"><span class="nav-number">2.0.2.1.</span> <span class="nav-text">模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视图"><span class="nav-number">2.0.2.2.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#控制器"><span class="nav-number">2.0.2.3.</span> <span class="nav-text">控制器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反转依赖：六边形架构"><span class="nav-number">2.0.3.</span> <span class="nav-text">反转依赖：六边形架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#依赖倒置原则（The-Dependency-Inversion-Principle，DIP）"><span class="nav-number">2.0.3.1.</span> <span class="nav-text">依赖倒置原则（The Dependency Inversion Principle，DIP）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#应用六边形架构"><span class="nav-number">2.0.3.2.</span> <span class="nav-text">应用六边形架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令查询责任分离（Command-Query-Responsibility-Segregation，CQRS）"><span class="nav-number">2.0.4.</span> <span class="nav-text">命令查询责任分离（Command Query Responsibility Segregation，CQRS）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#写模型"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">写模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读模型"><span class="nav-number">2.0.4.2.</span> <span class="nav-text">读模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同步写模型和读模型"><span class="nav-number">2.0.4.3.</span> <span class="nav-text">同步写模型和读模型</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事件溯源"><span class="nav-number">3.</span> <span class="nav-text">事件溯源</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
