@@ -15,7 +15,7 @@ date: 2020-05-27 08:28:58
 <!-- more -->
 
 聚合根上的工厂方法
----
+===
 
 工厂方法模式是一个经典的模式：
 
@@ -58,7 +58,7 @@ $wish = $aUser->makeWish(
 ```
 
 强制不变性
----
+===
 
 聚合根内的工厂方法也是一个放置不变性的好地方。
 
@@ -100,10 +100,10 @@ class Forum
 ```
 
 服务上的工厂
----
+===
 在服务中也可以解耦创建对象的逻辑。
 
-#### 构建规约
+## 构建规约
 
 在我们服务中使用规约(Specifications)来展示如何在服务中使用工厂是一个好的例子。
 
@@ -282,7 +282,7 @@ class LatestPostsFeedServiceTest extends PHPUnit_Framework_TestCase
 }
 ```
 
-#### 构建聚合
+## 构建聚合
 
 实体与持久机制无关。你不要将你的持久化细节与你的实体进行耦合并污染你的实体。看一下这个Application Service：
 
@@ -399,7 +399,7 @@ class SignUpUserService
 ```
 
 测试工厂
----
+===
 当你编写测试时，你会看到一个常用的模式。这是因为构建实体和复杂的聚合可能是一个非常繁琐且重复的过程。复杂性、重复性不可避免的出现在了你的测试中。看下面的这个实体：
 
 ```php
@@ -441,7 +441,7 @@ class MyTest extends PHPUnit_Framework_TestCase
 ```
 限界上下文内的服务共享者如实体、聚合、值对象这样的概念。想象一下在整个测试中一遍又一遍重复相同的构建逻辑的混乱情况。从测试中提取构建构建的逻辑非常方便并且能够防止重复编写。
 
-#### Object Mother
+## Object Mother
 
 `Object Mother`是工厂的容易被记住的名字，它为测试创建`fixed fixture`。与前面的示例类似，我们可以将重复的逻辑提取到`Object Mother`，以便在测试之间重复使用：
 
@@ -474,7 +474,7 @@ class MyTest extends PHPUnit_Framework_TestCase
 
 由于`Object Mother`并不是太灵活，因此它们的复杂性往往会迅速增长。所幸的是你还有更灵活的测试该方法。
 
-#### Test Data Builder
+## Test Data Builder
 
 Test Data Builder只是一个普通的构建器，其默认值专用于你的测试，因此你不必在特定的测试用例上指定不相关的参数：
 
@@ -610,6 +610,6 @@ class MyTest extends PHPUnit_Framework_TestCase
 ```
 
 总结
----
+===
 
 工厂是将构建逻辑与业务逻辑解耦的强大工具。工厂方法模式不仅有助于将创建职责移到聚合根中，而且还可以使其具有不变性。在我们的服务中使用抽象工厂模式可以使我们将领域逻辑与基础设施创建的细节分离，一个常见的用例就是规约模式和其各自持久机制的实现。我们也看到工厂模式也在我们的测试中派上用场，尽管我们可以将构建逻辑提取到Object Mother工厂中，但是Test Data Builder更强大灵活。

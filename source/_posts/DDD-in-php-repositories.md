@@ -20,14 +20,14 @@ date: 2020-05-27 09:42:09
 一旦你从仓储中成功获得聚合，你做的每个修改都会被持久化，不需要再存回仓储。
 
 定义
----
+===
 
 Martin Fowler这样定义仓储：
 
 > 领域与数据映射层之间的机制，就像是内存领域对象的集合。客户端构造查询规约，然后提交给仓储。可以像从简单的对象集合中那样将对象添加到仓储或从仓储中删除对象，并且仓储内部封装的映射代码将在背后执行适当的操作。从概念上讲，仓储封装了持久化在数据仓库的对象和一些操作，从而提供了持久层面向对象的视角。仓储也支持在领域和数据映射层之间实现清晰的分离和单项的依赖。
 
 仓储不是DAO
----
+===
 
 Data Access Object(DAO)是持久化领域对象到数据库的通用模式。这很容易将DAO模式与仓储混淆起来，最重要的不同点是仓储展现了集合，然而DAO更接近数据库，并且通常以数据表为主。通常，DAO包含特定领域对象的CRUD方法，让我们看一下DAO通用接口大致像这样：
 
@@ -66,7 +66,7 @@ interface BloatUserDAO
 如你所见，实现越多的新方法，就越难去测试DAO，而且它将与`User`对象紧密耦合。这问题将随着时间推移而明显，越多的协同开发者将会使得成为一个大泥球（Big Ball of Mud）。
 
 面向集合的仓储
----
+===
 仓储通过实现通用接口来模拟集合，作为一个集合，一个仓储不应该泄露任何持久化行为的意图，比如仓储到库中。
 
 底层的持久性机制必须支持这种需求，你不需要在对象的真个生命周期处理对它们的修改，该集合应用对象的最新状态，这意味着每次访问时，你都会获得最新的对象状态。
@@ -259,7 +259,7 @@ $post = newPost($postRepository->nextIdentity(), $body);
 
 一些开发者将实现作为模块的子包放在靠近接口定义的地方。但是，由于我们希望清晰的分离关注点，因此建议你将其放在基础设施层中。
 
-#### 基于内存的实现
+## 基于内存的实现
 
 Uncle Bob在《Screaming Architecture》中写到：
 
@@ -311,7 +311,7 @@ class InMemoryPostRepository implements PostRepository
 }
 ```
 
-#### Doctrine ORM
+## Doctrine ORM
 
 我们在过去的章节中已经讨论过`Doctrine`。Doctrine是数据库存储和对象映射的类库。它默认带有Symfony框架的bundle，同时拥有其他特性，允许你很容易将你的应用与你的持久层解耦，这多亏了`Data Mapper pattern`数据映射模式。
 
@@ -325,11 +325,11 @@ composer require doctrine/orm
 
 > （编者注：由于本书年代久远，建议关于Doctrine的部分参考其官网文档，以了解最新的使用方法）
 
-##### 对象映射
+### 对象映射
 
 在你的领域对象和数据库之间的映射可以被视为实现的细节。领域在生命周期中不应该知道这些持久化的细节信息。因此，映射信息应该定义为领域之外的基础设施层的一部分，并作为Repository的实现。
 
-###### Doctrine自定义映射类型
+#### Doctrine自定义映射类型
 
 我们的一个`Post`实体由像`Body`和`PostId`的值对象组成。如我们在值对象那一章中，一个好的办法是自定义映射类型或者使用Doctrine内嵌值。这将使得对象映射更简单：
 
@@ -438,7 +438,7 @@ http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 </doctrine-mapping>
 ```
 
-##### Entity Manager
+### Entity Manager
 
 `Entity Manager`是ORM功能的中心访问点，启动它很容易：
 
@@ -468,7 +468,7 @@ $entityManager = EntityManager::create(
 
 根据你的需求来进行配置！
 
-##### DQL实现
+### DQL实现
 
 在这个Repository的案例中，我们只需要`EntityManager`来从数据库直接获取领域对象：
 
@@ -516,7 +516,7 @@ class DoctrinePostRepository implements PostRepository
 
 如果你看过其他的一些Doctrine示例，你可能会发现，在persist或者remove之后，flush会被调用。但是在我们的看来，不应该调用`flush`。刷新和处理事务被委托给了Application Service。这就是为什么你可以使用Doctrine的原因，考虑到刷新所有的改变都将在请求结束后进行，就性能而言，一次flush调用是最佳的。
 
-#### 面向持久化的仓储
+## 面向持久化的仓储
 
 有时面向集合的Repository与我们的持久机制不太适合。如果你没有一个工作单元，那么追踪一个聚合的修改是一件难事。保存修改的唯一方法是通过显示的调用`save`。
 
@@ -546,7 +546,7 @@ $postRepository->save($post);
 ```
 除了这些差别，细节都在实现中了。
 
-##### Redis的实现
+### Redis的实现
 `Redis`是一个被用于缓存或存储的内存性键值对。
 
 根据你的情况，我们可以考虑将redis作为聚合的存储。
@@ -617,7 +617,7 @@ class RedisPostRepository implements PostRepository
 }
 ```
 
-##### SQL的实现
+### SQL的实现
 
 在一个经典案例中，我们可以通过使用原生SQL查询为我们的`PostRepository`创建一个简单的`PDO`实现：
 
@@ -726,7 +726,7 @@ class SqlPostRepository implements PostRepository
 }
 ```
 
-##### 额外的行为
+### 额外的行为
 
 ```php
 interface PostRepository
@@ -763,13 +763,13 @@ class DoctrinePostRepository implements PostRepository
 如果你发现自己创建了许多针对用例优化过的查找方法，则可能会引入了常见的 `code smell`。这可能表明聚合边界判断有问题。但是，如果你确信边界是正确的，那么时候探索CQRS了。
 
 查询仓储
----
+===
 
 通过比较，如果考虑仓储的查询能力，则它们与集合有些不同。Repository执行查询时通常处理的不是在内存中的对象。将领域对象所有实例加载到内存中并对其执行查询是不可行的。
 
 一个好的解决方案是传入一个`criterion`，并让Repository处理实现细节以成功执行操作。它可能会将criterion转换为SQL或者ORM查询，或者遍历内存中的集合。但是这并不重要，因为实现可以处理它。
 
-#### 规约模式
+## 规约模式
 
 `criterion`对象的一个通用实现是规约模式（Specification pattern）。规约是一个简单的谓词，它接受领域对象并返回一个bool值。给定的一个领域对象，如果指定了规约，则将返回true，否则返回false：
 
@@ -792,7 +792,7 @@ interface PostRepository
 }
 ```
 
-##### 内存实现
+### 内存实现
 
 如果我们想要通过使用内存实现规约的方式来在我们的`PostRepository`中复制`latestPosts`，可能像这样：
 
@@ -856,7 +856,7 @@ $latestPosts = $postRepository->query(
 );
 ```
 
-##### SQL的实现
+### SQL的实现
 
 标准规约非常适合内存的实现。但是，由于我们没有为SQL实现预加载所有领域对象到内存中，因此我们针对这种情需要特定的规约：
 
@@ -921,7 +921,7 @@ class SqlPostRepository implements PostRepository
 ```
 
 管理事务
----
+===
 
 领域模型不是管理事务的地方。在领域模型上的操作应该与持久机制无关。解决此问题的常用方法是在用用层放一个Facade（外观模式），从而将相关的用例分组在一起。当从UI层调用Facade方法时，业务方法开始一个事务。完成后，Facade将通过提交事务来结束交互。如果发生任何错误，事务将回滚：
 
@@ -1037,7 +1037,7 @@ $response = $useCase->execute();
 ```
 
 测试仓储
----
+===
 
 为了确保仓储可以在生产环境中运行，我们需要测试它的实现。为此，我们必须测试系统边界，以确保我们的期望是正确的。
 
@@ -1185,7 +1185,7 @@ class DoctrinePostRepositoryTest extends \PHPUnit_Framework_TestCase
 ```
 
 使用内存实现测试你的服务
----
+===
 
 配置一个完整的持久化Reposiotry可能会很复杂，并且导致执行缓慢。你应该关注一下如何快速测试。现在完成整个数据库的配置，然后查询将极大的降低你的速度。在内存中的实现可能有助于你将持久化决策推迟到最后，我们可以像以前一样进行测试。但是这次，我们将使用功能齐全的快速简单内存实现：
 
@@ -1203,7 +1203,7 @@ class MyServiceTest extends \PHPUnit_Framework_TestCase
 ```
 
 总结
----
+===
 
 一个Repository是一种充当存储位置的机制。DAO和Repository之间的区别在于，DAO遵循数据库优先的方式，使用许多底层方法来降低查询数据库的内聚性。根据底层持久化机制，我们已经看到了不同的Repository方法了：
 
