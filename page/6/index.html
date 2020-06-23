@@ -183,6 +183,208 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/understanding-originalCode-reverseCode-complementCode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/understanding-originalCode-reverseCode-complementCode/" class="post-title-link" itemprop="url">原码，反码，补码详解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-10-23 14:30:37" itemprop="dateCreated datePublished" datetime="2014-10-23T14:30:37+08:00">2014-10-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本篇文章讲解了计算机的原码, 反码和补码. 并且进行了深入探求了为何要使用反码和补码, 以及更进一步的论证了为何可以用反码, 补码的加法计算原码的减法.  希望本文对大家学习计算机基础有所帮助!</p>
+<h2 id="一-机器数和真值"><a href="#一-机器数和真值" class="headerlink" title="一. 机器数和真值"></a>一. 机器数和真值</h2><p>在学习原码, 反码和补码之前, 需要先了解机器数和真值的概念.</p>
+<h3 id="1、机器数"><a href="#1、机器数" class="headerlink" title="1、机器数"></a>1、机器数</h3><p>一个数在计算机中的二进制表示形式,  叫做这个数的机器数。机器数是带符号的，在计算机用一个数的最高位存放符号, 正数为0, 负数为1. 比如，十进制中的数 +3 ，计算机字长为8位，转换成二进制就是00000011。如果是 -3 ，就是 10000011 。 那么，这里的 00000011 和 10000011 就是机器数。</p>
+<h3 id="2、真值"><a href="#2、真值" class="headerlink" title="2、真值"></a>2、真值</h3><blockquote>
+<p>因为第一位是符号位，所以机器数的形式值就不等于真正的数值。例如上面的有符号数 10000011，其最高位1代表负，其真正数值是 -3 而不是形式值131（10000011转换成十进制等于131）。所以，为区别起见，将带符号位的机器数对应的真正数值称为机器数的真值。</p>
+</blockquote>
+<p>例：0000 0001的真值 = +000 0001 = +1，1000 0001的真值 = –000 0001 = –1  </p>
+<h2 id="二-原码-反码-补码的基础概念和计算方法"><a href="#二-原码-反码-补码的基础概念和计算方法" class="headerlink" title="二. 原码, 反码, 补码的基础概念和计算方法."></a>二. 原码, 反码, 补码的基础概念和计算方法.</h2><p>在探求为何机器要使用补码之前, 让我们先了解原码, 反码和补码的概念.对于一个数, 计算机要使用一定的编码方式进行存储. 原码, 反码, 补码是机器存储一个具体数字的编码方式.</p>
+<h3 id="1-原码"><a href="#1-原码" class="headerlink" title="1. 原码"></a>1. 原码</h3><p>原码就是符号位加上真值的绝对值, 即用第一位表示符号, 其余位表示值. 比如如果是8位二进制:</p>
+<blockquote>
+<p>[+1]原 = 0000 0001 [-1]原 = 1000 0001</p>
+</blockquote>
+<p>第一位是符号位. 因为第一位是符号位, 所以8位二进制数的取值范围就是:</p>
+<blockquote>
+<p>[1111 1111 , 0111 1111]</p>
+</blockquote>
+<p>即</p>
+<blockquote>
+<p>[-127 , 127]</p>
+</blockquote>
+<p>原码是人脑最容易理解和计算的表示方式.</p>
+<h3 id="2-反码"><a href="#2-反码" class="headerlink" title="2. 反码"></a>2. 反码</h3><p>反码的表示方法是: 正数的反码是其本身 负数的反码是在其原码的基础上, 符号位不变，其余各个位取反.</p>
+<blockquote>
+<p>[+1] = [00000001]原 = [00000001]反 [-1] = [10000001]原 = [11111110]反</p>
+</blockquote>
+<p>可见如果一个反码表示的是负数, 人脑无法直观的看出来它的数值. 通常要将其转换成原码再计算.</p>
+<h3 id="3-补码"><a href="#3-补码" class="headerlink" title="3. 补码"></a>3. 补码</h3><p>补码的表示方法是: 正数的补码就是其本身 负数的补码是在其原码的基础上, 符号位不变, 其余各位取反, 最后+1. (即在反码的基础上+1)</p>
+<blockquote>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补 [-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+</blockquote>
+<p>对于负数, 补码表示方式也是人脑无法直观看出其数值的. 通常也需要转换成原码在计算其数值.  </p>
+<h2 id="三-为何要使用原码-反码和补码"><a href="#三-为何要使用原码-反码和补码" class="headerlink" title="三. 为何要使用原码, 反码和补码"></a>三. 为何要使用原码, 反码和补码</h2><p>在开始深入学习前, 我的学习建议是先”死记硬背”上面的原码, 反码和补码的表示方式以及计算方法. 现在我们知道了计算机可以有三种编码方式表示一个数. 对于正数因为三种编码方式的结果都相同:</p>
+<blockquote>
+<p>[+1] = [00000001]原 = [00000001]反 = [00000001]补</p>
+</blockquote>
+<p>所以不需要过多解释. 但是对于负数:</p>
+<blockquote>
+<p>[-1] = [10000001]原 = [11111110]反 = [11111111]补</p>
+</blockquote>
+<p>可见原码, 反码和补码是完全不同的. 既然原码才是被人脑直接识别并用于计算表示方式, 为何还会有反码和补码呢? 首先, 因为人脑可以知道第一位是符号位, 在计算的时候我们会根据符号位, 选择对真值区域的加减. (真值的概念在本文最开头). 但是对于计算机, 加减乘数已经是最基础的运算, 要设计的尽量简单. 计算机辨别”符号位”显然会让计算机的基础电路设计变得十分复杂! 于是人们想出了将符号位也参与运算的方法. 我们知道, 根据运算法则减去一个正数等于加上一个负数, 即: 1-1 = 1 + (-1) = 0 , 所以机器可以只有加法而没有减法, 这样计算机运算的设计就更简单了. 于是人们开始探索 将符号位参与运算, 并且只保留加法的方法. 首先来看原码: 计算十进制的表达式: 1-1=0</p>
+<blockquote>
+<p>1 - 1 = 1 + (-1) = [00000001]原 + [10000001]原 = [10000010]原 = -2</p>
+</blockquote>
+<p>如果用原码表示, 让符号位也参与计算, 显然对于减法来说, 结果是不正确的.这也就是为何计算机内部不使用原码表示一个数. 为了解决原码做减法的问题, 出现了反码: 计算十进制的表达式: 1-1=0</p>
+<blockquote>
+<p>1 - 1 = 1 + (-1) = [0000 0001]原 + [1000 0001]原= [0000 0001]反 + [1111 1110]反 = [1111 1111]反 = [1000 0000]原 = -0</p>
+</blockquote>
+<p>发现用反码计算减法, 结果的真值部分是正确的. 而唯一的问题其实就出现在”0”这个特殊的数值上. 虽然人们理解上+0和-0是一样的, 但是0带符号是没有任何意义的. 而且会有[0000 0000]原和[1000 0000]原两个编码表示0. 于是补码的出现, 解决了0的符号以及两个编码的问题:</p>
+<blockquote>
+<p>1-1 = 1 + (-1) = [0000 0001]原 + [1000 0001]原 = [0000 0001]补 + [1111 1111]补 = [0000 0000]补=[0000 0000]原</p>
+</blockquote>
+<p>这样0用[0000 0000]表示, 而以前出现问题的-0则不存在了.而且可以用[1000 0000]表示-128:</p>
+<blockquote>
+<p>(-1) + (-127) = [1000 0001]原 + [1111 1111]原 = [1111 1111]补 + [1000 0001]补 = [1000 0000]补</p>
+</blockquote>
+<p>-1-127的结果应该是-128, 在用补码运算的结果中, [1000 0000]补 就是-128. 但是注意因为实际上是使用以前的-0的补码来表示-128, 所以-128并没有原码和反码表示.(对-128的补码表示[1000 0000]补算出来的原码是[0000 0000]原, 这是不正确的) 使用补码, 不仅仅修复了0的符号以及存在两个编码的问题, 而且还能够多表示一个最低数. 这就是为什么8位二进制, 使用原码或反码表示的范围为[-127, +127], 而使用补码表示的范围为[-128, 127]. 因为机器使用补码, 所以对于编程中常用到的32位int类型, 可以表示范围是: [-231, 231-1] 因为第一位表示的是符号位.而使用补码表示时又可以多保存一个最小值.  </p>
+<h2 id="四-原码-反码-补码-再深入"><a href="#四-原码-反码-补码-再深入" class="headerlink" title="四 原码, 反码, 补码 再深入"></a>四 原码, 反码, 补码 再深入</h2><p>计算机巧妙地把符号位参与运算, 并且将减法变成了加法, 背后蕴含了怎样的数学原理呢? 将钟表想象成是一个1位的12进制数. 如果当前时间是6点, 我希望将时间设置成4点, 需要怎么做呢?我们可以:</p>
+<blockquote>
+<p>1. 往回拨2个小时: 6 - 2 = 4 2. 往前拨10个小时: (6 + 10) mod 12 = 4 3. 往前拨10+12=22个小时: (6+22) mod 12 =4</p>
+</blockquote>
+<p>2,3方法中的mod是指取模操作, 16 mod 12 =4 即用16除以12后的余数是4. 所以钟表往回拨(减法)的结果可以用往前拨(加法)替代! 现在的焦点就落在了如何用一个正数, 来替代一个负数. 上面的例子我们能感觉出来一些端倪, 发现一些规律. 但是数学是严谨的. 不能靠感觉. 首先介绍一个数学中相关的概念: 同余  </p>
+<h3 id="同余的概念"><a href="#同余的概念" class="headerlink" title="同余的概念"></a>同余的概念</h3><p>两个整数a，b，若它们除以整数m所得的余数相等，则称a，b对于模m同余 记作 a ≡ b (mod m) 读作 a 与 b 关于模 m 同余。 举例说明:</p>
+<blockquote>
+<p>4 mod 12 = 4 16 mod 12 = 4 28 mod 12 = 4</p>
+</blockquote>
+<p>所以4, 16, 28关于模 12 同余.  </p>
+<h3 id="负数取模"><a href="#负数取模" class="headerlink" title="负数取模"></a>负数取模</h3><p>正数进行mod运算是很简单的. 但是负数呢? 下面是关于mod运算的数学定义: <img src="http://storage.veitor.net/uploads/2014/10/201103302155504514.jpg" alt="201103302155504514"> 上面是截图, “取下界”符号找不到如何输入(word中粘贴过来后乱码). 下面是使用”L”和”J”替换上图的”取下界”符号:</p>
+<blockquote>
+<p>x mod y = x - y L x / y J</p>
+</blockquote>
+<p>上面公式的意思是: x mod y等于 x 减去 y 乘上 x与y的商的下界. 以 -3 mod 2 举例:</p>
+<blockquote>
+<p>-3 mod 2 = -3 - 2xL -3/2 J = -3 - 2xL-1.5J = -3 - 2x(-2) = -3 + 4 = 1</p>
+</blockquote>
+<p>所以:</p>
+<blockquote>
+<p>(-2) mod 12 = 12-2=10 (-4) mod 12 = 12-4 = 8 (-5) mod 12 = 12 - 5 = 7</p>
+</blockquote>
+<h3 id="开始证明"><a href="#开始证明" class="headerlink" title="开始证明"></a>开始证明</h3><p>再回到时钟的问题上:</p>
+<blockquote>
+<p>回拨2小时 = 前拨10小时 回拨4小时 = 前拨8小时 回拨5小时= 前拨7小时</p>
+</blockquote>
+<p>注意, 这里发现的规律! 结合上面学到的同余的概念.实际上:</p>
+<blockquote>
+<p>(-2) mod 12 = 10 10 mod 12 = 10</p>
+</blockquote>
+<p>-2与10是同余的.</p>
+<blockquote>
+<p>(-4) mod 12 = 8 8 mod 12 = 8</p>
+</blockquote>
+<p>-4与8是同余的. 距离成功越来越近了. 要实现用正数替代负数, 只需要运用同余数的两个定理: 反身性:</p>
+<blockquote>
+<p>a ≡ a (mod m)</p>
+</blockquote>
+<p>这个定理是很显而易见的. 线性运算定理:</p>
+<blockquote>
+<p>如果a ≡ b (mod m)，c ≡ d (mod m) 那么: (1)a ± c ≡ b ± d (mod m) (2)a * c ≡ b * d (mod m)</p>
+</blockquote>
+<p>如果想看这个定理的证明, 请看:<a href="http://baike.baidu.com/view/79282.htm" target="_blank" rel="noopener">http://baike.baidu.com/view/79282.htm</a> 所以:</p>
+<blockquote>
+<p>7 ≡ 7 (mod 12) (-2) ≡ 10 (mod 12) 7 -2 ≡ 7 + 10 (mod 12)</p>
+</blockquote>
+<p>现在我们为一个负数, 找到了它的正数同余数. 但是并不是7-2 = 7+10, 而是 7 -2 ≡ 7 + 10 (mod 12) , 即计算结果的余数相等. 接下来回到二进制的问题上, 看一下: 2-1=1的问题.</p>
+<blockquote>
+<p>2-1=2+(-1) = [0000 0010]原 + [1000 0001]原= [0000 0010]反 + [1111 1110]反</p>
+</blockquote>
+<p>先到这一步, -1的反码表示是1111 1110. 如果这里将[1111 1110]认为是原码, 则[1111 1110]原 = -126, 这里将符号位除去, 即认为是126. 发现有如下规律:</p>
+<blockquote>
+<p>(-1) mod 127 = 126 126 mod 127 = 126</p>
+</blockquote>
+<p>即:</p>
+<blockquote>
+<p>(-1) ≡ 126 (mod 127) 2-1 ≡ 2+126 (mod 127)</p>
+</blockquote>
+<p>2-1 与 2+126的余数结果是相同的! 而这个余数, 正式我们的期望的计算结果: 2-1=1 所以说一个数的反码, 实际上是这个数对于一个膜的同余数. 而这个膜并不是我们的二进制, 而是所能表示的最大值! 这就和钟表一样, 转了一圈后总能找到在可表示范围内的一个正确的数值! 而2+126很显然相当于钟表转过了一轮, 而因为符号位是参与计算的, 正好和溢出的最高位形成正确的运算结果. 既然反码可以将减法变成加法, 那么现在计算机使用的补码呢? 为什么在反码的基础上加1, 还能得到正确的结果?</p>
+<blockquote>
+<p>2-1=2+(-1) = [0000 0010]原 + [1000 0001]原 = [0000 0010]补 + [1111 1111]补</p>
+</blockquote>
+<p>如果把[1111 1111]当成原码, 去除符号位, 则:</p>
+<blockquote>
+<p>[0111 1111]原 = 127</p>
+</blockquote>
+<p>其实, 在反码的基础上+1, 只是相当于增加了膜的值:</p>
+<blockquote>
+<p>(-1) mod 128 = 127 127 mod 128 = 127 2-1 ≡ 2+127 (mod 128)</p>
+</blockquote>
+<p>此时, 表盘相当于每128个刻度转一轮. 所以用补码表示的运算结果最小值和最大值应该是[-128, 128]. 但是由于0的特殊情况, 没有办法表示128, 所以补码的取值范围是[-128, 127] 本人一直不善于数学, 所以如果文中有不对的地方请大家多多包含, 多多指点!</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/youku-real-video-address-resolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +416,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -318,7 +520,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -408,7 +610,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -502,7 +704,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -586,7 +788,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -700,7 +902,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -939,7 +1141,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1015,7 +1217,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1147,7 +1349,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1175,138 +1377,6 @@ background-size: 100px auto;
           <p>昨天在做项目的时候，因为涉及到数据表结构的改动，需要进行大量数据的导入，那么如何高效的进行是我比较关注的。本文暂且从使用PHP脚本层面上来说，因为使用其他语言或其他方式也可以进行数据的重导。 在讨论这个问题的时候，前辈给我的意见就是单独做一个脚本，如果能拿python做更好，当然，python我还不是很会，所以拿php也能完成。既然这样，就采用最原生的方式来进行数据的重导。 整个过程中要先从一张表中取出全部数据，再进行数据的处理后导入到新的数据表中。而就我测试的那个数据库中的那张表里，数据量就已经上万了，如果直接全部取出必定会有性能上的问题。 他人给我的建议是，使用mysql_connect后用mysql_query执行sql（取大数据的情况如sele ct * from tbl）语句，理由是mysql_query不是返回的数据结果，因为后面用到mysql_fetch_assoc之类的函数，进行游标的移动来取得数据。并在sql执行前后分别使用了memory_get_usage来查看内存使用量。当然，执行后内存使用量比执行前大了，虽然使用了不多的内存，但对于只是测试数据库里的数据而言还行，当数据处理量很大的时候，php程序脚本可能会崩溃。为了确保重导真正线上数据库的数据万无一失，我还是查了一些相关资料。 最后了解到PHP中有个mysql_unbuffered_query这个函数，与mysql_query有点类似，手册上写了该函数不缓存的查询结果，它所带来的好处就是<strong>一不用缓存结果，二就是不必等待全部查询后进行操作，而是直接获取一条数据就可以操作</strong>。而mysql_query是查询出所有符合条件的结果并缓存后才能进行操作，这就让我怀疑之前建议的那个方法。 于是我同样用mysql_unbuffered_query查询同样一条sql语句，也同样对执行前后查看了内存使用量，结果前后内存使用量没有变，这就说明了内存并没有被拿来做查询数据缓存的相关事情。当然也可以使用以下方法来测试：</p>
 <p>   $link = mysql_con nect(‘localhost’,’root’,’root’);<br>   mysql_select_ db(‘phpcms’);<br>   $sql = “SEL ECT * FROM `phpcms_content`“;<br>   //$result = mysql_unbuffered_query($sql,$link);<br>   $result = mysql_query($sql,$link);<br>   while ($row = mysql_fe tch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>   mysql_data_seek($result,0);<br>   echo “<br/>“;<br>   while ($row = mysql_fetch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>    mysql_free_result($result);</p>
 <p>你会发现使用mysql_query会输出两次，而mysql_unbuffered_query只输出一次，说明使用mysql_query查询结果必定被缓存了，而使用mysql_unbuffered_query则边进行查询边给出结果。 最后再说明，使用mysql_unbuffered_query的话，不能使用mysql_num_rows()和mysql_data_seek()这也正因为它的特性方式决定了这样。还有比较重要的一点，如果你只是单单获取大数据量使用这个函数可以，<strong>但是，如果你在取得大数据的时候，使用while($row = mysql_fetch_assoc($result))方式进行执行新的sql语句的话，会出错。手册上也写明了，在执行一条心的sql之前，要提取所有未缓存的sql查询所产生的行。</strong>所以只使用mysql_unbuffered_query取数据可以，但期间还要执行其他sql就不行了。 以上只是我对这个函数的初步认识，如果理解有误，也希望能指正交流。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI/" class="post-title-link" itemprop="url">PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-08-05 00:35:05" itemprop="dateCreated datePublished" datetime="2014-08-05T00:35:05+08:00">2014-08-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><a href="http://www.php.net" target="_blank" rel="noopener" title="PHP Hypertext Preprocessor">PHP</a>的<a href="http://cn2.php.net/reserved.variables.server.php" target="_blank" rel="noopener" title="$_SERVER">$_SERVER</a>数组中存在五个和路径相关的变量：<code>PHP_SELF</code>，<code>SCRIPT_NAME</code>， <code>SCRIPT_FILENAME</code>，<code>PATH_INFO</code>，<code>REQUEST_URI</code>，这五个变量经常会被混淆，做下区分。</p>
-<h3 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h3><p>Nginx0.8.54 + FastCGI + PHP5.3.4 要先配置Nginx的<code>PATH_INFO</code>，在<code>nginx.conf</code>中加入如下配置：</p>
-<pre><code>location ~ .* .php {
-    fastcgi_pass   127.0.0.1:9000;
-    fastcgi_index  index.php;
-    #从$fastcgi_script_name中分离出真正执行的脚本名称和PATH_INFO
-    set $real_script_name $fastcgi_script_name;
-    if ($fastcgi_script_name ~ &quot;^(.+?.php)(/.+)$&quot;) {
-        set $real_script_name $1;
-        set $path_info $2;
-     }
-    #重新设置SCRIPT_FILENAME
-    fastcgi_param SCRIPT_FILENAME $document_root$real_script_name;
-    fastcgi_param  QUERY_STRING       $query_string;
-    fastcgi_param  REQUEST_METHOD     $request_method;
-    fastcgi_param  CONTENT_TYPE       $content_type;
-    fastcgi_param  CONTENT_LENGTH     $content_length;
-    #重新设置SCRIPT_NAME
-    fastcgi_param SCRIPT_NAME $real_script_name;
-    fastcgi_param PATH_INFO $path_info;
-    fastcgi_param  REQUEST_URI        $request_uri;
-    fastcgi_param  DOCUMENT_URI       $document_uri;
-    fastcgi_param  DOCUMENT_ROOT      $document_root;
-    fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-    fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
-    fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
-    fastcgi_param  REMOTE_ADDR        $remote_addr;
-    fastcgi_param  REMOTE_PORT        $remote_port;
-    fastcgi_param  SERVER_ADDR        $server_addr;
-    fastcgi_param  SERVER_PORT        $server_port;
-    fastcgi_param  SERVER_NAME        $server_name;
-    # PHP only, required if PHP was built with --enable-force-cgi-redirect
-    fastcgi_param  REDIRECT_STATUS    200;
-}</code></pre><p>我们的根目录为<code>/var/www</code>，测试域名为<code>example.com</code>（不过这个域名只能改<code>hosts</code>文件YY一下了），结构如下：</p>
-<pre><code>var
- |---www
-       |---test
-             |---test.php</code></pre><h3 id="测试脚本"><a href="#测试脚本" class="headerlink" title="测试脚本"></a>测试脚本</h3><p>使用如下脚本进行测试：</p>
-<pre><code>&lt;?php
-    echo &apos;SCRIPT_NAME=&apos; . $_SERVER[&apos;SCRIPT_NAME&apos;] . &apos;&lt;br /&gt;&apos;;
-    echo &apos;SCRIPT_FILENAME=&apos; . $_SERVER[&apos;SCRIPT_FILENAME&apos;] . &apos;&lt;br /&gt;&apos;;
-    echo &apos;PATH_INFO=&apos; . $_SERVER[&apos;PATH_INFO&apos;] . &apos;&lt;br /&gt;&apos;;
-    echo &apos;REQUEST_URI=&apos; . $_SERVER[&apos;REQUEST_URI&apos;] . &apos;&lt;br /&gt;&apos;;
-?&gt;</code></pre><h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><ul>
-<li>PHP_SELF: 当前所执行的脚本的文件名，这个值是相对于根目录来说。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>PHP_SELF</code>的值为 <strong>/test/test.php</strong>。</li>
-<li>SCRIPT_NAME： 当前执行的脚本的路径。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>SCRIPT_NAME</code>的值 为<strong>/test/test.php</strong>。这个变量是在<a href="http://tools.ietf.org/html/rfc3875" target="_blank" rel="noopener" title="CGI/1.1">CGI/1.1</a>中定义的。</li>
-<li>SCRIPT_FILENAME： 当前执行的脚本的绝对路径。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>SCRIPT_FILENAME</code>的值 为<strong>/var/www/test/test.php</strong>。 注意：如果一个脚本以相对路径，<a href="http://php.net/manual/en/features.commandline.php" target="_blank" rel="noopener" title="PHP CLI">CLI</a>方式来执行，例如<strong>../test/test.php</strong>，那么 <code>$_SERVER[&#39;SCRIPT_FILENAME&#39;]</code>的值为相对路径，即<strong>../test/test.php</strong>。</li>
-<li>PATH_INFO：客户端提供的路径信息，即在实际执行脚本后面尾随的内容，但是会去掉<strong>Query String</strong>。 如果请求<strong><a href="http://example.com/test/test.php/a/b?k=v" target="_blank" rel="noopener">http://example.com/test/test.php/a/b?k=v</a></strong>，则<code>PATH_INFO</code>的值为<strong>/a/b</strong>。 <a href="http://tools.ietf.org/html/rfc3875" target="_blank" rel="noopener" title="CGI/1.1">CGI1.1</a>标准中如下描述：”<strong>The PATH_INFO string is the trailing part of thecomponent of the script URI that follows the SCRIPT_NAME part of the path.</strong>“</li>
-<li>REQUEST_URI：包含HTTP协议中定义的URI内容。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>REQUEST_URI</code> 为<strong>/test/test.php?k=v</strong></li>
-</ul>
-<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ul>
-<li><p>PHP_SELF VS SCRIPT_NAME： <code>PHP_SELF</code>和<code>SCRIPT_NAME</code>的值在大部分情况下都是一样的，但是访问 <strong><a href="http://example.com/test/test.php/a/b?k=v" target="_blank" rel="noopener">http://example.com/test/test.php/a/b?k=v</a></strong>这类URL时候，<code>PHP_SELF</code> 为<strong>/test/test.php/a/b</strong>，<code>SCRIPT_NAME</code>为<strong>/test/test.php</strong>，可以看出<code>PHP_SELF</code> 比<code>SCRIPT_NAME</code>多了<code>PATH_INFO</code>的内容。</p>
-</li>
-<li><p>REQUEST_URI VS SCRIPT_NAME： 在访问<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>后，<code>REQUEST_URI</code> 为<strong>/test/test.php?k=v</strong>，<code>SCRIPT_NAME</code>为<strong>/test/test.php</strong>，可以看出<code>REQUEST_URI</code> 比<code>SCRIPT_NAME</code>多了<strong>Query String</strong>。 如果<strong><a href="http://example.com/test/test.php" target="_blank" rel="noopener">http://example.com/test/test.php</a></strong>在服务器端做了<strong>rewrite</strong>：</p>
-<pre><code>rewrite /test/test.php /test/test2.php;</code></pre></li>
-</ul>
-<pre><code>那么`REQUEST_URI`为**/test/test.php**，`SCRIPT_NAME`为**/test/test2.php**。</code></pre><h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://tools.ietf.org/html/draft-robinson-www-interface-00" target="_blank" rel="noopener">http://tools.ietf.org/html/draft-robinson-www-interface-00</a> <a href="http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri" target="_blank" rel="noopener">http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri</a> <a href="http://ca.php.net/manual/en/reserved.variables.server.php" target="_blank" rel="noopener">http://ca.php.net/manual/en/reserved.variables.server.php</a> (完)</p>
 
       
     </div>
@@ -1371,13 +1441,13 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">88</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

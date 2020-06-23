@@ -183,6 +183,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-cluster-and-distributed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-difference-between-cluster-and-distributed/" class="post-title-link" itemprop="url">概念解释：集群与分布式的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-04-27 13:50:11" itemprop="dateCreated datePublished" datetime="2014-04-27T13:50:11+08:00">2014-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>之前一直对集群与分布式的概念不是很清楚，认为两个名词概念都差不多，那到底区别在哪呢，我也在网上找了很多解释，但似乎都没有言简意赅的讲清区别，或者说没有很形象的讲明每个名词是什么意思，到底有何用。那么我就依我的看法来讲一下，首先是分别讲解，再来合起来讲一下： 【集群】 处理同一个业务，目的是实现高可用性，可用性顾名思义，就是要让用户能用，并且随时能访问。一个集群针对一个业务并且有着多台服务器，当一个服务器挂掉，剩下的几台能顶替着继续工作（当然这几台服务器在那台服务器没挂的时候也不是闲着的，他们都是在同时处理大量请求的业务，那台服务器挂掉后，它的一些任务只好让这几台来顺带帮着完成了），这样用户能继续访问网站的某一业务。举个例子，比如我有发布日志的业务，如果我只有一台服务器支撑着这个业务，当服务器因某种原因挂掉后，那么用户也就无法发日志，这一业务也就无法使用。然而如果我有着服务器集群，其中一台挂掉，用户仍然能发日志。 【分布式】 将不同的业务放在不同的地方（节点），换句话说，每个分布式节点都处理不同的任务（一个节点处理一个业务），举个例子，有一个节点的业务是处理上传图片，还有一个节点的业务是处理发布文章，就这样把每个业务放在不同的地方（节点）。 【分布式与集群的关系】 每一个分布式节点都可以看做一个集群，上面说了，分布式的每一个节点都处理一种业务，而集群是处理同一业务，那么分布式的节点可以做一个集群。</p>
+<hr>
+<p>  当然，从不同角度看，可能理解也有偏差。主要还是集群的概念比较重要。我个人认为集群除了实现高可用性，还有高并发和高性能。这可能要涉及负载均衡了，比如访问一个网站的一个业务，对应的有一个集群，前面放着相应服务器，后面几台服务器负责处理这个业务，当有业务访问的时候，相应服务器会根据哪台服务器负载情况，将业务交给负载不是很重的服务器去完成</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/PHPer-break-through-growth-bottlenecks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +292,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -299,7 +377,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -407,7 +485,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -492,7 +570,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -574,7 +652,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -650,7 +728,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -756,7 +834,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-29 11:01:37" itemprop="dateModified" datetime="2020-05-29T11:01:37+08:00">2020-05-29</time>
+                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -846,13 +924,13 @@ echo "<br>";
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">88</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
