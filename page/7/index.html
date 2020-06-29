@@ -183,6 +183,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/take-big-data-with-mysql-unbuffered-query-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/take-big-data-with-mysql-unbuffered-query-function/" class="post-title-link" itemprop="url">用mysql_unbuffered_query函数取大数据</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-08-13 12:52:04" itemprop="dateCreated datePublished" datetime="2014-08-13T12:52:04+08:00">2014-08-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>昨天在做项目的时候，因为涉及到数据表结构的改动，需要进行大量数据的导入，那么如何高效的进行是我比较关注的。本文暂且从使用PHP脚本层面上来说，因为使用其他语言或其他方式也可以进行数据的重导。 在讨论这个问题的时候，前辈给我的意见就是单独做一个脚本，如果能拿python做更好，当然，python我还不是很会，所以拿php也能完成。既然这样，就采用最原生的方式来进行数据的重导。 整个过程中要先从一张表中取出全部数据，再进行数据的处理后导入到新的数据表中。而就我测试的那个数据库中的那张表里，数据量就已经上万了，如果直接全部取出必定会有性能上的问题。 他人给我的建议是，使用mysql_connect后用mysql_query执行sql（取大数据的情况如sele ct * from tbl）语句，理由是mysql_query不是返回的数据结果，因为后面用到mysql_fetch_assoc之类的函数，进行游标的移动来取得数据。并在sql执行前后分别使用了memory_get_usage来查看内存使用量。当然，执行后内存使用量比执行前大了，虽然使用了不多的内存，但对于只是测试数据库里的数据而言还行，当数据处理量很大的时候，php程序脚本可能会崩溃。为了确保重导真正线上数据库的数据万无一失，我还是查了一些相关资料。 最后了解到PHP中有个mysql_unbuffered_query这个函数，与mysql_query有点类似，手册上写了该函数不缓存的查询结果，它所带来的好处就是<strong>一不用缓存结果，二就是不必等待全部查询后进行操作，而是直接获取一条数据就可以操作</strong>。而mysql_query是查询出所有符合条件的结果并缓存后才能进行操作，这就让我怀疑之前建议的那个方法。 于是我同样用mysql_unbuffered_query查询同样一条sql语句，也同样对执行前后查看了内存使用量，结果前后内存使用量没有变，这就说明了内存并没有被拿来做查询数据缓存的相关事情。当然也可以使用以下方法来测试：</p>
+<p>   $link = mysql_con nect(‘localhost’,’root’,’root’);<br>   mysql_select_ db(‘phpcms’);<br>   $sql = “SEL ECT * FROM `phpcms_content`“;<br>   //$result = mysql_unbuffered_query($sql,$link);<br>   $result = mysql_query($sql,$link);<br>   while ($row = mysql_fe tch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>   mysql_data_seek($result,0);<br>   echo “<br/>“;<br>   while ($row = mysql_fetch_array($result, MYSQL_NUM)) {<br>      printf (“ID: %s Name: %s”, $row[0], $row[1]);<br>   }<br>    mysql_free_result($result);</p>
+<p>你会发现使用mysql_query会输出两次，而mysql_unbuffered_query只输出一次，说明使用mysql_query查询结果必定被缓存了，而使用mysql_unbuffered_query则边进行查询边给出结果。 最后再说明，使用mysql_unbuffered_query的话，不能使用mysql_num_rows()和mysql_data_seek()这也正因为它的特性方式决定了这样。还有比较重要的一点，如果你只是单单获取大数据量使用这个函数可以，<strong>但是，如果你在取得大数据的时候，使用while($row = mysql_fetch_assoc($result))方式进行执行新的sql语句的话，会出错。手册上也写明了，在执行一条心的sql之前，要提取所有未缓存的sql查询所产生的行。</strong>所以只使用mysql_unbuffered_query取数据可以，但期间还要执行其他sql就不行了。 以上只是我对这个函数的初步认识，如果理解有误，也希望能指正交流。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +292,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -346,7 +424,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -425,7 +503,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -512,7 +590,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -603,7 +681,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -679,7 +757,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -755,7 +833,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -831,7 +909,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -907,7 +985,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -933,108 +1011,6 @@
 
       
           <p><a href="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/1402017825583.jpg" alt="1402017825583"></a> 从5月27号左右开始，谷歌(Google)在华的几乎所有的服务都处于无法使用的状态，谷歌官网域名Google.com、谷歌香港 Google.com.hk所有服务都打不开。ping出来的IP均显示为“美国”，也就是说谷歌香港的服务器，已经由香港转移至美国，所以链接实际会很 长，甚至断断续续出现请求超时的情况。 当时我的博客所在的SAE也有点小故障，所以那几天我的博客一直访问很慢，我以为是SAE的问题，结果后来终于发现博客的几个页面加载了google的字体资源，所以导致网站加载特别缓慢，现在终于解决了。 360网站卫士的解决方案： 修改方法如下： 打开wordpress代码中的文件wp-includes/script-loader.php文件，搜索：fonts.googleapis.com找到这行代码： $open_sans_font_url = “//fonts.googleapis.com/css?family1=Open+Sans:300italic,400italic,600italic,300,400,600&amp;subset=$subsets”; 把fonts.googleapis.com替换为fonts.useso.com 修改完保存，再次刷新，大家就可以发现，自己的网站速度已经比以前快了很多，几乎瞬间就可以拿到Google字体了。原因就是本来需要从美国服务器才能拿到的google字体，现在已经遍布360全国的机房了。 醒妹网的解决方案： 既然是关于Google字体，那解除字体问题就可以了。如果网页中设定的字体无法加载，那么网页会按照浏览器默认的字体显示。但浏览器并不知道Google字体服务被屏蔽了，还那么二的一直加载，直到加载失败。但这个过程会耗费十几秒的时间。 **　　WordPress网站解决Google字体的办法：** 第一种方法：安装Disable Google Font插件，但经过测试之后，没有明显效果。 第二种方法：注释或删除掉style.css和function.php有关加载Google字体的代码fonts.googleapis.com即可。 当然以上两种方法可以同时使用。 如果在更改style.css或function.php文件之后，wordpress网站报错，无法打开，或者新建文章时上传图片失败。一定是将wordpress文件的编码保存为非ANSI编码，用记事本打开，保存时选择编码ANSI替换掉原来的文件即可。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/code-writing-specifications-in-team-development/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/code-writing-specifications-in-team-development/" class="post-title-link" itemprop="url">团队开发中的代码编写规范</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-06-03 14:20:00" itemprop="dateCreated datePublished" datetime="2014-06-03T14:20:00+08:00">2014-06-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>代码规范问题虽然不影响程序的运行，但是却很可以使代码在管理上变得很容易。</p>
-<h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><p>注释是对于那些容易忘记作用的代码添加简短的介绍性内容。请使用 C 样式的注释“/* */”和标准 C++ 注释“//”。类、方法、函数请使用 phpdoc 格式的注释，在函数及方法的注释中至少要有 @param 和 @return 标签，如：</p>
-<p> /**<br>* 这里是函数说明<br>*<br>* @param int $a 参数1<br>* @param int $b 参数2<br>* @return xxx 参数1与参数2乘积<br>*/<br>public function function_demo_1($a, $b)<br>{<br>    return intval($a) * intval($b);<br>}</p>
-<p>对于 bug 修正时务必写上 bug 修改人、修改时间和修正 bug 的原因。</p>
-<p>// add xxx by <a href="mailto:liuming@leju.sina.com.cn" target="_blank" rel="noopener">liuming@leju.sina.com.cn</a> on 2009-09-01, test<br>// remove xxx by <a href="mailto:guoning@leju.sina.com.cn" target="_blank" rel="noopener">guoning@leju.sina.com.cn</a> on 2009-09-02, test<br>// last modified by <a href="mailto:liuxin@leju.sina.com.cn" target="_blank" rel="noopener">liuxin@leju.sina.com.cn</a> on 2009-09-05, typo<br>// last modified by <a href="mailto:dengwei@leju.sina.com.cn" target="_blank" rel="noopener">dengwei@leju.sina.com.cn</a> on 2009-09-09, typo<br>// fixed memory leak<br>unset($something);</p>
-<p>程序开发中难免留下一些临时代码和调试代码，此类代码必须添加注释，以免日后遗忘。所有临时性、调试性、试验性的代码，必须添加统一的注释标记“//@debug:”并后跟完整的注释信息，这样可以方便在程序发布和最终调试前批量检查程序中是否还存在有疑问的代码。例如：</p>
-<p>$num = 1;<br>$flag = true; // @debug: 测试文件加载<br>if (!$flag)<br>{<br>    // debug statements<br>}</p>
-<h4 id="书写规则"><a href="#书写规则" class="headerlink" title="书写规则"></a>书写规则</h4><p>缩进与换行：每个缩进的单位约定是一个TAB(4个空白字符宽度)，需每个参与项目的开发人员在编辑器中进行强制设定，以防在编写代码时遗忘而造成格式上的不规范。并且所有换行采用 UNIX 格式，既只有 \n 换行。 本缩进规范适用于 HTML、PHP、JS、AS 中的函数、类、逻辑结构、循环等。 大括号 {}、if 和 switch：首括号与关键词同行，尾括号与关键字同列； if 结构中，if 和 elseif 与前后两个圆括号同行，左右各一个空格，所有大括号都单独另起一行。另外，即便if后只有一行语句，仍然需要加入大括号，以保证结构清晰； switch 结构中，通常当一个 case 块处理后，将跳过之后的 case 块处理，因此大多数情况下需要添加 break。break 的位置视程序逻辑，与 case 同在一行，或新起一行均可，但同一 switch 体中，break 的位置格式应当保持一致。 以下是符合上述规范的例子：</p>
-<p>if ($condition)<br>{<br>    switch ($var)<br>    {<br>        case 1:<br>               echo ‘var is 1’;<br>              break;<br>          case 2:<br>              echo ‘var is 2’;<br>              break;<br>            default:<br>        echo ‘var is neither 1 or 2’;<br>            break;<br>    }<br>}<br>else<br>{<br>    switch ($str)<br>     {<br>           case ‘abc’:<br>             $result = ‘abc’;<br>            break;<br>         default:<br>               $result = ‘unknown’;<br>            break;<br>    }<br>}</p>
-<p>例外的，数据库 SQL 语句中，除字符串外所有数据都不得加单引号，但是在进行 SQL 查询之前都必须经过 intval 等相关函数处理；所有字符串都必须加单引号，以避免可能的注入漏洞和SQL错误。正确的写法为：</p>
-<p>$catid = intval($catid); // 当 $catid 只能为 int 时<br>$username = addslashes($username);<br>$username = “SELECT * FROM phpcms_member WHERE username = ‘{$username}’ AND catid = {$catid}”;</p>
-<p>  所有数据在插入数据库之前，均需要进行addslashes()处理，以免特殊字符未经转义在插入数据库的时候出现错误。如果使用基础类 baselib_request_arg 通过 GET、POST、FILE 取得的变量默认情况下已经使用了 addslashes() 进行了转义，不必重复进行。如果数据处理必要(例如用于直接显示)，可以使用 stripslashes() 恢复，但数据在插入数据库之前必须再次进行转义。 缓存文件中，一般对缓存数据的值采用 addcslashes($string, ‘\‘\&#39;) 进行转义。</p>
-<h4 id="命名原则"><a href="#命名原则" class="headerlink" title="命名原则"></a>命名原则</h4><p>命名是程序规划的核心，只要你给事物想到正确的名字，就会给你以及后来的人带来比代码更强的力量。总的来说，只有了解系统的程序员才能为系统取出最合适的名字。如果所有的命名都与其自然相适合，则关系清晰，含义可以推导得出，一般人的推想也能在意料之中。 就一般约定而言，类、函数和变量的名字应该总是能够描述让代码阅读者能够容易的知道这些代码的作用。形式越简单、越有规则，就越容易让人感知和理解。应该避免使用模棱两可，晦涩不标准的命名。 <strong>变量、对象、函数名</strong> 变量、对象、函数名一律为小写格式，单词之间一般使用下划线 “_” 进行分割； 以标准计算机英文为蓝本，杜绝一切拼音、或拼音英文混杂的命名方式； 变量命名只能使用项目中有据可查的英文缩写方式，例如可以使用$data而不可使用$data1、$data2这样容易产生混淆的形式，应当使用 $article_data、$user_data 这样一目了然容易理解的形式； 可以合理的对过长的命名进行缩写，例如 $bio($biography)，$tpp($threadsPerPage)，$uid($userid) 前提是英文中有这样既有的缩写形式，或字母符合英文缩写规范； 必须清楚所使用英文单词的词性，在权限相关的范围内，大多使用$enable<strong><em>、$is</em></strong> 的形式，前者后面接动词，后者后面接形容词。 <strong>常量</strong> 常量应该总是全部使用大写字母命名，少数特别必要的情况下，可使用划线来分隔单词； PHP 的内建值 TRUE、FALSE 和 NULL 必须全部采用大写字母书写。</p>
-<h4 id="变量的初始化与逻辑检查"><a href="#变量的初始化与逻辑检查" class="headerlink" title="变量的初始化与逻辑检查"></a>变量的初始化与逻辑检查</h4><p>任何变量在进行累加、直接显示或存储前必需进行初使化，例如：  </p>
-<p>$number = 0; //数值型初始化<br>$string = ‘’; //字符串初始化<br>$array = array(); //数组初始化</p>
-<p>  判断一个无法确定（不知道是否已被赋值）的变量时，可用 empty() 或 isset()，而不要直接使用 if($switch) 的形式，除非你确切的知道此变量一定已经被初始化并赋值。 判断一个变量是否为数组，请使用is_array()，这种判断尤其适用于对数组进行遍历的操作，例如foreach()，因为如果不事先判断，foreach()会对非数组类型的变量报错； 判断一个数组元素是否存在，可使用isset($array[‘key’])，也可使用empty()，两者异同见上。</p>
-<h4 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h4><p>代码设计应当兼顾 PHP 高低版本的特性。当前应仍然以 PHP 5.2 作为最低通过平台(部分历史遗留项目例外)，尽量不使用高版本 PHP 5.3 新增的函数、常数或者常量。如果使用只在高版本才具备的函数，必须对其进行二次封装，自动判断当前 PHP 版本，并自行编写低版本下的兼容代码； 对于个别函数，参数要求或者代码要求应当以较为严格的PHP版本为准； 除非必要，不要使用 PHP 扩展模块中的函数。使用时应当加入必要的判断，当服务器环境不支持此函数的时候，进行必要的处理。文档和程序中的功能说明中，也应加上兼容性说明。</p>
-<h4 id="包含调用"><a href="#包含调用" class="headerlink" title="包含调用"></a>包含调用</h4><p>包含调用程序文件时，请全部使用 require_once，以避免可能的重复包含问题； 包含调用缓存文件，由于缓存文件无法保证 100% 正确打开，请使用 include_once。在必要时，可以使用 @include_once 的方式，以忽略错误提示；我们仍建议大家把缓存数据放到 LC (Local cache:xcache、eaccelerator、APC) 或 RC (remote cache:memcached、couchdb …)。 包含和调用代码中，须以 APP_ROOT . ‘/‘开头，应避免直接写程序文件名 (例如：require_once ‘x.php’) 的做法； 所有被包含和调用的程序文件，包括但不限于程序、缓存或模板，通常其不能被直接URL请求。通过在 ./config.php 中定义一个标记性常量 APPNAME ，来判断程序是否被合法调用。因此，在除了./config.php 以外的任何一个被包含和调用的程序文件中，需要包含以下内容，以使得访问者无法直接通过URL 请求该文件： defined(‘APPNAME’) or exit(‘Access Denied’); <strong>错误报告级别</strong> 在开发和调试阶段，请使用 error_reporting(E_ALL) 作为默认的错误报告级别，此级别最为严格，能够报告程序中所有的错误、警告和提示信息，以帮助大家检查和核对代码，避免大多数安全性问题和逻辑错误、拼写错误。error_reporting() 可以公共头文件进行设置，或某个指定的文件进行设置，但是请不要在各个文件中都加一个 error_reporting 。 代码部署时，请删除所有 error_reporting 和 ini_set(‘display_errors’, xxx) 设置，php 采用服务器默认配置，此配置由服务器维护人员统一配置。</p>
-<h4 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h4><p><strong>字段</strong> 表和字段命名：表和字段的命名以前面《命名原则》的约定为基本准则。所有数据表名称，只要其名称是可数名词，则必须以复数方式命名，例如：members(用户表)；存储多项内容的字段，或代表数量的字段，也应当以复数方式命名，例如：hits(查看次数)、items(内容数量)。 当几个表间的字段有关连时，要注意表与表之间关联字段命名的统一，如 article_hash_01 表中的 articleid 与 article_data_hash_01 表中的 articleid。 代表id自增量的字段，通常用以下几种形式：</p>
-<ul>
-<li>一般情况下，使用全称的形式，例如 userid、articleid；</li>
-<li>没有功能性作用，只为管理和维护方便而设的id，可以使用全称的形式，也可只将其命名为id。</li>
-</ul>
-<p><strong>字段结构</strong> 允许 NULL 值的字段，数据库在进行比较操作时，会先判断其是否为 NULL，非 NULL 时才进行值的必对。因此基于效率的考虑，建议所有字段均不能为空，即全部 NOT NULL； 预计不会存储非负数的字段，例如各项 id、发帖数等，必须设置为 UNSIGNED 类型。 UNSIGNED 类型比非 UNSIGNED 类型所能存储的正整数范围大一倍，因此能获得更大的数值存储空间； 存储开关、选项数据的字段，通常使用 tinyint(1) 非 UNSIGNED 类型，少数情况也可能使用enum() 结果集的方式。tinyint 作为开关字段时，通常 1 为打开；0 为关闭；-1 为特殊数据，例如 N/A(不可用)；高于 1 的为特殊结果或开关二进制数组合； MEMORY/HEAP 类型的表中，要尤其注意规划节约使用存储空间，这将节约更多内存。例如cdb_sessions 表中，就将 IP 地址的存储拆分为4个 tinyint(3) UNSIGNED 类型的字段，而没有采用 char(15) 的方式； 任何类型的数据表，字段空间应当本着足够用，不浪费的原则。</p>
-<h4 id="SQL语句"><a href="#SQL语句" class="headerlink" title="SQL语句"></a>SQL语句</h4><p>所有 SQL 语句中，除了表名、字段名称以外，全部语句和函数均需大写，应当杜绝小写方式或大小写混杂的写法。例如 select * from members; 是不符合规范的写法。 很长的 SQL 语句应当有适当的断行，依据 JOIN、FROM、ORDER BY等关键字进行界定。 通常情况下，在对多表进行操作时，要根据不同表名称，对每个表指定一个 1 ~ 2 个字母的缩写，以利于语句简洁和可读性。 如下的语句范例，是符合规范的：</p>
-<p>$result = $db-&gt;query(“SELECT m.<em>, i.</em><br>FROM “ . TABLE_MEMBER . “ AS m, “ . TABLE_MEMBERINFO . “ AS i<br>WHERE m.userid = i.userid AND m.userid = ‘$_userid’);</p>
-<p>  原文地址：<a href="http://www.nowamagic.net/librarys/veda/detail/513" target="_blank" rel="noopener">http://www.nowamagic.net/librarys/veda/detail/513</a></p>
 
       
     </div>
@@ -1099,18 +1075,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">28</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

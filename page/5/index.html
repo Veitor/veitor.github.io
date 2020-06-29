@@ -183,6 +183,96 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/understanding-mysql-logical-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/understanding-mysql-logical-architecture/" class="post-title-link" itemprop="url">简单了解mysql逻辑架构</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-30 13:36:31" itemprop="dateCreated datePublished" datetime="2014-11-30T13:36:31+08:00">2014-11-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">Mysql</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/11/2012031510324452.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/2012031510324452.png" alt="2012031510324452"></a> 如图，mysql逻辑架构大致分为三层。 第一层，服务层(为客户端服务)：这并不是mysql所独有的，很多基于网络的客户端/服务器的工具或者服务都有这样的类似架构，比如为请求做连接处理，授权认证，安全等。 第二层，核心层：这是一个比较有意思的部分，大多数mysql核心服务功能都在这一层，包括查询解析、分析、优化、缓存以及所有的内置函数（例如日期、时间、数学和加密函数），所有跨存储引擎的功能都在这一层实现：存储过程、触发器、视图等。 第三层，存储引擎层：存储引擎负责Mysql中数据的存储和提取，每个存储引擎都有它的优势和劣势。服务器（即上面的核心层）通过API与存储引擎进行通信。这些接口屏蔽了不同存储引擎之间的差异，使得这些差异对上层的查询过程透明。存储引擎API包含几十个底层函数，用于执行注入“开始一个事务”或者“根据主键提取一行记录”等操作。但存储引擎不会去解析SQL（InnoDB是一个例外，它会解析外键定义，因为Mysql服务器本身没有实现该功能），不同存储引擎之间也不会相互通信，而只是简单的响应上层服务器的请求。 下面进一步了解第一层和第二层。</p>
+<blockquote>
+<h1 id="连接管理与安全性（第一层-服务层）"><a href="#连接管理与安全性（第一层-服务层）" class="headerlink" title="连接管理与安全性（第一层 服务层）"></a>连接管理与安全性（第一层 服务层）</h1></blockquote>
+<p><img src="http://storage.veitor.net/uploads/2014/11/2012031510114191.png" alt="2012031510114191"></p>
+<ul>
+<li>每个客户端链接都会在服务器进程中拥有一个线程，这个链接的查询只会在这个单独的线程中进行，即每个连接的查询都在一个进程中的线程完成。</li>
+<li>服务层会负责缓存线程，因此不需要为每个新建的连接创建一个线程或销毁已经使用的线程，类似线程池。</li>
+</ul>
+<h3 id="认证流程"><a href="#认证流程" class="headerlink" title="认证流程"></a>认证流程</h3><p><img src="http://storage.veitor.net/uploads/2014/11/2012031510220113.png" alt="2012031510220113">   当客户端（应用）连接到mysql服务器时，服务器需要对其进行认证。认证基于原始主机信息和密码。如果使用了安全套接字（SSL）的方式连接，还可以使用X.509证书认证。一旦客户端连接成功，服务器会继续验证该客户端是否具有执行某个特定查询的权限。例如，是否允许客户端对world数据库的country数据表执行select语句。</p>
+<blockquote>
+<h1 id="优化与执行（第二层-核心层）"><a href="#优化与执行（第二层-核心层）" class="headerlink" title="优化与执行（第二层 核心层）"></a>优化与执行（第二层 核心层）</h1></blockquote>
+<p><img src="http://storage.veitor.net/uploads/2014/11/2012031510482383.png" alt="2012031510482383">  </p>
+<p>mysql会解析查询，并创建内部数据结构（解析树），然后对其进行各种优化，包括重写查询、决定表的读取顺序，以及选择合适的索引等。</p>
+<p>在解析查询之前，服务器会“询问”是否进行了查询缓存(只能缓存SELECT语句和相应结果)。缓存过的直接返回结果，未缓存的就需要进行解析查询，优化，重新执行返回结果。</p>
+<p>参考文献《高性能Mysql》</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/improve-user-experience-with-progressive-JPEG/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +304,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -307,7 +397,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -526,7 +616,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -602,7 +692,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -682,7 +772,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -770,7 +860,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -850,7 +940,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -938,7 +1028,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1036,7 +1126,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
+                <time title="修改时间：2020-06-29 15:00:58" itemprop="dateModified" datetime="2020-06-29T15:00:58+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1132,88 +1222,6 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/congurence-operations-and-their-basic-properties/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/congurence-operations-and-their-basic-properties/" class="post-title-link" itemprop="url">同余运算及其基本性质</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-10-28 05:05:34" itemprop="dateCreated datePublished" datetime="2014-10-28T05:05:34+08:00">2014-10-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-23 09:18:25" itemprop="dateModified" datetime="2020-06-23T09:18:25+08:00">2020-06-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机系统</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <pre><code> 100除以7的余数是2，意思就是说把100个东西七个七个分成一组的话最后还剩2个。余数有一个严格的定义：假如被除数是a，除数是b（假设它们 均为正整数），那么我们总能够找到一个小于b的自然数r和一个整数m，使得a=bm+r。这个r就是a除以b的余数，m被称作商。我们经常用mod来表示 取余，a除以b余r就写成a mod b = r。
-
-如果两个数a和b之差能被m整除，那么我们就说a和b对模数m同余（关于m同余）。比 如，100-60除以8正好除尽，我们就说100和60对于模数8同余。它的另一层含义就是说，100和60除以8的余数相同。a和b对m同余，我们记作 a≡b(mod m)。比如，刚才的例子可以写成100≡60(mod 8)。你会发现这种记号到处都在用，比如和数论相关的书中就经常把a mod 3 = 1写作a≡1(mod 3)。
-
-之所以把同余当作一种运算，是因为同余满足运算的诸多性质。比如，同余满足等价关系。具体地说，它满足自反性（一个数永远和自己同余）、对称性（a和b同余，b和a也就同余）和传递性（a和b同余，b和c同余可以推出a和c同余）。这三个性质都是显然的。
-
- 同余运算里还有稍微复杂一些的性质。比如，同余运算和整数加减法一样满足“等量加等量，其和不变”。小学我们就知道，等式两边可以同时加上一个相等的数。例 如，a=b可以推出a+100=b+100。这样的性质在同余运算中也有：对于同一个模数m，如果a和b同余，x和y同余，那么a+x和b+y也同余。在 我看来，这个结论几乎是显然的。当然，我们也可以严格证明这个定理。这个定理对减法同样有效。 **性质：如果a≡b(mod m)，x≡y(mod m)，则a+x≡b+y(mod m)。** 证 明：条件告诉我们，可以找到p和q使得a-mp = b-mq，也存在r和s使得x-mr = y-ms。于是a-mp + x-mr = b-mq + y-ms，即a+x-m(p+r) = b+y-m(q+s)，这就告诉我们a+x和b+y除以m的余数相同。 容易想到，两个同余式对应相乘，同余式两边仍然相等： **如果a≡b(mod m)，x≡y(mod m)，则ax≡by(mod m)。** 证明：条件告诉我们，a-mp = b-mq，x-mr = y-ms。于是(a-mp)(x-mr) = (b-mq)(y-ms)，等式两边分别展开后必然是ax-m(…) = by-m(…)的形式，这就说明ax≡by(mod m)。 现在你知道为什么有的题要 叫你“输出答案mod xxxxx的结果”了吧，那是为了避免高精度运算，因为这里的结论告诉我们在运算过程中边算边mod和算完后再mod的结果一样。假如a是一个很大的数， 令b=a mod m，那么(a * 100) mod m和(b * 100) mod m的结果是完全一样的，这相当于是在a≡b (mod m)的两边同时乘以100。这些结论其实都很显然，因为同余运算只关心余数（不关心“整的部分”），完全可以每一次运算后都只保留余数。因此，整个运算过 程中参与运算的数都不超过m，避免了高精度的出现。 在证明**_Fermat小定理_**时，我们用到了这样一个定理： **如果ac≡bc(mod m)，且c和m互质，则a≡b(mod m)** （就是说同余式两边可以同时除以一个和模数互质的数）。 证明：条件告诉我们，ac-mp = bc-mq，移项可得ac-bc = mp-mq，也就是说(a-b)c = m(p-q)。这表明，(a-b)c里需要含有因子m，但c和m互质，因此只有可能是a-b被m整除，也即a≡b(mod m)。</code></pre><p>  原文地址：<a href="http://www.matrix67.com/blog/archives/236" target="_blank" rel="noopener">http://www.matrix67.com/blog/archives/236</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1263,18 +1271,18 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">28</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
