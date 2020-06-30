@@ -183,6 +183,137 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/understanding-of-inode-in-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/understanding-of-inode-in-Linux/" class="post-title-link" itemprop="url">Linux的inode的理解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-10-31 06:22:22" itemprop="dateCreated datePublished" datetime="2014-10-31T06:22:22+08:00">2014-10-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>一、inode是什么？</p>
+<p>理解inode，要从文件储存说起。</p>
+<p>文件储存在硬盘上，硬盘的最小存储单位叫做”扇区”（Sector）。每个扇区储存512字节（相当于0.5KB）。</p>
+<p>操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，即一次性读取一个”块”（block）。这种由多个扇区组成的”块”，是文件存取的最小单位。”块”的大小，最常见的是4KB，即连续八个 sector组成一个 block。</p>
+<p>文件数据都储存在”块”中，那么很显然，我们还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、文件的大小等等。这种储存文件元信息的区域就叫做inode，中文译名为”索引节点”。</p>
+<p>二、inode的内容</p>
+<p>inode包含文件的元信息，具体来说有以下内容：</p>
+<p>　　* 文件的字节数</p>
+<p>　　* 文件拥有者的User ID</p>
+<p>　　* 文件的Group ID</p>
+<p>　　* 文件的读、写、执行权限</p>
+<p>　　* 文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</p>
+<p>　　* 链接数，即有多少文件名指向这个inode</p>
+<p>　　* 文件数据block的位置</p>
+<p>可以用stat命令，查看某个文件的inode信息：</p>
+<p>stat example.txt</p>
+<p>总之，除了文件名以外的所有文件信息，都存在inode之中。至于为什么没有文件名，下文会有详细解释。</p>
+<p>三、inode的大小</p>
+<p>inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是数据区，存放文件数据；另一个是inode区（inode table），存放inode所包含的信息。</p>
+<p>每 个inode节点的大小，一般是128字节或256字节。inode节点的总数，在格式化时就给定，一般是每1KB或每2KB就设置一个inode。假定 在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode table的大小就会达到128MB，占整块硬盘的12.8%。</p>
+<p>查看每个硬盘分区的inode总数和已经使用的数量，可以使用df命令。</p>
+<p>df -i</p>
+<p>查看每个inode节点的大小，可以用如下命令：</p>
+<p>sudo dumpe2fs -h /dev/hda | grep “Inode size”</p>
+<p>由于每个文件都必须有一个inode，因此有可能发生inode已经用光，但是硬盘还未存满的情况。这时，就无法在硬盘上创建新文件。</p>
+<p>四、inode号码</p>
+<p>每个inode都有一个号码，操作系统用inode号码来识别不同的文件。</p>
+<p>这 里值得重复一遍，Unix/Linux系统内部不使用文件名，而使用inode号码来识别文件。对于系统来说，文件名只是inode号码便于识别的别称或 者绰号。表面上，用户通过文件名，打开文件。实际上，系统内部这个过程分成三步：首先，系统找到这个文件名对应的inode号码；其次，通过inode号 码，获取inode信息；最后，根据inode信息，找到文件数据所在的block，读出数据。</p>
+<p>使用ls -i命令，可以看到文件名对应的inode号码：</p>
+<p>ls -i example.txt</p>
+<p>五、目录文件</p>
+<p>Unix/Linux系统中，目录（directory）也是一种文件。打开目录，实际上就是打开目录文件。</p>
+<p>目录文件的结构非常简单，就是一系列目录项（dirent）的列表。每个目录项，由两部分组成：所包含文件的文件名，以及该文件名对应的inode号码。</p>
+<p>ls命令只列出目录文件中的所有文件名：</p>
+<p>ls /etc</p>
+<p>ls -i命令列出整个目录文件，即文件名和inode号码：</p>
+<p>ls -i /etc</p>
+<p>如果要查看文件的详细信息，就必须根据inode号码，访问inode节点，读取信息。ls -l命令列出文件的详细信息。</p>
+<p>ls -l /etc</p>
+<p>六、硬链接</p>
+<p>一 般情况下，文件名和inode号码是”一一对应”关系，每个inode号码对应一个文件名。但是，Unix/Linux系统允许，多个文件名指向同一个 inode号码。这意味着，可以用不同的文件名访问同样的内容；对文件内容进行修改，会影响到所有文件名；但是，删除一个文件名，不影响另一个文件名的访 问。这种情况就被称为”硬链接”（hard link）。</p>
+<p>ln命令可以创建硬链接：</p>
+<p>ln 源文件 目标文件</p>
+<p>运 行上面这条命令以后，源文件与目标文件的inode号码相同，都指向同一个inode。inode信息中有一项叫做”链接数”，记录指向该inode的文 件名总数，这时就会增加1。反过来，删除一个文件名，就会使得inode节点中的”链接数”减1。当这个值减到0，表明没有文件名指向这个inode，系 统就会回收这个inode号码，以及其所对应block区域。</p>
+<p>这里顺便说一下目录文件的”链接数”。创建目录时， 默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当 前目录的父目录的inode号码，等同于父目录的”硬链接”。所以，任何一个目录的”硬链接”总数，总是等于2加上它的子目录总数（含隐藏目录）,这里的 2是父目录对其的“硬链接”和当前目录下的”.硬链接“。</p>
+<p>七、软链接</p>
+<p>除了硬链接以外，还有 一种特殊情况。文件A和文件B的inode号码虽然不一样，但是文件A的内容是文件B的路径。读取文件A时，系统会自动将访问者导向文件B。因此，无论打 开哪一个文件，最终读取的都是文件B。这时，文件A就称为文件B的”软链接”（soft link）或者”符号链接（symbolic link）。</p>
+<p>这 意味着，文件A依赖于文件B而存在，如果删除了文件B，打开文件A就会报错：”No such file or directory”。这是软链接与硬链接最大的不同：文件A指向文件B的文件名，而不是文件B的inode号码，文件B的inode”链接数”不会因此 发生变化。</p>
+<p>ln -s命令可以创建软链接。</p>
+<p>ln -s 源文文件或目录 目标文件或目录</p>
+<p>八、inode的特殊作用</p>
+<p>由于inode号码与文件名分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
+<p>　　1. 有时，文件名包含特殊字符，无法正常删除。这时，直接删除inode节点，就能起到删除文件的作用。</p>
+<p>　　2. 移动文件或重命名文件，只是改变文件名，不影响inode号码。</p>
+<p>　　3. 打开一个文件以后，系统就以inode号码来识别这个文件，不再考虑文件名。因此，通常来说，系统无法从inode号码得知文件名。</p>
+<pre><code>第3点使得软件更新变得简单，可以在不关闭软件的情况下进行更新，不需要重启。因为系统通过inode号码，识别运行中的文件，不通过文件名。更新的时 候，新版文件以同样的文件名，生成一个新的inode，不会影响到运行中的文件。等到下一次运行这个软件的时候，文件名就自动指向新版文件，旧版文件的 inode则被回收。</code></pre><p>  九 实际问题 在一台配置较低的Linux服务器（内存、硬盘比较小）的/data分区内创建文件时，系统提示磁盘空间不足，用df -h命令查看了一下磁盘使用情况，发现/data分区只使用了66%，还有12G的剩余空间，按理说不会出现这种问题。 后来用df -i查看了一下/data分区的索引节点(inode)，发现已经用满(IUsed=100%)，导致系统无法创建新目录和文件。     查找原因： /data/cache目录中存在数量非常多的小字节缓存文件，占用的Block不多，但是占用了大量的inode。   解决方案： 1、删除/data/cache目录中的部分文件，释放出/data分区的一部分inode。 2、用软连接将空闲分区/opt中的newcache目录连接到/data/cache，使用/opt分区的inode来缓解/data分区inode不足的问题： ln -s /opt/newcache /data/cache   转自： <a href="http://www.ruanyifeng.com/blog/2011/12/inode.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2011/12/inode.html</a> <a href="http://blog.s135.com/post/295/" target="_blank" rel="noopener">http://blog.s135.com/post/295/</a> <a href="http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html" target="_blank" rel="noopener">http://hi.baidu.com/leejun_2005/blog/item/d9aa13a53b3af6e99152ee7e.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/congurence-operations-and-their-basic-properties/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +345,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -296,7 +427,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -498,7 +629,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -602,7 +733,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -692,7 +823,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -786,7 +917,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -870,7 +1001,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -984,7 +1115,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1223,7 +1354,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
+                <time title="修改时间：2020-06-30 16:48:49" itemprop="dateModified" datetime="2020-06-30T16:48:49+08:00">2020-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1249,138 +1380,6 @@ background-size: 100px auto;
 
       
           <p>Linux系统中的wget是一个下载文件的工具，它用在命令行下。对于Linux用户是必不可少的工具，我们经常要下载一些软件或从远程服务器恢复备份到本地服务器。wget支持HTTP，HTTPS和FTP协议，可以使用HTTP代理。所谓的自动下载是指，wget可以在用户退出系统的之后在后台执行。这意味这你可以登录系统，启动一个wget下载任务，然后退出系统，wget将在后台执行直到任务完成，相对于其它大部分浏览器在下载大量数据时需要用户一直的参与，这省去了极大的麻烦。 wget 可 以跟踪HTML页面上的链接依次下载来创建远程服务器的本地版本，完全重建原始站点的目录结构。这又常被称作”递归下载”。在递归下载的时 候，wget 遵循Robot Exclusion标准(/robots.txt). wget可以在下载的同时，将链接转换成指向本地文件，以方便离线 浏览。 wget 非常稳定，它在带宽很窄的情况下和不稳定网络中有很强的适应性.如果是由于网络的原因下载失败，wget会不断的尝试，直到整个文件下载完毕。如果是服务器打断下载过程，它会再次联到服务器上从停止的地方继续下载。这对从那些限定了链接时间的服务器上下载大文件非常有用。 1．命令格式： wget [参数] [URL地址] 2．命令功能： 用于从网络上下载资源，没有指定目录，下载资源回默认为当前目录。wget虽然功能强大，但是使用起来还是比较简单： 1）支持断点下传功能；这一点，也是网络蚂蚁和FlashGet当年最大的卖点，现在，Wget也可以使用此功能，那些网络不是太好的用户可以放心了； 2）同时支持FTP和HTTP下载方式；尽管现在大部分软件可以使用HTTP方式下载，但是，有些时候，仍然需要使用FTP方式下载软件； 3）支持代理服务器；对安全强度很高的系统而言，一般不会将自己的系统直接暴露在互联网上，所以，支持代理是下载软件必须有的功能； 4）设置方便简单；可能，习惯图形界面的用户已经不是太习惯命令行了，但是，命令行在设置上其实有更多的优点，最少，鼠标可以少点很多次，也不要担心是否错点鼠标； 5）程序小，完全免费；程序小可以考虑不计，因为现在的硬盘实在太大了；完全免费就不得不考虑了，即使网络上有很多所谓的免费软件，但是，这些软件的广告却不是我们喜欢的。 3．命令参数： 启动参数： -V, –version 显示wget的版本后退出 -h, –help 打印语法帮助 -b, –background 启动后转入后台执行 -e, –execute=COMMAND 执行<code>.wgetrc’格式的命令，wgetrc格式参见/etc/wgetrc或~/.wgetrc 记录和输入文件参数： -o, –output-file=FILE 把记录写到FILE文件中 -a, –append-output=FILE 把记录追加到FILE文件中 -d, –debug 打印调试输出 -q, –quiet 安静模式(没有输出) -v, –verbose 冗长模式(这是缺省设置) -nv, –non-verbose 关掉冗长模式，但不是安静模式 -i, –input-file=FILE 下载在FILE文件中出现的URLs -F, –force-html 把输入文件当作HTML格式文件对待 -B, –base=URL 将URL作为在-F -i参数指定的文件中出现的相对链接的前缀 –sslcertfile=FILE 可选客户端证书 –sslcertkey=KEYFILE 可选客户端证书的KEYFILE –egd-file=FILE 指定EGD socket的文件名 下载参数： –bind-address=ADDRESS 指定本地使用地址(主机名或IP，当本地有多个IP或名字时使用) -t, –tries=NUMBER 设定最大尝试链接次数(0 表示无限制). -O –output-document=FILE 把文档写到FILE文件中 -nc, –no-clobber 不要覆盖存在的文件或使用.#前缀 -c, –continue 接着下载没下载完的文件 –progress=TYPE 设定进程条标记 -N, –timestamping 不要重新下载文件除非比本地文件新 -S, –server-response 打印服务器的回应 –spider 不下载任何东西 -T, –timeout=SECONDS 设定响应超时的秒数 -w, –wait=SECONDS 两次尝试之间间隔SECONDS秒 –waitretry=SECONDS 在重新链接之间等待1…SECONDS秒 –random-wait 在下载之间等待0…2*WAIT秒 -Y, –proxy=on/off 打开或关闭代理 -Q, –quota=NUMBER 设置下载的容量限制 –limit-rate=RATE 限定下载输率 目录参数： -nd –no-directories 不创建目录 -x, –force-directories 强制创建目录 -nH, –no-host-directories 不创建主机目录 -P, –directory-prefix=PREFIX 将文件保存到目录 PREFIX/… –cut-dirs=NUMBER 忽略 NUMBER层远程目录 HTTP 选项参数： –http-user=USER 设定HTTP用户名为 USER. –http-passwd=PASS 设定http密码为 PASS -C, –cache=on/off 允许/不允许服务器端的数据缓存 (一般情况下允许) -E, –html-extension 将所有text/html文档以.html扩展名保存 –ignore-length 忽略 \</code>Content-Length’头域 –header=STRING 在headers中插入字符串 STRING –proxy-user=USER 设定代理的用户名为 USER –proxy-passwd=PASS 设定代理的密码为 PASS –referer=URL 在HTTP请求中包含 `Referer: URL’头 -s, –save-headers 保存HTTP头到文件 -U, –user-agent=AGENT 设定代理的名称为 AGENT而不是 Wget/VERSION –no-http-keep-alive 关闭 HTTP活动链接 (永远链接) –cookies=off 不使用 cookies –load-cookies=FILE 在开始会话前从文件 FILE中加载cookie –save-cookies=FILE 在会话结束后将 cookies保存到 FILE文件中 FTP 选项参数： -nr, –dont-remove-listing 不移走 <code>.listing’文件 -g, –glob=on/off 打开或关闭文件名的 globbing机制 –passive-ftp 使用被动传输模式 (缺省值). –active-ftp 使用主动传输模式 –retr-symlinks 在递归的时候，将链接指向文件(而不是目录) 递归下载参数： -r, –recursive 递归下载－－慎用! -l, –level=NUMBER 最大递归深度 (inf 或 0 代表无穷) –delete-after 在现在完毕后局部删除文件 -k, –convert-links 转换非相对链接为相对链接 -K, –backup-converted 在转换文件X之前，将之备份为 X.orig -m, –mirror 等价于 -r -N -l inf -nr -p, –page-requisites 下载显示HTML文件的所有图片 递归下载中的包含和不包含(accept/reject)： -A, –accept=LIST 分号分隔的被接受扩展名的列表 -R, –reject=LIST 分号分隔的不被接受的扩展名的列表 -D, –domains=LIST 分号分隔的被接受域的列表 –exclude-domains=LIST 分号分隔的不被接受的域的列表 –follow-ftp 跟踪HTML文档中的FTP链接 –follow-tags=LIST 分号分隔的被跟踪的HTML标签的列表 -G, –ignore-tags=LIST 分号分隔的被忽略的HTML标签的列表 -H, –span-hosts 当递归时转到外部主机 -L, –relative 仅仅跟踪相对链接 -I, –include-directories=LIST 允许目录的列表 -X, –exclude-directories=LIST 不被包含目录的列表 -np, –no-parent 不要追溯到父目录 wget -S –spider url 不下载只显示过程 4．使用实例： 实例1：使用wget下载单个文件 命令： wget http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 以下的例子是从网络下载一个文件并保存在当前目录，在下载的过程中会显示进度条，包含（下载完成百分比，已经下载的字节，当前下载速度，剩余下载时间）。 实例2：使用wget -O下载并以不同的文件名保存 命令： : wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080 说明： wget默认会以最后一个符合”/”的后面的字符来命令，对于动态链接的下载通常文件名会不正确。 错误：下面的例子会下载一个文件并以名称download.aspx?id=1080保存 wget http://www.minjieren.com/download?id=1 即使下载的文件是zip格式，它仍然以download.php?id=1080命令。 正确：为了解决这个问题，我们可以使用参数-O来指定一个文件名： wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080 实例3：使用wget –limit -rate限速下载 命令： wget --limit-rate=300k http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 当你执行wget的时候，它默认会占用全部可能的宽带下载。但是当你准备下载一个大文件，而你还需要下载其它文件时就有必要限速了。 实例4：使用wget -c断点续传 命令： wget -c http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 使用wget -c重新启动下载中断的文件，对于我们下载大文件时突然由于网络等原因中断非常有帮助，我们可以继续接着下载而不是重新下载一个文件。需要继续中断的下载时可以使用-c参数。 实例5：使用wget -b后台下载 命令： wget -b http://www.minjieren.com/wordpress-3.1-zh\_CN.zip 说明： 对于下载非常大的文件的时候，我们可以使用参数-b进行后台下载。 wget -b http://www.minjieren.com/wordpress-3.1-zh\_CN.zip Continuing in background, pid 1840. Output will be written to</code>wget-log’. 你可以使用以下命令来察看下载进度： tail -f wget-log 实例6：伪装代理名称下载 命令： wget –user-agent=”Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.204 Safari/534.16” <a href="http://www.minjieren.com/wordpress-3.1-zh\_CN.zip" target="_blank" rel="noopener">http://www.minjieren.com/wordpress-3.1-zh\_CN.zip</a> 说明： 有些网站能通过根据判断代理名称不是浏览器而拒绝你的下载请求。不过你可以通过–user-agent参数伪装。 实例7：使用wget –spider测试下载链接 命令： wget –spider URL 说明： 当你打算进行定时下载，你应该在预定时间测试下载链接是否有效。我们可以增加–spider参数进行检查。 wget –spider URL 如果下载链接正确，将会显示 wget –spider URL Spider mode enabled. Check if remote file exists. HTTP request sent, awaiting response… 200 OK Length: unspecified [text/html] Remote file exists and could contain further links, but recursion is disabled – not retrieving. 这保证了下载能在预定的时间进行，但当你给错了一个链接，将会显示如下错误 wget –spider url Spider mode enabled. Check if remote file exists. HTTP request sent, awaiting response… 404 Not Found Remote file does not exist – broken link!!! 你可以在以下几种情况下使用spider参数： 定时下载之前进行检查 间隔检测网站是否可用 检查网站页面的死链接 实例8：使用wget –tries增加重试次数 命令： wget –tries=40 URL 说明： 如果网络有问题或下载一个大文件也有可能失败。wget默认重试20次连接下载文件。如果需要，你可以使用–tries增加重试次数。 实例9：使用wget -i下载多个文件 命令： wget -i filelist.txt 说明： 首先，保存一份下载链接文件 cat &gt; filelist.txt url1 url2 url3 url4 接着使用这个文件和参数-i下载 实例10：使用wget –mirror镜像网站 命令： wget –mirror -p –convert-links -P ./LOCAL URL 说明： 下载整个网站到本地。 –miror:开户镜像下载 -p:下载所有为了html页面显示正常的文件 –convert-links:下载后，转换成本地的链接 -P ./LOCAL：保存所有文件和目录到本地指定目录 实例11：使用wget –reject过滤指定格式下载 命令： wget –reject=gif ur 说明： 下载一个网站，但你不希望下载图片，可以使用以下命令。 实例12：使用wget -o把下载信息存入日志文件 命令： wget -o download.log URL 说明： 不希望下载信息直接显示在终端而是在一个日志文件，可以使用 实例13：使用wget -Q限制总下载文件大小 命令： wget -Q5m -i filelist.txt 说明： 当你想要下载的文件超过5M而退出下载，你可以使用。注意：这个参数对单个文件下载不起作用，只能递归下载时才有效。 实例14：使用wget -r -A下载指定格式文件 命令： wget -r -A.pdf url 说明： 可以在以下情况使用该功能： 下载一个网站的所有图片 下载一个网站的所有视频 下载一个网站的所有PDF文件 实例15：使用wget FTP下载 命令： wget ftp-url wget –ftp-user=USERNAME –ftp-password=PASSWORD url 说明： 可以使用wget来完成ftp链接的下载。 使用wget匿名ftp下载： wget ftp-url 使用wget用户名和密码认证的ftp下载 wget –ftp-user=USERNAME –ftp-password=PASSWORD url 备注：编译安装 使用如下命令编译安装： # tar zxvf wget-1.9.1.tar.gz # cd wget-1.9.1 # ./configure # make # make install</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/wordpress-article-with-picture-sync-to-sina-weibo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/wordpress-article-with-picture-sync-to-sina-weibo/" class="post-title-link" itemprop="url">wordpress文章带图片同步到新浪微博</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-08-18 14:13:59" itemprop="dateCreated datePublished" datetime="2014-08-18T14:13:59+08:00">2014-08-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-29 16:13:41" itemprop="dateModified" datetime="2020-06-29T16:13:41+08:00">2020-06-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg" alt="1392117921664"></a> 今天终于能把个人博客上的文章及文中图片一起同步到新浪微博了，在此发文纪念一下，并带图同步到我的微博测试。并且与大家一起分享一下经验，想必也有很多朋友在同步到微博的时候，遇到了传图的问题。 此前我都是使用多说评论框的接口同步到微博的，但为了能拥有自己的微博来源小尾巴，就自己开发一个。 首先你当然得有微博开放平台的帐号，并申请通过了网站应用审核。其次就是调用API接口了。 新浪微博有个高级接口，能发布一条微博并指定上传图片的url，这个接口由于需要申请使用，比较麻烦，还不如自己用另一个接口来实现锻炼一下自己。这里我使用的是<a href="https://upload.api.weibo.com/2/statuses/upload.json" target="_blank" rel="noopener">https://upload.api.weibo.com/2/statuses/upload.json</a> 这个接口（<a href="http://open.weibo.com/wiki/2/statuses/upload" target="_blank" rel="noopener">详情见这</a>）</p>
-<p>必选</p>
-<p>类型及范围</p>
-<p>说明</p>
-<p>source</p>
-<p>false</p>
-<p>string</p>
-<p>采用OAuth授权方式不需要此参数，其他授权方式为必填参数，数值为应用的AppKey。</p>
-<p>access_token</p>
-<p>false</p>
-<p>string</p>
-<p>采用OAuth授权方式为必填参数，其他授权方式不需要此参数，OAuth授权后获得。</p>
-<p>status</p>
-<p>true</p>
-<p>string</p>
-<p>要发布的微博文本内容，必须做URLencode，内容不超过140个汉字。</p>
-<p>visible</p>
-<p>false</p>
-<p>int</p>
-<p>微博的可见性，0：所有人能看，1：仅自己可见，2：密友可见，3：指定分组可见，默认为0。</p>
-<p>list_id</p>
-<p>false</p>
-<p>string</p>
-<p>微博的保护投递指定分组ID，只有当visible参数为3时生效且必选。</p>
-<p>pic</p>
-<p>true</p>
-<p>binary</p>
-<p>要上传的图片，仅支持JPEG、GIF、PNG格式，图片大小小于5M。</p>
-<p>lat</p>
-<p>false</p>
-<p>float</p>
-<p>纬度，有效范围：-90.0到+90.0，+表示北纬，默认为0.0。</p>
-<p>long</p>
-<p>false</p>
-<p>float</p>
-<p>经度，有效范围：-180.0到+180.0，+表示东经，默认为0.0。</p>
-<p>annotations</p>
-<p>false</p>
-<p>string</p>
-<p>元数据，主要是为了方便第三方应用记录一些适合于自己使用的信息，每条微博可以包含一个或者多个元数据，必须以json字串的形式提交，字串长度不超过512个字符，具体内容可以自定。</p>
-<p>rip</p>
-<p>false</p>
-<p>string</p>
-<p>开发者上报的操作用户真实IP，形如：211.156.0.1。</p>
-<p>文档规定的参数有以上这些，我只用到了source、status和pic三个参数就行了，当然你可以获得access_token来代替source（本文使用source讲解）。 上传图片等流媒体文件需要使用<strong>multipart/form-data</strong>编码方式，这和我们平常使用的表单上传文件类似。提交时会向服务器端发出这样的数据（如下代码，已经去除部分不相关的头信息）。</p>
-<p>POST / HTTP/1.1<br>Content-Type:application/x-www-form-urlencoded<br>Accept-Encoding: gzip, deflate<br>Host: weibo.com<br>Content-Length: 21<br>Connection: Keep-Alive<br>Cache-Control: no-cache<br>txt1=hello&amp;txt2=world</p>
-<p>对于普通的HTML Form POST请求，它会在头信息里使用Content-Length注明内容长度。头信息每行一条，空行之后便是Body，即“内容”（entity）。它的Content-Type是application/x-www-form-urlencoded，这意味着消息内容会经过URL编码，就像在GET请 求时URL里的QueryString那样。txt1=hello&amp;txt2=world 最早的HTTP POST是不支持文件上传的，给编程开发带来很多问题。但是在1995年，ietf出台了rfc1867,也就是《RFC 1867 -Form-based File Upload in HTML》，用以支持文件上传。所以Content-Type的类型扩充了multipart/form-data用以支持向服务器发送二进制数据。因此发送post请求时候，表单 属性enctype共有二个值可选，这个属性管理的是表单的MIME编码： ①application/x-www-form-urlencoded(默认值) ②multipart/form-data 其实form表单在你不写enctype属性时，也默认为其添加了enctype属性值，默认值是enctype=”application/x- www-form-urlencoded”. 通过form表单提交文件操作如下：</p>
-<form method="post"action="http://w.sohu.com/t2/upload.do" enctype=”multipart/form-data”>
-<inputtype="text" name="desc">
-<inputtype="file" name="pic">
-</form>
-
-<p>浏览器会发送以下数据：</p>
-<p>POST /t2/upload.do HTTP/1.1<br>User-Agent: SOHUWapRebot<br>Accept-Language: zh-cn,zh;q=0.5<br>Accept-Charset: GBK,utf-8;q=0.7,*;q=0.7<br>Connection: keep-alive<br>Content-Length: 60408<br>Content-Type:multipart/form-data; boundary=ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Host: weibo.com<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name=”desc”<br>Content-Type: text/plain; charset=UTF-8<br>Content-Transfer-Encoding: 8bit<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name=”pic”; filename=”photo.jpg”<br>Content-Type: application/octet-stream<br>Content-Transfer-Encoding: binary<br>[图片二进制数据]<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC–</p>
-<p>先分析一下上面的内容，<strong>然后我们来根据这内容来构造发送的数据。</strong> 第7行指定发送编码是multipart/form-data，并且指定boundary值为“ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC”，这个值可以随机产生，不难理解，boundary就是来分隔数据的。并且每段分隔时boundary值前面需要加“–”，最后结尾处在boundary值的前后加”–”（看上面代码最后一行）。 每段boundary之内，先是数据描述，再是数据的主体。 <a href="http://storage.veitor.net/uploads/2014/08/QQ截图20140818215404.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ%E6%88%AA%E5%9B%BE20140818215404.jpg" alt="QQ截图20140818215404"></a>   <strong>现在放上我构造的代码，自己琢磨一下就明白了：</strong></p>
-<p>function post_to_sina_weibo($post_ID) {<br>  if( wp_is_post_revision($post_ID) ) return;<br>    $get_post_info = get_post($post_ID);<br>    //发布的文章内容，带所有标签格式<br>    $get_post_centent = get_post($post_ID)-&gt;post_content;<br>    //用正则表达式抠图<br>    preg_match_all(‘/&lt;img.<em>?(?: |\\t|\\r|\\n)?src=[\‘“]?(.+?)[\‘“]?(?:(?: |\\t|\\r|\\n)+.</em>?)?&gt;/sim’, $get_post_centent, $strResult, PREG_PATTERN_ORDER);<br>   if(count($strResult[1]) &gt; 0)<br>        $imgUrl = $strResult[1][0];//获得第一张图url地址<br>   else<br>        $imgUrl = null;<br>    //去掉文章内的html编码的空格、换行、tab等符号<br>    $get_post_centent = str_replace(“\t”, “ “, str_replace(“\n”, “ “, str_replace(“&nbsp;”, “ “, $get_post_centent)));<br>    //获取文章标题<br>    $get_post_title = get_post($post_ID)-&gt;post_title;<br>    if ( $get_post_info-&gt;post_status == ‘publish’ &amp;&amp; $_POST[‘original_post_status’] != ‘publish’ ) {<br>    //使用wordpress内置request请求类，在wp_includes/wp_http.php里<br>    $request = new WP_Http;<br>    //微博文字，格式为“【文章标题】文章摘要132字，全文地址：XXXX”<br>    $status = ‘【’ . strip_tags( $get_post_title ) . ‘】 ‘ . mb_strimwidth(strip_tags( apply_filters(‘the_content’, $get_post_centent)),0, 132,’…’) . ‘ 全文地址:’ . get_permalink($post_ID) ;<br>    //如果没图片则请求这个api<br>    $api_url = ‘<a href="https://api.weibo.com/2/statuses/update.json&#39;" target="_blank" rel="noopener">https://api.weibo.com/2/statuses/update.json&#39;</a>;<br>    //body内容，source参数为你的appkey，详情见wordpress的WP_http类<br>    $body = array( ‘status’ =&gt; $status, ‘source’=&gt;’706960568’);<br>    //请将xxxxxxxxx替换成你的，xxxxxxxxxx为“用户名：密码”的base64编码<br>    $headers = array( ‘Authorization’ =&gt; ‘Basic ‘ . ‘xxxxxxxxxxxxxxxx’ );<br>    //重要步骤，如果文章有图片则构造发送数据包<br>    if($imgUrl!==null)<br>    {<br>        $body[‘pic’] = $imgUrl;<br>        uksort($body, ‘strcmp’);<br>        $str_b=uniqid(‘——————‘);<br>        $str_m=’–’.$str_b;<br>        $str_e=$str_m. ‘–’;<br>        $tmpbody=’’;<br>        //对参数遍历，进行构造内容，仔细阅读，你会发现和上面讲的类似<br>        foreach($body as $k=&gt;$v){<br>            if($k==’pic’){<br>                $img_c=file_get_contents($imgUrl);<br>                $url_a=explode(‘?’, basename($imgUrl));<br>                $img_n=$url_a[0];<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.’”; filename=”‘.$img_n.’”‘.”\r\n”;<br>                $tmpbody.=”Content-Type: image/unknown\r\n\r\n”;<br>                $tmpbody.=$img_c.”\r\n”;<br>            }else{<br>                $tmpbody.=$str_m.”\r\n”;<br>                $tmpbody.=’Content-Disposition: form-data; name=”‘.$k.”\“\r\n\r\n”;<br>                $tmpbody.=$v.”\r\n”;<br>            }<br>        }<br>        $tmpbody.=$str_e;<br>        $body = $tmpbody;<br>        //图片处理结束，使用uploade API<br>        $api_url = ‘<a href="https://upload.api.weibo.com/2/statuses/upload.json&#39;" target="_blank" rel="noopener">https://upload.api.weibo.com/2/statuses/upload.json&#39;</a>;<br>        //设置Content-Type编码为multipart/form-data<br>        $headers[‘Content-Type’] = ‘multipart/form-data; boundary=’.$str_b;<br>    }<br>    //请求接口发送数据，详见wordpress自带的WP_http类<br>    $result = $request-&gt;post( $api_url , array( ‘body’ =&gt; $body, ‘headers’ =&gt; $headers ) );<br>}<br>//最后将这个函数挂到pulish_post钩子上，发表文章后就会触发这个函数<br>add_action(‘publish_post’, ‘post_to_sina_weibo’, 0);</p>
-<p>  这段代码理论上来说你可以拿去直接用了，只需按注释上说的修改几个参数为自己的就行了。 这也是我研究琢磨出来的，有任何疑问可以一起探讨。</p>
 
       
     </div>
@@ -1445,7 +1444,7 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">90</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1456,7 +1455,7 @@ background-size: 100px auto;
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">74</span>
+        <span class="site-state-item-count">75</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
