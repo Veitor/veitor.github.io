@@ -44,16 +44,16 @@
   };
 </script>
 
-  <meta name="description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。 一个Queue一个Queue能够包含两种状态的Connections：  SYN RECEIVED ESTABLISHED  只有ESTABLISHED状态的Connection才能被应用通过syscall accept()方法获取到。 因此，该队列的长度由liste">
+  <meta name="description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。">
 <meta name="keywords" content="linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SYN Queue和Accept Queue">
 <meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;syn-queue-and-accept-queue&#x2F;index.html">
 <meta property="og:site_name" content="Veitor的技术点滴">
-<meta property="og:description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。 一个Queue一个Queue能够包含两种状态的Connections：  SYN RECEIVED ESTABLISHED  只有ESTABLISHED状态的Connection才能被应用通过syscall accept()方法获取到。 因此，该队列的长度由liste">
+<meta property="og:description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;kingsamchen.github.io&#x2F;img&#x2F;syn-and-accept-queues.png">
-<meta property="og:updated_time" content="2020-07-01T05:02:54.012Z">
+<meta property="og:updated_time" content="2020-07-01T08:30:58.333Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;kingsamchen.github.io&#x2F;img&#x2F;syn-and-accept-queues.png">
 
@@ -212,7 +212,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-07-01 11:22:06 / 修改时间：13:02:54" itemprop="dateCreated datePublished" datetime="2020-07-01T11:22:06+08:00">2020-07-01</time>
+              <time title="创建时间：2020-07-01 11:22:06 / 修改时间：16:30:58" itemprop="dateCreated datePublished" datetime="2020-07-01T11:22:06+08:00">2020-07-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,6 +238,8 @@
 
       
         <h2 id="一个Queue还是两个Queue"><a href="#一个Queue还是两个Queue" class="headerlink" title="一个Queue还是两个Queue"></a>一个Queue还是两个Queue</h2><p>IPC/IP栈对一个处于<code>LISTEN</code>状态的socket有两种实现backlog queue的方式。</p>
+<a id="more"></a>
+
 <h3 id="一个Queue"><a href="#一个Queue" class="headerlink" title="一个Queue"></a>一个Queue</h3><p>一个Queue能够包含两种状态的Connections：</p>
 <ul>
 <li>SYN RECEIVED</li>
