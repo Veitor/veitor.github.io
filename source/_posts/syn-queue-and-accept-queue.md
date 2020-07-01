@@ -11,6 +11,8 @@ date: 2020-07-01 11:22:06
 
 IPC/IP栈对一个处于`LISTEN`状态的socket有两种实现backlog queue的方式。
 
+<!-- more -->
+
 ### 一个Queue
 
 一个Queue能够包含两种状态的Connections：
