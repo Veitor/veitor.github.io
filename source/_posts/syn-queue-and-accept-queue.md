@@ -129,8 +129,12 @@ drop:
 
 当接收到一个ACK包但`Accept queue`满了时：
 
-- 若设置 `tcp_abort_on_overflow = 1` ，则 TCP 协议栈回复 RST 包，并直接从 SYN queue 中删除该连接信息；
+- 若设置 `tcp_abort_on_overflow = 1` ，则 TCP 协议栈回复 RST 包，并直接从 SYN queue 中删除该连接信息，表示废弃这个握手过程和这个连接；
 - 若设置 `tcp_abort_on_overflow = 0` ，则 TCP 协议栈将该连接标记为 `acked` ，但仍保留在 SYN queue 中，并启动 timer 以便重发 SYN,ACK 包；当 SYN,ACK 的重传次数超过 `net.ipv4.tcp_synack_retries` 设置的值时，再将该连接从 SYN queue 中删除；
+
+> 通常把tcp_abort_on_overflow设置为0可以利于应对突发流量，当 TCP 全连接队列满导致服务器丢掉了 ACK，与此同时，客户端的连接状态却是 ESTABLISHED，进程就在建立好的连接上发送请求。只要服务器没有为请求回复 ACK，请求就会被多次重发。如果服务器上的进程只是短暂的繁忙造成 accept 队列满，那么当 TCP 全连接队列有空位时，再次接收到的请求报文由于含有 ACK，仍然会触发服务器端成功建立连接。
+
+> `tcp_abort_on_overflow` 参数位置位于`/proc/sys/net/ipv4/tcp_abort_on_overflow`
 
 但是，如果`Accept queue`满时，内核也会对SYN包接收速率强加一个限制：如果太多的SYN包被接受，其中将有一些会被抛弃。
 
