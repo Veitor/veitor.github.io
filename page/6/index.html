@@ -183,6 +183,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-difference-between-responsive-and-adaptive/" class="post-title-link" itemprop="url">响应式与自适应的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-06 08:14:09" itemprop="dateCreated datePublished" datetime="2014-11-06T08:14:09+08:00">2014-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" alt="6310d41cjw1em0lsear2xg20b408cn22"></a></p>
+<p>起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式<strong>宽度自适应布局</strong>。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：</p>
+<ul>
+<li>百分比宽度布局</li>
+<li>流式布局</li>
+</ul>
+<p>题主说的是第一派，宽度使用百分比，文字使用em。第二派的布局以 iGoogle 为代表（已经停止）。 再后来，浏览器大战 时代，firefox、Oparo、Chrome …… 出现，结束了 IE 一统江湖的局面，N 年没有更新的 IE6 发布了新版本，以前已 IE 为标准的 CSS 向 W3C 标准趋近，随后各种针对浏览器的 <a href="http://baike.baidu.com/view/1119452.htm" target="_blank" rel="noopener">css hack</a> 技术出现。 虽然浏览器这么多，但是<strong>响应式布局</strong>依然不是主流，人们还在使用 css hack 技术。注意我的用词——「不是主流」，虽然不是主流，不代表当时不被使用。 比如一向超前的伟大的 Google。当时没有响应式布局这个词语，但是慢慢出现了一个词——<strong>渐进增强</strong>，新词的出现总是伴随的旧词一起出现。就好比 3G 出现之前，没人管自己的手机叫 2G，所以，3G 和 2G 两个词是一起出现的（技术上当然2G技术先出现）。同理，渐进增强出现后，另一个词「优雅降级」也随之出现了。 词的意思可以自己看 wiki、Google，我只在这儿举一个例子，gmail 和 qqmail。 他俩的宽度都是 100%，都是自适应。但是： qqmail 就是 css hack 的完美体现，你用任何一个浏览器，几乎可以看到同一个样子的邮箱，腾讯的前端工程师们用各种 css hack 技术来展示邮箱页面，为的是<strong>统一的用户体验</strong>。 而 gmail 使用了<strong>渐进增强</strong>，你的浏览器越强，你看到的效果就越好，用户体验就越好。 再后来，就是大家都熟知的 Google 发布了 android，于是互联网大战从 PC 打到了手机。还有 HTML5 标准的发布。 手机虽然屏幕变小了，但是却提供了更丰富的功能。还记得以前用诺基亚上 QQ 的事儿吗？我们访问的是 3g.qq.com，当时我使用的是中兴的手机，访问 wap.qq.com，在后来的职能手机都是访问 m.qq.com。 不禁有人问「真的需要为每个手机分别设计一个网页吗？」、「真的需要为手机和电脑设计不同的网页吗？」，解决方法当然有很多种，可以看看 <a href="http://www.csszengarden.com/" target="_blank" rel="noopener">css zen garden</a> 相信做过前端的都看过这个网站，一个神奇的网站。 最终的解决方案胜出者是<strong>响应式布局</strong>。 响应式布局被大家熟知的一个重要原因就是 twitter 开源了 bootstrap。Google 第一次完成了<strong>从先驱到烈士</strong>。 好了，上面介绍的是从从“自适应”到“响应式”，以下 Responsive design ＝ RWD，Adaptive design ＝ AWD。 先说共同点，两者都是因为越来越多的 移动设备（ mobile, tablet device ）加入到互联网中来而出现的为移动设备提供更好的体验的技术。用技术来使网页适应从小到大（现在到超大）的不同分辨率的屏幕。有人说，RWD 是 AWD 包含的一个子集。 RWD：Ethan Marcote 的文章是大家认为 RWD 的起源。他提出的 RWD 是采用 CSS 的 media query 技术，配合流体布局（ fluid grids ）和同样可以自适应的图片/视频等资源素材。以上所说，都是通过 HTML 和 CSS 就能完成的。一般来说，RWD 倾向于只改变元素的外观布局，而不大幅度改变内容。Jeffrey Zeldman 总结说，我们就把 RWD 定义为一切能用来为各种分辨率和设备性能优化<strong>视觉体验</strong>的技术吧。 AWD：Adaptive Design 是 Aaron Gustafson 的书的标题。他认为 AWD 在包括 RWD 的 CSS media query 技术以外，也要用 Javascript 来操作 HTML 来更适应移动设备的能力。AWD 有可能会针对移动端用户减去内容，减去功能。AWD 可以在服务器端就进行优化，把优化过的内容送到终端上。AWD 通常会牵扯到另外一个词 “progressive enhancement” 。 progressive enhancement（渐进增强）：从针对最低端的，最低分辨率的设备的设计做起，逐步逐步为更高阶的设备增加功能和效果的做法。（换个角度说，也就是相当于为移动设备减去功能） RWD 和 AWD 在断点（ break point ）的区别： RWD 采用流体＋断点，在断点之间，页面依然会随窗口大小自动缩放（通过 fluid grid ），直到遇到断点改变界面样式。相对的，AWD 只在针对几种分辨率（如1280，800，640，320px）进行优化，在断点之间的自动过渡比较少。 还有一种说法： RWD 一般来说需要在网页设计初期就开始（通常采用 mobile first 策略），所以旧的网站要做 RWD 很可能要完全重建。而 AWD 则采用保留现有桌面网站（ desktop version ）而对于更小的分辨率做针对性的优化（适应），这点对于很多老的网站来说很重要，因为重构成本太大。 另外，对于 mobile 用户的优化到底应该怎么做，有两方的说法各不相让。有人说，不应该因为用户使用的是 mobile device 就删去内容，限制他们的功能，应该平等对待。也有人说，正因为是移动设备，有其流量，性能，网速的局限性，用移动设备登录网站的目的也会更有针对性，要为 用户精简文字，精简最常用的功能放在首页，服务器端的优化才是真的针对 mobile 的优化。 最后： 在网上的各种说法里确实是有很多相互干扰相互矛盾的地方，但是其实技术都是摆在那里的。其实可以认为，AWD 在针对布局的优化中，可以采用 RWD 的策略，但是AWD 着力于更多其他的 JS 或者服务器上的优化，来强化移动端体验。 不用纠结于词汇，根据网站功能复杂度，预算和资源等，选择要使用的技术，从客户端的展现，到 JS，到服务器的优化等等。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +296,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -312,7 +394,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -443,7 +525,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -525,7 +607,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -696,110 +778,6 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/youku-real-video-address-resolution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/youku-real-video-address-resolution/" class="post-title-link" itemprop="url">优酷真实视频地址解析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-10-08 08:41:55" itemprop="dateCreated datePublished" datetime="2014-10-08T08:41:55+08:00">2014-10-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/" itemprop="url" rel="index">
-                    <span itemprop="name">JS</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>序：优酷之前更新了次算法(很久之前了，呵呵。。。)，故此很多博客的解析算法已经无法使用。很多大牛也已经更新了新的解析方法。我也在此写篇解析过程的文章。(本文使用语言为C#) 由于优酷视频地址时间限制，在你访问本篇文章时，下面所属链接有可能已经失效，望见谅。 例：<a href="http://v.youku.com/v_show/id_XNzk2NTI0MzMy.html" target="_blank" rel="noopener">http://v.youku.com/v_show/id_<strong>XNzk2NTI0MzMy</strong>.html</a></p>
-<h1 id="1-获取视频vid"><a href="#1-获取视频vid" class="headerlink" title="1:获取视频vid"></a>1:获取视频vid</h1><p>在视频url中标红部分。一个<a href="http://www.cnblogs.com/zhaojunjie/p/3344909.html" target="_blank" rel="noopener">正则表达式</a>即可获取。</p>
-<p>string getVid(string url)<br>{<br>    string strRegex = “(?&lt;=id_)(\\w+)”;<br>    Regex reg = new Regex(strRegex);<br>    Match match = reg.Match(url);<br>    return match.ToString();<br>}</p>
-<h1 id="2-获取视频元信息"><a href="#2-获取视频元信息" class="headerlink" title="2:获取视频元信息"></a>2:获取视频元信息</h1><p><a href="http://v.youku.com/player/getPlayList/VideoIDS/XNzk2NTI0MzMy/Pf/4/ctype/12/ev/1" target="_blank" rel="noopener">http://v.youku.com/player/getPlayList/VideoIDS/</a><a href="http://v.youku.com/player/getPlayList/VideoIDS/XNzk2NTI0MzMy/Pf/4/ctype/12/ev/1" target="_blank" rel="noopener"><strong>XNzk2NTI0MzMy</strong>/Pf/4/ctype/12/ev/1</a> 将前述vid嵌入到上面url中访问即可得到视频信息文件。由于视频信息过长不在此贴出全部内容。下面是部分重要内容的展示。(获取文件为json文件，可直接解析)</p>
-<p>{ “data”: [ {<br>            “ip”: 996949050,<br>            “ep”: “NQXRTAodIbrd1vnC8+JxB4emuRs41w7DWho=”,<br>            “segs”: {<br>                “hd2”: [<br>                    {<br>                        “no”: “0”,<br>                        “size”: “34602810”,<br>                        “seconds”: 205,<br>                        “k”: “248fe14b4c1b37302411f67a”,<br>                        “k2”: “1c8e113cecad924c5”<br>                    },<br>                    {<br>                        “no”: “1”,<br>                    },] }, } ],}</p>
-<p>上面显示的内容后面都会使用到。其中<strong>segs包含hd3,hd2,flv,mp4,3gp</strong>等各种格式，并且每种格式下均分为若干段。本次选用清晰度较高的hd2(视频格式为flv)</p>
-<h1 id="3-拼接m3u8地址"><a href="#3-拼接m3u8地址" class="headerlink" title="3:拼接m3u8地址"></a><strong>3:拼接m3u8地址</strong></h1><p><a href="http://pl.youku.com/playlist/m3u8?ctype=12&ep=%7b0%7d&ev=1&keyframe=1&oip=%7b1%7d&sid=%7b2%7d&token=%7b3%7d&type=%7b4%7d&vid=%7b5%7d" target="_blank" rel="noopener">http://pl.youku.com/playlist/m3u8?ctype=12&amp;ep={0}&amp;ev=1&amp;keyframe=1&amp;oip={1}&amp;sid={2}&amp;token={3}&amp;type={4}&amp;vid={5}</a> 以上共有6个参数，其中vid和oip已经得到，分别之前的vid和json文件中的ip字段，即(<strong>XNzk2NTI0MzMy</strong>和<strong>1991941296</strong>)，但是ep,sid,token需要重新计算(json文件中的ep值不能直接使用)。type即为之前选择的segs。</p>
-<h2 id="3-1计算ep-sid-token"><a href="#3-1计算ep-sid-token" class="headerlink" title="3.1计算ep,sid,token"></a>3.1计算ep,sid,token</h2><p>计算方法单纯的为数学计算，下面给出计算的函数。三个参数可一次性计算得到。其中涉及到Base64编码解码知识，<a href="http://www.cnblogs.com/zhaojunjie/p/3946427.html" target="_blank" rel="noopener">点击查看</a>。</p>
-<p>private static string myEncoder(string a, byte[] c, bool isToBase64)<br>        {<br>            string result = “”;<br>            List<Byte> bytesR = new List<byte>();<br>            int f = 0, h = 0, q = 0;<br>            int[] b = new int[256];<br>            for (int i = 0; i &lt; 256; i++)<br>                    b[i] = i;<br>            while (h &lt; 256)<br>            {<br>                f = (f + b[h] + a[h % a.Length]) % 256;<br>                int temp = b[h];<br>                b[h] = b[f];<br>                b[f] = temp;<br>                h++;<br>            }<br>            f = 0; h = 0; q = 0;<br>            while (q &lt; c.Length)<br>            {<br>                h = (h + 1) % 256;<br>                f = (f + b[h]) % 256;<br>                int temp = b[h];<br>                b[h] = b[f];<br>                b[f] = temp;<br>                byte[] bytes = new byte[] { (byte)(c[q] ^ b[(b[h] + b[f]) % 256]) };<br>                bytesR.Add(bytes[0]);<br>                result += System.Text.ASCIIEncoding.ASCII.GetString(bytes);<br>                q++;<br>            }<br>            if (isToBase64)<br>            {<br>                Byte[] byteR = bytesR.ToArray();<br>                result = Convert.ToBase64String(byteR);<br>            }<br>            return result;<br>        }<br>        public static void getEp(string vid, string ep, ref string pNew, ref string token, ref string sid)<br>        {<br>            string template1 = “becaf9be”;<br>            string template2 = “bf7e5f01”;<br>            byte[] bytes = Convert.FromBase64String(ep);<br>            ep = ystem.Text.ASCIIEncoding.ASCII.GetString(bytes);<br>            string temp = myEncoder(template1, bytes, false);<br>            string[] part = temp.Split(‘<em>‘);<br>            sid = part[0];<br>            token = part[1];<br>            string whole = string.Format(“{0}</em>{1}_{2}”, sid, vid, token);<br>            byte[] newbytes = System.Text.ASCIIEncoding.ASCII.GetBytes(whole);<br>            epNew = myEncoder(template2, newbytes, true);<br>        }</p>
-<p>计算得到ep,token,sid分别为cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH/7YbAMZuNaHQmjbTwg==, 3825, 241273717793612e7b085。注意，此时ep并不能直接拼接到url中，需要对此做一下url编码ToUrlEncode(ep)。最终ep为cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d</p>
-<h2 id="3-2视频格式及清晰度"><a href="#3-2视频格式及清晰度" class="headerlink" title="3.2视频格式及清晰度"></a>3.2视频格式及清晰度</h2><p>视频格式和选择的segs有密切关系。如本文选择的hd2，格式即为flv，下面是segs,视频格式和清晰度的对照。之前对此部分理解有些偏差，多谢<a href="http://home.cnblogs.com/u/xzpgzl/" target="_blank" rel="noopener">削着苹果走路</a>提醒。<a href="http://www.cnblogs.com/xzpgzl/" target="_blank" rel="noopener"></a></p>
-<p>“segs”,”视频格式”,”清晰度”<br>“hd3”, “flv”, “1080P”<br>“hd2”, “flv”, “超清”<br>“mp4”, “mp4”, “高清”<br>“flvhd”, “flv”, “高清”<br>“flv”, “flv”, “标清”<br>“3gphd”, “3gp”, “高清”</p>
-<h2 id="3-3拼接地址"><a href="#3-3拼接地址" class="headerlink" title="3.3拼接地址"></a>3.3拼接地址</h2><p>　　最后的m3u8地址为</p>
-<p><a href="http://pl.youku.com/playlist/m3u8?ctype=12&ep=cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d&ev=1&keyframe=1&oip=996949050&sid=241273717793612e7b085&token=3825&type=hd2&vid=XNzk2NTI0MzMy" target="_blank" rel="noopener">http://pl.youku.com/playlist/m3u8?ctype=12&amp;ep=cCaVGE6OUc8H4ircjj8bMiuwdH8KXJZ0vESH%2f7YbAMZuNaHQmjbTwg%3d%3d&amp;ev=1&amp;keyframe=1&amp;oip=996949050&amp;sid=241273717793612e7b085&amp;token=3825&amp;type=hd2&amp;vid=XNzk2NTI0MzMy</a></p>
-<h1 id="4-获取视频地址"><a href="#4-获取视频地址" class="headerlink" title="4:获取视频地址"></a>4:获取视频地址</h1><p>将上述m3u8文件下载后，其中内容即为真实地址，不过还需要稍微处理一下。部分内容如下：</p>
-<p>#EXTM3U<br>#EXT-X-TARGETDURATION:12<br>#EXT-X-VERSION:3<br>#EXTINF:6.006,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=0&amp;ts\_end=5.906&amp;ts\_seg\_no=0&amp;ts_keyframe=1</a><br>#EXTINF:5.464,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=5.906&amp;ts\_end=11.37&amp;ts\_seg\_no=1&amp;ts_keyframe=1</a><br>#EXTINF:5.505,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=11.37&amp;ts\_end=16.875&amp;ts\_seg\_no=2&amp;ts_keyframe=1</a><br>#EXTINF:9.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=16.875&amp;ts\_end=26.135&amp;ts\_seg\_no=3&amp;ts_keyframe=1</a><br>#EXTINF:11.136,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=26.135&amp;ts\_end=37.271&amp;ts\_seg\_no=4&amp;ts_keyframe=1</a><br>#EXTINF:8.258,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=37.271&amp;ts\_end=45.529&amp;ts\_seg\_no=5&amp;ts_keyframe=1</a><br>#EXTINF:9.843,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=45.529&amp;ts\_end=55.372&amp;ts\_seg\_no=6&amp;ts_keyframe=1</a><br>#EXTINF:10.26,<br><a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv?ts\_start=55.372&amp;ts\_end=65.632&amp;ts\_seg\_no=7&amp;ts_keyframe=1</a></p>
-<p>其中每条url只包含6s左右视频，但是可将url中参数部分去掉即可得到实际的长度。但是每条去掉后需合并一下相同的url，如上述列表可得到url片段 <a href="http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv" target="_blank" rel="noopener">http://59.108.137.14/65666E0ED34581E6B96293A18/0300010F005430BCBA49631468DEFEC61C5678-3A78-37BA-1971-21A0D4EEA0E7.flv</a> 将m3u8中所有的url片段全部下载即可大功告成。 <a href="http://storage.veitor.net/uploads/2014/10/QQ截图20141008164115.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/10/QQ%E6%88%AA%E5%9B%BE20141008164115.jpg" alt="QQ截图20141008164115"></a> 原文地址：<a href="http://www.cnblogs.com/zhaojunjie/p/4009192.html" target="_blank" rel="noopener">http://www.cnblogs.com/zhaojunjie/p/4009192.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/Mysql-transaction-and-isolation-level/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -831,7 +809,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -921,7 +899,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -929,20 +907,8 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
                   </a>
                 </span>
             </span>
@@ -1015,7 +981,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1023,13 +989,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
                     <span itemprop="name">经验分享</span>
                   </a>
                 </span>
@@ -1099,7 +1059,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1213,7 +1173,7 @@ background-size: 100px auto;
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1221,13 +1181,7 @@ background-size: 100px auto;
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
-                    <span itemprop="name">程序与生活</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
                     <span itemprop="name">经验分享</span>
                   </a>
                 </span>
@@ -1472,12 +1426,12 @@ background-size: 100px auto;
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-count">75</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

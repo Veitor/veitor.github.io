@@ -183,6 +183,86 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/account-linking-and-account-mapping-in-IDaaS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/account-linking-and-account-mapping-in-IDaaS/" class="post-title-link" itemprop="url">IDaaS中的帐户映射和帐户关联概念</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-22 09:58:55 / 修改时间：10:00:08" itemprop="dateCreated datePublished" datetime="2020-07-22T09:58:55+08:00">2020-07-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>关于IDaaS就不多说了，主要是理解一下IDaaS中，如何与应用系统进行帐户关系上的处理。目前了解有三种，但主要还是关注<strong>帐户映射</strong>(<code>Account Mapping</code>)和<strong>帐户关联</strong>（<code>Account Linking</code>）两种做法，还有一种好像是基于角色的帐户。</p>
+<h2 id="帐户映射-Account-Mapping"><a href="#帐户映射-Account-Mapping" class="headerlink" title="帐户映射(Account Mapping)"></a>帐户映射(Account Mapping)</h2><p>用户在IdP和SP处都拥有其帐户，IdP的帐户基于共有的属性来映射到SP中的帐户。这是<code>一对一</code>的帐户关系，是基于类似于email、DN（LDAP中的）、uid等这些在SP和IdP之间共有的属性。</p>
+<h2 id="帐户关联-Account-Linking"><a href="#帐户关联-Account-Linking" class="headerlink" title="帐户关联(Account Linking)"></a>帐户关联(Account Linking)</h2><p>帐户关联是帐户映射的一种扩展形式，用户同样在多方拥有帐户，但是<code>没有公用的属性</code>来进行映射。这也是<code>一对一</code>的关系，与帐户映射类似。示例：用户在IdP的属性employeeNumber（或者其他属性）被连接到了SP中的不同属性（如uid或email）。</p>
+<blockquote>
+<p>简单来说，帐户映射是两个系统之间使用共同知晓的，也是最常见关于用户的唯一标识，如email、手机号等。而帐户关联，是两个系统内部定义的对帐户的唯一标识，比如IdP复杂的使用了A+B+C等属性来确定帐户的唯一性，而SP仅使用了一个ID属性，那么两个系统之间的属性做关联就是帐户关联。</p>
+</blockquote>
+<h2 id="阿里云对帐户映射和帐户关联的定义"><a href="#阿里云对帐户映射和帐户关联的定义" class="headerlink" title="阿里云对帐户映射和帐户关联的定义"></a>阿里云对帐户映射和帐户关联的定义</h2><p>虽然阿里云没有明确篇幅介绍这两个概念，但从其他文档中可以得出他们的定义。</p>
+<ul>
+<li>帐户关联：传统的做法，需要接入应用中本身已存在用户的帐户，然后在IDaaS中把SP帐户与IdP帐户进行关联。这里肯定是采用两者帐户唯一标识进行的。</li>
+<li>帐户映射：需要应用中本身没有用户的帐户，因此将IdP帐户唯一标识给SP应用使用。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/syn-queue-and-accept-queue/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +294,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -297,7 +377,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -388,7 +468,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -471,7 +551,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -554,7 +634,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -640,7 +720,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -726,7 +806,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -812,7 +892,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -867,95 +947,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-services/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/DDD-in-php-services/" class="post-title-link" itemprop="url">[译]服务 - 《Domain-Driven Design in PHP》第5章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-25 09:58:39" itemprop="dateCreated datePublished" datetime="2020-05-25T09:58:39+08:00">2020-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
-</blockquote>
-<p>你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Software:》书中说的话：</p>
-<blockquote>
-<p>当领域中的一个重要过程或转化不是实体或者值对象的自然职责时，增加一个操作作为一个单独的接口，此时该接口被声明为Service领域服务。根据模型的通用语言定义接口，并确保名称是通用语言中的一部分，是服务成为无状态。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/DDD-in-php-services/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-entities/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -987,7 +978,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-02 15:35:26" itemprop="dateModified" datetime="2020-07-02T15:35:26+08:00">2020-07-02</time>
+                <time title="修改时间：2020-07-22 10:00:08" itemprop="dateModified" datetime="2020-07-22T10:00:08+08:00">2020-07-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1093,12 +1084,12 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">76</span>
+        <span class="site-state-item-count">75</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
