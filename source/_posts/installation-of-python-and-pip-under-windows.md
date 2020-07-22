@@ -6,7 +6,7 @@ tags:
 url: 389.html
 id: 389
 categories:
-  - 编程语言
+  - python
 date: 2014-11-18 08:11:43
 ---
 

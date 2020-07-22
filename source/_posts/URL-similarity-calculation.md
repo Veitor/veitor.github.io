@@ -5,7 +5,6 @@ tags:
 url: 138.html
 id: 138
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-07-17 00:59:35
 ---

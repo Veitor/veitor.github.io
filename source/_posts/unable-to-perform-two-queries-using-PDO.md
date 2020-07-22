@@ -6,9 +6,7 @@ tags:
 url: 445.html
 id: 445
 categories:
-  - Mysql
   - PHP
-  - 编程语言
 date: 2014-12-16 13:38:41
 ---
 

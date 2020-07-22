@@ -6,7 +6,6 @@ tags:
 url: 447.html
 id: 447
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-12-19 07:26:45
 ---

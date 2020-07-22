@@ -5,7 +5,6 @@ tags:
 url: 452.html
 id: 452
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-12-22 08:34:42
 ---

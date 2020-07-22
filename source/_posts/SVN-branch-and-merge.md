@@ -5,7 +5,6 @@ tags:
 url: 273.html
 id: 273
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-09-05 05:30:52
 ---

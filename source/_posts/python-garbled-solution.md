@@ -7,9 +7,6 @@ url: 459.html
 id: 459
 categories:
   - Python
-  - 程序与生活
-  - 经验分享
-  - 编程语言
 date: 2015-01-06 01:46:19
 ---
 

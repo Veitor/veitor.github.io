@@ -3,7 +3,6 @@ title: 使用composer安装yii2出现"could not parse version.."的问题
 url: 528.html
 id: 528
 categories:
-  - 程序与生活
   - 经验分享
 date: 2015-08-14 00:53:42
 tags:

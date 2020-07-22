@@ -6,10 +6,7 @@ tags:
 url: 470.html
 id: 470
 categories:
-  - PHP
-  - 程序与生活
   - 经验分享
-  - 编程语言
 date: 2015-01-07 08:45:13
 ---
 

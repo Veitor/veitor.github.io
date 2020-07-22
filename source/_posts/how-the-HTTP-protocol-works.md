@@ -6,8 +6,7 @@ tags:
 url: 466.html
 id: 466
 categories:
-  - PHP
-  - 编程语言
+  - 计算机系统
 date: 2015-01-06 14:44:24
 ---
 

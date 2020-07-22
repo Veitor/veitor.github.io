@@ -7,7 +7,6 @@ tags:
 url: 482.html
 id: 482
 categories:
-  - 程序与生活
   - 经验分享
 date: 2015-02-01 14:36:04
 ---

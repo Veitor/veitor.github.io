@@ -6,7 +6,6 @@ tags:
 url: 256.html
 id: 256
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-08-24 14:03:34
 ---

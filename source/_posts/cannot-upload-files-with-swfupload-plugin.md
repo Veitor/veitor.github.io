@@ -8,8 +8,6 @@ url: 476.html
 id: 476
 categories:
   - JS
-  - PHP
-  - 编程语言
 date: 2015-01-17 08:59:29
 ---
 

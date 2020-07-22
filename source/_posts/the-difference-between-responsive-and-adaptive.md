@@ -8,7 +8,6 @@ tags:
 url: 377.html
 id: 377
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-11-06 08:14:09
 ---

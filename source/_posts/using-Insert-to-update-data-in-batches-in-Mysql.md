@@ -5,9 +5,7 @@ tags:
 url: 275.html
 id: 275
 categories:
-  - PHP
-  - 程序与生活
-  - 经验分享
+  - mysql
 date: 2014-09-09 09:00:37
 ---
 

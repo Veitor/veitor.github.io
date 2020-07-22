@@ -6,7 +6,6 @@ tags:
 url: 409.html
 id: 409
 categories:
-  - 程序与生活
   - 经验分享
 date: 2014-11-28 04:35:41
 ---

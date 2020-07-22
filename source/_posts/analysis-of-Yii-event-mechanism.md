@@ -8,7 +8,6 @@ url: 508.html
 id: 508
 categories:
   - PHP
-  - 编程语言
 date: 2015-02-26 13:34:26
 ---
 

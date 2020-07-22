@@ -6,7 +6,6 @@ tags:
 url: 479.html
 id: 479
 categories:
-  - 程序与生活
   - 经验分享
 date: 2015-01-22 06:57:54
 ---

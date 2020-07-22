@@ -5,7 +5,6 @@ tags:
 url: 511.html
 id: 511
 categories:
-  - 程序与生活
   - 经验分享
 date: 2015-02-28 01:24:19
 ---
