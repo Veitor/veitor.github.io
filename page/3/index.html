@@ -183,6 +183,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-architectural-styles/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/DDD-in-php-architectural-styles/" class="post-title-link" itemprop="url">[译]架构风格 - 《Domain-Driven Design in PHP》第2章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-04-19 13:27:00" itemprop="dateCreated datePublished" datetime="2018-04-19T13:27:00+08:00">2018-04-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>为了能够构建一个复杂的应用程序，其中一个关键点就是需要有一个适合该程序的架构设计。领域驱动设计的一个优势就是它不受任何架构风格的约束。相反，我们可以自由的去为核心领域内的每一个限界上下文选择最合适的架构，为每一个领域问题提供多种架构选择。</p>
+<p>例如，订单处理系统可以使用事件溯源(Event Sourcing)去追踪所有不同订单的操作；一个产品目录系统能够使用CQRS去将产品详情展示给不同客户端；一个内容管理系统能使用六边形架构(Hexagonal Architecture)来展示如博客、静态页等需求。</p>
+<p>本章将介绍PHP相关的每种架构风格，从传统PHP代码演变为复杂的架构。请注意虽然还有很多其他现有的架构如Data Fabric和SOA，我们发现他们其中一些从PHP角度来介绍太过于复杂。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/DDD-in-php-architectural-styles/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-getting-started-with-domain-driven-design/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +302,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -300,7 +388,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -383,7 +471,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -473,7 +561,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -562,7 +650,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -646,7 +734,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -722,7 +810,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -800,7 +888,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -876,7 +964,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
+                <time title="修改时间：2020-07-28 17:33:51" itemprop="dateModified" datetime="2020-07-28T17:33:51+08:00">2020-07-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -919,146 +1007,6 @@
 <h2 id="4、触发事件"><a href="#4、触发事件" class="headerlink" title="4、触发事件"></a>4、触发事件</h2><p>这个比较简单，在你需要执行这个事件的地方调用第1步定义的事件，如$this-&gt;onEcho($event)，函数执行里面的一句话$this-&gt;raiseEvent(‘onEcho’.$event)，raiseEvent这个方法代码如下：</p>
 <p>public function raiseEvent($name,$event)<br>{<br>    $name=strtolower($name);<br>    if(isset($this-&gt;_e[$name]))<br>    {<br>        foreach($this-&gt;_e[$name] as $handler)<br>        {<br>            if(is_string($handler))<br>                call_user_func($handler,$event);<br>            elseif(is_callable($handler,true))<br>            {<br>                if(is_array($handler))<br>                {<br>                    // an array: 0 - object, 1 - method name<br>                    list($object,$method)=$handler;<br>                    if(is_string($object))    // static method call<br>                        call_user_func($handler,$event);<br>                    elseif(method_exists($object,$method))<br>                        $object-&gt;$method($event);<br>                    else<br>                        throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is attached with an invalid handler “{handler}”.’,<br>                            array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name, ‘{handler}’=&gt;$handler[1])));<br>                }<br>                else // PHP 5.3: anonymous function<br>                    call_user_func($handler,$event);<br>            }<br>            else<br>                throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is attached with an invalid handler “{handler}”.’,<br>                    array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name, ‘{handler}’=&gt;gettype($handler))));<br>            // stop further handling if param.handled is set true<br>            if(($event instanceof CEvent) &amp;&amp; $event-&gt;handled)<br>                return;<br>        }<br>    }<br>    elseif(YII_DEBUG &amp;&amp; !$this-&gt;hasEvent($name))<br>        throw new CException(Yii::t(‘yii’,’Event “{class}.{event}” is not defined.’,<br>            array(‘{class}’=&gt;get_class($this), ‘{event}’=&gt;$name)));<br>}</p>
 <p>这个方法会获得$_e[‘onecho’]值，那么这个值是数组形式对吧，而且数组的每个元素都是一个回调函数，那么用foreach对其进行遍历（代码第6行），循环部分的代码最终都是调用了call_user_func，把回调函数和$event传入进去，那么回调函数就被执行了，并且该回调函数得到的参数是触发事件时$this-&gt;onEcho($event)的这个$event参数。所以我在第2步中说道，这个$event参数并不一定要CEvent的实例或其子类，因为要看你回调函数需要什么参数。这么一看，通过foreach后，注册到这个事件onEcho中的所有回调函数都会被执行一遍。 那么就这样完成了整个事件了，还比较容易理解吧？有任何疑问可以留言，一起探讨</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/PHP-name-case-sensitivity-rules/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/PHP-name-case-sensitivity-rules/" class="post-title-link" itemprop="url">PHP命名大小写敏感规则</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2015-02-25 14:44:24" itemprop="dateCreated datePublished" datetime="2015-02-25T14:44:24+08:00">2015-02-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-28 16:02:59" itemprop="dateModified" datetime="2020-07-28T16:02:59+08:00">2020-07-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>一直觉得PHP中各种大小写规则理不清，就连工作多年的老手们也不一定能对PHP大小写敏感问题足够了解。在PHP中，大小写敏感问题的处理比较乱，大家一定要注意。即使某些地方大小写不敏感，但在编程过程中能始终坚持“大小写敏感”是最好不过的。下面整理了一些大小写问题注意点：</p>
-<blockquote>
-<p><strong>大小写敏感</strong></p>
-</blockquote>
-<p><strong>1. 变量名区分大小写</strong> 所有变量均区分大小写，包括普通变量以 及$_GET,$_POST,$_REQUEST,$_COOKIE,$_SESSION,$GLOBALS,$_SERVER,$_FILES,$_ENV 等；</p>
-<?php
-$abc = 'abc';
-echo $abc;    //输出'abc'
-echo $aBc;    //无输出
-echo $ABC;    //无输出
-?>
-
-<p><strong>2、常量名区分大小写</strong> 使用define定义的常量是区分大小写的。</p>
-<?php
-define('BLOGGER','Veitor');
-echo BLOGGER;    //输出'Veitor'
-echo BLOgger;    //报NOTICE提示，并输出'BLOgger'
-echo blogger;    //报NOTICE提示，并输出'blogger'
-?>
-
-<p><strong>3、数组索引（键名）区分大小写</strong></p>
-<?php
-$arr = array('one'=>'first');
-echo $arr\['one'\];    //输出'first'
-echo $arr\['One'\];    //无输出并报错
-echo $Arr\['one'\];    //上面讲过，变量名区分大小写，所以无输出并报错
-?>
-
-
-
-<blockquote>
-<p><strong>大小写不敏感</strong></p>
-</blockquote>
-<p><strong>1. 函数名、方法名、类名不区分大小写</strong> 虽然这些不区分大小写，但坚持“大小写敏感”原则，建议还是使用与定义时相同大小写的名字</p>
-<?php
-class Test
-{
-    static public function Ceshi()
-    {
-        echo '123';
-    }
-    public funcion Dxx()
-    {
-        echo '321';
-    }
-}
-$obj = new Test;
-$obj->Dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
-$obj->dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
-$obj = new test;
-$obj->Dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
-$obj->dxx();    //成功实例化Test类，并调用Dxx方法输出'321'
-Test::Ceshi();    //输出'123'
-test::Ceshi();    //输出'123'
-Test::ceshi();    //输出'123'
-test::ceshi();    //输出'123'
-?>
-
-<p><strong>2、魔术常量不区分大小写</strong> 一些魔术常量包括：__LINE__、__FILE__、__DIR__、__FUNCTION__、__CLASS__、__METHOD__、 __NAMESPACE__等都不区分大小写。</p>
-<?php
-echo \_\_LINE\_\_;    //输出2
-echo \_\_line\_\_;    //输出3
-?>
-
-<p>** 3、 NULL、TRUE、FALSE不区分大小写** 这个知道的人应该比较多就不举例了。 <strong>4、强制类型转换不区分大小写</strong> 如这些 (int)，(integer) – 转换成整型 (bool)，(boolean) – 转换成布尔型 (float)，(double)，(real) – 转换成浮点型 (string) – 转换成字符串 (array) – 转换成数组 (object) – 转换成对象 一般我们都小写，这个问题不大。   <strong>总的来说，容易搞不明白的就是变量、常量、类名、方法名和函数名，把这些记住对自己会有帮助的。</strong></p>
 
       
     </div>
@@ -1123,7 +1071,7 @@ echo \_\_line\_\_;    //输出3
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-count">92</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
