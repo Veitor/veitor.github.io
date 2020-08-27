@@ -183,6 +183,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/usage-of-SVN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/usage-of-SVN/" class="post-title-link" itemprop="url">SVN使用方法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-14 07:05:58" itemprop="dateCreated datePublished" datetime="2014-07-14T07:05:58+08:00">2014-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">程序与生活</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>问题一：Revert changes from this revision 跟Revert to this</strong> 譬如有个文件，有十个版本，假定版本号是1，2，3，4，5，6，7，8，9，10。 (1)Revert to this revision： 如果是在版本6这里点击“Revert to this revision”，表示7～10的修改全部作废，历史倒退到了版本6那个年代。 (2)Revert changes from this revision：如果是在版本6这里点击“Revert changes from this revision”，表示版本6这个历史事件被抹杀了，只剩下除版本6外的9个历史事件了。 如果俺是同时选择了6，7，8三个历史时期并点击“Revert changes from this revision”，表示抹杀6~8这仨历史时期。 同理，如果同时选择7～10，然后点击“Revert changes from this revision”，则效果跟在版本6这里点击“Revert to this revision”是一样的。 TortoiseSVN是windows下其中一个非常优秀的SVN客户端工具。通过使用它，我们可以可视化的管理我们的版本库。不过由于它只是一个客户端，所以它不能对版本库进行权限管理。 TortoiseSVN不是一个独立的窗口程序，而是集成在windows右键菜单中，使用起来比较方便。 01、SVN Checkout(SVN取出) 点击SVN Checkout，弹出检出提示框，在URL of repository输入框中输入服务器仓库地址，在Checkout directory输入框中输入本地工作拷贝的路径，点击确定，即可检出服务器上的配置库。 02、SVN Update(SVN更新) 如果配置库在本地已有工作拷贝，则取得最新版本只是执行SVN Update即可，点击SVN Update，系统弹出更新提示框，点击确定，则把服务器是最新版本更新下来 03、Import（导入） 选择要提交到服务器的目录，右键选择TortoiseSVN—-Import，系统弹出导入提示框，在URL of repository输入框中输入服务器仓库地址，在Import Message输入框中输入导入日志信息，点击确定，则文件导入到服务器仓库中。 04、Add(加入) 如果有多个文件及文件夹要提交到服务器，我们可以先把这些要提交的文件加入到提交列表中，要执行提交操作，一次性把所有文件提交，如图，可以选择要提交的文件，然后点击执行提交（SVN Commit）,即可把所有文件一次性提交到服务器上 05、Resolving Conflicts(解决冲突) 有时你从档案库更新文件会有冲突。冲突产生于两人都修改文件的某一部分。解决冲突只能靠人而不是机器。当产生冲突时，你应该打开冲突的文件，查找以&lt;&lt;&lt;&lt;&lt;&lt;&lt;开始的行。冲突部分被标记： &lt;&lt;&lt;&lt;&lt;&lt;&lt; filename your changes ======= code merged from repository &gt;&gt;&gt;&gt;&gt;&gt;&gt; revision Subversion为每个冲突文件产生三个附加文件： filename.ext.mine 更新前的本地文件。 filename.ext.rOLDREV 你作改动的基础版本。 filename.ext.rNEWREV 更新时从档案库得到的最新版本。 使 用快捷菜单的编辑冲突Edit Conflict命令来解决冲突。然后从快捷菜单中执行已解决Resolved命令，将改动送交到档案库。请注意，解决命令并不解决冲突，而仅仅是删除 filename.ext.mineandfilename.ext.r<em>文件并允许你送交。 06、Check for Modifications（检查更新） 点击Check for Modifications,系统列表所以待更新的文件及文件夹的状态. 07、Revision Graph(版本分支图) 查看文件的分支,版本结构,可以点击Revision Graph,系统以图形化形式显示版本分支. 08、Rename(改名) SVN支持文件改名,点击Rename,弹出文件名称输入框,输入新的文件名称,点击确定,再把修改提交,即可完成文件改名 09、Delete(删除) SVN支持文件删除,而且操作简单,方便,选择要删除的文件,点击Delete,再把删除操作提交到服务器 10、Moving(移动) 选择待移动的文件和文件夹；按住右键拖动right-drag文件（夹）到跟踪拷贝内的新地方；松开左键；在弹出菜单中选择move files in Subversion to here 11、Revert(还原) 还原操作,如刚才对文件做了删除操作,现在把它还原回来,点击删除后,再点击提交,会出现如上的提示框,点击删除后,再点击Revert,即已撤销删除操作,如果这时候点击提交,则系统弹出提示框:没有文件被修改或增加,不能提交 12、Branch/Tag(分支/标记) 当需要创建分支，点击Branch/Tag，在弹出的提示框中，输入分支文件名，输入日志信息，点击确定，分支创建成功，然后可查看文件的版本分支情况 13、Switch(切换) 文件创建分支后，你可以选择在主干工作，还是在分支工作，这时候你可以通过Switch来切换。 14、Merge(合并) 主干和分支的版本进行合并，在源和目的各输入文件的路径，版本号，点击确定。系统即对文件进行合并，如果存在冲突，请参考冲突解决。 15、Export(导出) 把整个工作拷贝导出到本地目录下,导出的文件将不带svn文件标志,文件及文件夹没有绿色的”√”符号标志。 16、Relocate(重新定位) 当服务器上的文件库目录已经改变，我们可以把工作拷贝重新定位，在To URL输入框中输入新的地址 17、Add to Ignore List(添加到忽略列表) 大多数项目会有一些文件（夹）不需要版本控制，如编译产生的</em>.obj, *.lst,等。每次送交，TortoiseSVN提示那些文件不需要控制，挺烦的。这时候可以把这些文件加入忽略列表。 18、SVN其它相关功能 客户端修改用户密码: 打开浏览器,在地址栏内输入<a href="http://192.168.1.250/cgi-bin/ChangePasswd" target="_blank" rel="noopener">http://192.168.1.250/cgi-bin/ChangePasswd</a>,启动客户端修改用户密码的界面,输入正确的用户名,旧密码,新密码(注意密码的位数应该不小于6,尽量使用安全的密码),点击修改即可. 19、SVN Commit（版本提交） 把自己工作拷贝所做的修改提交到版本库中，这样别人在获取最新版本(Update)的时候就可以看到你的修改了。 20、Show log（显示日志） 显示当前文件(夹)的所有修改历史。SVN支持文件以及文件夹独立的版本追溯。 21、Repo-Browser（查看当前版本库） 查看当前版本库，这是TortoiseSVN查看版本库的入口，通过这个菜单项，我们就可以进入配置库的资源管理器，然后就可以对配置库的文件夹进行各种管理，相当于我们打开我的电脑进行文件管理一样。 22、Revision Graph（版本图形） 查看当前项目或文件的修订历史图示。如果项目比较大型的话，一般会建多个分支，并且多个里程碑（稳定版本发布），通过这里，我们就可以看到项目的全貌。 23、Resolved（解决冲突） 如果当前工作拷贝和版本库上的有冲突，不能自动合并到一起，那么当你提交修改的时 候，tortoisesvn就会提示你存在冲突，这时候你就可以通过这个菜单项来解决冲突。冲突的解决有两种，一种是保留某一份拷贝，例如使用配置库覆盖 当前工作拷贝，或者反过来。还有一种是手动解决冲突，对于文本文件，可以使用tortoiseSVN自带的工具，它会列出存在冲突的地方，然后你就可以和 提交者讨论怎么解决这个冲突。同时它也对Word有很好的支持 24、Update to Revision(更新至版本) 从版本库中获取某一个历史版本。这个功能主要是方便查看历史版本用，而 不是回滚版本。注意：获取下来之后，对这个文件不建议进行任何操作。如果你做了修改，那么当你提交的时候SVN会提示你，当前版本已失效（即不是最新版 本），无法提交，需要先update一下。这样你所做的修改也就白费了。 25、Revert（回滚） 如果你对工作拷贝做了一些修改，但是你又不想要了，那么你可以使用这个选项把所做的修改撤销 26、Cleanup（清除状态） 如果当前工作拷贝有任何问题的话，可以使用这个选项进行修正。例如，有些文件原来是版本控制的， 但是你没有通过tortoiseSVN就直接删除了，但是tortoiseSVN还是保留着原来的信息（每个文件夹下都有一个.svn的隐藏文件夹，存放 着当前文件夹下所有文件夹的版本信息）所以这就会产生一些冲突。可以使用cleanup来清理一下。 27、GetLock/ReleaseLock（加锁/解锁） 如果你不想别人修改某个文件的话，那么你就可以把这个文件进行加锁，这样可以保证只有你对这个文件有修改权。除非你释放了锁，否则别人不可能提交任何修改到配置库中 28、Branch/tag（分支/标签） Branch是分支的意思。例如当在设计一个东西的时候，不同的人有不同的实现，但是没有经过实践检验，谁也不想直接覆盖掉其他人的设计，所以可以引出不同的分支。将来如果需要，可以将这些分支进行合并。 tag是打标签的意思。通常当项目开发到一定程度，已经可以稳定运行的时候，可以对其打上一个标签，作为稳定版。将来可以方便的找到某个特定的版本（当然我们也可以使用版本号来查找，但是数字毕竟不方便） SVN对于分支和标签都是采用类似Linux下硬链接的方式（同一个文件可以存在两个地方，删除一个不会影响另一个，所做修改会影响另一个），来管理文件的，而不是简单的复制一份文件的拷贝，所以不会有浪费存储空间的问题存在。 29、Export（导出） 这个功能是方便我们部署用。当我们需要发布一个稳定版本时，就可以使用这个功能将整个工程导出到某个文件夹，新的文件夹将不会包含任何版本信息了。 30、Relocate（版本库转移） 当我们版本库发生转移的时候就需要用到这个功能了。例如我原先的版本库是建在U盘上的，现在转移到（复制整个配置库文件夹）开发服务器上，使用https代替文件系统的访问。因此就需要将原来的工作拷贝的目标版本库重新定位到开发服务器上。 31、create patch（创建补丁） 创建补丁。如果管理员不想让任何人都随便提交修改，而是都要经过审核才能做出修改，那么其他人就可以通过创建补丁的方式，把修改信息（补丁文件）发送给管理员，管理员审核通过之后就可以使用apply patch提交这次修改了。 32、diff (比较修改部分) 如果你修改了一个文件，又不确定改了那些地方，这时你可以在相应文件上点右键，选择diff查看，与服务器上最新版的差异</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/problem-of-link-pictures-under-IE678/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +290,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -290,7 +366,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -366,7 +442,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -442,7 +518,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -544,7 +620,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -730,7 +806,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -806,7 +882,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -888,7 +964,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -966,7 +1042,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1062,101 +1138,6 @@ $subject->setState(5);//被观察者修改状态。
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/crypt-encryption-functions-in-PHP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/crypt-encryption-functions-in-PHP/" class="post-title-link" itemprop="url">了解PHP中crypt加密函数</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-05-10 08:33:05" itemprop="dateCreated datePublished" datetime="2014-05-10T08:33:05+08:00">2014-05-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。 crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT_STD_DES 、CRYPT_EXT_DES、CRYPT_MD5、CRYPT_BLOWFISH、CRYPT_SHA256、CRYPT_SHA512。这些常量不是1就是0，也意味着其所对应的算法是否可用。 我们可以看一下下面代码的输出结果：</p>
-<p>if (CRYPT_STD_DES == 1) {<br>    echo ‘Standard DES: ‘ . crypt(‘rasmuslerdorf’, ‘rl’) . “<br>“;<br>}<br>if (CRYPT_EXT_DES == 1) {<br>    echo ‘Extended DES: ‘ . crypt(‘rasmuslerdorf’, ‘_J9..rasm’) . “<br>“;<br>}<br>if (CRYPT_MD5 == 1) {<br>    echo ‘MD5:          ‘ . crypt(‘rasmuslerdorf’, ‘$1$rasmusle$’) . “<br>“;<br>}<br>if (CRYPT_BLOWFISH == 1) {<br>    echo ‘Blowfish:     ‘ . crypt(‘rasmuslerdorf’, ‘$2a$07$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA256 == 1) {<br>    echo ‘SHA-256:      ‘ . crypt(‘rasmuslerdorf’, ‘$5$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}<br>if (CRYPT_SHA512 == 1) {<br>    echo ‘SHA-512:      ‘ . crypt(‘rasmuslerdorf’, ‘$6$rounds=5000$usesomesillystringforsalt$’) . “<br>“;<br>}</p>
-<p>输出结果：</p>
-<p>Standard DES: rl.3StKT.4T8M<br>Extended DES: _J9..rasmBYk8r9AiWNc<br>MD5: $1$rasmusle$rISCgZzpwk3UhDidwXvin0<br>Blowfish: $2a$07$usesomesillystringfore2uDLvp1Ii2e./U9C8sBjqp8I90dH6hi<br>SHA-256: $5$rounds=5000$usesomesillystri$KqJWpanXZHKq2BOB43TSaYhEWsQ1Lr5QNyPCDH/Tp.6<br>SHA-512: $6$rounds=5000$usesomesillystri$D4IrlXatmP7rx3P3InaxBeoomnAihCKRVQP22JZ6EY47Wc6BkroIuUUBOov1i.S5KPgErtP/EN5mcO.ChWQW21</p>
-<p>第一个结果是基于标准 DES 算法的散列，使用 “./0-9A-Za-z” 字符中的两个字符作为盐值，本例中使用了”rl”，你可以试一下添加更多字符如”rlsdfs”，输出结果还是不变的。手册中说，如果不提供salt，默认使用该算法，但我试过之后发现是使用的下面md5。 第二个结果是扩展的基于 DES 算法的散列。其盐值为 9 个字符的字符串，由 1 个下划线后面跟着 4 字节循环次数和 4 字节盐值组成。它们被编码成可打印字符，每个字符 6 位，有效位最少的优先。0 到 63 被编码为 “./0-9A-Za-z”。 第三个结果就是使用了md5后的散列，使用一个以 $1$ 开始的 12 字符的字符串盐值。 第四个Blowfish 算法使用如下盐值：“$2a$”，一个两位 cost 参数，“$” 以及 64 位由 “./0-9A-Za-z” 中的字符组合而成的字符串。在盐值中使用此范围之外的字符将导致 crypt() 返回一个空字符串。两位 cost 参数是循环次数以 2 为底的对数，它的范围是 04-31，超出这个范围将导致 crypt() 失败。 第五个结果是 SHA-256 算法，使用一个以 $5$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。 第六个是 SHA-512 算法，使用一个以 $6$ 开头的 16 字符字符串盐值进行散列。如果盐值字符串以 “rounds=<N>$” 开头，N 的数字值将被用来指定散列循环的执行次数，这点很像 Blowfish 算法的 cost 参数。默认的循环次数是 5000，最小是 1000，最大是 999,999,999。超出这个范围的 N 将会被转换为最接近的值。</p>
-<hr>
-<p>大致的了解了一下crypt几种散列类型，但最终如何应用？ 使用crypt加密就是为了即使加密列表落入他人手中，也无法获得其明文，因为该加密是不可逆的。 单纯的使用crypt($input_pwd)会生成不同的随机值。（本人在win系统和centos上获得的都是基于md5的散列值，即$1$开头的随机值） 使用crypt加密方式有很多，你或许可以使用：</p>
-<?php
-$pwd = 'veitor';        //注册密码明文
-crypt($pwd);
-?php
-
-将注册密码明文用crypt随机生成的散列值存入数据库。 验证登陆时：
-
-<?php
-$input_pwd = 'veitor';              //表单输入密码明文
-crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗文
-?>
-
-<p>你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input_pwd, sub_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1206,7 +1187,7 @@ crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-count">93</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

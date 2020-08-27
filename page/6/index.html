@@ -183,6 +183,94 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/usage-of-where-1-0-in-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/usage-of-where-1-0-in-sql/" class="post-title-link" itemprop="url">sql中where 1=1和 0=1 的作用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-11-10 02:36:09" itemprop="dateCreated datePublished" datetime="2014-11-10T02:36:09+08:00">2014-11-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">Mysql</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>刚在写sql的时候思考了一下在不确定条件因素时的情况，之前看到别人使用过where 1=1这个条件， 这个条件始终为True，后来了解到在不定数量查询条件情况下，1=1可以很方便的规范语句。</p>
+<h2 id="一、不用where-1-1-在多条件查询中的困扰"><a href="#一、不用where-1-1-在多条件查询中的困扰" class="headerlink" title="一、不用where  1=1  在多条件查询中的困扰"></a>一、不用where  1=1  在多条件查询中的困扰</h2><p>　　举个例子，如果您做查询页面，并且，可查询的选项有多个，同时，还让用户自行选择并输入查询关键词，那么，按平时的查询语句的动态构造，代码大体如下：</p>
+<p>$sql=”select * from table where”；<br>if(!empty($age))<br>{<br>    $sql .= ‘age=’.$age’；<br>}<br>if(!empty($address))<br>{<br>　　$sql. = ‘and address=’.$address;<br>}</p>
+<p>如果上述的两个if判断语句，均为true，即用户都输入了查询词，那么，最终的$sql动态构造语句变为： $sql= ‘select * from table where age=20 and address=”常州”‘; 可以看得出来，这是一条完整的正确的SQL查询语句，能够正确的被执行，并根据数据库是否存在记录，返回数据。 ②种假设 如果上述的两个if判断语句不成立，那么，最终的$sql动态构造语句变为： $sql  = ‘select * from table where’; 现在，我们来看一下这条语句，由于where关键词后面需要使用条件，但是这条语句根本就不存在条件，所以，该语句就是一条错误的语句，肯定不能被执行，不仅报错，同时还不会查询到任何数据。 上述的两种假设，代表了现实的应用，说明，语句的构造存在问题，不足以应付灵活多变的查询条件。</p>
+<h2 id="二、使用-where-1-1-的好处"><a href="#二、使用-where-1-1-的好处" class="headerlink" title="二、使用 where  1=1  的好处"></a>二、使用 where  1=1  的好处</h2><p>假如我们将上述的语句改为：</p>
+<p>$sql=”select * from table where 1=1”；<br>if(!empty($age))<br>{<br>    $sql .= ‘ and age=’.$age’；<br>}<br>if(!empty($address))<br>{<br>　　$sql. = ‘and address=’.$address;<br>}</p>
+<p>①种假设 如果两个if都成立，那么，语句变为： $sql = ‘select * from table where 1=1 and age=12 and address=”常州’”，很明显，该语句是一条正确的语句，能够正确执行，如果数据库有记录，肯定会被查询到。 ②种假设 如果两个if都不成立，那么，语句变为： $sql = ‘select * from table where 1=1’，现在，我们来看这条语句，由于where 1=1 是为true的语句，因此，该条语句语法正确，能够被正确执行，它的作用相当于：$sql = ‘select * from table’，即返回表中所有数据。 言下之意就是：如果用户在多条件查询页面中，不选择任何字段、不输入任何关键词，那么，必将返回表中所有数据；如果用户在页面中，选择了部分字段并且输入了部分查询关键词，那么，就按用户设置的条件进行查询。 说到这里，不知道您是否已明白，其实，where 1=1的应用，不是什么高级的应用，也不是所谓的智能化的构造，仅仅只是为了满足多条件查询页面中不确定的各种因素而采用的一种构造一条正确能运行的动态SQL语句的一种方法。 where 1=0; 这个条件始终为false，结果不会返回任何数据，只有表结构，可用于快速建表 “select * from table where 1=0”; 该select语句主要用于读取表的结构而不考虑表中的数据，这样节省了内存，因为可以不用保存结果集。 create table newtable as select * from oldtable where 1=0;  创建一个新表，而新表的结构与查询的表的结构是一样的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-relation-mong-ASCII-unicode-UTF8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +302,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,7 +382,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -376,7 +464,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -474,7 +562,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -605,7 +693,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -687,7 +775,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -889,7 +977,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -979,7 +1067,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1061,7 +1149,7 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1089,120 +1177,6 @@ echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" targ
           <p><strong>1.创建分支的意义</strong> 创 建分支的意义，比如我们在一个基础平台上进行开发，每个技术小组负责一个子项目，而基础平台也是有可能会继续更改的，这个时候，如果不创建分支，子项目之 间会相互影响，影响最大的就是后期的测试和版本发布，子项目A已经结束，但测试却受到正在进行的子项目B的影响，测试通不过，就别说版本发布了。所以，我 们需要从目前的项目（主干trunk）中创建分支（branch），隔离子项目间的相互影响。 <strong>2.svn创建分支原理</strong> 在 svn中，创建分支，实际上就是一个版本拷贝(对应copy to…注意：绝不是简单在客户端上copy一个目录，而是svn仓库中copy，文件版本号会增加。），两边做任何修改发生的版本变化，是一套机制。 举例：目前主干版本是100，分支版本是101，主干中增加一个文件，版本为102，分支中再增加一个文件，版本就为103了。两边的版本号是一套，不会 重复。 <strong>3.svn创建分支的方法</strong> <strong>TortoiseSVN：</strong>右键点击工程目录-&gt;TortoiseSVN-&gt;Branch/tag..菜单，From WC at Url自动为工程svn url，比如<a href="https://localhost:8443/svn/fbysss/prj1/trunk" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/trunk</a>，to Url填写<a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/branches/branch1</a>。点OK按钮，分支就创建好了。 <strong>Subclipse：</strong>Team-&gt;Branch/tag..，跟上面类似. <strong>SVN命令模式：</strong>svn copy trunk_path  branch_path  -m ‘描述’ 举例：svn copy <a href="https://localhost:8443/svn/fbysss/prj1/trunk" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1</a><a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">/trunk </a> <a href="https://localhost:8443/svn/fbysss/prj1" target="_blank" rel="noopener">https://localhost:8443/svn/fbysss/prj1/branches/branch1</a> -m “第一个分支” <strong>注意一点：</strong>trunk和branch不能互为子目录，否则就乱套了。 <strong>4.分支合并</strong> <strong>1）从分支合并到主干</strong> 分支开发结束之后，往往需要合并回主干去测试、发布，但分支和主干可能有很多冲突的地方，在合并时经常需要手工解决。 <strong>被操作对象：</strong>主干 <strong>From**</strong>：<strong>主干的打出分支时的版本 **To：</strong>分支的Head版本（最新版本）   怎么理解这个From和To呢?似乎跟我们的想当然不太一样：因为我们理解，把分支合并到主干，肯定是From分支，To主干。怎么搞反了呢？ 实际上，<strong>Svn**</strong>认为，我们要合并的，是从主干的某个版本开始，到分支的某个版本结束。两边的版本号实际上是一套系统，不会有重复。**我们从TortoiseSVN Help中也能找到证据：</p>
 <p>If you are using this method to merge a feature branch back to trunk, you need to ……..<br>In the From: field enter the full folder URL of the trunk. This may sound wrong, but remember that the trunk is the start point to which you want to add the branch changes. You may also click … to browse the repository.<br>In the To: field enter the full folder URL of the feature branch.</p>
 <p>  <strong>2）从主干合并到分支</strong> 试想这样的情况：一个项目里面，要独立出来一个子项目，需要单独发布版本，用到了基础框架代码，而基础框架在主干中不断修改完善，这就需要从主干合并到分支。 <strong>被操作对象：</strong>分支 <strong>From：</strong>分支的第一个版本（最旧版本） <strong>To：</strong>主干的Head版本（最新版本） 相当于从分支的第一个版本开始一直到主干最后一个版本结束合并之后，替换分支。 <strong>3）从分支合并到分支</strong> 有 这样的需求：一个项目中有很多分支，这些分支需要分期上线，有多个工作并行，但每一期之间不能相互影响，这就可以打出几个tag（也是分支），从主干 copy而来。其他主干根据排期分别合并到这些tag中来。比如有prjTag1和prjTag2，model1、model2需要合并到prjTag1 中，model3、model4需要合并到prjTag2中。拿prjTag1举例： 在prjTag1的work copy中，merge   <strong>From**</strong>：<strong>主干的打出分支时的版本 **To：</strong>分支的Head版本（最新版本） <strong>注意：</strong>From不是本Tag的某个版本，而是之前主干打出分支时的版本，最终Merge到prjTag1的work copy，而prjTag1是找不到当初打分支时的版本的。 原文地址：<a href="http://blog.csdn.net/fbysss/article/details/5437157" target="_blank" rel="noopener">http://blog.csdn.net/fbysss/article/details/5437157</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/how-websites-fit-Retina-screens/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.jpg">
-      <meta itemprop="name" content="Veitor">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Veitor的技术点滴">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/how-websites-fit-Retina-screens/" class="post-title-link" itemprop="url">网站如何适配Retina屏幕</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2014-08-28 00:37:21" itemprop="dateCreated datePublished" datetime="2014-08-28T00:37:21+08:00">2014-08-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JS/" itemprop="url" rel="index">
-                    <span itemprop="name">JS</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h1><p>随着2012年苹果发布第一款Retina Macbook Pro（以下简称RMBP），Retina屏幕开始进入笔记本行业。两年过去了，RMBP的市场占有率越来越高，且获得了一大批设计师朋友的青睐，网站对于Retina屏幕的适配越来越重要。 如果大家对于Retina适配的重要性不是特别清楚，请看我的两个截图： <a href="http://storage.veitor.net/uploads/2014/08/QQ20140827-1@2x.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ20140827-1@2x.jpg" alt="QQ20140827-1@2x"></a> 上图是Google的首页LOGO，我们对比下图SOSO的LOGO： <a href="http://storage.veitor.net/uploads/2014/08/QQ20140827-2@2x.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/08/QQ20140827-2@2x.jpg" alt="QQ20140827-2@2x"></a> 如果大家还是看不出来，请自行访问这两个网站或者下载附件的截图对比。 那么说完了重要性，适配Retina的原理又是什么呢？我们知道，当一个图像在标准设备下全屏显示时，一位图像素对应的就是一设备像素，导致一个完全保 真的显示，因为一个位置像素不能进一步分裂。而当在Retina屏幕下时，他要放大四倍来保持相同的物理像素的大小，这样就会丢失很多细节，造成失真的情 形。换句话说，每一位图像素被乘以四填补相同的物理表面在视网膜屏幕下显示。（摘自《走向视网膜（Retina）的Web时代》） 那么，解决方法相信大家也都听过，就是通过手动制图或以编程的方式制作两种不同的图形，一张是普通屏幕的图片，另外一种是Retina屏幕的图形，而且Retina屏幕下的图片是普通屏幕的两倍像素。 原理虽然简单，在现实中要实现就不仅仅如此，需综合考虑加载速度，浏览器适配等多方面因素，本文就是教大家如何对Retina的屏幕进行适配。</p>
-<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h3 id="1-直接加载2倍大小的图片。"><a href="#1-直接加载2倍大小的图片。" class="headerlink" title="1.直接加载2倍大小的图片。"></a><strong>1.直接加载2倍大小的图片。</strong></h3><p>假如要显示的图片大小为200px*300px，你准备的实际图片大小应该为400px*600px，并且使用以下代码控制即可：</p>
-<img src="pic.png" height="200px" width="300px" />
-
-<p>这种方法就解决了Retina显示不清楚的问题，但是在普通屏幕下，这种图片要经过浏览器的压缩，在IE6和IE7上有十分差得显示效果，同时，两倍大小的图片势必会导致页面加载时间加长，用户体验下降，此时，我们可以通过Retina.js（<a href="http://retinajs.com/" target="_blank" rel="noopener">http://retinajs.com/</a>）文件解决：</p>
-<pre><code>&lt;img class=&quot;pic&quot; src=&quot;pic.png&quot; height=&quot;200px&quot; width=&quot;300px&quot;/&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-$(document).ready(function () {
-if (window.devicePixelRatio &gt; 1) {
-var images = $(&quot;img.pic&quot;);
-images.each(function(i) {
-var x1 = $(this).attr(&apos;src&apos;);
-var x2 = x1.replace(/(.*)(.w+)/, &quot;$1@2x$2&quot;);
-$(this).attr(&apos;src&apos;, x2);
-});
-}
-});
-&lt;/script&gt;</code></pre><h3 id="2-Image-set控制"><a href="#2-Image-set控制" class="headerlink" title="2.Image-set控制"></a>2.Image-set控制</h3><p>假如要显示的图片大小为200px*300px，你准备的图片应有两张：一张大小为200px*300px，命名为pic.png；另一张大小为 400px*600px，命名为<a href="mailto:pic@2x.png" target="_blank" rel="noopener">pic@2x.png</a>（@2x是Retina图标的标准命名方式），然后使用以下css代码控制：</p>
-<pre><code>#logo {
-background: url(pic.png) 0 0 no-repeat;
-background-image: -webkit-image-set(url(pic.png) 1x, url(pic@2x.png) 2x);
-background-image: -moz-image-set(url(pic.png) 1x,url(images/pic@2x.png) 2x);
-background-image: -ms-image-set(url(pic.png) 1x,url(images/pic@2x.png) 2x);
-background-image: -o-image-set(url(url(pic.png) 1x,url(images/pic@2x.png) 2x);
-}</code></pre><p>或者使用HTML代码控制亦可：</p>
-<img src="pic.png" srcset="pic@2x.png 2x" />
-
-
-
-<h3 id="3-使用-media控制"><a href="#3-使用-media控制" class="headerlink" title="3.使用@media控制"></a>3.使用@media控制</h3><p>实际是判断屏幕的像素比来取舍是否显示高分辨率图像，代码如下：</p>
-<pre><code>@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
-       only screen and (min--moz-device-pixel-ratio: 1.5), /* 注意这里的写法比较特殊 */
-       only screen and (-o-min-device-pixel-ratio: 3/2),
-       only screen and (min-device-pixel-ratio: 1.5) {
-#logo {
-background-image: url(pic@2x.png);
-background-size: 100px auto;
-}
-}</code></pre><p>使用这个的确定就是IE6、7、8不支持@media，所以无效。但是如果你只是支持苹果的RMBP的话，不存在兼容问题，因为MacOS X上压根没有IE！哈哈哈！ <strong>OK，本文到这里就结束了，介绍了上面的三个办法大家可以各有取舍的使用吧~</strong> 附件：<a href="http://storage.veitor.net/uploads/2014/08/76757.1946.zip" target="_blank" rel="noopener">附件</a> 原文地址：<a href="http://www.ui.cn/project.php?id=24556" target="_blank" rel="noopener">http://www.ui.cn/project.php?id=24556</a></p>
 
       
     </div>
@@ -1267,7 +1241,7 @@ background-size: 100px auto;
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-count">93</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

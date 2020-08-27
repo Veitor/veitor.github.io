@@ -183,6 +183,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/SNS-website-feed-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/SNS-website-feed-design/" class="post-title-link" itemprop="url">SNS网站Feed功能设计</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-04-11 08:00:56" itemprop="dateCreated datePublished" datetime="2014-04-11T08:00:56+08:00">2014-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在SNS的网站中，最核心的功能就是Feed功能，Feed就是一条twitter或一条好友动态。该功能面临的挑战是：每天产生成千上万条数据，数据推送的需要实时性等，做网站其实最大的难点就是对海量数据和高并发的处理。本人通过对Twitter和新浪微博架构的一些资料的学习，大致了解了如何实现一个Feed功能。一个Feed功能往往有多种实现方式，最常见的是这3种：推模式、拉模式、推拉结合模式。 <strong>推模式：</strong> 推就是把自己的发的feed推送到每个粉丝那里，就是一条feed在数据库中存储多份，做法就将feed表按userId分库，对应粉丝Id的库中插一条记录。这种做法的缺点就是数据量大，数据冗余太严重，如一个明星用户有1000万粉丝，那么他发一条feed,就要产生1000万条记录。Feed的推送需要异步队列，队列的好处就是降并发，推送是需要时间的，所以一个明星发了一条feed后，当最后那个粉丝看到这条feed可能已经是几分钟后的事情了。这种模式的优点是用户查看Feed就很容易了，根据userId查询就可以了。这种做法是牺牲大量储存空间来换取网站的查看性能。 <strong>拉模式：</strong> 拉就是用户要查看动态时就去每个关注者那边找，然后聚合并展现。Feed数据只储存一份，省了很多空间。这种模式在用户量较小的网站就很容易实现，展示只要一条SQL语句。但是当用户多了以后就会遇到问题，比如我关注了2000个用户，而这2000个用户都是活跃用户，每天都会产生很多feed。我查看 feed时就要去2000个关注者那里找最新的几条，合并和按时间排序，每次查看一条查询语句就快把数据库搞得累死，而且合并和排序这些feed计算量太大。拉模式在用户关注人数很多的网站不太适合。 <strong>推拉结合：</strong> 顾名思义就是两种模式的结合，将两者的优点结合。不活跃的用户（偶偶上线，关注人数又少的僵死用户等）推送的时候就不要推送给他们，省点资源，当他们上线查看时就直接拉，因为他们关注的人比较少，拉也不是很耗性能。 最后，不管采用什么方法实现，少不了异步队列，nosql等工具。比如发表feed的时候就往队列里一扔，前端马上返回，异步慢慢处理，而用户一点也察觉不出来。Nosql缓存，比如一些计数（关注数、粉丝数神马的）直接用redis、TT等储存，还有feed列表可以存储在memcached或redis 中，redis的list功能很适合这种情形，但是一些大网站还不敢这么做。 以上借鉴于新浪微博架构PPT。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,7 +290,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -320,7 +396,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-29 11:46:10" itemprop="dateModified" datetime="2020-07-29T11:46:10+08:00">2020-07-29</time>
+                <time title="修改时间：2020-08-27 09:46:06" itemprop="dateModified" datetime="2020-08-27T09:46:06+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -410,7 +486,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-count">93</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
