@@ -52,7 +52,7 @@
 <meta property="og:site_name" content="Veitor的技术点滴">
 <meta property="og:description" content="认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？ 在下面我将基于一个虚拟的用例来展示两种实现方式。 基本要求这些概念最好了解一下：  Application Service Hexagonal Architecture">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-08-27T01:46:06.297Z">
+<meta property="og:updated_time" content="2020-08-27T01:50:40.692Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/">
@@ -210,7 +210,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-08-27 08:49:59 / 修改时间：09:46:06" itemprop="dateCreated datePublished" datetime="2020-08-27T08:49:59+08:00">2020-08-27</time>
+              <time title="创建时间：2020-08-27 08:49:59 / 修改时间：09:50:40" itemprop="dateCreated datePublished" datetime="2020-08-27T08:49:59+08:00">2020-08-27</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,7 +294,7 @@
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConsoleCollaboratorService</span> <span class="keyword">implements</span> <span class="title">CollaboratorService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorFrom</span><span class="params">($authorId, $blogId)</span> </span>&#123; … &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostConsole</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> newPostCommand()</span><br><span class="line">     &#123;</span><br><span class="line">        <span class="comment">// gets values from console parameters</span></span><br><span class="line">        <span class="comment">// executes AddPostService use case</span></span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><ul>
-<li>所有对authentication/authorization的检查都在*Application Service<code>中的</code>CollaboratorService`中隐式的完成。</li>
+<li>所有对authentication/authorization的检查都在<em>Application Service</em>中的<em>CollaboratorService</em>中隐式的完成。</li>
 <li><em>Application Service</em>中<em>authorId</em>参数的输入某种程度上是多态的，因为它接收来自Web的直接的id或来自REST的token。也许这也是允许我们将authentication/auuthorization放进<em>Application Service</em>之内的关键点。</li>
 <li><em>CollaboratorService</em>根据认证机制需要几种不同的实现。</li>
 </ul>
