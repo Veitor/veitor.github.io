@@ -275,7 +275,7 @@ class PostConsole
 
 ### 总结
 
-- 所有对authentication/authorization的检查都在*Application Service`中的`CollaboratorService`中隐式的完成。
+- 所有对authentication/authorization的检查都在*Application Service*中的*CollaboratorService*中隐式的完成。
 - *Application Service*中*authorId*参数的输入某种程度上是多态的，因为它接收来自Web的直接的id或来自REST的token。也许这也是允许我们将authentication/auuthorization放进*Application Service*之内的关键点。
 - *CollaboratorService*根据认证机制需要几种不同的实现。
 
