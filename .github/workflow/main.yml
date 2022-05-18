@@ -1,0 +1,58 @@
+#github自己的CI系统Actions的编排文件
+#ci名称
+name: CI
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ source ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # uses相当于使用的某个插件（在https://github.com/marketplace?type=actions找到）
+      # 检出代码
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with: 
+          ref: source
+
+      # 设置node环境
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "10.x"
+
+      # 运行npm install
+      - name: Npm Install
+        run: npm install
+
+      # 替换密钥
+      - name: replace gitalk key
+        run: sed -i "s/gitalk-github-client-secret/${GITTALK_GITHUB_CLIENT_SECRET}/g" ./_config.yml
+        env:
+          GITTALK_GITHUB_CLIENT_SECRET: ""
+
+      # 生成静态网页
+      - name: generate static html
+        run: hexo generate
+
+      # 移动CNAME文件到生成的静态文件夹中，即网页根目录下
+      - name: move cname file
+        run: cp ./CNAME ./public/CNAME
+
+      # 发布部署到master分支
+      - name: deploy
+        uses: solybum/hexo-deploy@master
+        env:
+          PERSONAL_TOKEN: ${{ secrets.DEPLOY_KEY }}
+          PUBLISH_REPOSITORY: veitor/veitor.github.io # The repository the action should deploy to.
+          BRANCH: master  # The branch the action should deploy to.
+          PUBLISH_DIR: ./public # The folder the action should deploy.
