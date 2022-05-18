@@ -161,7 +161,7 @@ Application Service剖析
 
 一旦我们在请求中封装了数据，就开始业务逻辑了。如Vaughn Vernon所说：保持Application Service精简，使用它们只是协调模型上的任务。
 
-首先要做的是从请求中提取必要的信息，即`email`和`password`。在更层次上，我们需要检查是否有特定email的用户存在。如果没有，那么我们创建用户并将其添加到`UserRepository`中。在使用相同email来查找用户的情况下，我们会抛出一个异常，以便客户端可以用自己的方式处理它，如展示出错误、重试、或者忽略异常：
+首先要做的是从请求中提取必要的信息，即`email`和`password`。在更高层次上，我们需要检查是否有特定email的用户存在。如果没有，那么我们创建用户并将其添加到`UserRepository`中。在使用相同email来查找用户的情况下，我们会抛出一个异常，以便客户端可以用自己的方式处理它，如展示出错误、重试、或者忽略异常：
 
 ```php
 namespace Lw\Application\Service\User;
@@ -273,7 +273,7 @@ $app->match('/signup' ,function (Request $request) use ($app) {
 });
 ```
 
-如你缩减，`$app`作为服务容器。我们注册了所有的组件及其依赖项。`sign_up_user_application_service`取决于上面的定义。修改`user_repository`的实现就像返回其他内容（Mysql，MongoDB等）一样容易，所以我们根本不需要修改Service代码。
+如你所见，`$app`作为服务容器。我们注册了所有的组件及其依赖项。`sign_up_user_application_service`取决于上面的定义。修改`user_repository`的实现就像返回其他内容（Mysql，MongoDB等）一样容易，所以我们根本不需要修改Service代码。
 
 在Symfony中像这样：
 
