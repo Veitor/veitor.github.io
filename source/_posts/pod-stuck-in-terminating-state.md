@@ -21,6 +21,7 @@ date: 2022-05-18 11:33:00
 NAME                     READY     STATUS             RESTARTS   AGE
 nginx-7ef9efa7cd-qasd2   1/1       Terminating        0          1h
 ```
+<!-- more -->
 
 排查和处理步骤
 ---
