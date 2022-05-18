@@ -45,15 +45,34 @@ jobs:
       - name: generate static html
         run: npm run build
 
-      # 移动CNAME文件到生成的静态文件夹中，即网页根目录下
-      - name: move cname file
-        run: cp ./CNAME ./public/CNAME
-
       # 发布部署到master分支
       - name: deploy
+        run: |
+          REPOSITORY_PATH="https://x-access-token:${PERSONAL_TOKEN}@github.com/${PRO_REPOSITORY}.git"
+
+          cd ./public
+
+          echo ${CNAME} > ./CNAME
+
+          echo "Config git ..."
+          git init
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git remote add origin "${REPOSITORY_PATH}"
+          git checkout --orphan $BRANCH
+
+          git add --all
+
+          echo 'Start Commit'
+          git commit --allow-empty -m "Deploying to ${BRANCH}"
+
+          echo 'Start Push'
+          git push origin "${BRANCH}" --force
+          echo "Deployment succesful!"
         uses: solybum/hexo-deploy@master
         env:
           PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_REPOSITORY: Veitor/veitor.github.io # The repository the action should deploy to.
           BRANCH: master  # The branch the action should deploy to.
           PUBLISH_DIR: ./public # The folder the action should deploy.
+          CNAME: www.veitor.net
