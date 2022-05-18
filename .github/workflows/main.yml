@@ -43,7 +43,7 @@ jobs:
 
       # 生成静态网页
       - name: generate static html
-        run: hexo generate
+        run: npm run build
 
       # 移动CNAME文件到生成的静态文件夹中，即网页根目录下
       - name: move cname file
