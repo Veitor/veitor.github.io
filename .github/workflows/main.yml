@@ -48,6 +48,7 @@ jobs:
       # 发布部署到master分支
       - name: deploy
         run: |
+          PRO_REPOSITORY=${PUBLISH_REPOSITORY}
           REPOSITORY_PATH="https://x-access-token:${PERSONAL_TOKEN}@github.com/${PRO_REPOSITORY}.git"
 
           cd ./public
