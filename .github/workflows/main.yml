@@ -69,7 +69,6 @@ jobs:
           echo 'Start Push'
           git push origin "${BRANCH}" --force
           echo "Deployment succesful!"
-        uses: solybum/hexo-deploy@master
         env:
           PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH_REPOSITORY: Veitor/veitor.github.io # The repository the action should deploy to.
