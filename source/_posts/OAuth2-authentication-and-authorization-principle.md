@@ -12,6 +12,9 @@ date: 2014-11-26 07:09:32
 
 以前做过一个人人网的站内应用（http://apps.renren.com/rr_timer不过已经很久没更新了），其中就用到了OAtuth授权，今天要做个新浪微博授权登陆，那么正巧再复习一下OAuth认证和授权原理吧，也没多少时间写这玩意儿，网上之前看到一篇不错的就拉过来了。 [OAuth](http://en.wikipedia.org/wiki/OAuth)是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。 本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为[RFC 6749](http://www.rfcreader.com/#rfc6749)。 ![bg2014051201](http://storage.veitor.net/uploads/2014/11/bg2014051201.png)
 
+<!-- more -->
+
+
 一、应用场景
 ------
 

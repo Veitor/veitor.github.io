@@ -11,12 +11,18 @@ categories:
 date: 2014-05-10 08:33:05
 ---
 
-曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。 crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT\_STD\_DES 、CRYPT\_EXT\_DES、CRYPT\_MD5、CRYPT\_BLOWFISH、CRYPT\_SHA256、CRYPT\_SHA512。这些常量不是1就是0，也意味着其所对应的算法是否可用。 我们可以看一下下面代码的输出结果：
+曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。
 
-if (CRYPT\_STD\_DES == 1) {
+crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT_STD_DES 、CRYPT_EXT_DES、CRYPT_MD5、CRYPT_BLOWFISH、CRYPT_SHA256、CRYPT_SHA512。 这些常量不是1就是0，也意味着其所对应的算法是否可用。
+
+<!-- more -->
+
+我们可以看一下下面代码的输出结果：
+
+if (CRYPT_STD_DES == 1) {
     echo 'Standard DES: ' . crypt('rasmuslerdorf', 'rl') . "<br>";
 }
-if (CRYPT\_EXT\_DES == 1) {
+if (CRYPT_EXT_DES == 1) {
     echo 'Extended DES: ' . crypt('rasmuslerdorf', '_J9..rasm') . "<br>";
 }
 if (CRYPT_MD5 == 1) {
@@ -59,4 +65,4 @@ $input_pwd = 'veitor';		      //表单输入密码明文
 crypt($input_pwd, $pwd) == $pwd       //$pwd为上一步数据库中的加密暗文
 ?>
 
-你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input\_pwd, sub\_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。
+你需要使用库中的加密暗文作为salt，这样做是指定crypt使用的散列类型。比如我上一步注册生成的暗文是基于MD5的，则暗文以$1$开头多位字符串，那么在这一步中，使用该暗文作为salt，crypt判断$1$就知道使用的散列类型是md5了。（另外，改成crypt($input_pwd, sub_str($pwd,0,12)) == $pwd也是正确的，因为基于md5散列时，salt只使用到前12个字符） 当然你还可以使用crypt和md5两个函数的结合，使得密码更安全，如md5(crypt($pwd))这种方式，生成后的依旧是32位字符，初看就以为是md5加密而已，即使再庞大的数据系统也难以进行暴力破解。 以上只是本人的一点小理解，或许存在偏差，如果你有更好的想法，不妨留个言一起探讨。
