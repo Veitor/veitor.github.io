@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。">
+<meta name="keywords" content="ddd,领域驱动设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]工厂 - 《Domain-Driven Design in PHP》第9章">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;DDD-in-php-factories&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-10-10T08:14:24.274Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-factories/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>[译]工厂 - 《Domain-Driven Design in PHP》第9章 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-factories/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          [译]工厂 - 《Domain-Driven Design in PHP》第9章
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-27 08:28:58" itemprop="dateCreated datePublished" datetime="2020-05-27T08:28:58+08:00">2020-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-10 16:14:24" itemprop="dateModified" datetime="2022-10-10T16:14:24+08:00">2022-10-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。</p>
+<a id="more"></a>
+
+<h1 id="聚合根上的工厂方法"><a href="#聚合根上的工厂方法" class="headerlink" title="聚合根上的工厂方法"></a>聚合根上的工厂方法</h1><p>工厂方法模式是一个经典的模式：</p>
+<p>定义一个创建对象的接口，但将其类型的选择权留给了子类，在运行时创建对象。</p>
+<p>在聚合根中添加工厂方法会隐藏任何从外部客户端创建聚合的内部实现细节。这也将负责聚合完整性的职责挪到了聚合根里。</p>
+<p>在有一个<code>User</code>实体和<code>Wish</code>实体的领域模型中，<code>User</code>扮演者聚合根的角色，没有<code>User</code>就没有<code>Wish</code>。<code>User</code>实体应当管理它的聚合。</p>
+<p>将<code>Wish</code>的控制权移到<code>User</code>实体中的方法是将工厂方法放在聚合根里：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">makeWish</span><span class="params">(WishId $wishId, $email, $content)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $wish = <span class="keyword">new</span> WishEmail(</span><br><span class="line">            $wishId,</span><br><span class="line">            <span class="keyword">$this</span>-&gt;id(),</span><br><span class="line">            $email,</span><br><span class="line">            $content</span><br><span class="line">        );</span><br><span class="line">        DomainEventPublisher::instance()-&gt;publish(</span><br><span class="line">            <span class="keyword">new</span> WishMade($wishId)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span> $wish;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端不需要知道聚合根内部是如何处理创建逻辑的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$wish = $aUser-&gt;makeWish(</span><br><span class="line">    $wishRepository-&gt;nextIdentity(),</span><br><span class="line">    <span class="string">'user@example.com'</span>,</span><br><span class="line">    <span class="string">'I want to be free!'</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h1 id="强制不变性"><a href="#强制不变性" class="headerlink" title="强制不变性"></a>强制不变性</h1><p>聚合根内的工厂方法也是一个放置不变性的好地方。</p>
+<p>在有<code>Forum</code>和<code>Post</code>实体的领域模型中，<code>Post</code>是聚合根<code>Forum</code>的一部分，发布一个<code>Post</code>看起来是这样的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Forum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">publishPost</span><span class="params">(PostId $postId, $content)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $post = <span class="keyword">new</span> Post(<span class="keyword">$this</span>-&gt;id, $postId, $content);</span><br><span class="line">        DomainEventPublisher::instance()-&gt;publish(</span><br><span class="line">            <span class="keyword">new</span> PostPublished($postId)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span> $post;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在于领域专家讨论过后，我们得到一个结论就是当<code>Forum</code>关闭时，不能发布<code>Post</code>，这是一个不变性，我们应该直接在创建<code>Post</code>时来强制执行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Forum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">publishPost</span><span class="params">(PostId $postId, $content)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;isClosed()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ForumClosedException();</span><br><span class="line">        &#125;</span><br><span class="line">        $post = <span class="keyword">new</span> Post(<span class="keyword">$this</span>-&gt;id, $postId, $content);</span><br><span class="line">        DomainEventPublisher::instance()-&gt;publish(</span><br><span class="line">            <span class="keyword">new</span> PostPublished($postId)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span> $post;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="服务上的工厂"><a href="#服务上的工厂" class="headerlink" title="服务上的工厂"></a>服务上的工厂</h1><p>在服务中也可以解耦创建对象的逻辑。</p>
+<h2 id="构建规约"><a href="#构建规约" class="headerlink" title="构建规约"></a>构建规约</h2><p>在我们服务中使用规约(Specifications)来展示如何在服务中使用工厂是一个好的例子。</p>
+<p>看个例子，从外部世界的一个请求，我们想要基于添加到系统中最新的<code>Posts</code>来构建一个feed：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Application</span>\<span class="title">Service</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">Post</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">PostRepository</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LatestPostsFeedService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $postRepository;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(PostRepository $postRepository)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;postRepository = $postRepository;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> LatestPostsFeedRequest $request</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $posts = <span class="keyword">$this</span>-&gt;postRepository-&gt;latestPosts($request-&gt;since);</span><br><span class="line">        <span class="keyword">return</span> array_map(<span class="function"><span class="keyword">function</span><span class="params">(Post $post)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> [</span><br><span class="line">                <span class="string">'id'</span> =&gt; $post-&gt;id()-&gt;id(),</span><br><span class="line">                <span class="string">'content'</span> =&gt; $post-&gt;body()-&gt;content(),</span><br><span class="line">                <span class="string">'created_at'</span> =&gt; $post-&gt; createdAt()</span><br><span class="line">            ];</span><br><span class="line">        &#125;, $posts);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Repository中的查找方法<code>latestPosts</code>有一些限制，因为它们会无线增加Repository复杂性。如我们在第10章中讨论的，使用规约(Specifications)是更好的方法。</p>
+<p>幸运的是，我们有一个不错的<code>query</code>方法在<code>PostRepository</code>中，该仓储库使用了规约模式并运行良好：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LatestPostsFeedService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $posts = <span class="keyword">$this</span>-&gt;postRepository-&gt;query($specification);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于规约模式，使用一个具体的实现是一个糟糕的主意：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LatestPostsFeedService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $posts = <span class="keyword">$this</span>-&gt;postRepository-&gt;query(</span><br><span class="line">            <span class="keyword">new</span> SqlLatestPostSpecification($request-&gt;since)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将高层的应用服务与低层的规约模式耦合在一起，这会将多层混合并破坏了关注点的分离。此外，这将是我们的服务与具体基础设施实现耦合的最坏的方法。你使用这个Service时将无法使用除了SQL之外的实现方案，如果我们想通过内存实现方案来测试我们的Service怎么办？</p>
+<p>解决此问题的方法是使用抽象工厂模式将规约创建与service本身解耦，根据OODesign.com：</p>
+<blockquote>
+<p>抽象工厂提供了创建一些相关对象的接口，而无需指定它们的类。</p>
+</blockquote>
+<p>因为我们可能会有多种规约模式的实现，所以我们先需要用工厂创建一个接口：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Domain</span>\<span class="title">Model</span>;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PostSpecificationFactory</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">createLatestPosts</span><span class="params">(DateTimeImmutable $since)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们需要为每个<code>PostRepository</code>实现创建一个工厂。一个内存实现的<code>PostRepository</code>的例子是这样的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Infrastructure</span>\<span class="title">Persistence</span>\<span class="title">InMemory</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">PostSpecificationFactory</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InMemoryPostSpecificationFactory</span></span></span><br><span class="line"><span class="class"><span class="keyword">implements</span> <span class="title">PostSpecificationFactory</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">createLatestPosts</span><span class="params">(DateTimeImmutable $since)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> InMemoryLatestPostSpecification($since);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一旦我们把创建逻辑集中在这一个地方，那就很容易让这个业务逻辑与服务进行解耦：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LatestPostsFeedService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $postRepository;</span><br><span class="line">    <span class="keyword">private</span> $postSpecificationFactory;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        PostRepository $postRepository,</span></span></span><br><span class="line"><span class="function"><span class="params">        PostSpecificationFactory $postSpecificationFactory</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;postRepository = $postRepository;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;postSpecificationFactory = $postSpecificationFactory;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $posts = <span class="keyword">$this</span>-&gt;postRepository-&gt;query(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;postSpecificationFactory-&gt;createLatestPosts(</span><br><span class="line">                $request-&gt;since</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在，测试通过内存实现的<code>PostRepository</code>是如此的简单：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">Application</span>\<span class="title">Service</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">Body</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">Post</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Domain</span>\<span class="title">Model</span>\<span class="title">PostId</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Infrastructure</span>\<span class="title">Persistence</span>\<span class="title">InMemory</span>\<span class="title">InMemoryPostRepositor</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LatestPostsFeedServiceTest</span> <span class="keyword">extends</span> <span class="title">PHPUnit_Framework_TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@var</span> \Infrastructure\Persistence\InMemory\InMemoryPostRepository</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">private</span> $postRepository;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@var</span> LatestPostsFeedService</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">private</span> $latestPostsFeedService;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setUp</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;latestPostsFeedService = <span class="keyword">new</span> LatestPostsFeedService(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;postRepository = <span class="keyword">new</span> InMemoryPostRepository()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@test</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">shouldBuildAFeedFromLatestPosts</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;addPost(<span class="number">1</span>, <span class="string">'first'</span>, <span class="string">'-2 hours'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;addPost(<span class="number">2</span>, <span class="string">'second'</span>, <span class="string">'-3 hours'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;addPost(<span class="number">3</span>, <span class="string">'third'</span>, <span class="string">'-5 hours'</span>);</span><br><span class="line">        $feed = <span class="keyword">$this</span>-&gt;latestPostsFeedService-&gt;execute(</span><br><span class="line">            <span class="keyword">new</span> LatestPostsFeedRequest(</span><br><span class="line">                <span class="keyword">new</span> \DateTimeImmutable(<span class="string">'-4 hours'</span>)</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertFeedContains([</span><br><span class="line">            [<span class="string">'id'</span> =&gt; <span class="number">1</span>, <span class="string">'content'</span> =&gt; <span class="string">'first'</span>],</span><br><span class="line">            [<span class="string">'id'</span> =&gt; <span class="number">2</span>, <span class="string">'content'</span> =&gt; <span class="string">'second'</span>]</span><br><span class="line">        ], $feed);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">addPost</span><span class="params">($id, $content, $createdAt)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;postRepository-&gt;add(<span class="keyword">new</span> Post(</span><br><span class="line">            <span class="keyword">new</span> PostId($id),</span><br><span class="line">            <span class="keyword">new</span> Body($content),</span><br><span class="line">            <span class="keyword">new</span> \DateTimeImmutable($createdAt)</span><br><span class="line">        ));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">assertFeedContains</span><span class="params">($expected, $feed)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">foreach</span> ($expected <span class="keyword">as</span> $index =&gt; $contents) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;assertArraySubset($contents, $feed[$index]);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;assertNotNull($feed[$index][<span class="string">'created_at'</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="构建聚合"><a href="#构建聚合" class="headerlink" title="构建聚合"></a>构建聚合</h2><p>实体与持久机制无关。你不要将你的持久化细节与你的实体进行耦合并污染你的实体。看一下这个Application Service：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpUserService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserRepository $userRepository)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> SignUpUserRequest $request</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">( $request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $email = $request-&gt;email();</span><br><span class="line">        $password = $request-&gt;password();</span><br><span class="line">        $user = <span class="keyword">$this</span>-&gt;userRepository-&gt;userOfEmail($email);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> !== $user) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UserAlreadyExistsException();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository-&gt;persist(<span class="keyword">new</span> User(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;userRepository-&gt;nextIdentity(),</span><br><span class="line">            $email,</span><br><span class="line">            $password</span><br><span class="line">        ));</span><br><span class="line">        <span class="keyword">return</span> $user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想象一下<code>User</code>实体是这样的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userId;</span><br><span class="line">    <span class="keyword">private</span> $email;</span><br><span class="line">    <span class="keyword">private</span> $password;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserId $userId, $email, $password)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再想象一下，我们使用Doctrine作为我们基础设施的持久性机制，Doctrine要求id作为纯字符串变量才能正常工作。在我们的实体中，<code>$userId</code>是一个<code>UserId</code>值对象。因为Doctrine，增加一个额外的<code>id</code>到我们的<code>User</code>实体中会将我们的持久化机制与我们的领域模型耦合。我们在第4章中（实体）看到，通过在基础设施层中把<code>User</code>实体封装一下，使用代理Id（Surrogate ID）就能解决这问题：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DoctrineUser</span> <span class="keyword">extends</span> <span class="title">User</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $surrogateUserId;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserId $userId, $email, $password)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>:: __construct($userId, $email, $password);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;surrogateUserId = $userId-&gt;id();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于在我们的应用服务中创建<code>DoctrineUser</code>将会使持久层与我们的领域再次耦合，我们需要使用抽象工厂来将创建逻辑与服务进行解耦。</p>
+<p>我们可能在我们领域中这样创建接口：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">UserFactory</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">build</span><span class="params">(UserId $userId, $email, $password)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，我们在基础设施层来实现这个接口：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DoctrineUserFactory</span> <span class="keyword">implements</span> <span class="title">UserFactory</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">build</span><span class="params">(UserId $userId, $email, $password)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DoctrineUser($userId, $email, $password);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一旦解耦，我们只需要在应用服务中注入工厂即可：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpUserService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $userRepository;</span><br><span class="line">    <span class="keyword">private</span> $userFactory;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        UserRepository $userRepository,</span></span></span><br><span class="line"><span class="function"><span class="params">        UserFactory $userFactory</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository = $userRepository;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userFactory = $userFactory;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> SignUpUserRequest $request</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        $user = <span class="keyword">$this</span>-&gt;userFactory-&gt;build(</span><br><span class="line">            <span class="keyword">$this</span>-&gt;userRepository-&gt;nextIdentity(),</span><br><span class="line">            $email,</span><br><span class="line">            $password</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">$this</span>-&gt;userRepository-&gt;persist($user);</span><br><span class="line">        <span class="keyword">return</span> $user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="测试工厂"><a href="#测试工厂" class="headerlink" title="测试工厂"></a>测试工厂</h1><p>当你编写测试时，你会看到一个常用的模式。这是因为构建实体和复杂的聚合可能是一个非常繁琐且重复的过程。复杂性、重复性不可避免的出现在了你的测试中。看下面的这个实体：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Author</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $username;</span><br><span class="line">    <span class="keyword">private</span> $email ;</span><br><span class="line">    <span class="keyword">private</span> $fullName;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Username $aUsername,</span></span></span><br><span class="line"><span class="function"><span class="params">        FullName $aFullName,</span></span></span><br><span class="line"><span class="function"><span class="params">    Email $anEmail</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = $aUsername;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;email = $anEmail ;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;fullName = $aFullName;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在你系统的某个地方，你将写出这样的一个测试：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">PHPUnit_Framework_TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@test</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">itDoesSomething</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $author = <span class="keyword">new</span> Author(</span><br><span class="line">            <span class="keyword">new</span> Username(<span class="string">'johndoe'</span>),</span><br><span class="line">            <span class="keyword">new</span> FullName(<span class="string">'John'</span>, <span class="string">'Doe'</span> ),</span><br><span class="line">            <span class="keyword">new</span> Email(<span class="string">'john@doe.com'</span> )</span><br><span class="line">        );</span><br><span class="line">        <span class="comment">//do something with author</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>限界上下文内的服务共享者如实体、聚合、值对象这样的概念。想象一下在整个测试中一遍又一遍重复相同的构建逻辑的混乱情况。从测试中提取构建构建的逻辑非常方便并且能够防止重复编写。</p>
+<h2 id="Object-Mother"><a href="#Object-Mother" class="headerlink" title="Object Mother"></a>Object Mother</h2><p><code>Object Mother</code>是工厂的容易被记住的名字，它为测试创建<code>fixed fixture</code>。与前面的示例类似，我们可以将重复的逻辑提取到<code>Object Mother</code>，以便在测试之间重复使用：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AuthorObjectMother</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">createOne</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Author(</span><br><span class="line">            <span class="keyword">new</span> Username(<span class="string">'johndoe'</span>),</span><br><span class="line">            <span class="keyword">new</span> FullName(<span class="string">'John'</span>, <span class="string">'Doe'</span>),</span><br><span class="line">            <span class="keyword">new</span> Email(<span class="string">'john@doe.com )</span></span><br><span class="line"><span class="string">        );</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">class MyTest extends PHPUnit_Framework_TestCase</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    /**</span></span><br><span class="line"><span class="string">    * @test</span></span><br><span class="line"><span class="string">    */</span></span><br><span class="line"><span class="string">    public function itDoesSomething()</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">        $author = AuthorObjectMother::createOne();</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>你会注意到你拥有的测试和用例越多，工厂所拥有的方法就越多。</p>
+<p>由于<code>Object Mother</code>并不是太灵活，因此它们的复杂性往往会迅速增长。所幸的是你还有更灵活的测试该方法。</p>
+<h2 id="Test-Data-Builder"><a href="#Test-Data-Builder" class="headerlink" title="Test Data Builder"></a>Test Data Builder</h2><p>Test Data Builder只是一个普通的构建器，其默认值专用于你的测试，因此你不必在特定的测试用例上指定不相关的参数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AuthorBuilder</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $username;</span><br><span class="line">    <span class="keyword">private</span> $email ;</span><br><span class="line">    <span class="keyword">private</span> $fullName;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = <span class="keyword">new</span> Username(<span class="string">'johndoe'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;email = <span class="keyword">new</span> Email(<span class="string">'john@doe.com'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;fullName = <span class="keyword">new</span> FullName(<span class="string">'John'</span>, <span class="string">'Doe'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">anAuthor</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">self</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withFullName</span><span class="params">(FullName $aFullName)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;fullName = $aFullName;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withUsername</span><span class="params">(Username $aUsername)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = $aUsername;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withEmail</span><span class="params">(Email $anEmail)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;email = $anEmail ;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">build</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Author(<span class="keyword">$this</span>-&gt;username, <span class="keyword">$this</span>-&gt;fullName, <span class="keyword">$this</span>-&gt;email);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">PHPUnit_Framework_TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@test</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">itDoesSomething</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $author = AuthorBuilder::anAuthor()</span><br><span class="line">        -&gt;withEmail(<span class="keyword">new</span> Email(<span class="string">'other@email.com'</span>))</span><br><span class="line">        -&gt;build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们甚至可以结合使用Test Data Builder来构建更复杂的聚合，例如<code>Post</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Post</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $id;</span><br><span class="line">    <span class="keyword">private</span> $author;</span><br><span class="line">    <span class="keyword">private</span> $body;</span><br><span class="line">    <span class="keyword">private</span> $createdAt;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        PostId $anId, Author $anAuthor, Body $aBody</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;id = $anId;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;author = $anAuthor;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;body = $aBody;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;createdAt = <span class="keyword">new</span> DateTimeImmutable();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>让我们看<code>Post</code>对应的Test Data Builder。对于默认的<code>Author</code>，我们可以重用<code>AuthorBuilder</code>来进行构建：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostBuilder</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $postId;</span><br><span class="line">    <span class="keyword">private</span> $author;</span><br><span class="line">    <span class="keyword">private</span> $body;</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;postId = <span class="keyword">new</span> PostId();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;author = AuthorBuilder::anAuthor()-&gt;build();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;body = <span class="keyword">new</span> Body(<span class="string">'Post body'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">aPost</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">self</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withAuthor</span><span class="params">(Author $anAuthor)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;author = $anAuthor;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withPostId</span><span class="params">(PostId $aPostId)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;postId = $aPostId;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">withBody</span><span class="params">(Body $body)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;body = $body;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">build</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Post(<span class="keyword">$this</span>-&gt;postId, <span class="keyword">$this</span>-&gt;author, <span class="keyword">$this</span>-&gt;body);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的解决方案可以足够灵活的来覆盖到各种测试用例，包括构建内部实体的可能性：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">PHPUnit_Framework_TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@test</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">itDoesSomething</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $post = PostBuilder::aPost()</span><br><span class="line">            -&gt;withAuthor(AuthorBuilder::anAuthor()</span><br><span class="line">            -&gt;withUsername(<span class="keyword">new</span> Username(<span class="string">'other'</span>))</span><br><span class="line">            -&gt;build())</span><br><span class="line">            -&gt;withBody(<span class="keyword">new</span> Body(<span class="string">'Another body'</span>))</span><br><span class="line">            -&gt;build();</span><br><span class="line">        <span class="comment">//do something with the post</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>工厂是将构建逻辑与业务逻辑解耦的强大工具。工厂方法模式不仅有助于将创建职责移到聚合根中，而且还可以使其具有不变性。在我们的服务中使用抽象工厂模式可以使我们将领域逻辑与基础设施创建的细节分离，一个常见的用例就是规约模式和其各自持久机制的实现。我们也看到工厂模式也在我们的测试中派上用场，尽管我们可以将构建逻辑提取到Object Mother工厂中，但是Test Data Builder更强大灵活。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/DDD-in-php-aggregates/" rel="prev" title="[译]聚合 - 《Domain-Driven Design in PHP》第8章">
+      <i class="fa fa-chevron-left"></i> [译]聚合 - 《Domain-Driven Design in PHP》第8章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/DDD-in-php-repositories/" rel="next" title="[译]仓储 - 《Domain-Driven Design in PHP》第10章">
+      [译]仓储 - 《Domain-Driven Design in PHP》第10章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#聚合根上的工厂方法"><span class="nav-number">1.</span> <span class="nav-text">聚合根上的工厂方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#强制不变性"><span class="nav-number">2.</span> <span class="nav-text">强制不变性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务上的工厂"><span class="nav-number">3.</span> <span class="nav-text">服务上的工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#构建规约"><span class="nav-number">3.1.</span> <span class="nav-text">构建规约</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建聚合"><span class="nav-number">3.2.</span> <span class="nav-text">构建聚合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试工厂"><span class="nav-number">4.</span> <span class="nav-text">测试工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-Mother"><span class="nav-number">4.1.</span> <span class="nav-text">Object Mother</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-Data-Builder"><span class="nav-number">4.2.</span> <span class="nav-text">Test Data Builder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

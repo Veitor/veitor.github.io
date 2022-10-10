@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？ 在下面我将基于一个虚拟的用例来展示两种实现方式。 基本要求这些概念最好了解一下：  Application Service Hexagonal Architecture">
+<meta name="keywords" content="ddd,领域驱动设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="领域驱动设计中的认证和授权">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;authentication-and-authorization-in-ddd&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？ 在下面我将基于一个虚拟的用例来展示两种实现方式。 基本要求这些概念最好了解一下：  Application Service Hexagonal Architecture">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-10-10T08:14:24.278Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>领域驱动设计中的认证和授权 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          领域驱动设计中的认证和授权
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-27 08:49:59" itemprop="dateCreated datePublished" datetime="2020-08-27T08:49:59+08:00">2020-08-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-10 16:14:24" itemprop="dateModified" datetime="2022-10-10T16:14:24+08:00">2022-10-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证/授权的最佳方式是什么？</p>
+<p>在下面我将基于一个虚拟的用例来展示两种实现方式。</p>
+<h1 id="基本要求"><a href="#基本要求" class="headerlink" title="基本要求"></a>基本要求</h1><p>这些概念最好了解一下：</p>
+<ul>
+<li><a href="http://martinfowler.com/eaaCatalog/serviceLayer.html" target="_blank" rel="noopener">Application Service</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/84223605" target="_blank" rel="noopener">Hexagonal Architecture</a></li>
+</ul>
+<a id="more"></a>
+
+<h1 id="用例"><a href="#用例" class="headerlink" title="用例"></a>用例</h1><p>假设我们想开发一个<strong>博客平台</strong>。</p>
+<p>我们在下面定义了<strong>博客平台</strong>上下文(Context)中的通用语言(Ubiquitous Languate)：</p>
+<ul>
+<li><strong>Author:</strong> 博客平台中的用户，它是一个带有<code>authorId</code>唯一标识的Entity。</li>
+<li><strong>Blog:</strong> 博客平台中含有博文的特定区域，它是一个带有<code>blogId</code>唯一标识的Entity。</li>
+<li><strong>Collaborator:</strong> 可以在给定的Blog中创建博文的Author。</li>
+<li><strong>Authentication:</strong> 识别一个Author的过程。</li>
+<li><strong>Authorization:</strong> 检查在给定的Blog中Author是否是Collaborator。</li>
+</ul>
+<p>我们将要开发的用例是Blog的Collaborator可以在Blog中创建博文。为了能够比较两种实现方式，该用例可以在Web、REST和Console中执行。</p>
+<blockquote>
+<p>注意：为了把注意力放在重要概念上，示例代码中对dependencies、getters等概念已经简化了。</p>
+</blockquote>
+<h2 id="版本1：在Application-Srvice外进行"><a href="#版本1：在Application-Srvice外进行" class="headerlink" title="版本1：在Application Srvice外进行"></a>版本1：在Application Srvice外进行</h2><p>这种方式下，一旦发起对<code>Application Service</code>的请求，则它将被执行，且没有任何Authentication和Authorization的过程。</p>
+<h3 id="Application-Service"><a href="#Application-Service" class="headerlink" title="Application Service"></a>Application Service</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Request</span></span><br><span class="line">class AddPostRequest()</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorId</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">blogId</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">title</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">text</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Application Service</span></span><br><span class="line">class AddPostService()</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       $authorId = $request-&gt;authorId();</span><br><span class="line">       $blogId   = $request-&gt;blogId();</span><br><span class="line">       $title    = $request-&gt;title();</span><br><span class="line">       $text     = $request-&gt;text();</span><br><span class="line">       <span class="keyword">if</span> (!$blog = <span class="keyword">$this</span>-&gt;blogRepository-&gt;blogOfId($blogId)) &#123;</span><br><span class="line">             <span class="keyword">throw</span> <span class="keyword">new</span> BlogNotFoundException();</span><br><span class="line">       &#125;</span><br><span class="line"> </span><br><span class="line">       $post = $blog-&gt;buildPost(</span><br><span class="line">          <span class="keyword">$this</span>-&gt;postRepository-&gt;nextIdentity(),</span><br><span class="line">          $authorId,</span><br><span class="line">          $title,</span><br><span class="line">          $text</span><br><span class="line">       );</span><br><span class="line">       <span class="keyword">$this</span>-&gt;postRepository-&gt;save($post);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h3><p>在控制器中（或框架的其他hook中），用例执行之前，对当前用户进行认证检查，同时也检查其是否是Blog的collaborator。</p>
+<p>为了检查这些，我们在Controller中使用<code>Domain Service</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> newPostAction()</span><br><span class="line">   &#123;</span><br><span class="line">       <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;sessionService()-&gt;isAuthenticated()) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnauthenticatedUserException();</span><br><span class="line">       &#125;</span><br><span class="line">       $blogId = <span class="keyword">$this</span>-&gt;request-&gt;get(‘blog_id’);</span><br><span class="line">       $userId = <span class="keyword">$this</span>-&gt;sessionService()-&gt;currentUserId();</span><br><span class="line">   </span><br><span class="line">       $isCollaborator = <span class="keyword">$this</span>-&gt;permissionService()-&gt;isCollaborator(</span><br><span class="line">           $userId, $blogId</span><br><span class="line">       );</span><br><span class="line">       <span class="keyword">if</span> (!$isCollaborator) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnauthorizedUserException();</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// executes AddPostService use case</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="REST"><a href="#REST" class="headerlink" title="REST"></a>REST</h3><p>REST方式中，会使用header中的Authorization获取token，需要检查这个token是否属于某个用户，并且这用户是否是Blog的collaborator。</p>
+<p>为了检查这些，我们在Controller中使用<code>Domain Service</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostRestFulController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> newPostAction()</span><br><span class="line">   &#123;</span><br><span class="line">       $authorizationValue = <span class="keyword">$this</span>-&gt;authorizationHeader();</span><br><span class="line">       $userId = <span class="keyword">$this</span>-&gt;oauthService()-&gt;userId($authorizationValue);</span><br><span class="line">       $blogId = <span class="keyword">$this</span>-&gt;request-&gt;get(‘blog_id’);</span><br><span class="line">       <span class="keyword">if</span> (!$userId) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnauthenticatedUserException();</span><br><span class="line">       &#125;</span><br><span class="line">       $isCollaborator = <span class="keyword">$this</span>-&gt;permissionService()-&gt;isCollaborator(</span><br><span class="line">           $userId, $blogId</span><br><span class="line">       );</span><br><span class="line">       <span class="keyword">if</span> (!$isCollaborator) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnauthorizedUserException();</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// execute AddPostService use case</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Console"><a href="#Console" class="headerlink" title="Console"></a>Console</h3><p>Console下，执行用例没有检查authentication和authorization。<code>userId</code>来自命令行的参数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; blog add-post — user-id <span class="number">1</span> — blog-id <span class="number">1</span> — title Foo …</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostConsole</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> newPostCommand()</span><br><span class="line">    &#123;</span><br><span class="line">       <span class="comment">// gets values from console parameters</span></span><br><span class="line">       <span class="comment">// execute AddPostService use case</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>Authentication/Authorization检查是在Application Service之外的Controller或框架的其他hook中进行。</li>
+<li>Authentication/Authorization必须在Application Service用例执行前进行。</li>
+<li>根据应用的入口（如Web、REST、Console）来使用authentication服务，实例中使用的是<em>OauthService</em>、<em>SessionService</em>。</li>
+</ul>
+<h2 id="版本2：在Application-Service内进行"><a href="#版本2：在Application-Service内进行" class="headerlink" title="版本2：在Application Service内进行"></a>版本2：在Application Service内进行</h2><p>我们可以在用例内使用通用语言，来隐式的执行authentication/authorization。</p>
+<h3 id="Application-Service-1"><a href="#Application-Service-1" class="headerlink" title="Application Service"></a>Application Service</h3><p>它将使用一个名为<em>CollaboratorService</em>的<em>Domain Service</em>来检查authentication和authorization。<em>CollaboratorService</em>返回Author的值对象。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CollaboratorService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorFrom</span><span class="params">($authorId, $blogId)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Request</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddPostRequest</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorId</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">blogId</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">title</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">text</span><span class="params">()</span> </span>&#123;…&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Application Service</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddPostService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">       $authorId = $request-&gt;authorId();</span><br><span class="line">       $blogId   = $request-&gt;blogId();</span><br><span class="line">       $title    = $request-&gt;title();</span><br><span class="line">       $text     = $request-&gt;text();</span><br><span class="line">       $author = <span class="keyword">$this</span>-&gt;collaboratorService-&gt;authorFrom(</span><br><span class="line">           $authorId, </span><br><span class="line">           $blogId</span><br><span class="line">       );</span><br><span class="line">       <span class="keyword">if</span> (!$author) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> InvalidAuthorException();</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">if</span> (!$blog = <span class="keyword">$this</span>-&gt;blogRepository-&gt;blogOfId($blogId)) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> BlogNotFoundException();</span><br><span class="line">       &#125;</span><br><span class="line"> </span><br><span class="line">       $post = $blog-&gt;buildPost(</span><br><span class="line">           <span class="keyword">$this</span>-&gt;postRepository-&gt;nextIdentity(),</span><br><span class="line">           $author,</span><br><span class="line">           $title,</span><br><span class="line">           $text</span><br><span class="line">       );</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">$this</span>-&gt;postRepository-&gt;save($post);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Web-1"><a href="#Web-1" class="headerlink" title="Web"></a>Web</h3><p><em>Controller</em>不需要检查authentication/authorization，但它需要创建用例请求和传入<em>authorId</em>参数，一个通用场景是从session中读取<em>userId</em>。剩下的参数从http请求中读取到。</p>
+<p>随后<em>CollaboratorService</em>的实现直接与userId进行交互。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserIdCollaboratorService</span> <span class="keyword">implements</span> <span class="title">CollaboratorService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorFrom</span><span class="params">($authorId, $blogId)</span> </span>&#123; … &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> newPostAction()</span><br><span class="line">    &#123;</span><br><span class="line">        $authorId = <span class="keyword">$this</span>-&gt;sessionService()-&gt;userId();</span><br><span class="line">        <span class="comment">// executes ApplicationService use case</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="REST-1"><a href="#REST-1" class="headerlink" title="REST"></a>REST</h3><p>REST下使用http headr头中Authorization获取用户的token，在REST入口中，认证机制可能是OAuth、JTW等。<em>CollaboratorService</em>的实现可能与那个token进行交互。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OAuthCollaboratorService</span> <span class="keyword">implements</span> <span class="title">CollaboratorService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorFrom</span><span class="params">($authorId, $blogId)</span> </span>&#123; … &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostRestFulController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> newPostAction()</span><br><span class="line">     &#123;</span><br><span class="line">         $authorId = <span class="keyword">$this</span>-&gt;authorizationHeader();</span><br><span class="line">         <span class="comment">// executes ApplicationService use case</span></span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Console-1"><a href="#Console-1" class="headerlink" title="Console"></a>Console</h3><p><em>authorId</em>参数来自命令行，因此如果给出的<em>author-id</em>属于这个blog则不会有任何异常抛出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blog add-post — author-id 1 — blog-id 1 — title Foo</span><br></pre></td></tr></table></figure>
+
+<p><em>CallaboratorService</em>的实现可能与Web或其他实现一样：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConsoleCollaboratorService</span> <span class="keyword">implements</span> <span class="title">CollaboratorService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authorFrom</span><span class="params">($authorId, $blogId)</span> </span>&#123; … &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PostConsole</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> newPostCommand()</span><br><span class="line">     &#123;</span><br><span class="line">        <span class="comment">// gets values from console parameters</span></span><br><span class="line">        <span class="comment">// executes AddPostService use case</span></span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>所有对authentication/authorization的检查都在<em>Application Service</em>中的<em>CollaboratorService</em>中隐式的完成。</li>
+<li><em>Application Service</em>中<em>authorId</em>参数的输入某种程度上是多态的，因为它接收来自Web的直接的id或来自REST的token。也许这也是允许我们将authentication/auuthorization放进<em>Application Service</em>之内的关键点。</li>
+<li><em>CollaboratorService</em>根据认证机制需要几种不同的实现。</li>
+</ul>
+<blockquote>
+<p>原文：<a href="https://medium.com/@martinezdelariva/authentication-and-authorization-in-ddd-671f7a5596ac" target="_blank" rel="noopener">https://medium.com/@martinezdelariva/authentication-and-authorization-in-ddd-671f7a5596ac</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/sso-and-identity-federation/" rel="prev" title="我所理解的单点登录和身份联邦">
+      <i class="fa fa-chevron-left"></i> 我所理解的单点登录和身份联邦
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/compiler-vs-interpreter/" rel="next" title="编译器(Compiler)和解释器(Interpreter)">
+      编译器(Compiler)和解释器(Interpreter) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本要求"><span class="nav-number">1.</span> <span class="nav-text">基本要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用例"><span class="nav-number">2.</span> <span class="nav-text">用例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#版本1：在Application-Srvice外进行"><span class="nav-number">2.1.</span> <span class="nav-text">版本1：在Application Srvice外进行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-Service"><span class="nav-number">2.1.1.</span> <span class="nav-text">Application Service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web"><span class="nav-number">2.1.2.</span> <span class="nav-text">Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REST"><span class="nav-number">2.1.3.</span> <span class="nav-text">REST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Console"><span class="nav-number">2.1.4.</span> <span class="nav-text">Console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.1.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#版本2：在Application-Service内进行"><span class="nav-number">2.2.</span> <span class="nav-text">版本2：在Application Service内进行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-Service-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">Application Service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REST-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">REST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Console-1"><span class="nav-number">2.2.4.</span> <span class="nav-text">Console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-1"><span class="nav-number">2.2.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

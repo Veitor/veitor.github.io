@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="问题描述当一个Pod被执行删除操作后，却长时间的处于Terminating状态，发生这样的情况可能是因为：  Pod有一个与其关联的finalizer，这个finalizer的任务没有完成。 Pod对中断信号没有响应  当我们执行kubectl get pods命令时，你将会看到这样的信息： 12NAME                     READY     STATUS">
+<meta name="keywords" content="Kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pod长时间处于Terminating状态的问题">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;pod-stuck-in-terminating-state&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="问题描述当一个Pod被执行删除操作后，却长时间的处于Terminating状态，发生这样的情况可能是因为：  Pod有一个与其关联的finalizer，这个finalizer的任务没有完成。 Pod对中断信号没有响应  当我们执行kubectl get pods命令时，你将会看到这样的信息： 12NAME                     READY     STATUS">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-10-10T08:14:24.278Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/pod-stuck-in-terminating-state/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Pod长时间处于Terminating状态的问题 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/pod-stuck-in-terminating-state/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Pod长时间处于Terminating状态的问题
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-18 11:33:00" itemprop="dateCreated datePublished" datetime="2022-05-18T11:33:00+08:00">2022-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-10 16:14:24" itemprop="dateModified" datetime="2022-10-10T16:14:24+08:00">2022-10-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>当一个Pod被执行删除操作后，却长时间的处于<code>Terminating</code>状态，发生这样的情况可能是因为：</p>
+<ul>
+<li>Pod有一个与其关联的<code>finalizer</code>，这个<code>finalizer</code>的任务没有完成。</li>
+<li>Pod对中断信号没有响应</li>
+</ul>
+<p>当我们执行<code>kubectl get pods</code>命令时，你将会看到这样的信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NAME                     READY     STATUS             RESTARTS   AGE</span><br><span class="line">nginx-7ef9efa7cd-qasd2   1/1       Terminating        0          1h</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+
+<h2 id="排查和处理步骤"><a href="#排查和处理步骤" class="headerlink" title="排查和处理步骤"></a>排查和处理步骤</h2><h4 id="1-收集一些信息"><a href="#1-收集一些信息" class="headerlink" title="1. 收集一些信息"></a>1. 收集一些信息</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod -n [NAMESPACE] -p [POD_NAME] -o yaml</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-检查finalizer"><a href="#2-检查finalizer" class="headerlink" title="2. 检查finalizer"></a>2. 检查finalizer</h4><p>首先我们需要先查看pod有没有关联的finalizer，如果有关联的finalizer，那么很可能就是finalizer的问题。</p>
+<p>获取并查看pod的配置信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod -n [NAMESPACE] -p [POD_NAME] -o yaml &gt; /tmp.txt</span><br></pre></td></tr></table></figure>
+
+<p>然后在<code>/tmp.txt</code>内容中查找<code>metadata</code>配置块下是否有<code>finalizer</code>字段，如果有，则采用<a href="#方案A：移除finalizer">解决方案A</a></p>
+<h4 id="3-检查node的状态"><a href="#3-检查node的状态" class="headerlink" title="3. 检查node的状态"></a>3. 检查node的状态</h4><p>也可能是pod所在的node节点因为一些原因而导致的问题。</p>
+<p>如果你从<code>/tmp.txt</code>内容中发现某个node节点上的所有pod都处于<code>Terminating</code>状态，那么就是该node节点的问题。</p>
+<h4 id="4-尝试删除pod"><a href="#4-尝试删除pod" class="headerlink" title="4. 尝试删除pod"></a>4. 尝试删除pod</h4><p>pod没有被终止可能是进程对信号没有响应，具体的原因需要结合具体的应用和上下文来看。通常可能包括：</p>
+<ul>
+<li><p>在执行的用户空间代码中存在对中断信号无响应<code>tight loop</code>循环</p>
+</li>
+<li><p>在应用运行时（runtime）的一个维护过程（例如垃圾回收）</p>
+</li>
+</ul>
+<p>在这种情况下，采用<a href="#方案B：强行删除Pod">解决方案B</a>可能行的通</p>
+<h4 id="5-重启kubelet"><a href="#5-重启kubelet" class="headerlink" title="5. 重启kubelet"></a>5. 重启kubelet</h4><p>如果其他方法都不起作用，则尝试在pod运行的node节点上重启kubelet。见<a href="#方案C：重启kubelet">解决方案C</a></p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h4 id="方案A：移除finalizer"><a href="#方案A：移除finalizer" class="headerlink" title="方案A：移除finalizer"></a>方案A：移除finalizer</h4><p>从对应的pod上移除其所有的finalizer：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl patch pod [POD_NAME] -p '&#123;"metadata":&#123;"finalizers":null&#125;&#125;'</span><br></pre></td></tr></table></figure>
+
+<h4 id="方案B：强行删除Pod"><a href="#方案B：强行删除Pod" class="headerlink" title="方案B：强行删除Pod"></a>方案B：强行删除Pod</h4><p>请注意，这是一个变通的方法，而不是一个有效的解决方案，目前网上大多数文章都优先推荐了该方法。在执行该方法时应该谨慎小心，注意确保不会产生额外的其他问题。关于强行删除StatefulSet的Pod的信息请见<a href="https://kubernetes.io/docs/tasks/run-application/force-delete-stateful-set-pod/" target="_blank" rel="noopener">这里</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete pod --grace-period=0 --force --namespace [NAMESPACE] [POD_NAME]</span><br></pre></td></tr></table></figure>
+
+<h4 id="方案C：重启kubelet"><a href="#方案C：重启kubelet" class="headerlink" title="方案C：重启kubelet"></a>方案C：重启kubelet</h4><p>如果你可以通过ssh连接登录到node节点，则可以将节点上的kubelet进程重启，如果你没有这权限，那么就需要相关有权限的人来操作。</p>
+<p>在你重启kubelet之前，最好检查一下kubelet日志来确认一下是否有异常问题。</p>
+<h4 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h4><p>如果当执行<code>kubectl get pods</code>再也没显示刚才处于Terminating的Pod，则说明该问题处理完成了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pod -n mynamespace -p nginx-7ef9efa7cd-qasd2</span></span><br><span class="line">NAME                     READY     STATUS             RESTARTS   AGE</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="进一步处理和探究"><a href="#进一步处理和探究" class="headerlink" title="进一步处理和探究"></a>进一步处理和探究</h2><h4 id="1-检查确认finalizer的工作任务是否需要被执行完成才会好"><a href="#1-检查确认finalizer的工作任务是否需要被执行完成才会好" class="headerlink" title="1. 检查确认finalizer的工作任务是否需要被执行完成才会好"></a>1. 检查确认finalizer的工作任务是否需要被执行完成才会好</h4><p>这需要看finalizer都做些哪些工作任务来判断，通常finalizer的任务未完成可能是因为与Volume有关的任务。</p>
+<h4 id="2-确定根本原因"><a href="#2-确定根本原因" class="headerlink" title="2. 确定根本原因"></a>2. 确定根本原因</h4><p>这也是需要看finalizer都做些什么任务来判断的，并且还需要一些特定上下文的信息。如果你有访问node节点的权限，检查一下kubelet的日志，控制器会在里面记录一些有用的信息供你排查。</p>
+<h2 id="相关参考信息"><a href="#相关参考信息" class="headerlink" title="相关参考信息"></a>相关参考信息</h2><ul>
+<li><a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#finalizers" target="_blank" rel="noopener">Finalizers</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/" target="_blank" rel="noopener">Container Lifecycle Hooks</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods" target="_blank" rel="noopener">Termination of Pods</a></li>
+<li><a href="https://unofficial-kubernetes.readthedocs.io/en/latest/concepts/abstractions/pod-termination/" target="_blank" rel="noopener">Unofficial Kubernetes Pod Termination</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/debug-application-cluster/debug-cluster/#looking-at-logs" target="_blank" rel="noopener">Kubelet logs</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/compiler-vs-interpreter/" rel="prev" title="编译器(Compiler)和解释器(Interpreter)">
+      <i class="fa fa-chevron-left"></i> 编译器(Compiler)和解释器(Interpreter)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/patch-vs-put-rest-api/" rel="next" title="RESTful接口中的PATCH和PUT">
+      RESTful接口中的PATCH和PUT <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排查和处理步骤"><span class="nav-number">2.</span> <span class="nav-text">排查和处理步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-收集一些信息"><span class="nav-number">2.0.1.</span> <span class="nav-text">1. 收集一些信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-检查finalizer"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. 检查finalizer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-检查node的状态"><span class="nav-number">2.0.3.</span> <span class="nav-text">3. 检查node的状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-尝试删除pod"><span class="nav-number">2.0.4.</span> <span class="nav-text">4. 尝试删除pod</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-重启kubelet"><span class="nav-number">2.0.5.</span> <span class="nav-text">5. 重启kubelet</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方案A：移除finalizer"><span class="nav-number">3.0.1.</span> <span class="nav-text">方案A：移除finalizer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方案B：强行删除Pod"><span class="nav-number">3.0.2.</span> <span class="nav-text">方案B：强行删除Pod</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方案C：重启kubelet"><span class="nav-number">3.0.3.</span> <span class="nav-text">方案C：重启kubelet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证结果"><span class="nav-number">3.0.4.</span> <span class="nav-text">验证结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进一步处理和探究"><span class="nav-number">4.</span> <span class="nav-text">进一步处理和探究</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-检查确认finalizer的工作任务是否需要被执行完成才会好"><span class="nav-number">4.0.1.</span> <span class="nav-text">1. 检查确认finalizer的工作任务是否需要被执行完成才会好</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-确定根本原因"><span class="nav-number">4.0.2.</span> <span class="nav-text">2. 确定根本原因</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关参考信息"><span class="nav-number">5.</span> <span class="nav-text">相关参考信息</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
