@@ -23,6 +23,7 @@
         data-loading="lazy"
         crossorigin="anonymous"
         async>
+</script>
 {% endblock %}
 
 {% block sidebar %}
