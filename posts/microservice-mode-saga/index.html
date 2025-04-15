@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="背景你已经应用了一个服务一个数据库的模式，每个服务都有自己的数据库。但是一些事务需要跨服务，因此你需要一种机制来保证跨服务的数据一致性。假设你正在建设一个电子商城，客户有其信用额度。应用必须确保新订单不会超过该客户的可用额度限制。因为订单和客户信息在不同的数据库中，因此应用不能简单的使用ACID事务。">
+<meta name="keywords" content="CQRS,Event Sourcing,微服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务模式：Saga">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;microservice-mode-saga&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="背景你已经应用了一个服务一个数据库的模式，每个服务都有自己的数据库。但是一些事务需要跨服务，因此你需要一种机制来保证跨服务的数据一致性。假设你正在建设一个电子商城，客户有其信用额度。应用必须确保新订单不会超过该客户的可用额度限制。因为订单和客户信息在不同的数据库中，因此应用不能简单的使用ACID事务。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;3652855247.jpg">
+<meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;2143801791.jpeg">
+<meta property="og:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;951589825.jpeg">
+<meta property="og:updated_time" content="2025-04-15T02:38:09.387Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;storage.veitor.net&#x2F;2018&#x2F;12&#x2F;3652855247.jpg">
+
+<link rel="canonical" href="http://www.veitor.net/posts/microservice-mode-saga/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>微服务模式：Saga | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/microservice-mode-saga/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          微服务模式：Saga
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-05 01:46:00" itemprop="dateCreated datePublished" datetime="2018-12-05T01:46:00+08:00">2018-12-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>你已经应用了<a href="http://www.veitor.net/article/580.html">一个服务一个数据库</a>的模式，每个服务都有自己的数据库。但是一些事务需要跨服务，因此你需要一种机制来保证跨服务的数据一致性。假设你正在建设一个电子商城，客户有其信用额度。应用必须确保新订单不会超过该客户的可用额度限制。因为订单和客户信息在不同的数据库中，因此应用不能简单的使用ACID事务。</p>
+<a id="more"></a>
+
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>如何处理跨服务的数据一致性问题？</p>
+<h1 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h1><ul>
+<li>2PC不能用</li>
+</ul>
+<h1 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h1><p>将跨服务的事务实现为Saga。在Saga中每个本地事务更新数据库后并发布一个事件来触发下一个本地事务。如果一个本地事务因不符合业务规则而失败，则Saga将执行一系列修正事务，来撤销之前本地事务的修改。</p>
+<p><img src="http://storage.veitor.net/2018/12/3652855247.jpg" alt="saga.jpg" title="saga.jpg"></p>
+<p>实现Saga的两种方式：</p>
+<ul>
+<li>编排（Choreography）：每个本地事务发送领域事件来触发其他服务中的本地事务。</li>
+<li>编制（Orchestration）：一个编制器（对象）告诉参与者该执行什么本地事务。</li>
+</ul>
+<h1 id="示例：基于编排的Saga模式"><a href="#示例：基于编排的Saga模式" class="headerlink" title="示例：基于编排的Saga模式"></a>示例：基于编排的Saga模式</h1><p><img src="http://storage.veitor.net/2018/12/2143801791.jpeg" alt="Saga_Choreography_Flow.001.jpeg" title="Saga_Choreography_Flow.001.jpeg"></p>
+<p>使用基于编排Saga的电商程序在创建订单时包含以下步骤：</p>
+<ol>
+<li><code>订单服务</code>创建一个待确认状态的订单并且发布一个<code>OrderCreated</code>事件；</li>
+<li><code>客户服务</code>接收到了该事件，并尝试去为该订单查询信用。它将发布一个<code>CreditReserved</code>事件或者<code>CreditLimitExcedded</code>事件。</li>
+<li><code>订单服务</code>接收到事件后将改变订单状态为通过或取消。</li>
+</ol>
+<h1 id="示例：基于编制的Saga模式"><a href="#示例：基于编制的Saga模式" class="headerlink" title="示例：基于编制的Saga模式"></a>示例：基于编制的Saga模式</h1><p><img src="http://storage.veitor.net/2018/12/951589825.jpeg" alt="Saga_Orchestration_Flow.001.jpeg" title="Saga_Orchestration_Flow.001.jpeg"></p>
+<p>使用基于编制Saga的电商程序在创建订单时包含以下步骤：</p>
+<ol>
+<li><code>订单服务</code>创建一个待确认状态的订单，同时创建了一个<code>CreateOrderSaga</code>；</li>
+<li><code>CreateOrderSaga</code>发送一个<code>ReserveCredit</code>命令到客户服务；</li>
+<li><code>客户服务</code>尝试为该订单查询信用并发送回复。</li>
+<li><code>CreateOrderSaga</code>接受到回复后发送<code>ApproveOrder</code>或<code>RejectOrder</code>命令到订单服务；</li>
+<li><code>订单服务</code>将订单状态修改为通过或取消。</li>
+</ol>
+<blockquote>
+<p>基于编制的Saga又被称为<code>流程管理器(Process Manager)</code>，因为一个聚合状态的整个流程变化都由Saga来控制。如上步骤示例，可以看出Saga会对前一步骤创建出来的Event作出响应，所以基于编制的Saga流程管理又类似于Event Dispatcher，会分发和处理相应的领域事件。</p>
+</blockquote>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p>这模式有以下好处：</p>
+<ul>
+<li>它能让应用不使用分布式事务而实现跨服务的数据一致性。</li>
+</ul>
+<p>但也有以下缺点：</p>
+<ul>
+<li>编程模型会变得更复杂。开发者必须要设计修正事务来明确撤销之前在saga中做的改动。</li>
+</ul>
+<p>还有以下问题需要去解决：</p>
+<ul>
+<li>为了可靠性，一个服务必须以原子方式更新数据库和发布事件。它不能使用跨数据库和消息broker的分布式事务这种传统方式，相反，它必须使用下列模式中的一种。</li>
+</ul>
+<h1 id="相关模式"><a href="#相关模式" class="headerlink" title="相关模式"></a>相关模式</h1><ul>
+<li><p>一个服务一个数据库</p>
+</li>
+<li><p>以下模式是以原子更新状态和发布事件消息的：</p>
+<ul>
+<li>事件溯源（Event Sourcing）</li>
+<li>应用事件（Application Event）</li>
+</ul>
+</li>
+<li><p>一个基于编排的saga能使用聚合和领域事件发布事件。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CQRS/" rel="tag"># CQRS</a>
+              <a href="/tags/Event-Sourcing/" rel="tag"># Event Sourcing</a>
+              <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/microservice-mode-a-service-a-database/" rel="prev" title="微服务模式：一个服务一个数据库">
+      <i class="fa fa-chevron-left"></i> 微服务模式：一个服务一个数据库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/what-is-SNI/" rel="next" title="什么是SNI？">
+      什么是SNI？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+<script src="https://giscus.app/client.js"
+        data-repo="Veitor/veitor.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU="
+        data-category="Article Discussions"
+        data-category-id="DIC_kwDODV0Ec84CpCCm"
+        data-mapping="title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#限制"><span class="nav-number">3.</span> <span class="nav-text">限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方案"><span class="nav-number">4.</span> <span class="nav-text">方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例：基于编排的Saga模式"><span class="nav-number">5.</span> <span class="nav-text">示例：基于编排的Saga模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例：基于编制的Saga模式"><span class="nav-number">6.</span> <span class="nav-text">示例：基于编制的Saga模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结果"><span class="nav-number">7.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关模式"><span class="nav-number">8.</span> <span class="nav-text">相关模式</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

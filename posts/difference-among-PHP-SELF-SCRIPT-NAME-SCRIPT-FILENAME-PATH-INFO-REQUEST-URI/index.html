@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://www.veitor.net').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言PHP的$_SERVER数组中存在五个和路径相关的变量：PHP_SELF，SCRIPT_NAME， SCRIPT_FILENAME，PATH_INFO，REQUEST_URI，这五个变量经常会被混淆，做下区分。 测试环境Nginx0.8.54 + FastCGI + PHP5.3.4 要先配置Nginx的PATH_INFO，在nginx.conf中加入如下配置： location ~ .* .">
+<meta name="keywords" content="PHP,路径">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别">
+<meta property="og:url" content="http:&#x2F;&#x2F;www.veitor.net&#x2F;posts&#x2F;difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI&#x2F;index.html">
+<meta property="og:site_name" content="Veitor的技术点滴">
+<meta property="og:description" content="前言PHP的$_SERVER数组中存在五个和路径相关的变量：PHP_SELF，SCRIPT_NAME， SCRIPT_FILENAME，PATH_INFO，REQUEST_URI，这五个变量经常会被混淆，做下区分。 测试环境Nginx0.8.54 + FastCGI + PHP5.3.4 要先配置Nginx的PATH_INFO，在nginx.conf中加入如下配置： location ~ .* .">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2025-04-15T02:38:09.386Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.veitor.net/posts/difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别 | Veitor的技术点滴</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Veitor的技术点滴</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-among-PHP-SELF-SCRIPT-NAME-SCRIPT-FILENAME-PATH-INFO-REQUEST-URI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术点滴">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          PHP_SELF，SCRIPT_NAME，SCRIPT_FILENAME，PATH_INFO，REQUEST_URI的区别
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2014-08-05 00:35:05" itemprop="dateCreated datePublished" datetime="2014-08-05T00:35:05+08:00">2014-08-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-04-15 10:38:09" itemprop="dateModified" datetime="2025-04-15T10:38:09+08:00">2025-04-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PHP/" itemprop="url" rel="index">
+                    <span itemprop="name">PHP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><a href="http://www.php.net" target="_blank" rel="noopener" title="PHP Hypertext Preprocessor">PHP</a>的<a href="http://cn2.php.net/reserved.variables.server.php" target="_blank" rel="noopener" title="$_SERVER">$_SERVER</a>数组中存在五个和路径相关的变量：<code>PHP_SELF</code>，<code>SCRIPT_NAME</code>， <code>SCRIPT_FILENAME</code>，<code>PATH_INFO</code>，<code>REQUEST_URI</code>，这五个变量经常会被混淆，做下区分。</p>
+<h3 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h3><p>Nginx0.8.54 + FastCGI + PHP5.3.4 要先配置Nginx的<code>PATH_INFO</code>，在<code>nginx.conf</code>中加入如下配置：</p>
+<pre><code>location ~ .* .php {
+    fastcgi_pass   127.0.0.1:9000;
+    fastcgi_index  index.php;
+    #从$fastcgi_script_name中分离出真正执行的脚本名称和PATH_INFO
+    set $real_script_name $fastcgi_script_name;
+    if ($fastcgi_script_name ~ &quot;^(.+?.php)(/.+)$&quot;) {
+        set $real_script_name $1;
+        set $path_info $2;
+     }
+    #重新设置SCRIPT_FILENAME
+    fastcgi_param SCRIPT_FILENAME $document_root$real_script_name;
+    fastcgi_param  QUERY_STRING       $query_string;
+    fastcgi_param  REQUEST_METHOD     $request_method;
+    fastcgi_param  CONTENT_TYPE       $content_type;
+    fastcgi_param  CONTENT_LENGTH     $content_length;
+    #重新设置SCRIPT_NAME
+    fastcgi_param SCRIPT_NAME $real_script_name;
+    fastcgi_param PATH_INFO $path_info;
+    fastcgi_param  REQUEST_URI        $request_uri;
+    fastcgi_param  DOCUMENT_URI       $document_uri;
+    fastcgi_param  DOCUMENT_ROOT      $document_root;
+    fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+    fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+    fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+    fastcgi_param  REMOTE_ADDR        $remote_addr;
+    fastcgi_param  REMOTE_PORT        $remote_port;
+    fastcgi_param  SERVER_ADDR        $server_addr;
+    fastcgi_param  SERVER_PORT        $server_port;
+    fastcgi_param  SERVER_NAME        $server_name;
+    # PHP only, required if PHP was built with --enable-force-cgi-redirect
+    fastcgi_param  REDIRECT_STATUS    200;
+}</code></pre><p>我们的根目录为<code>/var/www</code>，测试域名为<code>example.com</code>（不过这个域名只能改<code>hosts</code>文件YY一下了），结构如下：</p>
+<pre><code>var
+ |---www
+       |---test
+             |---test.php</code></pre><h3 id="测试脚本"><a href="#测试脚本" class="headerlink" title="测试脚本"></a>测试脚本</h3><p>使用如下脚本进行测试：</p>
+<pre><code>&lt;?php
+    echo &apos;SCRIPT_NAME=&apos; . $_SERVER[&apos;SCRIPT_NAME&apos;] . &apos;&lt;br /&gt;&apos;;
+    echo &apos;SCRIPT_FILENAME=&apos; . $_SERVER[&apos;SCRIPT_FILENAME&apos;] . &apos;&lt;br /&gt;&apos;;
+    echo &apos;PATH_INFO=&apos; . $_SERVER[&apos;PATH_INFO&apos;] . &apos;&lt;br /&gt;&apos;;
+    echo &apos;REQUEST_URI=&apos; . $_SERVER[&apos;REQUEST_URI&apos;] . &apos;&lt;br /&gt;&apos;;
+?&gt;</code></pre><h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><ul>
+<li>PHP_SELF: 当前所执行的脚本的文件名，这个值是相对于根目录来说。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>PHP_SELF</code>的值为 <strong>/test/test.php</strong>。</li>
+<li>SCRIPT_NAME： 当前执行的脚本的路径。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>SCRIPT_NAME</code>的值 为<strong>/test/test.php</strong>。这个变量是在<a href="http://tools.ietf.org/html/rfc3875" target="_blank" rel="noopener" title="CGI/1.1">CGI/1.1</a>中定义的。</li>
+<li>SCRIPT_FILENAME： 当前执行的脚本的绝对路径。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>SCRIPT_FILENAME</code>的值 为<strong>/var/www/test/test.php</strong>。 注意：如果一个脚本以相对路径，<a href="http://php.net/manual/en/features.commandline.php" target="_blank" rel="noopener" title="PHP CLI">CLI</a>方式来执行，例如<strong>../test/test.php</strong>，那么 <code>$_SERVER[&#39;SCRIPT_FILENAME&#39;]</code>的值为相对路径，即<strong>../test/test.php</strong>。</li>
+<li>PATH_INFO：客户端提供的路径信息，即在实际执行脚本后面尾随的内容，但是会去掉<strong>Query String</strong>。 如果请求<strong><a href="http://example.com/test/test.php/a/b?k=v" target="_blank" rel="noopener">http://example.com/test/test.php/a/b?k=v</a></strong>，则<code>PATH_INFO</code>的值为<strong>/a/b</strong>。 <a href="http://tools.ietf.org/html/rfc3875" target="_blank" rel="noopener" title="CGI/1.1">CGI1.1</a>标准中如下描述：”<strong>The PATH_INFO string is the trailing part of thecomponent of the script URI that follows the SCRIPT_NAME part of the path.</strong>“</li>
+<li>REQUEST_URI：包含HTTP协议中定义的URI内容。 如果请求<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>，则<code>REQUEST_URI</code> 为<strong>/test/test.php?k=v</strong></li>
+</ul>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ul>
+<li><p>PHP_SELF VS SCRIPT_NAME： <code>PHP_SELF</code>和<code>SCRIPT_NAME</code>的值在大部分情况下都是一样的，但是访问 <strong><a href="http://example.com/test/test.php/a/b?k=v" target="_blank" rel="noopener">http://example.com/test/test.php/a/b?k=v</a></strong>这类URL时候，<code>PHP_SELF</code> 为<strong>/test/test.php/a/b</strong>，<code>SCRIPT_NAME</code>为<strong>/test/test.php</strong>，可以看出<code>PHP_SELF</code> 比<code>SCRIPT_NAME</code>多了<code>PATH_INFO</code>的内容。</p>
+</li>
+<li><p>REQUEST_URI VS SCRIPT_NAME： 在访问<strong><a href="http://example.com/test/test.php?k=v" target="_blank" rel="noopener">http://example.com/test/test.php?k=v</a></strong>后，<code>REQUEST_URI</code> 为<strong>/test/test.php?k=v</strong>，<code>SCRIPT_NAME</code>为<strong>/test/test.php</strong>，可以看出<code>REQUEST_URI</code> 比<code>SCRIPT_NAME</code>多了<strong>Query String</strong>。 如果<strong><a href="http://example.com/test/test.php" target="_blank" rel="noopener">http://example.com/test/test.php</a></strong>在服务器端做了<strong>rewrite</strong>：</p>
+<pre><code>rewrite /test/test.php /test/test2.php;</code></pre></li>
+</ul>
+<pre><code>那么`REQUEST_URI`为**/test/test.php**，`SCRIPT_NAME`为**/test/test2.php**。</code></pre><h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://tools.ietf.org/html/draft-robinson-www-interface-00" target="_blank" rel="noopener">http://tools.ietf.org/html/draft-robinson-www-interface-00</a> <a href="http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri" target="_blank" rel="noopener">http://stackoverflow.com/questions/279966/php-self-vs-path-info-vs-script-name-vs-request-uri</a> <a href="http://ca.php.net/manual/en/reserved.variables.server.php" target="_blank" rel="noopener">http://ca.php.net/manual/en/reserved.variables.server.php</a> (完)</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/%E8%B7%AF%E5%BE%84/" rel="tag"># 路径</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/responsive-and-adaptive/" rel="prev" title="两个宜于『统一Web』的方案：响应式与自适应">
+      <i class="fa fa-chevron-left"></i> 两个宜于『统一Web』的方案：响应式与自适应
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/take-big-data-with-mysql-unbuffered-query-function/" rel="next" title="用mysql_unbuffered_query函数取大数据">
+      用mysql_unbuffered_query函数取大数据 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+<script src="https://giscus.app/client.js"
+        data-repo="Veitor/veitor.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU="
+        data-category="Article Discussions"
+        data-category-id="DIC_kwDODV0Ec84CpCCm"
+        data-mapping="title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试环境"><span class="nav-number">2.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试脚本"><span class="nav-number">3.</span> <span class="nav-text">测试脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试结果"><span class="nav-number">4.</span> <span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#区别"><span class="nav-number">5.</span> <span class="nav-text">区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Veitor</span>
+</div>
+
+        
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1253040939&web_id=1253040939"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
