@@ -8,15 +8,6 @@
   <div class="posts-expand">
     {{ partial('_macro/post.swig', {post: page}) }}
   </div>
-
-{% endblock %}
-
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
-
-{### 下面script代码块使用了giscus作为评论组件，不用时去除下面script ###}
-{% block comment %}
 <script src="https://giscus.app/client.js"
         data-repo="Veitor/veitor.github.io"
         data-repo-id="MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU="
@@ -32,5 +23,8 @@
         data-loading="lazy"
         crossorigin="anonymous"
         async>
-</script>
+{% endblock %}
+
+{% block sidebar %}
+  {{ sidebar_template.render(true) }}
 {% endblock %}
