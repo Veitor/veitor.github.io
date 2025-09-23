@@ -2,7 +2,7 @@
 title: B树与数据库索引
 categories:
   - Mysql
-date: 2025-09-23 15:30:48
+date: 2025-09-23 16:55:35
 ---
 
 ## 什么是B树
@@ -15,11 +15,11 @@ B树在许多软件中都扮演着基础角色，尤其是数据库管理系统�
 
 <!-- more -->
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree" width="100%" height="500px"></iframe>
 
 如果上述动画速度过快或过慢，你可以调整本文中所有与B树相关操作的动画速度。请在下方进行调整：
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree-speed-adjuster" width="100%" height="90px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree-speed-adjuster" width="100%" height="90px"></iframe>
 
 每个 B 树都由节点（矩形）和子指针（连接节点的线）组成。我们将最顶层的节点称为根节点，最底层的节点称为叶子节点，其余的节点则称为内部节点。B 树的正式定义可能因询问对象的不同而有所差异，但以下是一个相当典型的定义。
 
@@ -41,7 +41,7 @@ B树的另一个关键特性是有序性。在每个节点中，元素都保持�
 
 以这种方式进行搜索时，为了查找一个键，你在树的每一层只需访问一个节点。因此，树的层数越少（或者说树越浅），搜索速度就越快。试着在下面的树中搜索一些键：
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree-search" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#btree-search" width="100%" height="500px"></iframe>
 
 当你有大量数据需要持久化到长期存储设备（磁盘）时，B树特别适用。这是因为每个节点使用固定数量的字节。字节数量可以进行调整，以很好地适配**磁盘块**。
 
@@ -65,7 +65,7 @@ B树非常优秀，但许多数据库索引使用了一种更“高级”的变�
 
 下面是另一个可视化示例，展示具有这些修改特性的B+树是如何工作的。这次除了**添加键值对**外，你还可以分别**调整内部节点**和**叶子节点**中的键的数量。
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree" width="100%" height="500px"></iframe>
 
 为什么 B+ 树更适合用于数据库呢？主要有两个原因。
 
@@ -74,7 +74,7 @@ B树非常优秀，但许多数据库索引使用了一种更“高级”的变�
 
 也来尝试一下在 B+ 树上进行搜索吧：
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-search" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-search" width="100%" height="500px"></iframe>
 
 ## 在Mysql中使用B+树
 
@@ -90,7 +90,7 @@ B树非常优秀，但许多数据库索引使用了一种更“高级”的变�
 
 使用下面的可视化示例来查看每个内部节点和每个叶子节点中的键数量如何影响树的深度。树的深度越大，查找元素的速度就越慢。因此，我们希望数据库中的树尽可能浅！
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-depth-line" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-depth-line" width="100%" height="500px"></iframe>
 
 在 InnoDB 表上创建二级索引也很常见，二级索引是创建在非主键列上的索引。在 SQL 查询中，可能需要这些索引来加快 WHERE 子句的过滤速度。为每个二级索引都会构建一棵额外的持久化 B+ 树。对于这些 B+ 树，其键是用户选择用来创建索引的列，值则是关联行的主键。每当查询使用二级索引时：
 
@@ -162,7 +162,7 @@ SELECT username FROM user WHERE email = 'x@veitor.net';
 
 如果你想了解 `分裂百分比` 对连续插入和随机插入模式的影响，可以查看下面的交互式可视化图表。使用滑块设置 `分裂百分比`，折线图会更新，显示在插入 400 个键的过程中不同阶段前 5 次插入需要访问的节点数量。请注意，在大多数情况下，`连续插入` 需要访问的节点数量比 `随机插入` 少得多，而且也更可预测。
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-inserts-nodes-visited" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-inserts-nodes-visited" width="100%" height="500px"></iframe>
 
 ## 数据顺序
 
@@ -178,11 +178,11 @@ FROM post
 
 设想一下，如果我们使用 UUIDv4 作为主键会怎样。在下面的 B+ 树中，已经向表中插入了一堆随机键和对应的值。尝试 `查找值的范围`。你看到了什么？
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-random-range-search" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-random-range-search" width="100%" height="500px"></iframe>
 
 注意到值序列分布在许多非连续的叶子节点中。另一方面，可以考虑 `查找` 按顺序插入的值。
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-sequential-range-search" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-sequential-range-search" width="100%" height="500px"></iframe>
 
 
 在这种情况下，包含搜索结果的所有页面都会彼此相邻。甚至有可能搜索几行数据，而这些数据都在同一页面中彼此相邻。对于这种查询模式，我们可以使用顺序主键来减少需要读取的页面数量。
@@ -199,11 +199,11 @@ FROM post
 
 假设每个树节点只有 100 字节，子指针为 8 字节，值为 8 字节。每个节点可以存储 4 个 UUID（加上 4 个子指针）。点击下面的播放插入序列按钮查看插入过程。
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-key-size-large" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-key-size-large" width="100%" height="500px"></iframe>
 
 如果我们使用的是 BIGINT，那么每个节点就可以容纳 6 个键（以及相应的子指针）。这将使树的层级更浅，有助于提升性能。
 
-<iframe src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-key-size-small" width="100%" height="500px"></iframe>
+<iframe frameborder="0" scrolling="no" src="https://storage.veitor.net/2025/09/iframe/iframe.html#bplustree-key-size-small" width="100%" height="500px"></iframe>
 
 ## 页和InnoDB
 

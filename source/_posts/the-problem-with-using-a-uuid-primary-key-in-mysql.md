@@ -1,6 +1,6 @@
 ---
 title: 在Mysql中使用UUID作为主键的问题
-tags:
+categories:
   - Mysql
 date: 2025-09-23 15:30:48
 ---
