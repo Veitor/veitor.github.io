@@ -1,10 +1,12 @@
 version: "3"
 services:
   hexo:
-    image: registry.cn-hangzhou.aliyuncs.com/hangjia/hexo:latest
-    volumes:
-      - ./:/home
-    working_dir: /home
+    build: 
+      context: .
+      dockerfile: docker/local/Dockerfile
     ports:
-      - 80:80
-    command: "server -p 80"
+      - 80:4000
+    volumes:
+      - ./themes:/home/themes
+      - ./source:/home/source
+      - ./_config.yml:/home/_config.yml
