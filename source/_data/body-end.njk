@@ -1,0 +1,53 @@
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>

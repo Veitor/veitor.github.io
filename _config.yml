@@ -3,10 +3,10 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Veitor的技术点滴
-subtitle: 'PHP,DDD,CQRS,Event Sourcing,Kubernetes,Docker,Golang'
-description: ''
-keywords: 'php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker,互联网,化龙巷,常州'
+title: Veitor的技术博客
+subtitle: ''
+description: '关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣'
+keywords: 'php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker'
 author: Veitor
 language: zh-CN
 timezone: Asia/Shanghai
@@ -43,11 +43,15 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
+syntax_highlighter: prismjs
 highlight:
-  enable: true
-  line_number: true
   auto_detect: false
-  tab_replace: ''
+  line_number: true
+  line_threshold: 0
+prismjs:
+  preprocess: false
+  line_number: true
+  line_threshold: 0
 
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
@@ -94,29 +98,32 @@ theme: next
 
 #关于主题的配置
 theme_config:
+  sidebar:
+    offset: 12
+  custom_file_path:
+    variable: source/_data/variables.styl
+    postBodyEnd: source/_data/post-body-end.njk
+    bodyEnd: source/_data/body-end.njk
+  codeblock:
+    theme: 
+      light: default
+      dark: default
+    prism:
+      light: prism-tomorrow.min
+      dark: prism-tomorrow.min
+    copy_button:
+      enable: true
 #  custom_file_path:
 #    postMeta: source/_data/post-meta.swig
-  cnzz_siteid: 1253040939
   reading_progress:
     enable: true
-  gitalk:
-    enable: false
-    github_id: veitor # GitHub repo owner
-    repo: veitor.github.io # Repository name to store issues
-    client_id: 8fffdd9e888794e7cafb # GitHub Application Client ID
-    client_secret: gitalk-github-client-secret # GitHub Application Client Secret
-    admin_user: veitor # GitHub repo owner and collaborators, only these guys can initialize gitHub issues
-    distraction_free_mode: true # Facebook-like distraction free mode
-    # Gitalk's display language depends on user's browser or system environment
-    # If you want everyone visiting your site to see a uniform language, you can set a force language value
-    # Available values: en | es-ES | fr | ru | zh-CN | zh-TW
-    language:
+  scheme: Pisces
   social:
-    GitHub: https://github.com/veitor || github
+    GitHub: https://github.com/veitor || fab fa-github
     #E-Mail: mailto:yourname@gmail.com || envelope
-    Weibo: https://weibo.com/veitor || weibo
+    Weibo: https://weibo.com/veitor || fab fa-weibo
     #Google: https://plus.google.com/yourname || google
-    Twitter: https://twitter.com/Veitor_424 || twitter
+    Twitter: https://twitter.com/Veitor_424 || fab fa-twitter
     #FB Page: https://www.facebook.com/yourname || facebook
     #StackOverflow: https://stackoverflow.com/yourname || stack-overflow
     #YouTube: https://youtube.com/yourname || youtube
@@ -130,17 +137,12 @@ theme_config:
     rounded: true
     # If true, the avatar will be rotated with the cursor.
     rotated: false
-  scheme: Pisces
-  vendors:
-    # linux上无法通过generate生成字体文件，这里使用外部的
-    fontawesome: //cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css
-    _internal: lib
   menu:
-    首页: / || home
-    归档: /archives/ || archive
-    标签: /tags/ || tags
-    分类: /categories/ || th
-    关于: /about/ || user
+    首页: / || fa fa-home
+    归档: /archives/ || fa fa-archive
+    标签: /tags/ || fa fa-tags
+    分类: /categories/ || fa fa-th
+    # 关于: /about/ || fa fa-user
 #    招聘: /hire/ || fire
   footer:
     beian:
@@ -148,7 +150,7 @@ theme_config:
       icp:  苏ICP备14016154号-1
     since: 2019
     icon:
-      name: heart
+      name: fa fa-heart
       animated: true
       color: "#ff0000"
   favicon:
@@ -156,7 +158,12 @@ theme_config:
     medium: /favicon.ico
   seo: true
   baidu_push: true
+  baidu_analytics: "c422d42123239fdefb0180ed522d050a"
   fancybox: true
+  lazyload: true
+  pangu: true
+  local_search:
+    enable: true
 
 
 # Deployment

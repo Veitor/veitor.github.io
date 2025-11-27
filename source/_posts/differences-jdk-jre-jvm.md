@@ -2,7 +2,7 @@
 title: 'JDK、JRE和JVM的区别'
 categories:
 - 计算机基础
-  date: 2022-02-01 14:11:13
+date: 2022-02-01 14:11:13
 ---
 
 JDK（Java Deveplopment Kit）是一个用于开发java应用程序的软件开发环境。它包含了JRE（Java Runtime Environment）、解释器/加载器(Java)、编译器（javac）、打包模块(jar)、文档生成器（Javadoc）和其他java开发中所需要的工具。
@@ -17,7 +17,9 @@ JDK（Java Deveplopment Kit）是一个用于开发java应用程序的软件开�
 
 - 每当在命令行中运行java程序时，一个JVM实例将会被创建。
 
-![pic](https://media.geeksforgeeks.org/wp-content/uploads/20210218150010/JDK.png)
+![pic](https://storage.veitor.net/2022/02/JDK.png)
+
+<!-- more -->
 
 1. JDK（Java Development Kis）是一个提供了开发和运行Java程序环境的工具套件，其包含了两个东西：
     - 开发工具（为你开发java程序提供了环境）
@@ -40,7 +42,7 @@ JRE的组件有：
 
 假设Java源码为`Example.java`，其文件被编译成了一组字节码被存储在了`.class`文件中，这里是`Example.class`。
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/JRE_JDK_JVM.jpg)
+![](https://storage.veitor.net/2022/02/JRE_JDK_JVM.jpg)
 
 下面的行为发生在运行时：
 
@@ -64,5 +66,5 @@ JVM在Java程序运行时成为JRE的一个实例，它是一个运行时解释�
 - Java应用程序被称为WORA（Write Once Run Anywhere）。这意味着程序员可以在一个系统上开发java代码，并可以期望它在任何其他支持Java的系统上运行，而无需进行任何调整，这是因为JVM的原因。
 - 当我们编译`.java`文件时，Java编译器生成的`.class`文件名（包含了字节码）与`.java`文件中的class类名相同。当我们运行`.class`文件时，其会参与到JVM的各个步骤环节中。
 
-![](https://media.geeksforgeeks.org/wp-content/uploads/jvm-3.jpg)
+![](https://storage.veitor.net/2022/02/jvm-3.jpg)
 

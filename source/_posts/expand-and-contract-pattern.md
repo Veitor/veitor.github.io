@@ -7,7 +7,7 @@ categories:
 date: 2025-11-25 16:10:53
 ---
 
-![expand-and-contract-pattern-cover.png](https://storage.veitor.net/2025/11/expand-and-contract-pattern-cover.png)
+![expand-and-contract-pattern-cover.png](https://storage.veitor.net/2025/11/expand-and-contract-pattern-cover.png@articleCover)
 
 ## 引言
 
