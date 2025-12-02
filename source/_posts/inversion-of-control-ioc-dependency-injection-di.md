@@ -77,6 +77,8 @@ class UserService {
 
 接下来看一下控制反转（IoC）的主要模式。虽然依赖注入是最常被提及的，但还有其他几种重要的模式：
 
+![ioc-patterns.webp](https://storage.veitor.net/2025/12/ioc-patterns.webp)
+
 ### Dependency Injection (DI)
 
 依赖注入（DI）是 IoC 的一种具体实现形式，它把依赖“注入”到类中，而不是由类自己创建。可以把它理解为：
@@ -413,6 +415,8 @@ class NewsChannel implements Observer {
 - DI 专门关注对象如何接收其依赖
 
 ## 使用 IoC 和 DI 模式将高耦合类转化为松耦合类
+
+![lossely-coupled-transformation-process.webp](https://storage.veitor.net/2025/12/lossely-coupled-transformation-process.webp)
 
 图片展示了一个包含 4 个步骤的转换过程：
 
