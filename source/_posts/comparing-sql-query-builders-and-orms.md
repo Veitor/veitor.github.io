@@ -45,7 +45,6 @@ date: 2025-11-28 14:51:46
 
 #### 原生SQL的缺点
 
-While native querying has some definite strong points, it is not without its problems.
 尽管原生SQL有一些明显的优点，但它也有一些缺点。
 
 当你在应用程序中使用原生SQL与数据库进行交互时，你必须理解底层数据结构才能编写有效的查询。你需要完全负责应用程序使用的数据类型和结构与数据库中存储的数据类型和结构之间的映射关系。
