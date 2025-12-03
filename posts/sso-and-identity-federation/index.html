@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="最近在研究和开发统一用户身份认证的系统，与此同时也了解到市场上有着如IAM、IDaaS这样的公有云产品，可以将应用快速接入实现统一用户身份认证、权限管理、SSO单点登录等功能。 我主要了解的是阿里云的IDaaS产品，一直认为阿里云产品文档是一个非常好的学习途径，在了解该类产品和功能过程中，阿里云在文档中除了说明产品的使用，更是加入了一些概念的讲解、知识的讲解。这里倒是要摘一些重要的概念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我所理解的单点登录和身份联邦">
+<meta property="og:url" content="http://www.veitor.net/posts/sso-and-identity-federation/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="最近在研究和开发统一用户身份认证的系统，与此同时也了解到市场上有着如IAM、IDaaS这样的公有云产品，可以将应用快速接入实现统一用户身份认证、权限管理、SSO单点登录等功能。 我主要了解的是阿里云的IDaaS产品，一直认为阿里云产品文档是一个非常好的学习途径，在了解该类产品和功能过程中，阿里云在文档中除了说明产品的使用，更是加入了一些概念的讲解、知识的讲解。这里倒是要摘一些重要的概念。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-28T08:52:23.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.994Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/sso-and-identity-federation/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/sso-and-identity-federation/","path":"posts/sso-and-identity-federation/","title":"我所理解的单点登录和身份联邦"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>我所理解的单点登录和身份联邦 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E3%80%8C%E8%BA%AB%E4%BB%BD%E8%81%94%E9%82%A6%E3%80%8D%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是「身份联邦」？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95-Single-Sign-On%EF%BC%88SSO%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">单点登录 Single Sign On（SSO）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BA%AB%E4%BB%BD%E8%81%94%E9%82%A6-Identity-Federation"><span class="nav-number">3.</span> <span class="nav-text">身份联邦 Identity Federation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BA%AB%E4%BB%BD%E6%8F%90%E4%BE%9B%E6%96%B9-IDP-Identity-Provider"><span class="nav-number">3.1.</span> <span class="nav-text">身份提供方 IDP Identity Provider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5-Provisioning"><span class="nav-number">3.2.</span> <span class="nav-text">同步 Provisioning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86-Permission-Management"><span class="nav-number">3.3.</span> <span class="nav-text">权限管理 Permission Management</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BE%E4%BA%A4%E8%B4%A6%E5%8F%B7%E7%99%BB%E5%BD%95-Social-Login"><span class="nav-number">3.4.</span> <span class="nav-text">社交账号登录 Social Login</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-Conclusion"><span class="nav-number">4.</span> <span class="nav-text">总结 Conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/sso-and-identity-federation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="我所理解的单点登录和身份联邦 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我所理解的单点登录和身份联邦
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-28 16:52:23" itemprop="dateCreated datePublished" datetime="2020-07-28T16:52:23+08:00">2020-07-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>最近在研究和开发统一用户身份认证的系统，与此同时也了解到市场上有着如IAM、IDaaS这样的公有云产品，可以将应用快速接入实现统一用户身份认证、权限管理、SSO单点登录等功能。</p>
+<p>我主要了解的是阿里云的IDaaS产品，一直认为阿里云产品文档是一个非常好的学习途径，在了解该类产品和功能过程中，阿里云在文档中除了说明产品的使用，更是加入了一些概念的讲解、知识的讲解。这里倒是要摘一些重要的概念。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="什么是「身份联邦」？"><a href="#什么是「身份联邦」？" class="headerlink" title="什么是「身份联邦」？"></a>什么是「身份联邦」？</h2><p>「身份联邦」并不是一个新词，我们几乎天天都会在使用「身份联邦」概念下的应用场景。但在身份安全领域，即便是在行业内，很多人对「单点登录」的认知都是不准确的，对「身份联邦」甚至没有任何认知，或和「单点登录」的概念混淆不清。而在行业外，可想而知这两个词汇可能带来的困扰。</p>
+<p>对于最终使用的用户而言，这两者实现提供的使用体验很相近。实现任意一种，普通用户都只需要登录一次，即可访问所有的应用服务。（当然，对于开发人员和管理人员来讲，身份联邦比单点登录高效地多，也复杂地多。）所以从需求侧，往往对这两个词的混淆不求甚解。</p>
+<p>不仅如此，几乎所有新一代的 IAM 统一身份认证平台 都会在某种程度上「同时」实现这两个概念，而又不加说明，这使得两个概念的边界更加模糊。为了让阿里云 IDaaS 的客户对这两个概念有所区分，增强对 IAM 产品的认知，本文会梳理两个概念的区别和优劣。</p>
+<p>我们从单点登录开始说起。</p>
+<h2 id="单点登录-Single-Sign-On（SSO）"><a href="#单点登录-Single-Sign-On（SSO）" class="headerlink" title="单点登录 Single Sign On（SSO）"></a>单点登录 Single Sign On（SSO）</h2><p>单点登录 不是一个技术实现方式的定义，而是代表着一种特定用户认证体验的观念。一般而言，单点登录指的是：</p>
+<blockquote>
+<p>用户只需要认证一次，即可用一个身份访问所有在当前可信环境中的所有应用。</p>
+</blockquote>
+<p>只要实现了这种效果，就可以定义为实现了「单点登录」。企业常见的实现方式多种多样，但往往并没有过多考虑安全性和扩展性，远远低估了一套完整统一身份认证系统的复杂度，在实现后也往往需要重新设计或进行外部采购。实现方式包括使用 cookie、jsonp、页面重定向 等等，也包括了一些单点登录标准协议例如 SAML、OIDC 等。（这里会触及到一点「身份联邦」的概念，但远不完整。）</p>
+<p>有一些人会把「用户访问所有的应用都共享一套用户名+密码」作为 单点登录 的另一种形式，用户每访问不同应用都需要单独输入一次统一共享用户名+密码，我们认为这种实现方式是「假单点登录」（虽然在一些场景中我们必须通过「密码代填」来实现 SSO），在这里不多讨论，免得让概念更加错综复杂。</p>
+<p>往往企业实现单点登录后，各系统身份仍然相对隔离没有打通，很可能应用系统自己的账密登录入口也仍然保留着，各系统仍然单独维护着独立的账号体系。这种情况的问题如下：</p>
+<ol>
+<li>由于一套账号即可通用所有应用，需要依赖每个应用独立维护多因素认证，以达到最低安全要求，避免单点爆破，消耗研发资源。</li>
+<li>员工离职后，需要手动为其从每个应用系统中删除&#x2F;禁用信息。如有遗忘：<ol>
+<li>可能会造成长期信息泄露，造成潜在安全隐患。</li>
+<li>可能会导致企业长期为离职员工维护企业软件 license，造成额外开支。</li>
+</ol>
+</li>
+</ol>
+<p>于此需求，「身份联邦」与「单点登录」的区别浮现出来。</p>
+<h2 id="身份联邦-Identity-Federation"><a href="#身份联邦-Identity-Federation" class="headerlink" title="身份联邦 Identity Federation"></a>身份联邦 Identity Federation</h2><p>「身份联邦」是实现「单点登录」的一种标准方式，但「单点登录」远不是「身份联邦」的唯一目的。只要实现了「身份联邦」，即必然已经实现了「单点登录」，而反之不成立。</p>
+<p>「身份联邦」的目的是用标准协议来打通不同安全域之间的用户身份，在跨域、跨产品、跨公司的场景中实现身份信息共享，包含了一系列认证、授权、身份治理、跨域身份同步、统一 license 管理、跨域字段转换的策略、协议和最佳实现。使用实现了「身份联邦」的 IAM 服务，将可以在企业 IT 架构中将身份与权限管理层完整抽离出来，并统一到一个安全平台进行管理。「身份联邦」是一个涵盖面非常广（且仍然在快速完善中）的词。</p>
+<p>在「身份联邦」的实现中，浮现出了一个身份和权限访问的中央处理机制，负责统筹所有应用的访问服务。各应用系统不再单独维护独立的账号体系，全部转化为统一的登录入口，登录后将用户分发到希望访问的目标应用中去。</p>
+<p>这个处理身份和权限管理的核心即为 IDP Identity Provider，在服务中处于身份提供方。其他的业务服务为 SP Service Provider，服务提供方。</p>
+<h3 id="身份提供方-IDP-Identity-Provider"><a href="#身份提供方-IDP-Identity-Provider" class="headerlink" title="身份提供方 IDP Identity Provider"></a>身份提供方 IDP Identity Provider</h3><p>这样一来，每个单独的业务应用将完全无需关注安全的「身份治理」，包括二次认证、密码强度、定期改密、风险识别等等能力，即可通过统一在 IDP 上增加安全机制，实现不需要应用任何改造，即可满足任意场景的访问安全需要。</p>
+<p>除此外，IDP 可以统一管理所有用户的隐私设置以及信息共享，很多国家对各自公民的隐私信息都有立法保护，著名的有欧洲的 GDPR 以及加州的 CCPA。出于对合规的诉求，外国企业（特别是面向顾客提供服务的零售、娱乐等行业）往往对于一个统一登录入口、统一管理所有应用访问安全性有刚性需要。国内虽然立法上相对落后，但明确正在加速完善网络安全、隐私安全的保障，很快由安全合规推进的 IDP 需求会迎来爆发期。</p>
+<p>由于「身份联邦」强调的互操作性（Interoperability，即系统之间按照标准协议对接而获得的一种解耦性），在「身份联邦」体系中实现的「单点登录」不能再依赖于 cookie，不可限制在特定安全域内，需要统一使用 SAML、OIDC、CAS 等标准协议实现跨域（或非跨域）单点登录、单点登出的能力。由此一来，按照标准协议实施的应用，有能力与任何支持 SAML、OIDC、CAS 的 IDP 进行配置集成，实现依赖于任意 IDP 身份源的单点登录。</p>
+<h3 id="同步-Provisioning"><a href="#同步-Provisioning" class="headerlink" title="同步 Provisioning"></a>同步 Provisioning</h3><p>单点登录的实现是不需要依赖于同步的，但身份联邦涉及到多套身份体系之间的关联、映射和集中管理，需要同步来作为 IDP 对外连接的关键触角。</p>
+<p>企业的 IDP 往往只有一个（或有限的、架构需要的几个），但身份系统在绝大部分关键系统中都存在。如果希望实现在 IDP 中对账号的「一处修改、处处生效」的话，同步机制必不可少。</p>
+<p>一个很常见的场景，企业现有的 IAM 作为身份权限管理核心使用，但针对用户的增删改查等操作，仍然需要同步到 AD 中，因为仍然会有应用依赖于 AD 作为他们的 IDP。</p>
+<p>IDP 需要具备类似 LDAP、SCIM 这样的标准身份提供、身份交换的协议，与其他的 IDP、SP 在身份层面打通，实现身份联邦治理。</p>
+<h3 id="权限管理-Permission-Management"><a href="#权限管理-Permission-Management" class="headerlink" title="权限管理 Permission Management"></a>权限管理 Permission Management</h3><p>有一些 IDP 会延展现有能力，提供统一的权限系统管理能力。这是 FID（Federated Identity Management 联邦身份管理）的自然延伸。当企业中的核心 IDP 包揽了所有应用的身份对接后，员工的生命周期往往在 IDP 中进行集中管理，设置员工权限往往是下一个步骤。</p>
+<p>员工能够访问哪些应用，能访问应用中的哪些菜单、按钮甚至数据，都可以算在身份联邦体系中 IDP 可以提供的权限集中管理能力范围内。</p>
+<h3 id="社交账号登录-Social-Login"><a href="#社交账号登录-Social-Login" class="headerlink" title="社交账号登录 Social Login"></a>社交账号登录 Social Login</h3><p>「身份联邦」其实很常见，我们天天使用的扫码登录即是一例。</p>
+<p>在网络中，支付宝、淘宝、微信等（海外则包括 Facebook、Google 等）存有用户身份信息的平台（IDP 身份提供方），通过 OAuth 协议，将自己的平台用户信息开放给自由注册的第三方调用，并提供统一认证机制（扫码、或者账密登录），统一返回结果给应用（即 SP 服务提供方）。</p>
+<p>在 AWS、Google 中都有「联合身份」（Federate Identity）的概念，可以这么理解：「联合身份」是一个动作片段，最终实现的结果是「身份联邦」。</p>
+<h2 id="总结-Conclusion"><a href="#总结-Conclusion" class="headerlink" title="总结 Conclusion"></a>总结 Conclusion</h2><p>「单点登录」只牵扯到「认证」这一部分的技术实现，可见单点登录的实现是「身份联邦」整体能力的一小块关键部分。「单点登录」强调的 是用户与客户端之间的互动，而「身份联邦」则普遍需要包含用户对用户、用户对服务、以及服务之间的互动。</p>
+<p>由此我们可以想象，在公有云上，「身份联邦」将会依托于各层面的身份和权限的协议和标准，组成一个网状结构。网上有两种节点，IDP 和 SP（Service Provider，即业务应用）。任意 IDP 和 IDP，IDP 和 SP 之间，可以按照企业客户需求，通过标准协议、标准定义接口，组成新的网络连接，实现企业特有的「身份联邦」体系，并以此实现集中的身份权限管理，极大程度上优化企业内部 IT 架构，降低管理和使用成本，提高企业运转效率。</p>
+<hr>
+<p>看完之后加上个人理解和思考，平时以往在做登录相关、用户信息相关的功能时，并没有这么深入的去了解。但是如今在做用户中台，那么既然是中台的功能项目，这功能就需要如此的深入，毕竟是中台领域之一。</p>
+<p>我对SSO单点登录的理解：其主要特征应当是「SP需要与IDP进行数据交互」，这种交互是必须且不可缺的，交互形式并不固定，根据双方遵循的协议（如CAS、SAML等）进行交互。</p>
+<p>我对身份联邦的理解：其主要特征应当是「IDP帐户作为SP帐户、或IDP帐户与SP帐户有关联、IDP帐户与认证源帐户有关联」，总之，是与帐户相关的数据之间的关系建立。</p>
+<p>之所以人们容易对这两者概念容易混淆，我认为的原因是，身份联邦本身是对帐户数据间产生联系，可以是IDP帐户与SP帐户的联系，也可以是多个SP应用帐户之间的联系。而SSO的目的是在不同SP应用之间只需要认证一次，即可访问所有应用，这很显然了，身份联邦把应用之间的帐户建立了联系，而我又想在多个应用之间免认证，那么不免要进行帐户信息的转换，来认定该帐户是否是认证有效的，身份联邦把这关联和转换的事给做了，所以就容易与SSO产生了紧密的联系，容易混淆起来。</p>
+<p>但其实还有个场景我还是比较疑惑的，那就是如APP、微信小程序这样的场景下，身份联邦该怎么实现？SSO又该怎么实现？</p>
+<p>直接举些常见的功能例子，可以直观的感受：</p>
+<ol>
+<li><p>pc网页中访问A应用，并在A应用登录后，访问B应用，在B应用处免登陆，则属于SSO单点登录。</p>
+</li>
+<li><p>手机微信中打开A应用网页，授权后，与IDP帐户进行关联，并登录。至此为身份联邦操作。如果此时又在微信中打开了B网页，处于登录状态，那么属于SSO操作。</p>
+</li>
+<li><p>手机App唤起微信进行授权，授权之后回到APP，进行注册、绑定等。此操作属于身份联邦。那么App能否做SSO？根据我上面的理解，要做SSO，则需要SP与IDP进行交互，也就是说，如果APP内部以某种方式打开了IDP页面，并最终使得App认证完成为登录状态；或者是App唤起外部App（这个App是IDP），做了一系列认证之后，回到该APP，此时APP成为登录状态。此时如果再打开另一个APP，还是同样的一堆与IDP的交互之后，那个APP成为登录状态，则这些操作属于SSO。</p>
+</li>
+<li><p>微信小程序的SSO应该与手机App原理差不多了，如果只是授权之后设置为登录状态，则是身份联邦。如果与IDP交互且认证后成为登录，且打开另一个小程序后与IDP交互也成为登录状态，那么这一系列操作是SSO操作。</p>
+</li>
+</ol>
+<p>另外再谈一下三个我理解的概念：</p>
+<ul>
+<li>认证源</li>
+<li>数据源</li>
+<li>应用</li>
+</ul>
+<p>平时对这三个概念不会很明确的去做拆分理解，除非对这一块需要做专门的开发规划才会了解到。</p>
+<p>对于认证源，就是认证过程所发生的地方就是认证源，比如你在APP1上唤起了APP2，并在APP2上进行登录后，跳回APP1，则APP2是认证源；比如你在阿里云上使用淘宝帐号登录，但跳转到淘宝网后发现淘宝网也没登录，所以你在淘宝网下面点击了使用支付宝帐号登录，那你跳转到支付宝登录页后，点击了扫码登录，掏出你手机支付宝APP扫码后，一系列的往前跳转动作开始发生，支付宝网页登录成功后跳回淘宝网，淘宝网又被登录成功后跳回阿里云，最后阿里云登录成功。在这过程中，淘宝网是阿里云的认证源，支付宝网页是淘宝网页的认证源，支付宝APP是支付宝网页的认证源。所以只要认证过程发生在哪，那里就是认证源。认证源可以用来存储用户的密码、对外提供某种协议的认证方式、有密码策略（密码复杂度、用户锁定等）。</p>
+<p>对于数据源，有帐户信息、其他关联信息等，实际上IDaaS上还会有企业组织目录等等。</p>
+<p>对于应用，假如该应用没有设计任何与用户帐号相关功能，那么它实际与认证源、数据源这些概念无关。但如果要产生关系，那么一个应用可以作为认证源、认证源+数据源（IDaaS就是这样的应用）、数据源，但大多数情况下，作为了数据源，那么其肯定能作为认证源。在移动APP中，认证源最常见，如使用微信登录、使用支付宝登录等，这些场景中与SSO无关。</p>
+<p>另外再说一下在工作中遇到的事，在web网页上，我们会经常讨论到SSO，希望在这网站应用上登录后再到另一个网页应用上可以免登陆或已是登录状态，这是非常常见的事。然而当我们换到微信小程序这样的场景下，可能就经常讨论到的是我如何授权登录，在这场景下SSO就没有如此被强调了，因此在该场景下更多讨论的应该是身份联邦，讲的是认证源。这比较符合大众（据说SSO的应用场景初衷本身就是为Web应用这种B&#x2F;S架构设计的，且对于CAS这些是基于cookie的。对于APP、小程序这类登录，貌似是建议直接请求IDP的后置接口。）</p>
+<p>这些差不多就是我对SSO与联邦身份的理解了，后几段因为是想到一些再插入写上一些，对这些理解改了好几遍，可能上下文逻辑思路看起来不连贯或有重复冲突。有问题欢迎讨论。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/account-linking-and-account-mapping-in-IDaaS/" rel="prev" title="IDaaS中的帐户映射和帐户关联概念">
+                  <i class="fa fa-angle-left"></i> IDaaS中的帐户映射和帐户关联概念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/authentication-and-authorization-in-ddd/" rel="next" title="领域驱动设计中的认证和授权">
+                  领域驱动设计中的认证和授权 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

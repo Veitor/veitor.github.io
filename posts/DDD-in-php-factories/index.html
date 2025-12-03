@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]工厂 - 《Domain-Driven Design in PHP》第9章">
+<meta property="og:url" content="http://www.veitor.net/posts/DDD-in-php-factories/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-27T00:28:58.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.991Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-factories/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/DDD-in-php-factories/","path":"posts/DDD-in-php-factories/","title":"[译]工厂 - 《Domain-Driven Design in PHP》第9章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译]工厂 - 《Domain-Driven Design in PHP》第9章 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%81%9A%E5%90%88%E6%A0%B9%E4%B8%8A%E7%9A%84%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">聚合根上的工厂方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6%E4%B8%8D%E5%8F%98%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">强制不变性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E4%B8%8A%E7%9A%84%E5%B7%A5%E5%8E%82"><span class="nav-number">3.</span> <span class="nav-text">服务上的工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%A7%84%E7%BA%A6"><span class="nav-number">3.1.</span> <span class="nav-text">构建规约</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%81%9A%E5%90%88"><span class="nav-number">3.2.</span> <span class="nav-text">构建聚合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%8E%82"><span class="nav-number">4.</span> <span class="nav-text">测试工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-Mother"><span class="nav-number">4.1.</span> <span class="nav-text">Object Mother</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-Data-Builder"><span class="nav-number">4.2.</span> <span class="nav-text">Test Data Builder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-factories/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译]工厂 - 《Domain-Driven Design in PHP》第9章 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]工厂 - 《Domain-Driven Design in PHP》第9章
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-27 08:28:58" itemprop="dateCreated datePublished" datetime="2020-05-27T08:28:58+08:00">2020-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>工厂是一个强有力的抽象。它们帮助客户端从如何与领域交互的细节中解耦出来。客户端不需要知道如何去构建一个复杂的对象和聚合，所以你可以使用工厂来创建整个聚合，从而让其具有不变性。</p>
+<span id="more"></span>
+
+<h1 id="聚合根上的工厂方法"><a href="#聚合根上的工厂方法" class="headerlink" title="聚合根上的工厂方法"></a>聚合根上的工厂方法</h1><p>工厂方法模式是一个经典的模式：</p>
+<p>定义一个创建对象的接口，但将其类型的选择权留给了子类，在运行时创建对象。</p>
+<p>在聚合根中添加工厂方法会隐藏任何从外部客户端创建聚合的内部实现细节。这也将负责聚合完整性的职责挪到了聚合根里。</p>
+<p>在有一个<code>User</code>实体和<code>Wish</code>实体的领域模型中，<code>User</code>扮演者聚合根的角色，没有<code>User</code>就没有<code>Wish</code>。<code>User</code>实体应当管理它的聚合。</p>
+<p>将<code>Wish</code>的控制权移到<code>User</code>实体中的方法是将工厂方法放在聚合根里：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class User
+&#123;
+    &#x2F;&#x2F; ...
+    public function makeWish(WishId $wishId, $email, $content)
+    &#123;
+        $wish &#x3D; new WishEmail(
+            $wishId,
+            $this-&gt;id(),
+            $email,
+            $content
+        );
+        DomainEventPublisher::instance()-&gt;publish(
+            new WishMade($wishId)
+        );
+        return $wish;
+    &#125;
+&#125;</code></pre>
+
+<p>客户端不需要知道聚合根内部是如何处理创建逻辑的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$wish &#x3D; $aUser-&gt;makeWish(
+    $wishRepository-&gt;nextIdentity(),
+    &#39;user@example.com&#39;,
+    &#39;I want to be free!&#39;
+);</code></pre>
+
+<h1 id="强制不变性"><a href="#强制不变性" class="headerlink" title="强制不变性"></a>强制不变性</h1><p>聚合根内的工厂方法也是一个放置不变性的好地方。</p>
+<p>在有<code>Forum</code>和<code>Post</code>实体的领域模型中，<code>Post</code>是聚合根<code>Forum</code>的一部分，发布一个<code>Post</code>看起来是这样的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Forum
+&#123;
+    &#x2F;&#x2F; ...
+    public function publishPost(PostId $postId, $content)
+    &#123;
+        $post &#x3D; new Post($this-&gt;id, $postId, $content);
+        DomainEventPublisher::instance()-&gt;publish(
+            new PostPublished($postId)
+        );
+        return $post;
+    &#125;
+&#125;</code></pre>
+
+<p>在于领域专家讨论过后，我们得到一个结论就是当<code>Forum</code>关闭时，不能发布<code>Post</code>，这是一个不变性，我们应该直接在创建<code>Post</code>时来强制执行：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Forum
+&#123;
+    &#x2F;&#x2F; ...
+    public function publishPost(PostId $postId, $content)
+    &#123;
+        if ($this-&gt;isClosed()) &#123;
+            throw new ForumClosedException();
+        &#125;
+        $post &#x3D; new Post($this-&gt;id, $postId, $content);
+        DomainEventPublisher::instance()-&gt;publish(
+            new PostPublished($postId)
+        );
+        return $post;
+    &#125;
+&#125;</code></pre>
+
+<h1 id="服务上的工厂"><a href="#服务上的工厂" class="headerlink" title="服务上的工厂"></a>服务上的工厂</h1><p>在服务中也可以解耦创建对象的逻辑。</p>
+<h2 id="构建规约"><a href="#构建规约" class="headerlink" title="构建规约"></a>构建规约</h2><p>在我们服务中使用规约(Specifications)来展示如何在服务中使用工厂是一个好的例子。</p>
+<p>看个例子，从外部世界的一个请求，我们想要基于添加到系统中最新的<code>Posts</code>来构建一个feed：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Application\Service;
+use Domain\Model\Post;
+use Domain\Model\PostRepository;
+class LatestPostsFeedService
+&#123;
+    private $postRepository;
+    public function __construct(PostRepository $postRepository)
+    &#123;
+        $this-&gt;postRepository &#x3D; $postRepository;
+    &#125;
+    &#x2F;**
+    * @param LatestPostsFeedRequest $request
+    *&#x2F;
+    public function execute($request)
+    &#123;
+        $posts &#x3D; $this-&gt;postRepository-&gt;latestPosts($request-&gt;since);
+        return array_map(function(Post $post) &#123;
+            return [
+                &#39;id&#39; &#x3D;&gt; $post-&gt;id()-&gt;id(),
+                &#39;content&#39; &#x3D;&gt; $post-&gt;body()-&gt;content(),
+                &#39;created_at&#39; &#x3D;&gt; $post-&gt; createdAt()
+            ];
+        &#125;, $posts);
+    &#125;
+&#125;</code></pre>
+<p>Repository中的查找方法<code>latestPosts</code>有一些限制，因为它们会无线增加Repository复杂性。如我们在第10章中讨论的，使用规约(Specifications)是更好的方法。</p>
+<p>幸运的是，我们有一个不错的<code>query</code>方法在<code>PostRepository</code>中，该仓储库使用了规约模式并运行良好：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class LatestPostsFeedService
+&#123;
+    &#x2F;&#x2F; ...
+    public function execute($request)
+    &#123;
+        $posts &#x3D; $this-&gt;postRepository-&gt;query($specification);
+    &#125;
+&#125;</code></pre>
+
+<p>对于规约模式，使用一个具体的实现是一个糟糕的主意：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class LatestPostsFeedService
+&#123;
+    public function execute($request)
+    &#123;
+        $posts &#x3D; $this-&gt;postRepository-&gt;query(
+            new SqlLatestPostSpecification($request-&gt;since)
+        );
+    &#125;
+&#125;</code></pre>
+
+<p>将高层的应用服务与低层的规约模式耦合在一起，这会将多层混合并破坏了关注点的分离。此外，这将是我们的服务与具体基础设施实现耦合的最坏的方法。你使用这个Service时将无法使用除了SQL之外的实现方案，如果我们想通过内存实现方案来测试我们的Service怎么办？</p>
+<p>解决此问题的方法是使用抽象工厂模式将规约创建与service本身解耦，根据OODesign.com：</p>
+<blockquote>
+<p>抽象工厂提供了创建一些相关对象的接口，而无需指定它们的类。</p>
+</blockquote>
+<p>因为我们可能会有多种规约模式的实现，所以我们先需要用工厂创建一个接口：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Domain\Model;
+interface PostSpecificationFactory
+&#123;
+    public function createLatestPosts(DateTimeImmutable $since);
+&#125;</code></pre>
+
+<p>然后我们需要为每个<code>PostRepository</code>实现创建一个工厂。一个内存实现的<code>PostRepository</code>的例子是这样的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\InMemory;
+use Domain\Model\PostSpecificationFactory;
+class InMemoryPostSpecificationFactory
+implements PostSpecificationFactory
+&#123;
+    public function createLatestPosts(DateTimeImmutable $since)
+    &#123;
+        return new InMemoryLatestPostSpecification($since);
+    &#125;
+&#125;</code></pre>
+
+<p>一旦我们把创建逻辑集中在这一个地方，那就很容易让这个业务逻辑与服务进行解耦：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class LatestPostsFeedService
+&#123;
+    private $postRepository;
+    private $postSpecificationFactory;
+    
+    public function __construct(
+        PostRepository $postRepository,
+        PostSpecificationFactory $postSpecificationFactory
+    ) &#123;
+            $this-&gt;postRepository &#x3D; $postRepository;
+        $this-&gt;postSpecificationFactory &#x3D; $postSpecificationFactory;
+    &#125;
+    public function execute($request)
+    &#123;
+        $posts &#x3D; $this-&gt;postRepository-&gt;query(
+            $this-&gt;postSpecificationFactory-&gt;createLatestPosts(
+                $request-&gt;since
+            )
+        );
+    &#125;
+&#125;</code></pre>
+
+<p>现在，测试通过内存实现的<code>PostRepository</code>是如此的简单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Application\Service;
+use Domain\Model\Body;
+use Domain\Model\Post;
+use Domain\Model\PostId;
+use Infrastructure\Persistence\InMemory\InMemoryPostRepositor;
+class LatestPostsFeedServiceTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;**
+    * @var \Infrastructure\Persistence\InMemory\InMemoryPostRepository
+    *&#x2F;
+    private $postRepository;
+    &#x2F;**
+    * @var LatestPostsFeedService
+    *&#x2F;
+    private $latestPostsFeedService;
+    public function setUp()
+    &#123;
+        $this-&gt;latestPostsFeedService &#x3D; new LatestPostsFeedService(
+            $this-&gt;postRepository &#x3D; new InMemoryPostRepository()
+        );
+    &#125;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function shouldBuildAFeedFromLatestPosts()
+    &#123;
+        $this-&gt;addPost(1, &#39;first&#39;, &#39;-2 hours&#39;);
+        $this-&gt;addPost(2, &#39;second&#39;, &#39;-3 hours&#39;);
+        $this-&gt;addPost(3, &#39;third&#39;, &#39;-5 hours&#39;);
+        $feed &#x3D; $this-&gt;latestPostsFeedService-&gt;execute(
+            new LatestPostsFeedRequest(
+                new \DateTimeImmutable(&#39;-4 hours&#39;)
+            )
+        );
+        $this-&gt;assertFeedContains([
+            [&#39;id&#39; &#x3D;&gt; 1, &#39;content&#39; &#x3D;&gt; &#39;first&#39;],
+            [&#39;id&#39; &#x3D;&gt; 2, &#39;content&#39; &#x3D;&gt; &#39;second&#39;]
+        ], $feed);
+    &#125;
+    private function addPost($id, $content, $createdAt)
+    &#123;
+        $this-&gt;postRepository-&gt;add(new Post(
+            new PostId($id),
+            new Body($content),
+            new \DateTimeImmutable($createdAt)
+        ));
+    &#125;
+    private function assertFeedContains($expected, $feed)
+    &#123;
+        foreach ($expected as $index &#x3D;&gt; $contents) &#123;
+            $this-&gt;assertArraySubset($contents, $feed[$index]);
+            $this-&gt;assertNotNull($feed[$index][&#39;created_at&#39;]);
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<h2 id="构建聚合"><a href="#构建聚合" class="headerlink" title="构建聚合"></a>构建聚合</h2><p>实体与持久机制无关。你不要将你的持久化细节与你的实体进行耦合并污染你的实体。看一下这个Application Service：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpUserService
+&#123;
+    private $userRepository;
+    public function __construct(UserRepository $userRepository)
+    &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+    &#125;
+    &#x2F;**
+    * @param SignUpUserRequest $request
+    *&#x2F;
+    public function execute( $request)
+    &#123;
+        $email &#x3D; $request-&gt;email();
+        $password &#x3D; $request-&gt;password();
+        $user &#x3D; $this-&gt;userRepository-&gt;userOfEmail($email);
+        if (null !&#x3D;&#x3D; $user) &#123;
+            throw new UserAlreadyExistsException();
+        &#125;
+        $this-&gt;userRepository-&gt;persist(new User(
+            $this-&gt;userRepository-&gt;nextIdentity(),
+            $email,
+            $password
+        ));
+        return $user;
+    &#125;
+&#125;</code></pre>
+<p>想象一下<code>User</code>实体是这样的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class User
+&#123;
+    private $userId;
+    private $email;
+    private $password;
+    public function __construct(UserId $userId, $email, $password)
+    &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+    &#x2F;&#x2F; ...
+&#125;</code></pre>
+
+<p>再想象一下，我们使用Doctrine作为我们基础设施的持久性机制，Doctrine要求id作为纯字符串变量才能正常工作。在我们的实体中，<code>$userId</code>是一个<code>UserId</code>值对象。因为Doctrine，增加一个额外的<code>id</code>到我们的<code>User</code>实体中会将我们的持久化机制与我们的领域模型耦合。我们在第4章中（实体）看到，通过在基础设施层中把<code>User</code>实体封装一下，使用代理Id（Surrogate ID）就能解决这问题：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrineUser extends User
+&#123;
+    private $surrogateUserId;
+    public function __construct(UserId $userId, $email, $password)
+    &#123;
+        parent:: __construct($userId, $email, $password);
+        $this-&gt;surrogateUserId &#x3D; $userId-&gt;id();
+    &#125;
+&#125;</code></pre>
+
+<p>由于在我们的应用服务中创建<code>DoctrineUser</code>将会使持久层与我们的领域再次耦合，我们需要使用抽象工厂来将创建逻辑与服务进行解耦。</p>
+<p>我们可能在我们领域中这样创建接口：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface UserFactory
+&#123;
+    public function build(UserId $userId, $email, $password);
+&#125;</code></pre>
+
+<p>然后，我们在基础设施层来实现这个接口：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrineUserFactory implements UserFactory
+&#123;
+    public function build(UserId $userId, $email, $password)
+    &#123;
+        return new DoctrineUser($userId, $email, $password);
+    &#125;
+&#125;</code></pre>
+
+<p>一旦解耦，我们只需要在应用服务中注入工厂即可：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpUserService
+&#123;
+    private $userRepository;
+    private $userFactory;
+    public function __construct(
+        UserRepository $userRepository,
+        UserFactory $userFactory
+    ) &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+        $this-&gt;userFactory &#x3D; $userFactory;
+    &#125;
+    &#x2F;**
+    * @param SignUpUserRequest $request
+    *&#x2F;
+    public function execute($request)
+    &#123;
+        &#x2F;&#x2F; ...
+        $user &#x3D; $this-&gt;userFactory-&gt;build(
+            $this-&gt;userRepository-&gt;nextIdentity(),
+            $email,
+            $password
+        );
+        $this-&gt;userRepository-&gt;persist($user);
+        return $user;
+    &#125;
+&#125;</code></pre>
+
+<h1 id="测试工厂"><a href="#测试工厂" class="headerlink" title="测试工厂"></a>测试工厂</h1><p>当你编写测试时，你会看到一个常用的模式。这是因为构建实体和复杂的聚合可能是一个非常繁琐且重复的过程。复杂性、重复性不可避免的出现在了你的测试中。看下面的这个实体：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Author
+&#123;
+    private $username;
+    private $email ;
+    private $fullName;
+    public function __construct(
+        Username $aUsername,
+        FullName $aFullName,
+    Email $anEmail
+    ) &#123;
+        $this-&gt;username &#x3D; $aUsername;
+        $this-&gt;email &#x3D; $anEmail ;
+        $this-&gt;fullName &#x3D; $aFullName;
+    &#125;
+    &#x2F;&#x2F; ...
+&#125;</code></pre>
+<p>在你系统的某个地方，你将写出这样的一个测试：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class MyTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itDoesSomething()
+    &#123;
+        $author &#x3D; new Author(
+            new Username(&#39;johndoe&#39;),
+            new FullName(&#39;John&#39;, &#39;Doe&#39; ),
+            new Email(&#39;john@doe.com&#39; )
+        );
+        &#x2F;&#x2F;do something with author
+    &#125;
+&#125;</code></pre>
+<p>限界上下文内的服务共享者如实体、聚合、值对象这样的概念。想象一下在整个测试中一遍又一遍重复相同的构建逻辑的混乱情况。从测试中提取构建构建的逻辑非常方便并且能够防止重复编写。</p>
+<h2 id="Object-Mother"><a href="#Object-Mother" class="headerlink" title="Object Mother"></a>Object Mother</h2><p><code>Object Mother</code>是工厂的容易被记住的名字，它为测试创建<code>fixed fixture</code>。与前面的示例类似，我们可以将重复的逻辑提取到<code>Object Mother</code>，以便在测试之间重复使用：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class AuthorObjectMother
+&#123;
+    public static function createOne()
+    &#123;
+        return new Author(
+            new Username(&#39;johndoe&#39;),
+            new FullName(&#39;John&#39;, &#39;Doe&#39;),
+            new Email(&#39;john@doe.com )
+        );
+    &#125;
+&#125;
+
+class MyTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itDoesSomething()
+    &#123;
+        $author &#x3D; AuthorObjectMother::createOne();
+    &#125;
+&#125;</code></pre>
+
+<p>你会注意到你拥有的测试和用例越多，工厂所拥有的方法就越多。</p>
+<p>由于<code>Object Mother</code>并不是太灵活，因此它们的复杂性往往会迅速增长。所幸的是你还有更灵活的测试该方法。</p>
+<h2 id="Test-Data-Builder"><a href="#Test-Data-Builder" class="headerlink" title="Test Data Builder"></a>Test Data Builder</h2><p>Test Data Builder只是一个普通的构建器，其默认值专用于你的测试，因此你不必在特定的测试用例上指定不相关的参数：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class AuthorBuilder
+&#123;
+    private $username;
+    private $email ;
+    private $fullName;
+    private function __construct()
+    &#123;
+        $this-&gt;username &#x3D; new Username(&#39;johndoe&#39;);
+        $this-&gt;email &#x3D; new Email(&#39;john@doe.com&#39;);
+        $this-&gt;fullName &#x3D; new FullName(&#39;John&#39;, &#39;Doe&#39;);
+    &#125;
+    public static function anAuthor()
+    &#123;
+        return new self();
+    &#125;
+    public function withFullName(FullName $aFullName)
+    &#123;
+        $this-&gt;fullName &#x3D; $aFullName;
+        return $this;
+    &#125;
+    public function withUsername(Username $aUsername)
+    &#123;
+        $this-&gt;username &#x3D; $aUsername;
+        return $this;
+    &#125;
+    public function withEmail(Email $anEmail)
+    &#123;
+        $this-&gt;email &#x3D; $anEmail ;
+        return $this;
+    &#125;
+    public function build()
+    &#123;
+        return new Author($this-&gt;username, $this-&gt;fullName, $this-&gt;email);
+    &#125;
+&#125;
+class MyTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itDoesSomething()
+    &#123;
+        $author &#x3D; AuthorBuilder::anAuthor()
+        -&gt;withEmail(new Email(&#39;other@email.com&#39;))
+        -&gt;build();
+    &#125;
+&#125;</code></pre>
+
+<p>我们甚至可以结合使用Test Data Builder来构建更复杂的聚合，例如<code>Post</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    private $id;
+    private $author;
+    private $body;
+    private $createdAt;
+    public function __construct(
+        PostId $anId, Author $anAuthor, Body $aBody
+    ) &#123;
+        $this-&gt;id &#x3D; $anId;
+        $this-&gt;author &#x3D; $anAuthor;
+        $this-&gt;body &#x3D; $aBody;
+        $this-&gt;createdAt &#x3D; new DateTimeImmutable();
+    &#125;
+&#125;</code></pre>
+
+<p>让我们看<code>Post</code>对应的Test Data Builder。对于默认的<code>Author</code>，我们可以重用<code>AuthorBuilder</code>来进行构建：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostBuilder
+&#123;
+    private $postId;
+    private $author;
+    private $body;
+    private function __construct()
+    &#123;
+        $this-&gt;postId &#x3D; new PostId();
+        $this-&gt;author &#x3D; AuthorBuilder::anAuthor()-&gt;build();
+        $this-&gt;body &#x3D; new Body(&#39;Post body&#39;);
+    &#125;
+    public static function aPost()
+    &#123;
+        return new self();
+    &#125;
+    public function withAuthor(Author $anAuthor)
+    &#123;
+        $this-&gt;author &#x3D; $anAuthor;
+        return $this;
+    &#125;
+    public function withPostId(PostId $aPostId)
+    &#123;
+        $this-&gt;postId &#x3D; $aPostId;
+        return $this;
+    &#125;
+    public function withBody(Body $body)
+    &#123;
+        $this-&gt;body &#x3D; $body;
+        return $this;
+    &#125;
+    public function build()
+    &#123;
+        return new Post($this-&gt;postId, $this-&gt;author, $this-&gt;body);
+    &#125;
+&#125;</code></pre>
+
+<p>这样的解决方案可以足够灵活的来覆盖到各种测试用例，包括构建内部实体的可能性：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class MyTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itDoesSomething()
+    &#123;
+        $post &#x3D; PostBuilder::aPost()
+            -&gt;withAuthor(AuthorBuilder::anAuthor()
+            -&gt;withUsername(new Username(&#39;other&#39;))
+            -&gt;build())
+            -&gt;withBody(new Body(&#39;Another body&#39;))
+            -&gt;build();
+        &#x2F;&#x2F;do something with the post
+    &#125;
+&#125;</code></pre>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>工厂是将构建逻辑与业务逻辑解耦的强大工具。工厂方法模式不仅有助于将创建职责移到聚合根中，而且还可以使其具有不变性。在我们的服务中使用抽象工厂模式可以使我们将领域逻辑与基础设施创建的细节分离，一个常见的用例就是规约模式和其各自持久机制的实现。我们也看到工厂模式也在我们的测试中派上用场，尽管我们可以将构建逻辑提取到Object Mother工厂中，但是Test Data Builder更强大灵活。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-aggregates/" rel="prev" title="[译]聚合 - 《Domain-Driven Design in PHP》第8章">
+                  <i class="fa fa-angle-left"></i> [译]聚合 - 《Domain-Driven Design in PHP》第8章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-repositories/" rel="next" title="[译]仓储 - 《Domain-Driven Design in PHP》第10章">
+                  [译]仓储 - 《Domain-Driven Design in PHP》第10章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

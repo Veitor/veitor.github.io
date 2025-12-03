@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="今天终于能把个人博客上的文章及文中图片一起同步到新浪微博了，在此发文纪念一下，并带图同步到我的微博测试。并且与大家一起分享一下经验，想必也有很多朋友在同步到微博的时候，遇到了传图的问题。 此前我都是使用多说评论框的接口同步到微博的，但为了能拥有自己的微博来源小尾巴，就自己开发一个。 首先你当然得有微博开放平台的帐号，并申请通过了网站应用审核。其次就是调用API接口了。 新浪微博有个高级接口，能发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="wordpress文章带图片同步到新浪微博">
+<meta property="og:url" content="http://www.veitor.net/posts/wordpress-article-with-picture-sync-to-sina-weibo/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="今天终于能把个人博客上的文章及文中图片一起同步到新浪微博了，在此发文纪念一下，并带图同步到我的微博测试。并且与大家一起分享一下经验，想必也有很多朋友在同步到微博的时候，遇到了传图的问题。 此前我都是使用多说评论框的接口同步到微博的，但为了能拥有自己的微博来源小尾巴，就自己开发一个。 首先你当然得有微博开放平台的帐号，并申请通过了网站应用审核。其次就是调用API接口了。 新浪微博有个高级接口，能发">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/08/QQ%E6%88%AA%E5%9B%BE20140818215404.jpg">
+<meta property="article:published_time" content="2014-08-18T06:13:59.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.996Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/wordpress-article-with-picture-sync-to-sina-weibo/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/wordpress-article-with-picture-sync-to-sina-weibo/","path":"posts/wordpress-article-with-picture-sync-to-sina-weibo/","title":"wordpress文章带图片同步到新浪微博"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>wordpress文章带图片同步到新浪微博 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/wordpress-article-with-picture-sync-to-sina-weibo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="wordpress文章带图片同步到新浪微博 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          wordpress文章带图片同步到新浪微博
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-08-18 14:13:59" itemprop="dateCreated datePublished" datetime="2014-08-18T14:13:59+08:00">2014-08-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg"><img data-src="http://storage.veitor.net/uploads/2014/08/1392117921664.jpg" alt="1392117921664"></a> 今天终于能把个人博客上的文章及文中图片一起同步到新浪微博了，在此发文纪念一下，并带图同步到我的微博测试。并且与大家一起分享一下经验，想必也有很多朋友在同步到微博的时候，遇到了传图的问题。 此前我都是使用多说评论框的接口同步到微博的，但为了能拥有自己的微博来源小尾巴，就自己开发一个。 首先你当然得有微博开放平台的帐号，并申请通过了网站应用审核。其次就是调用API接口了。 新浪微博有个高级接口，能发布一条微博并指定上传图片的url，这个接口由于需要申请使用，比较麻烦，还不如自己用另一个接口来实现锻炼一下自己。这里我使用的是<a target="_blank" rel="noopener" href="https://upload.api.weibo.com/2/statuses/upload.json">https://upload.api.weibo.com/2/statuses/upload.json</a> 这个接口（<a target="_blank" rel="noopener" href="http://open.weibo.com/wiki/2/statuses/upload">详情见这</a>）</p>
+<p>必选</p>
+<p>类型及范围</p>
+<p>说明</p>
+<p>source</p>
+<p>false</p>
+<p>string</p>
+<p>采用OAuth授权方式不需要此参数，其他授权方式为必填参数，数值为应用的AppKey。</p>
+<p>access_token</p>
+<p>false</p>
+<p>string</p>
+<p>采用OAuth授权方式为必填参数，其他授权方式不需要此参数，OAuth授权后获得。</p>
+<p>status</p>
+<p>true</p>
+<p>string</p>
+<p>要发布的微博文本内容，必须做URLencode，内容不超过140个汉字。</p>
+<p>visible</p>
+<p>false</p>
+<p>int</p>
+<p>微博的可见性，0：所有人能看，1：仅自己可见，2：密友可见，3：指定分组可见，默认为0。</p>
+<p>list_id</p>
+<p>false</p>
+<p>string</p>
+<p>微博的保护投递指定分组ID，只有当visible参数为3时生效且必选。</p>
+<p>pic</p>
+<p>true</p>
+<p>binary</p>
+<p>要上传的图片，仅支持JPEG、GIF、PNG格式，图片大小小于5M。</p>
+<p>lat</p>
+<p>false</p>
+<p>float</p>
+<p>纬度，有效范围：-90.0到+90.0，+表示北纬，默认为0.0。</p>
+<p>long</p>
+<p>false</p>
+<p>float</p>
+<p>经度，有效范围：-180.0到+180.0，+表示东经，默认为0.0。</p>
+<p>annotations</p>
+<p>false</p>
+<p>string</p>
+<p>元数据，主要是为了方便第三方应用记录一些适合于自己使用的信息，每条微博可以包含一个或者多个元数据，必须以json字串的形式提交，字串长度不超过512个字符，具体内容可以自定。</p>
+<p>rip</p>
+<p>false</p>
+<p>string</p>
+<p>开发者上报的操作用户真实IP，形如：211.156.0.1。</p>
+<p>文档规定的参数有以上这些，我只用到了source、status和pic三个参数就行了，当然你可以获得access_token来代替source（本文使用source讲解）。 上传图片等流媒体文件需要使用<strong>multipart&#x2F;form-data</strong>编码方式，这和我们平常使用的表单上传文件类似。提交时会向服务器端发出这样的数据（如下代码，已经去除部分不相关的头信息）。</p>
+<p>POST &#x2F; HTTP&#x2F;1.1<br>Content-Type:application&#x2F;x-www-form-urlencoded<br>Accept-Encoding: gzip, deflate<br>Host: weibo.com<br>Content-Length: 21<br>Connection: Keep-Alive<br>Cache-Control: no-cache<br>txt1&#x3D;hello&amp;txt2&#x3D;world</p>
+<p>对于普通的HTML Form POST请求，它会在头信息里使用Content-Length注明内容长度。头信息每行一条，空行之后便是Body，即“内容”（entity）。它的Content-Type是application&#x2F;x-www-form-urlencoded，这意味着消息内容会经过URL编码，就像在GET请 求时URL里的QueryString那样。txt1&#x3D;hello&amp;txt2&#x3D;world 最早的HTTP POST是不支持文件上传的，给编程开发带来很多问题。但是在1995年，ietf出台了rfc1867,也就是《RFC 1867 -Form-based File Upload in HTML》，用以支持文件上传。所以Content-Type的类型扩充了multipart&#x2F;form-data用以支持向服务器发送二进制数据。因此发送post请求时候，表单 属性enctype共有二个值可选，这个属性管理的是表单的MIME编码： ①application&#x2F;x-www-form-urlencoded(默认值) ②multipart&#x2F;form-data 其实form表单在你不写enctype属性时，也默认为其添加了enctype属性值，默认值是enctype&#x3D;”application&#x2F;x- www-form-urlencoded”. 通过form表单提交文件操作如下：</p>
+<form method="post"action="http://w.sohu.com/t2/upload.do" enctype=”multipart/form-data”>
+<inputtype="text" name="desc">
+<inputtype="file" name="pic">
+</form>
+
+<p>浏览器会发送以下数据：</p>
+<p>POST &#x2F;t2&#x2F;upload.do HTTP&#x2F;1.1<br>User-Agent: SOHUWapRebot<br>Accept-Language: zh-cn,zh;q&#x3D;0.5<br>Accept-Charset: GBK,utf-8;q&#x3D;0.7,*;q&#x3D;0.7<br>Connection: keep-alive<br>Content-Length: 60408<br>Content-Type:multipart&#x2F;form-data; boundary&#x3D;ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Host: weibo.com<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name&#x3D;”desc”<br>Content-Type: text&#x2F;plain; charset&#x3D;UTF-8<br>Content-Transfer-Encoding: 8bit<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC<br>Content-Disposition: form-data;name&#x3D;”pic”; filename&#x3D;”photo.jpg”<br>Content-Type: application&#x2F;octet-stream<br>Content-Transfer-Encoding: binary<br>[图片二进制数据]<br>–ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC–</p>
+<p>先分析一下上面的内容，<strong>然后我们来根据这内容来构造发送的数据。</strong> 第7行指定发送编码是multipart&#x2F;form-data，并且指定boundary值为“ZnGpDtePMx0KrHh_G0X99Yef9r8JZsRJSXC”，这个值可以随机产生，不难理解，boundary就是来分隔数据的。并且每段分隔时boundary值前面需要加“–”，最后结尾处在boundary值的前后加”–”（看上面代码最后一行）。 每段boundary之内，先是数据描述，再是数据的主体。 <a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/08/QQ%E6%88%AA%E5%9B%BE20140818215404.jpg"><img data-src="http://storage.veitor.net/uploads/2014/08/QQ%E6%88%AA%E5%9B%BE20140818215404.jpg" alt="QQ截图20140818215404"></a>   <strong>现在放上我构造的代码，自己琢磨一下就明白了：</strong></p>
+<p>function post_to_sina_weibo($post_ID) {<br>  if( wp_is_post_revision($post_ID) ) return;<br>    $get_post_info &#x3D; get_post($post_ID);<br>    &#x2F;&#x2F;发布的文章内容，带所有标签格式<br>    $get_post_centent &#x3D; get_post($post_ID)-&gt;post_content;<br>    &#x2F;&#x2F;用正则表达式抠图<br>    preg_match_all(‘&#x2F;&lt;img.*?(?: |\\t|\\r|\\n)?src&#x3D;[\‘“]?(.+?)[\‘“]?(?:(?: |\\t|\\r|\\n)+.*?)?&gt;&#x2F;sim’, $get_post_centent, $strResult, PREG_PATTERN_ORDER);<br>   if(count($strResult[1]) &gt; 0)<br>        $imgUrl &#x3D; $strResult[1][0];&#x2F;&#x2F;获得第一张图url地址<br>   else<br>        $imgUrl &#x3D; null;<br>    &#x2F;&#x2F;去掉文章内的html编码的空格、换行、tab等符号<br>    $get_post_centent &#x3D; str_replace(“\t”, “ “, str_replace(“\n”, “ “, str_replace(“&nbsp;”, “ “, $get_post_centent)));<br>    &#x2F;&#x2F;获取文章标题<br>    $get_post_title &#x3D; get_post($post_ID)-&gt;post_title;<br>    if ( $get_post_info-&gt;post_status &#x3D;&#x3D; ‘publish’ &amp;&amp; $_POST[‘original_post_status’] !&#x3D; ‘publish’ ) {<br>    &#x2F;&#x2F;使用wordpress内置request请求类，在wp_includes&#x2F;wp_http.php里<br>    $request &#x3D; new WP_Http;<br>    &#x2F;&#x2F;微博文字，格式为“【文章标题】文章摘要132字，全文地址：XXXX”<br>    $status &#x3D; ‘【’ . strip_tags( $get_post_title ) . ‘】 ‘ . mb_strimwidth(strip_tags( apply_filters(‘the_content’, $get_post_centent)),0, 132,’…’) . ‘ 全文地址:’ . get_permalink($post_ID) ;<br>    &#x2F;&#x2F;如果没图片则请求这个api<br>    $api_url &#x3D; ‘<a target="_blank" rel="noopener" href="https://api.weibo.com/2/statuses/update.json">https://api.weibo.com/2/statuses/update.json</a>‘;<br>    &#x2F;&#x2F;body内容，source参数为你的appkey，详情见wordpress的WP_http类<br>    $body &#x3D; array( ‘status’ &#x3D;&gt; $status, ‘source’&#x3D;&gt;’706960568’);<br>    &#x2F;&#x2F;请将xxxxxxxxx替换成你的，xxxxxxxxxx为“用户名：密码”的base64编码<br>    $headers &#x3D; array( ‘Authorization’ &#x3D;&gt; ‘Basic ‘ . ‘xxxxxxxxxxxxxxxx’ );<br>    &#x2F;&#x2F;重要步骤，如果文章有图片则构造发送数据包<br>    if($imgUrl!&#x3D;&#x3D;null)<br>    {<br>        $body[‘pic’] &#x3D; $imgUrl;<br>        uksort($body, ‘strcmp’);<br>        $str_b&#x3D;uniqid(‘——————‘);<br>        $str_m&#x3D;’–’.$str_b;<br>        $str_e&#x3D;$str_m. ‘–’;<br>        $tmpbody&#x3D;’’;<br>        &#x2F;&#x2F;对参数遍历，进行构造内容，仔细阅读，你会发现和上面讲的类似<br>        foreach($body as $k&#x3D;&gt;$v){<br>            if($k&#x3D;&#x3D;’pic’){<br>                $img_c&#x3D;file_get_contents($imgUrl);<br>                $url_a&#x3D;explode(‘?’, basename($imgUrl));<br>                $img_n&#x3D;$url_a[0];<br>                $tmpbody.&#x3D;$str_m.”\r\n”;<br>                $tmpbody.&#x3D;’Content-Disposition: form-data; name&#x3D;”‘.$k.’”; filename&#x3D;”‘.$img_n.’”‘.”\r\n”;<br>                $tmpbody.&#x3D;”Content-Type: image&#x2F;unknown\r\n\r\n”;<br>                $tmpbody.&#x3D;$img_c.”\r\n”;<br>            }else{<br>                $tmpbody.&#x3D;$str_m.”\r\n”;<br>                $tmpbody.&#x3D;’Content-Disposition: form-data; name&#x3D;”‘.$k.”\“\r\n\r\n”;<br>                $tmpbody.&#x3D;$v.”\r\n”;<br>            }<br>        }<br>        $tmpbody.&#x3D;$str_e;<br>        $body &#x3D; $tmpbody;<br>        &#x2F;&#x2F;图片处理结束，使用uploade API<br>        $api_url &#x3D; ‘<a target="_blank" rel="noopener" href="https://upload.api.weibo.com/2/statuses/upload.json">https://upload.api.weibo.com/2/statuses/upload.json</a>‘;<br>        &#x2F;&#x2F;设置Content-Type编码为multipart&#x2F;form-data<br>        $headers[‘Content-Type’] &#x3D; ‘multipart&#x2F;form-data; boundary&#x3D;’.$str_b;<br>    }<br>    &#x2F;&#x2F;请求接口发送数据，详见wordpress自带的WP_http类<br>    $result &#x3D; $request-&gt;post( $api_url , array( ‘body’ &#x3D;&gt; $body, ‘headers’ &#x3D;&gt; $headers ) );<br>}<br>&#x2F;&#x2F;最后将这个函数挂到pulish_post钩子上，发表文章后就会触发这个函数<br>add_action(‘publish_post’, ‘post_to_sina_weibo’, 0);</p>
+<p>  这段代码理论上来说你可以拿去直接用了，只需按注释上说的修改几个参数为自己的就行了。 这也是我研究琢磨出来的，有任何疑问可以一起探讨。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/take-big-data-with-mysql-unbuffered-query-function/" rel="prev" title="用mysql_unbuffered_query函数取大数据">
+                  <i class="fa fa-angle-left"></i> 用mysql_unbuffered_query函数取大数据
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/wget-command-in-Linux/" rel="next" title="Linux操作系统之wget命令">
+                  Linux操作系统之wget命令 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

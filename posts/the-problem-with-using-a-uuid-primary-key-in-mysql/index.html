@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="通用唯一识别码（Universally Unique Identifiers，也称为 UUID）旨在让开发人员能够在不了解其他系统的情况下生成唯一的 ID，从而保证 ID 的唯一性。在分布式架构中，当有多个系统和数据库负责创建记录时，UUID 特别有用。你可能认为在数据库中使用 UUID 作为主键是个不错的主意，但如果使用不当，它们可能会严重影响数据库性能。 在本文中，你将了解在 MySQL 数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Mysql中使用UUID作为主键的问题">
+<meta property="og:url" content="http://www.veitor.net/posts/the-problem-with-using-a-uuid-primary-key-in-mysql/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="通用唯一识别码（Universally Unique Identifiers，也称为 UUID）旨在让开发人员能够在不了解其他系统的情况下生成唯一的 ID，从而保证 ID 的唯一性。在分布式架构中，当有多个系统和数据库负责创建记录时，UUID 特别有用。你可能认为在数据库中使用 UUID 作为主键是个不错的主意，但如果使用不当，它们可能会严重影响数据库性能。 在本文中，你将了解在 MySQL 数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://storage.veitor.net/2025/09/uuid-v1-diagram.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/09/uuid-v4-diagram.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/09/uuid-v6-diagram.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/09/b-tree-diagram.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/09/b-tree-rebalanced-diagram.png">
+<meta property="article:published_time" content="2025-09-23T07:30:48.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.995Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://storage.veitor.net/2025/09/uuid-v1-diagram.png">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/the-problem-with-using-a-uuid-primary-key-in-mysql/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/the-problem-with-using-a-uuid-primary-key-in-mysql/","path":"posts/the-problem-with-using-a-uuid-primary-key-in-mysql/","title":"在Mysql中使用UUID作为主键的问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>在Mysql中使用UUID作为主键的问题 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC%E7%9A%84UUID"><span class="nav-number">1.</span> <span class="nav-text">不同版本的UUID</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv1"><span class="nav-number">1.1.</span> <span class="nav-text">UUIDv1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv2"><span class="nav-number">1.2.</span> <span class="nav-text">UUIDv2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv3%E5%92%8Cv5"><span class="nav-number">1.3.</span> <span class="nav-text">UUIDv3和v5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv4"><span class="nav-number">1.4.</span> <span class="nav-text">UUIDv4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv6"><span class="nav-number">1.5.</span> <span class="nav-text">UUIDv6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv7"><span class="nav-number">1.6.</span> <span class="nav-text">UUIDv7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUIDv8"><span class="nav-number">1.7.</span> <span class="nav-text">UUIDv8</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UUID%E4%B8%8EMysql"><span class="nav-number">2.</span> <span class="nav-text">UUID与Mysql</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%8F%92%E5%85%A5%E6%80%A7%E8%83%BD"><span class="nav-number">2.1.</span> <span class="nav-text">数据插入性能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%80%97%E6%9B%B4%E5%A4%9A%E7%9A%84%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">2.2.</span> <span class="nav-text">消耗更多的存储空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-MySQL-%E4%B8%AD%E4%BD%BF%E7%94%A8-UUID-%E4%B8%BB%E9%94%AE%E7%9A%84%E6%9C%80%E4%BD%B3%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">在 MySQL 中使用 UUID 主键的最佳方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">使用二进制数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%9C%89%E5%BA%8F%E7%9A%84-UUID-%E5%8F%98%E4%BD%93"><span class="nav-number">3.2.</span> <span class="nav-text">使用有序的 UUID 变体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Mysql%E5%86%85%E7%BD%AE%E7%9A%84UUID%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">使用Mysql内置的UUID方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E7%9A%84-ID"><span class="nav-number">3.4.</span> <span class="nav-text">使用其他类型的 ID</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-problem-with-using-a-uuid-primary-key-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="在Mysql中使用UUID作为主键的问题 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在Mysql中使用UUID作为主键的问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-23 15:30:48" itemprop="dateCreated datePublished" datetime="2025-09-23T15:30:48+08:00">2025-09-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>通用唯一识别码（Universally Unique Identifiers，也称为 UUID）旨在让开发人员能够在不了解其他系统的情况下生成唯一的 ID，从而保证 ID 的唯一性。在分布式架构中，当有多个系统和数据库负责创建记录时，UUID 特别有用。你可能认为在数据库中使用 UUID 作为主键是个不错的主意，但如果使用不当，它们可能会严重影响数据库性能。</p>
+<p>在本文中，你将了解在 MySQL 数据库中使用 UUID 作为主键的缺点。</p>
+<span id="more"></span>
+
+<h2 id="不同版本的UUID"><a href="#不同版本的UUID" class="headerlink" title="不同版本的UUID"></a>不同版本的UUID</h2><p>在撰写本文时，UUID 有五个官方版本和三个提议版本。让我们来看看每个版本，以便更好地理解它们的工作原理。</p>
+<h3 id="UUIDv1"><a href="#UUIDv1" class="headerlink" title="UUIDv1"></a>UUIDv1</h3><p>UUID 版本 1 也被称为基于时间的 UUID，可分解如下：</p>
+<p><img data-src="https://storage.veitor.net/2025/09/uuid-v1-diagram.png" alt="UUIDv1 架构"></p>
+<p>虽然现代计算大多以 UNIX 纪元时间（1970 年 1 月 1 日）为基准，但 UUID 实际上使用的是 1568 年 10 月 10 日这个不同的日期，这一天是公历开始更广泛使用的日期。UUID 中嵌入的时间戳从这个日期开始以 100 纳秒为增量递增，然后用这个时间戳来设置 UUID 的 <code>time_low</code>、<code>time_mid</code> 和 <code>time_hi</code> 段。</p>
+<p>UUID 的第三段包含版本号以及 <code>time_hi</code> 部分，且该段的第一个字符用于表示版本号。后续示例将展示，所有版本的 UUID 都是如此。保留部分也称为 UUID 的变体，它决定了 UUID 中各个位的使用方式。最后，UUID 的最后一段是节点（node），它是生成该 UUID 的系统的唯一地址。</p>
+<h3 id="UUIDv2"><a href="#UUIDv2" class="headerlink" title="UUIDv2"></a>UUIDv2</h3><p>UUID 版本 2 相较于版本 1 做了一处改动，即将其结构中的 <code>low_time</code> 段替换为 POSIX 用户 ID。其理论依据是，这些 UUID 可以追溯到生成它们的用户账户。由于 <code>low_time</code> 段是 UUID 大部分可变性所在之处，替换这一段会增加冲突的可能性。因此，这个版本的 UUID 很少被使用。</p>
+<h3 id="UUIDv3和v5"><a href="#UUIDv3和v5" class="headerlink" title="UUIDv3和v5"></a>UUIDv3和v5</h3><p>UUID 的版本 3 和版本 5 非常相似。这两个版本的目标是能够以确定性的方式生成 UUID，这样在给定相同信息的情况下，就能生成相同的 UUID。这些实现使用两部分信息：一个命名空间（其本身也是一个 UUID）和一个名称。将这些值输入哈希算法，生成一个可以表示为 UUID 的 128 位值。</p>
+<p>版本 3 使用 MD5 哈希算法，而版本 5 使用 SHA-1 哈希算法。</p>
+<h3 id="UUIDv4"><a href="#UUIDv4" class="headerlink" title="UUIDv4"></a>UUIDv4</h3><p>UUID 版本 4 是随机生成的 UUID，不基于任何信息。它的生成是完全随机的，不依赖于时间、位置或其他任何因素。这使得版本 4 的 UUID 非常安全，因为它们不容易被预测或猜测。例外情况是 UUID 第三段的第一个位置，这个位置始终为 4，用于表示所使用的版本。</p>
+<p><img data-src="https://storage.veitor.net/2025/09/uuid-v4-diagram.png" alt="UUIDv4 架构"></p>
+<h3 id="UUIDv6"><a href="#UUIDv6" class="headerlink" title="UUIDv6"></a>UUIDv6</h3><p>UUID 版本 6 与版本 1 几乎完全相同。唯一的区别在于，用于捕获时间戳的位被翻转了，这意味着时间戳的最高有效部分会被优先存储。下图展示了这些差异。</p>
+<p><img data-src="https://storage.veitor.net/2025/09/uuid-v6-diagram.png" alt="UUIDv6 架构"></p>
+<p>创建 UUID 版本 6 的主要原因是生成一个与版本 1 兼容的值，同时由于时间戳的最高有效部分位于前面，使得这些值更易于排序。</p>
+<h3 id="UUIDv7"><a href="#UUIDv7" class="headerlink" title="UUIDv7"></a>UUIDv7</h3><p>UUID 版本 7 同样是基于时间的 UUID 变体，但它集成了更常用的 UNIX 纪元时间戳，而非版本 1 所使用的公历日期。另一个关键区别在于，节点（基于生成 UUID 的系统的值）被随机数取代，这使得这些 UUID 更难以追溯到其来源。</p>
+<h3 id="UUIDv8"><a href="#UUIDv8" class="headerlink" title="UUIDv8"></a>UUIDv8</h3><p>UUID 版本 8 是最新版本，它允许供应商进行特定实现，同时遵循 RFC 标准。与其他所有版本一样，UUIDv8 唯一的要求是在第三段的第一个位置指定版本号。</p>
+<h2 id="UUID与Mysql"><a href="#UUID与Mysql" class="headerlink" title="UUID与Mysql"></a>UUID与Mysql</h2><p>使用 UUID（在大多数情况下）可以保证在架构中的所有系统间实现唯一性，因此你可能会倾向于将其用作记录的主键。需要注意的是，与自增整数相比，这样做存在一些权衡之处。</p>
+<h3 id="数据插入性能"><a href="#数据插入性能" class="headerlink" title="数据插入性能"></a>数据插入性能</h3><p>在 MySQL 中，每当向表中插入一条新记录时，与主键关联的索引都需要更新，以确保表的查询性能良好。MySQL 中的索引采用 B+ 树的形式，这是一种多层数据结构，能让查询快速找到所需的数据。</p>
+<p>下面的示意图展示了一个相对简单的 B+ 树结构，包含 6 个值从 1 到 6 的条目。如果有查询请求查找值 5，MySQL 会从根节点开始，然后从根节点得知需要遍历树的右侧来找到目标数据。</p>
+<blockquote>
+<p>注意：为简单起见，这些示意图展示的是 B 树而非 B+ 树。关键区别在于，在 B+ 树中，叶子节点包含对实际数据的引用，而在 B 树中，叶子节点不包含。</p>
+</blockquote>
+<p><img data-src="https://storage.veitor.net/2025/09/b-tree-diagram.png" alt="B+ 树示例"></p>
+<p>如果向这个简单的 B+ 树中添加值 7 - 9，MySQL 会对右侧节点进行拆分并重新平衡树结构。这是因为 B+ 树需要保持自身的平衡特性，以维持高效的查询性能。当节点中的条目数量超过其容量时，就会触发节点拆分和树的重新平衡操作。</p>
+<p><img data-src="https://storage.veitor.net/2025/09/b-tree-rebalanced-diagram.png" alt="B+ 树重新平衡示例"></p>
+<p>这个过程被称为页分裂（page splitting），其目标是保持 B+ 树结构的平衡，以便 MySQL 能够快速找到所需的数据。对于顺序值，这个过程相对简单；然而，当算法中引入随机性时，MySQL 重新平衡树的时间会显著变长。在高流量（负载较重的数据库环境）的数据库中，由于 MySQL 试图保持树的平衡，这可能会影响用户体验。</p>
+<h3 id="消耗更多的存储空间"><a href="#消耗更多的存储空间" class="headerlink" title="消耗更多的存储空间"></a>消耗更多的存储空间</h3><p>在 MySQL 中，所有主键都会被索引。默认情况下，一个自增整数每个值仅消耗 32 位存储空间。与之相比，若以紧凑的二进制形式存储 UUID，每个 UUID 在磁盘上会消耗 128 位空间，这已经是 32 位整数存储空间的 4 倍。</p>
+<p>如果选择使用更便于人类阅读的基于字符串的表示形式，每个 UUID 会以 <code>CHAR(36)</code> 的形式存储，每个 UUID 会消耗高达 288 位的空间。这意味着每条记录存储的数据量将是使用 32 位整数时的 9 倍。</p>
+<p>除了主键上创建的默认索引外，二级索引也会消耗更多的存储空间。这是因为二级索引会使用主键作为指向实际行的指针，这意味着它们需要与索引一起存储。根据在使用 UUID 作为主键的表上创建的索引数量，这可能会导致数据库的存储需求显著增加。</p>
+<p>除了上述提到的存储空间消耗差异，页分裂（如前一节所述）也会对存储利用率和性能产生负面影响。InnoDB 假定主键会以数字或字典序的方式可预测地递增。若确实如此，InnoDB 会在创建新页面之前将页面填充至约 94% 的页面大小。但当主键是随机的时候，每个页面的空间利用率可能低至 50%。因此，使用包含随机性的 UUID 可能会导致需要过多的页面来存储索引。</p>
+<h2 id="在-MySQL-中使用-UUID-主键的最佳方法"><a href="#在-MySQL-中使用-UUID-主键的最佳方法" class="headerlink" title="在 MySQL 中使用 UUID 主键的最佳方法"></a>在 MySQL 中使用 UUID 主键的最佳方法</h2><p>如果确实需要在表中使用 UUID 作为记录的唯一标识符，你可以遵循以下几个最佳实践，以尽量减少这样做带来的负面影响。</p>
+<h3 id="使用二进制数据类型"><a href="#使用二进制数据类型" class="headerlink" title="使用二进制数据类型"></a>使用二进制数据类型</h3><p>虽然 UUID 通常以 36 个字符的字符串形式使用，但它们也可以用原生二进制格式表示。如果将其转换为二进制值，可以将其存储在 <code>BINARY(16)</code> 列中，这样每个值的存储需求就会降至 16 字节。这仍然比 32 位整数大很多，但肯定比将 UUID 存储为 <code>CHAR(36)</code> 要好。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table uuids(
+  UUIDAsChar char(36) not null,
+  UUIDAsBinary binary(16) not null
+);
+
+insert into uuids set
+  UUIDAsChar &#x3D; &#39;d211ca18-d389-11ee-a506-0242ac120002&#39;,
+  UUIDAsBinary &#x3D; UUID_TO_BIN(&#39;d211ca18-d389-11ee-a506-0242ac120002&#39;);
+
+select * from uuids;
+-- +--------------------------------------+------------------------------------+
+-- | UUIDAsChar                           | UUIDAsBinary                       |
+-- +--------------------------------------+------------------------------------+
+-- | d211ca18-d389-11ee-a506-0242ac120002 | 0xD211CA18D38911EEA5060242AC120002 |
+-- +--------------------------------------+------------------------------------+</code></pre>
+
+<h3 id="使用有序的-UUID-变体"><a href="#使用有序的-UUID-变体" class="headerlink" title="使用有序的 UUID 变体"></a>使用有序的 UUID 变体</h3><p>使用支持排序的 UUID 版本可以使生成的值更具顺序性，从而减轻使用 UUID 带来的部分性能和存储方面的影响，避免前文所述的部分页分裂问题。即使在多个系统上生成 UUID，基于时间的 UUID（如版本 6 或 7）也能在保证唯一性的同时，让值尽可能保持顺序性。UUIDv1 是个例外，它的时间戳最低有效部分排在最前面。</p>
+<h3 id="使用Mysql内置的UUID方法"><a href="#使用Mysql内置的UUID方法" class="headerlink" title="使用Mysql内置的UUID方法"></a>使用Mysql内置的UUID方法</h3><p>MySQL 支持在 SQL 中直接生成 UUID；不过，它仅支持 UUIDv1 值。虽然单独使用这些值并非最佳实践，但 MySQL 中有一个名为 <code>uuid_to_bin</code> 的辅助函数。该函数不仅能将字符串值转换为二进制，还可以使用 <code>swap flag</code> 选项，该选项会对时间戳部分重新排序，使生成的二进制值更具顺序性。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">set @uuidvar &#x3D; &#39;d211ca18-d389-11ee-a506-0242ac120002&#39;;
+-- Without swap flag
+SELECT HEX(UUID_TO_BIN(@uuidvar)) as UUIDAsHex;
+-- +----------------------------------+
+-- | UUIDAsHex                        |
+-- +----------------------------------+
+-- | D211CA18D38911EEA5060242AC120002 |
+-- +----------------------------------+
+
+-- With swap flag
+SELECT HEX(UUID_TO_BIN(@uuidvar,1)) as UUIDAsHex;
+-- +----------------------------------+
+-- | UUIDAsHex                        |
+-- +----------------------------------+
+-- | 11EED389D211CA18A5060242AC120002 |
+-- +----------------------------------+</code></pre>
+
+<h3 id="使用其他类型的-ID"><a href="#使用其他类型的-ID" class="headerlink" title="使用其他类型的 ID"></a>使用其他类型的 ID</h3><p>UUID 并非在分布式架构中提供唯一性的唯一标识符类型。鉴于 UUID 最早于 1987 年创建，其他专业人士有足够的时间提出不同的格式，例如雪花 ID（Snowflake IDs）、通用唯一词法 ID（ULIDs），甚至是纳秒 ID（NanoIDs）。</p>
+<pre class="line-numbers language-none"><code class="language-none"># Snowflake ID
+7167350074945572864
+
+# ULID
+01HQF2QXSW5EFKRC2YYCEXZK0N
+
+# NanoID
+kw2c0khavhql</code></pre>
+
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>在 MySQL 中使用 UUID 作为主键几乎可以保证分布式系统中的唯一性；不过，这也存在一些权衡之处。幸运的是，有多种可用的版本以及其他替代方案，你可以选择能更好应对这些权衡的选项。阅读本文后，在设计下一个数据库时，你应该能够更明智地选择 ID 类型。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/patch-vs-put-rest-api/" rel="prev" title="RESTful接口中的PATCH和PUT">
+                  <i class="fa fa-angle-left"></i> RESTful接口中的PATCH和PUT
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/btress-and-database-indexes/" rel="next" title="B树与数据库索引">
+                  B树与数据库索引 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

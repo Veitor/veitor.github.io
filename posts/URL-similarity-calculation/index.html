@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="在做一些web相关的工作的时候，我们往往可能需要做一些对url的处理，其中包括对相似的url的识别和处理。这就需要计算两个url的相似度。 那么怎么进行url相似度的计算的？我首先想到的是把一个url看作是一个字符串，这样就简化成两个字符串相似度的计算。字符串相似度计算有很多已经比较成熟的算法，比如“编辑距离算法”，该算法描述了两个字符串之间转换需要的最小的编辑次数；还有一些其他的比如“最长公共字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="URL相似度计算的思考">
+<meta property="og:url" content="http://www.veitor.net/posts/URL-similarity-calculation/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="在做一些web相关的工作的时候，我们往往可能需要做一些对url的处理，其中包括对相似的url的识别和处理。这就需要计算两个url的相似度。 那么怎么进行url相似度的计算的？我首先想到的是把一个url看作是一个字符串，这样就简化成两个字符串相似度的计算。字符串相似度计算有很多已经比较成熟的算法，比如“编辑距离算法”，该算法描述了两个字符串之间转换需要的最小的编辑次数；还有一些其他的比如“最长公共字">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-07-16T16:59:35.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.991Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="URL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/URL-similarity-calculation/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/URL-similarity-calculation/","path":"posts/URL-similarity-calculation/","title":"URL相似度计算的思考"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>URL相似度计算的思考 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/URL-similarity-calculation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="URL相似度计算的思考 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          URL相似度计算的思考
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-07-17 00:59:35" itemprop="dateCreated datePublished" datetime="2014-07-17T00:59:35+08:00">2014-07-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在做一些web相关的工作的时候，我们往往可能需要做一些对url的处理，其中包括对相似的url的识别和处理。这就需要计算两个url的相似度。 那么怎么进行url相似度的计算的？我首先想到的是把一个url看作是一个字符串，这样就简化成两个字符串相似度的计算。字符串相似度计算有很多已经比较成熟的算法，比如“<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Levenshtein_Distance">编辑距离算法</a>”，该算法描述了两个字符串之间转换需要的最小的编辑次数；还有一些其他的比如“<a target="_blank" rel="noopener" href="http://www.cnblogs.com/dartagnan/archive/2011/10/06/2199764.html">最长公共字串</a>”等方法。但这些方法对于url相似度的计算来说是不是够了呢？比如给以下三个url： url1: <a target="_blank" rel="noopener" href="http://www.spongeliu.com/xxx/123.html">www.spongeliu.com/xxx/123.html</a> url2: <a target="_blank" rel="noopener" href="http://www.spongeliu.com/xxx/456.html">www.spongeliu.com/xxx/456.html</a> url3: <a target="_blank" rel="noopener" href="http://www.spongeliu.com/xxx/abc.html">www.spongeliu.com/xxx/abc.html</a> 这三个url的编辑距离是一致的，但是直观上我们却认为url1和url2更加相似一些。 再比如我们要判断两个站点是否同一套建站模版建立的，抽出两个url如下这样： url1: <a target="_blank" rel="noopener" href="http://www.163.com/go/artical/43432.html">www.163.com/go/artical/43432.html</a> url2: <a target="_blank" rel="noopener" href="http://www.sina.com.cn/go/artical/453109.html">www.sina.com.cn/go/artical/453109.html</a> 这两个url按照情景应该是相似的，这就超出了字符串相似度判断的能力范围。 </p>
+<p>重新回到问题，要判断的是两个url的相似度，但是字符串的判断方法又不能很好应用。那么url和字符串的区别在哪里？这取决于如何定义相似的url。可以注意到，url比字符串含有更多的信息可以参考，因为url本身是包含<strong>结构和特征</strong>的，比如站点、目录。定义相似url的时候，是否要考虑站点？是否要考虑目录的一致？是否要考虑目录的深度？这取决于具体的需求。 考虑到url本身的结构，对其相似度的计算就可以抽象为对其关键特征相似度的计算。比如可以把站点抽象为一维特征，目录深度抽象为一维特征，一级目录、二级目录、尾部页面的名字也都可以抽象为一维特征。比如下面两个url: url1:  <a target="_blank" rel="noopener" href="http://www.spongeliu.com/go/happy/1234.html">http://www.spongeliu.com/go/happy/1234.html</a> url2:  <a target="_blank" rel="noopener" href="http://www.spongeliu.com/snoopy/tree/abcd.html">http://www.spongeliu.com/snoopy/tree/abcd.html</a> 先不定义他们是否相似，先来抽象一下他们的特征： </p>
+<p>1、站点特征：如果两个url站点一样，则特征取值1，否则取值0； </p>
+<p>2、目录深度特征：特征取值分别是两个url的目录深度是否一致； </p>
+<p>3、一级目录特征：在这维特征的取值上，可以采用多种方法，比如如果一级目录名字相同则特征取1，否则取0；或者根据目录名字的编辑距离算出一个特征值； 或者根据目录名字的pattern，如是否数字、是否字母、是否字母数字穿插等。这取决于具体需求，这里示例仅仅根据目录名是否相同取1和0； </p>
+<p>4、尾页面特征：这维特征的取值同一级目录，可以判断后缀是否相同、是否数字页、是否机器生成的随机字符串或者根据编辑长度来取值，具体也依赖于需求。这里示例仅仅判断最后一级目录的特征是否一致（比如是否都由数字组成、是否都有字母组成等）。 这样，对于这两个url就获得了4个维度的特征，分别是：1 1 0 0 。 有了这两个特征组合，就可以根据具体需求判断是否相似了。我们定义一下每个特征的重要程度，给出一个公式： similarity &#x3D; feather1 * x1 + feather2*x2 + feather3*x3 + feather4*x4; 其 中x表示对应特征的重要程度，比如我认为站点和目录都不重要，最后尾页面的特征才是最重要的，那么x1,x2,x3都可以取值为0，x4取值为 1，这样根据similarity就能得出是否相似了。或者认为站点的重要性占10%，目录深度占50%，尾页面的特征占40%，那么系数分别取值为 0.1\0.5\0\0.4即可。 其实这样找出需要的特征，可以把这个问题简化成一个机器学习的问题，只需要人为判断出一批url是否相似，用svm训练一下就可以达到机器判断的目的。 除了上面这种两个url相似度的判断，也可以将每一条url都抽象成一组特征，然后计算出一个url的得分，设置一个分数差的阈值，就可以达到从一大堆url中找出相似的url的目的。   下面的代码是perl编写的抽象两个url特征的脚本，这只是一个测试的脚本，难免有bug和丑陋的地方，仅供参考：</p>
+<pre class="line-numbers language-perl" data-language="perl"><code class="language-perl">#!&#x2F;usr&#x2F;bin&#x2F;perl
+use strict;
+use warnings;
+my $url1 &#x3D; $ARGV\[0\];
+my $url2 &#x3D; $ARGV\[1\];
+my @array1 &#x3D; split( &#x2F;\\&#x2F;&#x2F;, $url1 );
+my @array2 &#x3D; split( &#x2F;\\&#x2F;&#x2F;, $url2 );
+#特征1：目录数
+my $path1 &#x3D; @array1;
+my $path2 &#x3D; @array2;
+#print $path1, $path2;
+#特征2：是否目录结尾
+my $lastispath1 &#x3D; 0;
+my $lastispath2 &#x3D; 0;
+if( $url1 &#x3D;~ &#x2F;\\&#x2F;$&#x2F; )
+&#123;
+	$lastispath1 &#x3D; 1;
+&#125;
+if( $url1 &#x3D;~ &#x2F;\\&#x2F;$&#x2F; )
+&#123;
+	$lastispath2 &#x3D; 1;
+&#125;</code></pre>
+<p>#特征3：最后一级是否有后缀(htm,html,shtml等)</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">my $len;
+my $hassuffix1 &#x3D; 0;
+my $hassuffix2 &#x3D; 0;
+my $suffixstr;
+my $laststr1 &#x3D; $array1\[$path1 - 1\];
+my $laststr2 &#x3D; $array2\[$path2 - 1\];
+my $issuffixsame &#x3D; 0;
+if( $lastispath1 &#x3D;&#x3D; 0 )
+&#123;
+	my @suffix1 &#x3D; split( &#x2F;\\.&#x2F;, $array1\[$path1 - 1\]);
+	if( @suffix1 &gt;&#x3D; 2 )
+	&#123;
+		$len &#x3D; rindex( $suffix1\[@suffix1 - 1\].&quot;\\$&quot;, &quot;\\$&quot;);
+		if( $len &lt;&#x3D; 5 )
+		&#123;
+			$hassuffix1 &#x3D; 1;
+			$suffixstr &#x3D; $suffix1\[@suffix1 - 1\];
+			my $tmplen &#x3D; rindex( $array1\[@array1 - 1\].&quot;\\$&quot;, &quot;\\$&quot;);
+			$laststr1 &#x3D; substr( $array1\[@array1 - 1\], 0, $tmplen-$len-1 );
+		&#125;
+	&#125;
+&#125;
+if( $lastispath2 &#x3D;&#x3D; 0 )
+&#123;
+	my @suffix2 &#x3D; split( &#x2F;\\.&#x2F;, $array2\[$path2 - 1\]);
+	if( @suffix2 &gt;&#x3D; 2 )
+	&#123;
+		$len &#x3D; rindex( $suffix2\[@suffix2 - 1\].&quot;\\$&quot;, &quot;\\$&quot;);
+		if( $len &lt;&#x3D; 5 )
+		&#123;
+			$hassuffix2 &#x3D; 1;
+			if($suffixstr eq $suffix2\[@suffix2 - 1\])
+			&#123;
+				$issuffixsame &#x3D; 1;
+			&#125;
+			my $tmplen &#x3D; rindex( $array2\[@array2 - 1\].&quot;\\$&quot;, &quot;\\$&quot;);
+			$laststr2 &#x3D; substr( $array2\[@array2 - 1\], 0, $tmplen-$len-1 );
+		&#125;
+	&#125;
+&#125;</code></pre>
+<p>#特征3：最后一级几个分隔符(通过特征匹配计算laststr1和laststr2相似度，如果仅计算字符串相似度，可以用编辑长度)</p>
+<pre class="line-numbers language-none"><code class="language-none">my @area1 &#x3D; split(&#x2F;-&#x2F;, $laststr1);
+my @area2 &#x3D; split(&#x2F;-&#x2F;, $laststr2);
+my $i;
+my $j;
+my $totalarea1&#x3D;0;
+my $totalarea2&#x3D;0;
+my @patternarray1&#x3D;&#123;0&#125;;
+my @patternarray2&#x3D;&#123;0&#125;;
+my @splitarray1&#x3D;&#123;0&#125;;
+my @splitarray2&#x3D;&#123;0&#125;;
+#my $numarea1 &#x3D; @area2;
+#print $laststr1,&quot; &quot;,$laststr2,&quot;\\n&quot;,$numarea1,&quot;\\n&quot;;
+for ( $i &#x3D; 1; $i&lt;&#x3D;@area1; $i++ )
+&#123;
+	my @tmp1 &#x3D; split( &#x2F;_&#x2F;, $area1\[$i-1\]);
+	for( $j &#x3D; 0; $j&lt;@tmp1; $j++)
+	&#123;
+		if( $tmp1\[$j\] &#x3D;~ &#x2F;^\\d+$&#x2F; )
+		&#123;
+			$patternarray1\[$totalarea1\] &#x3D; 1; #数字pattern
+		&#125;
+		elsif( $tmp1\[$j\] &#x3D;~ &#x2F;^\[a-zA-Z\]+$&#x2F;)
+		&#123;
+			$patternarray1\[$totalarea1\] &#x3D; 2; #纯字母pattern
+		&#125;
+		elsif( $tmp1\[$j\] &#x3D;~ &#x2F;^\[a-zA-Z\]+\[0-9\]+$&#x2F;)
+		&#123;
+			$patternarray1\[$totalarea1\] &#x3D; 3; #先字母后数字pattern
+		&#125;
+		elsif( $tmp1\[$j\] &#x3D;~ &#x2F;^\[0-9\]+\[a-zA-Z\]+$&#x2F;)
+		&#123;
+			$patternarray1\[$totalarea1\] &#x3D; 4; #先数字后字母pattern
+		&#125;
+		else
+		&#123;
+			$patternarray1\[$totalarea1\] &#x3D; 5; #其他pattern
+		&#125;
+		if( $j &#x3D;&#x3D; 0 )
+		&#123;
+			$splitarray1\[$totalarea1\]&#x3D;1;
+		&#125;
+		else
+		&#123;
+			$splitarray1\[$totalarea1\]&#x3D;2;
+		&#125;
+		$totalarea1 ++;
+	&#125;
+&#125;
+for ( $i &#x3D; 1; $i&lt;&#x3D;@area2; $i++ )
+&#123;
+	my @tmp2 &#x3D; split( &#x2F;_&#x2F;, $area2\[$i-1\]);
+	for( $j &#x3D; 0; $j&lt;@tmp2; $j++)
+	&#123;
+		if( $tmp2\[$j\] &#x3D;~ &#x2F;^\\d+$&#x2F; )
+		&#123;
+			$patternarray2\[$totalarea2\] &#x3D; 1; #数字pattern
+		&#125;
+		elsif( $tmp2\[$j\] &#x3D;~ &#x2F;^\[a-zA-Z\]+$&#x2F;)
+		&#123;
+			$patternarray2\[$totalarea2\] &#x3D; 2; #纯字母pattern
+		&#125;
+		elsif( $tmp2\[$j\] &#x3D;~ &#x2F;^\[a-zA-Z\]+\[0-9\]+$&#x2F;)
+		&#123;
+			$patternarray2\[$totalarea2\] &#x3D; 3; #先字母后数字pattern
+		&#125;
+		elsif( $tmp2\[$j\] &#x3D;~ &#x2F;^\[0-9\]+\[a-zA-Z\]+$&#x2F;)
+		&#123;
+			$patternarray2\[$totalarea2\] &#x3D; 4; #先数字后字母pattern
+		&#125;
+		else
+		&#123;
+			$patternarray2\[$totalarea2\] &#x3D; 5; #其他pattern
+		&#125;
+		if( $j &#x3D;&#x3D; 0 )
+		&#123;
+			$splitarray2\[$totalarea2\]&#x3D;1;
+		&#125;
+		else
+		&#123;
+			$splitarray2\[$totalarea2\]&#x3D;2;
+		&#125;
+		$totalarea2 ++;
+	&#125;
+&#125;
+print $path1,&quot; &quot;,$lastispath1,&quot; &quot;,$hassuffix1,&quot; &quot;,$issuffixsame,&quot; &quot;,$totalarea1;
+for( $i &#x3D; 0; $i&lt;$totalarea1; $i++)
+&#123;
+	print &quot; &quot;,$splitarray1\[$i\],&quot; &quot;,$patternarray1\[$i\];
+&#125;
+print &quot;\\n&quot;;
+print $path2,&quot; &quot;,$lastispath2,&quot; &quot;,$hassuffix1,&quot; &quot;,$issuffixsame,&quot; &quot;,$totalarea2;
+for( $i &#x3D; 0; $i&lt;$totalarea2; $i++)
+&#123;
+	print &quot; &quot;,$splitarray2\[$i\],&quot; &quot;,$patternarray2\[$i\];
+&#125;
+print &quot;\\n&quot;;
+#print @array1;</code></pre>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/URL/" rel="tag"># URL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/the-origin-of-the-Unix-directory-structure/" rel="prev" title="Unix目录结构的来历">
+                  <i class="fa fa-angle-left"></i> Unix目录结构的来历
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/10-most-dangerous-commands-to-never-execute-in-Linux/" rel="next" title="永远不要在 Linux 执行的 10 个最危险的命令">
+                  永远不要在 Linux 执行的 10 个最危险的命令 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

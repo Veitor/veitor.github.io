@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  为了与领域对象进行交互，你需要持有该对象的引用。实现这样的一种方式是通过创建对象来实现。或者，你可以贯穿关联，在面向对象编程中，对象持有与其他对象的引用，这使它们贯穿，从而有助于我们的模型的展现。但是，你需要有一种机制来获取第一个对象：聚合根。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]仓储 - 《Domain-Driven Design in PHP》第10章">
+<meta property="og:url" content="http://www.veitor.net/posts/DDD-in-php-repositories/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  为了与领域对象进行交互，你需要持有该对象的引用。实现这样的一种方式是通过创建对象来实现。或者，你可以贯穿关联，在面向对象编程中，对象持有与其他对象的引用，这使它们贯穿，从而有助于我们的模型的展现。但是，你需要有一种机制来获取第一个对象：聚合根。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-27T01:42:09.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.991Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-repositories/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/DDD-in-php-repositories/","path":"posts/DDD-in-php-repositories/","title":"[译]仓储 - 《Domain-Driven Design in PHP》第10章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译]仓储 - 《Domain-Driven Design in PHP》第10章 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%93%E5%82%A8%E4%B8%8D%E6%98%AFDAO"><span class="nav-number">2.</span> <span class="nav-text">仓储不是DAO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E9%9B%86%E5%90%88%E7%9A%84%E4%BB%93%E5%82%A8"><span class="nav-number">3.</span> <span class="nav-text">面向集合的仓储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text">基于内存的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Doctrine-ORM"><span class="nav-number">3.2.</span> <span class="nav-text">Doctrine ORM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%98%A0%E5%B0%84"><span class="nav-number">3.2.1.</span> <span class="nav-text">对象映射</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Doctrine%E8%87%AA%E5%AE%9A%E4%B9%89%E6%98%A0%E5%B0%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.1.1.</span> <span class="nav-text">Doctrine自定义映射类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Entity-Manager"><span class="nav-number">3.2.2.</span> <span class="nav-text">Entity Manager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DQL%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.3.</span> <span class="nav-text">DQL实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E4%BB%93%E5%82%A8"><span class="nav-number">3.3.</span> <span class="nav-text">面向持久化的仓储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.3.1.</span> <span class="nav-text">Redis的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.3.2.</span> <span class="nav-text">SQL的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="nav-number">3.3.3.</span> <span class="nav-text">额外的行为</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E4%BB%93%E5%82%A8"><span class="nav-number">4.</span> <span class="nav-text">查询仓储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E7%BA%A6%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">规约模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.1.1.</span> <span class="nav-text">内存实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E7%9A%84%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">4.1.2.</span> <span class="nav-text">SQL的实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E4%BA%8B%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">管理事务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E4%BB%93%E5%82%A8"><span class="nav-number">6.</span> <span class="nav-text">测试仓储</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%86%85%E5%AD%98%E5%AE%9E%E7%8E%B0%E6%B5%8B%E8%AF%95%E4%BD%A0%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.</span> <span class="nav-text">使用内存实现测试你的服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-repositories/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译]仓储 - 《Domain-Driven Design in PHP》第10章 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]仓储 - 《Domain-Driven Design in PHP》第10章
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-27 09:42:09" itemprop="dateCreated datePublished" datetime="2020-05-27T09:42:09+08:00">2020-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>为了与领域对象进行交互，你需要持有该对象的引用。实现这样的一种方式是通过创建对象来实现。或者，你可以贯穿关联，在面向对象编程中，对象持有与其他对象的引用，这使它们贯穿，从而有助于我们的模型的展现。但是，你需要有一种机制来获取第一个对象：聚合根。</p>
+<span id="more"></span>
+
+<p>仓储扮演者存储的角色，在这里可以获取到与存储时完全相同状态的对象。在领域驱动设计中，每一个聚合类型通常都有一个唯一的关联的仓储，用于该聚合的持久化和获取需求。但是，在需要共享一个聚合对象层级结构的情况下，这个类型可能共享一个仓储。</p>
+<p>一旦你从仓储中成功获得聚合，你做的每个修改都会被持久化，不需要再存回仓储。</p>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>Martin Fowler这样定义仓储：</p>
+<blockquote>
+<p>领域与数据映射层之间的机制，就像是内存领域对象的集合。客户端构造查询规约，然后提交给仓储。可以像从简单的对象集合中那样将对象添加到仓储或从仓储中删除对象，并且仓储内部封装的映射代码将在背后执行适当的操作。从概念上讲，仓储封装了持久化在数据仓库的对象和一些操作，从而提供了持久层面向对象的视角。仓储也支持在领域和数据映射层之间实现清晰的分离和单项的依赖。</p>
+</blockquote>
+<h1 id="仓储不是DAO"><a href="#仓储不是DAO" class="headerlink" title="仓储不是DAO"></a>仓储不是DAO</h1><p>Data Access Object(DAO)是持久化领域对象到数据库的通用模式。这很容易将DAO模式与仓储混淆起来，最重要的不同点是仓储展现了集合，然而DAO更接近数据库，并且通常以数据表为主。通常，DAO包含特定领域对象的CRUD方法，让我们看一下DAO通用接口大致像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface UserDAO
+&#123;
+    &#x2F;**
+    * @param string $username
+    * @return User
+    *&#x2F;
+    public function get($username);
+    public function create(User $user);
+    public function update(User $user);
+    &#x2F;**
+    * @param string $username
+    *&#x2F;
+    public function delete($username);
+&#125;</code></pre>
+<p>一个DAO接口可能有多种实现，从使用原生SQL查询到ORM构造器。DAO的主要问题是它们的职责没有明确定义。DAO通常被认为是数据库的网关，因此使用许多特定方法来查询数据库可以大大降低内聚性，这相对容易：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface BloatUserDAO
+&#123;
+    public function get($username);
+    public function create(User $user);
+    public function update(User $user);
+    public function delete($username);
+    public function getUserByLastName($lastName);
+    public function getUserByEmail($email);
+    public function updateEmailAddress($username, $email);
+    public function updateLastName($username, $lastName);
+&#125;</code></pre>
+
+<p>如你所见，实现越多的新方法，就越难去测试DAO，而且它将与<code>User</code>对象紧密耦合。这问题将随着时间推移而明显，越多的协同开发者将会使得成为一个大泥球（Big Ball of Mud）。</p>
+<h1 id="面向集合的仓储"><a href="#面向集合的仓储" class="headerlink" title="面向集合的仓储"></a>面向集合的仓储</h1><p>仓储通过实现通用接口来模拟集合，作为一个集合，一个仓储不应该泄露任何持久化行为的意图，比如仓储到库中。</p>
+<p>底层的持久性机制必须支持这种需求，你不需要在对象的真个生命周期处理对它们的修改，该集合应用对象的最新状态，这意味着每次访问时，你都会获得最新的对象状态。</p>
+<p>仓储库实现了一个具体的集合类型——Set。一个Set是具有不包含重复条目的不变量的数据结构。如果你尝试添加已经存在与Set中的元素，则不会添加进去。这在我们的用例中很有用，因为每个聚合都具有与实体相关的唯一身份标识。</p>
+<p>看一下例子：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Domain\Model;
+class Post
+&#123;
+    const EXPIRE_EDIT_TIME &#x3D; 120; &#x2F;&#x2F; seconds
+    private $id;
+    private $body;
+    private $createdAt;
+    public function __construct(PostId $anId, Body $aBody)
+    &#123;
+        $this-&gt;id &#x3D; $anId;
+        $this-&gt;body &#x3D; $aBody;
+        $this-&gt;createdAt &#x3D; new \DateTimeImmutable();
+    &#125;
+    public function editBody(Body $aNewBody)
+    &#123;
+        if($this-&gt;editExpired()) &#123;
+            throw new RuntimeException(&#39;Edit time expired&#39;);
+        &#125;
+        $this-&gt;body &#x3D; $aNewBody;
+    &#125;
+    private function editExpired()
+    &#123;
+        $expiringTime&#x3D; $this-&gt;createdAt-&gt;getTimestamp() +
+        self::EXPIRE_EDIT_TIME;
+        return $expiringTime &lt; time();
+    &#125;
+    public function id()
+    &#123;
+        return $this-&gt;id;
+    &#125;
+    public function body()
+    &#123;
+        return $this-&gt;body;
+    &#125;
+    public function createdAt()
+    &#123;
+        return $this-&gt;createdAt;
+    &#125;
+&#125;
+class Body
+&#123;
+    const MIN_LENGTH &#x3D; 3;
+    const MAX_LENGTH &#x3D; 250;
+    private $content;
+    public function __construct($content)
+    &#123;
+        $this-&gt;setContent(trim($content));
+    &#125;
+    private function setContent($content)
+    &#123;
+        $this-&gt;assertNotEmpty($content);
+        $this-&gt;assertFitsLength($content);
+        $this-&gt;content &#x3D; $content;
+    &#125;
+    private function assertNotEmpty($content)
+    &#123;
+        if(empty($content)) &#123;
+            throw new DomainException(&#39;Empty body&#39;);
+        &#125;
+    &#125;
+    private function assertFitsLength($content)
+    &#123;
+        if(strlen($content) &lt; self::MIN_LENGTH) &#123;
+            throw new DomainException(&#39;Body is too short&#39;);
+        &#125;
+        if(strlen($content) &gt; self::MAX_LENGTH) &#123;
+            throw new DomainException(&#39;Body is too long&#39;);
+        &#125;
+    &#125;
+    public function content()
+    &#123;
+        return $this-&gt;content;
+    &#125;
+&#125;
+class PostId
+&#123;
+    private $id;
+    public function __construct($id &#x3D; null)
+    &#123;
+        $this-&gt;id &#x3D; $id ?: uniqid();
+    &#125;
+    public function id()
+    &#123;
+        return $this-&gt;id;
+    &#125;
+    public function equals(PostId $anId)
+    &#123;
+        return $this-&gt;id &#x3D;&#x3D;&#x3D; $anId-&gt;id();
+    &#125;
+&#125;</code></pre>
+
+<p>如果我们想要持久化<code>Post</code>实体，一个简单的内存实现的<code>PostRepository</code>像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SimplePostRepository
+&#123;
+    private $post &#x3D; [];
+    public add(Post $aPost)
+    &#123;
+        $this-&gt;posts[(string) $aPost-&gt;id()] &#x3D; $aPost;
+    &#125;
+    public function postOfId(PostId $anId)
+    &#123;
+        if (isset($this-&gt;posts[(string) $anId])) &#123;
+            return $this-&gt;posts[(string) $anId];
+        &#125;
+        return null;
+    &#125;
+&#125;</code></pre>
+<p>然后按你所想的处理集合：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$id &#x3D; new PostId();
+$repository &#x3D; new SimplePostRepository();
+$repository-&gt;add(new Post($id, &#39;Random content&#39;));
+
+&#x2F;&#x2F; later ...
+$post &#x3D; $repository-&gt;postOfId($id);
+$post-&gt;editBody(&#39;Updated content&#39;);
+
+&#x2F;&#x2F; even later ...
+$post &#x3D; $repository-&gt;postOfId($id);
+assert(&#39;Updated content&#39; &#x3D;&#x3D;&#x3D; $post-&gt;body());</code></pre>
+
+<p>如你所见，从集合的角度来看，Repository不需要用于保存的方法。对对象的修改由基础设施层正确处理。面向集合的仓储是不需要添加之前已经保存过的聚合的。这主要是发生在基于内存的仓储中，但是我们也有使用持久化机制仓储进行存储的方法。我们待会儿再看。次完，我们将在第11章应用中更深入介绍这一点。</p>
+<p>设计一个仓储的第一步是为其定义一个面向集合的接口。接口需要定义一些常用的方法，如：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    public function add(Post $aPost);
+    public function addAll(array $posts);
+    public function remove(Post $aPost);
+    public function removeAll(array $posts);
+    &#x2F;&#x2F; ...
+&#125;</code></pre>
+<p>对于实现这样的接口，你可以使用一个抽象类。通常，让我们谈论接口时，我们通常指的是概念，而不是仅仅是PHP interface接口。为了简化设计，不要添加你不需要的方法。仓储的定义和其对应的聚合应该放置在同一个模块中。</p>
+<p>有时，删除并不会从数据库中屋里删除聚合。这种策略（聚合的状态字段被更新为已删除）被称为软删除。为什么这方法有趣？审核修改和性能会很有趣。这种情况下，你可以将聚合标记为禁用或逻辑删除。可以通过去掉删除方法或提供禁用行为来更新这个仓储。</p>
+<p>仓储另一个重要的方面是查找方法，像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @return Post
+    *&#x2F;
+    public function postOfId(PostId $anId);
+    &#x2F;**
+    * @return Post[]
+    *&#x2F;
+    public function latestPosts(DateTimeImmutable $sinceADate);
+&#125;</code></pre>
+
+<p>如我们在第4章实体中建议的，我们更喜欢应用生成的身份标识。为聚合生成一个新身份标识的最好的位置就是在其Repository中。因此为一个<code>Post</code>获取一个全局唯一ID，包含这逻辑的位置在<code>PostRepository</code>中：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @return PostId
+    *&#x2F;
+    public function nextIdentity();
+&#125;</code></pre>
+
+<p>负责构建每个<code>Post</code>实例的代码调用<code>nextIdentity</code>来获得唯一标识符<code>PostId</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$post &#x3D; newPost($postRepository-&gt;nextIdentity(), $body);</code></pre>
+
+<p>一些开发者将实现作为模块的子包放在靠近接口定义的地方。但是，由于我们希望清晰的分离关注点，因此建议你将其放在基础设施层中。</p>
+<h2 id="基于内存的实现"><a href="#基于内存的实现" class="headerlink" title="基于内存的实现"></a>基于内存的实现</h2><p>Uncle Bob在《Screaming Architecture》中写到：</p>
+<blockquote>
+<p>良好的软件架构可以推迟对框架、数据库、服务器以及其他环境问题和工具的决策。好的架构是你不必在项目的后续阶段就决定使用Mysql、Hibernate、Rails还是Spring。一个好的架构可以轻易的改变你对这些决定的想法，好的架构会强调用例，并将外围问题分离。</p>
+</blockquote>
+<p>在应用的早期阶段，可以使用快速的内存实现。你可以使用它来完善系统的其他部分，从而使数据库决策推迟到正确的时间点。内存存储实现非常简单，快速且容易实现。</p>
+<p>对于我们<code>Post</code>仓储，一个内存实现的hash map足够提供我们所需要的功能点：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\InMemory;
+use Domain\Model\Post;
+use Domain\Model\PostId;
+use Domain\Model\PostRepository;
+class InMemoryPostRepository implements PostRepository
+&#123;
+    private $posts &#x3D; [];
+    public function add(Post $aPost)
+    &#123;
+        $this-&gt;posts[$aPost-&gt;id()-&gt;id()] &#x3D; $aPost;
+    &#125;
+    public function remove(Post $aPost)
+    &#123;
+        unset($this-&gt;posts[$aPost-&gt;id()-&gt;id()]);
+    &#125;
+    public function postOfId(PostId $anId)
+    &#123;
+        if (isset($this-&gt;posts[$anId-&gt;id()])) &#123;
+            return $this-&gt;posts[$anId-&gt;id()];
+        &#125;
+        return null;
+    &#125;
+    public function latestPosts(\DateTimeImmutable $sinceADate)
+    &#123;
+        return $this-&gt;filterPosts(
+            function (Post $post) use($sinceADate) &#123;
+                return $post-&gt;createdAt() &gt; $sinceADate;
+            &#125;
+        );
+    &#125;
+    private function filterPosts(callable $fn)
+    &#123;
+        return array_values(array_filter($this-&gt;posts, $fn));
+    &#125;
+    public function nextIdentity()
+    &#123;
+        return new PostId();
+    &#125;
+&#125;</code></pre>
+
+<h2 id="Doctrine-ORM"><a href="#Doctrine-ORM" class="headerlink" title="Doctrine ORM"></a>Doctrine ORM</h2><p>我们在过去的章节中已经讨论过<code>Doctrine</code>。Doctrine是数据库存储和对象映射的类库。它默认带有Symfony框架的bundle，同时拥有其他特性，允许你很容易将你的应用与你的持久层解耦，这多亏了<code>Data Mapper pattern</code>数据映射模式。</p>
+<p>同时，ORM位于强大的数据库抽象层智商，该层可以通过Doctrine Query Language(DQL)实现与数据库交互。这受到<code>Java Hibernate</code>框架的启发。</p>
+<p>如果你想要使用Doctrine ORM，首要的任务是通过<code>composer</code>安装：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">composer require doctrine&#x2F;orm</code></pre>
+
+<blockquote>
+<p>（编者注：由于本书年代久远，建议关于Doctrine的部分参考其官网文档，以了解最新的使用方法）</p>
+</blockquote>
+<h3 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a>对象映射</h3><p>在你的领域对象和数据库之间的映射可以被视为实现的细节。领域在生命周期中不应该知道这些持久化的细节信息。因此，映射信息应该定义为领域之外的基础设施层的一部分，并作为Repository的实现。</p>
+<h4 id="Doctrine自定义映射类型"><a href="#Doctrine自定义映射类型" class="headerlink" title="Doctrine自定义映射类型"></a>Doctrine自定义映射类型</h4><p>我们的一个<code>Post</code>实体由像<code>Body</code>和<code>PostId</code>的值对象组成。如我们在值对象那一章中，一个好的办法是自定义映射类型或者使用Doctrine内嵌值。这将使得对象映射更简单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\Doctrine\Types;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Domain\Model\Body;
+class BodyType extends Type
+&#123;
+    public function getSQLDeclaration(
+        array $fieldDeclaration, AbstractPlatform $platform
+    ) &#123;
+        return $platform-&gt;getVarcharTypeDeclarationSQL(
+            $fieldDeclaration
+        );
+    &#125;
+    &#x2F;**
+    * @param string $value
+    * @return Body
+    *&#x2F;
+    public function convertToPHPValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return new Body($value);
+    &#125;
+    &#x2F;**
+    * @param Body $value
+    *&#x2F;
+    public function convertToDatabaseValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return $value-&gt;content();
+    &#125;
+    public function getName()
+    &#123;
+        return &#39;body&#39;;
+    &#125;
+&#125;
+namespace Infrastructure\Persistence\Doctrine\Types;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Domain\Model\PostId;
+class PostIdType extends Type
+&#123;
+    public function getSQLDeclaration(
+        array $fieldDeclaration, AbstractPlatform $platform
+    ) &#123;
+        return $platform-&gt;getGuidTypeDeclarationSQL(
+        $fieldDeclaration
+    );
+    &#125;
+    &#x2F;**
+    * @param string $value
+    * @return PostId
+    *&#x2F;
+    public function convertToPHPValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return new PostId($value);
+    &#125;
+    &#x2F;**
+    * @param PostId $value
+    *&#x2F;
+    public function convertToDatabaseValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return $value-&gt;id();
+    &#125;
+    public function getName()
+    &#123;
+        return &#39;post_id&#39;;
+    &#125;
+&#125;</code></pre>
+<p>不要忘记在<code>PostId</code>值对象上实现<code>__toString</code>魔术方法，因为Doctrine要求这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostId
+&#123;
+    &#x2F;&#x2F; ...
+    public function __toString()
+    &#123;
+    return $this-&gt;id;
+    &#125;
+&#125;</code></pre>
+
+<p>Doctrine提供了多种映射格式，如Yaml、Xml或者注释。XML是我们的首选，因为它提供了IDE自动提示：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;
+&lt;doctrine-mapping
+xmlns&#x3D;&quot;http:&#x2F;&#x2F;doctrine-project.org&#x2F;schemas&#x2F;orm&#x2F;doctrine-mapping&quot;
+xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;
+xsi:schemaLocation&#x3D;&quot;
+http:&#x2F;&#x2F;doctrine-project.org&#x2F;schemas&#x2F;orm&#x2F;doctrine-mapping
+http:&#x2F;&#x2F;raw.github.com&#x2F;doctrine&#x2F;doctrine2&#x2F;master&#x2F;doctrine-mapping.xsd&quot;&gt;
+    &lt;entity name&#x3D;&quot;Domain\Model\Post&quot; table&#x3D;&quot;posts&quot;&gt;
+        &lt;id name&#x3D;&quot;id&quot; type&#x3D;&quot;post_id&quot; column&#x3D;&quot;id&quot;&gt;
+            &lt;generator strategy&#x3D;&quot;NONE&quot; &#x2F;&gt;
+        &lt;&#x2F;id&gt;
+        &lt;field name&#x3D;&quot;body&quot; type&#x3D;&quot;body&quot; length&#x3D;&quot;250&quot; column&#x3D;&quot;body&quot;&#x2F;&gt;
+        &lt;field name&#x3D;&quot;createdAt&quot; type&#x3D;&quot;datetime&quot; column&#x3D;&quot;created_at&quot;&#x2F;&gt;
+    &lt;&#x2F;entity&gt;
+&lt;&#x2F;doctrine-mapping&gt;</code></pre>
+
+<h3 id="Entity-Manager"><a href="#Entity-Manager" class="headerlink" title="Entity Manager"></a>Entity Manager</h3><p><code>Entity Manager</code>是ORM功能的中心访问点，启动它很容易：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools;
+Type::addType(
+    &#39;post_id&#39;,
+    &#39;Infrastructure\Persistence\Doctrine\Types\PostIdType&#39;
+);
+Type::addType(
+    &#39;body&#39;,
+    &#39;Infrastructure\Persistence\Doctrine\Types\BodyType&#39;
+);
+$entityManager &#x3D; EntityManager::create(
+    [
+        &#39;driver&#39; &#x3D;&gt; &#39;pdo_sqlite&#39;,
+        &#39;path&#39;&#x3D;&gt; __DIR__ . &#39;&#x2F;db.sqlite&#39;,
+    ],
+    Tools\Setup::createXMLMetadataConfiguration(
+        [&#39;&#x2F;Path&#x2F;To&#x2F;Infrastructure&#x2F;Persistence&#x2F;Doctrine&#x2F;Mapping&#39;],
+        $devMode &#x3D; true
+    )
+);</code></pre>
+
+<p>根据你的需求来进行配置！</p>
+<h3 id="DQL实现"><a href="#DQL实现" class="headerlink" title="DQL实现"></a>DQL实现</h3><p>在这个Repository的案例中，我们只需要<code>EntityManager</code>来从数据库直接获取领域对象：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\Doctrine;
+use Doctrine\ORM\EntityManager;
+use Domain\Model\Post;
+use Domain\Model\PostId;
+use Domain\Model\PostRepository;
+class DoctrinePostRepository implements PostRepository
+&#123;
+    protected $em;
+    public function __construct(EntityManager $em)
+    &#123;
+        $this-&gt;em &#x3D; $em;
+    &#125;
+    public function add(Post $aPost)
+    &#123;
+        $this-&gt;em-&gt;persist($aPost);
+    &#125;
+    public function remove(Post $aPost)
+    &#123;
+        $this-&gt;em-&gt;remove($aPost);
+    &#125;
+    public function postOfId(PostId $anId)
+    &#123;
+        return $this-&gt;em-&gt;find(&#39;Domain\Model\Post&#39;, $anId);
+    &#125;
+    public function latestPosts(\DateTimeImmutable $sinceADate)
+    &#123;
+        return $this-&gt;em-&gt;createQueryBuilder()
+            -&gt;select(&#39;p&#39;)
+            -&gt;from(&#39;Domain\Model\Post&#39;, &#39;p&#39;)
+            -&gt;where(&#39;p.createdAt &gt; :since&#39;)
+            -&gt;setParameter(&#39;:since&#39;, $sinceADate)
+            -&gt;getQuery()
+            -&gt;getResult();
+    &#125;
+    public function nextIdentity()
+    &#123;
+        return new PostId();
+    &#125;
+&#125;</code></pre>
+
+<p>如果你看过其他的一些Doctrine示例，你可能会发现，在persist或者remove之后，flush会被调用。但是在我们的看来，不应该调用<code>flush</code>。刷新和处理事务被委托给了Application Service。这就是为什么你可以使用Doctrine的原因，考虑到刷新所有的改变都将在请求结束后进行，就性能而言，一次flush调用是最佳的。</p>
+<h2 id="面向持久化的仓储"><a href="#面向持久化的仓储" class="headerlink" title="面向持久化的仓储"></a>面向持久化的仓储</h2><p>有时面向集合的Repository与我们的持久机制不太适合。如果你没有一个工作单元，那么追踪一个聚合的修改是一件难事。保存修改的唯一方法是通过显示的调用<code>save</code>。</p>
+<p>面向持久化的仓储的接口定义与面向集合的仓储的定义的方式类似：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    public function nextIdentity();
+    public function postOfId(PostId $anId);
+    public function save(Post $aPost);
+    public function saveAll(array $posts);
+    public function remove(Post $aPost);
+    public function removeAll(array $posts);
+&#125;</code></pre>
+
+<p>在这例子中，我们现在有了<code>saveAll</code>方法，提供了与之前<code>addAll</code>相似的功能。但重点是客户端如何使用它是有所区别的。在面向集合的仓储中，你只有要使用<code>add</code>方法一次：当聚合被创建时。在面向持久化的仓储中，你不仅需要在创建聚合后使用一次<code>save</code>，还需要对已存在的聚合修改后再调用一次：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$post &#x3D; new Post(&#x2F;* ... *&#x2F;);
+$postRepository-&gt;save($post);
+&#x2F;&#x2F; later ...
+$post &#x3D; $postRepository-&gt;postOfId($postId);
+$post-&gt;editBody(new Body(&#39;New body!&#39;));
+$postRepository-&gt;save($post);</code></pre>
+<p>除了这些差别，细节都在实现中了。</p>
+<h3 id="Redis的实现"><a href="#Redis的实现" class="headerlink" title="Redis的实现"></a>Redis的实现</h3><p><code>Redis</code>是一个被用于缓存或存储的内存性键值对。</p>
+<p>根据你的情况，我们可以考虑将redis作为聚合的存储。</p>
+<p>一开始，确保你有一个连接到Redis的PHP客户端，一个比较推荐的是<code>Predis</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">composer require predis&#x2F;predis:~1.0
+namespace Infrastructure\Persistence\Redis;
+use Domain\Model\Post;
+use Domain\Model\PostId;
+use Domain\Model\PostRepository;
+use Predis\Client;
+class RedisPostRepository implements PostRepository
+&#123;
+    private $client;
+    public function __construct(Client $client)
+    &#123;
+        $this-&gt;client &#x3D; $client;
+    &#125;
+    public function save(Post $aPost)
+    &#123;
+        $this-&gt;client-&gt;hset(
+            &#39;posts&#39;,
+            (string) $aPost-&gt;id(), serialize($aPost)
+        );
+    &#125;
+    public function remove(Post $aPost)
+    &#123;
+        $this-&gt;client-&gt;hdel(&#39;posts&#39;, (string) $aPost-&gt;id());
+    &#125;
+    public function postOfId(PostId $anId)
+    &#123;
+        if($data &#x3D; $this-&gt;client-&gt;hget(&#39;posts&#39;, (string) $anId)) &#123;
+            return unserialize($data);
+        &#125;
+        return null;
+    &#125;
+    public function latestPosts(\DateTimeImmutable $sinceADate)
+    &#123;
+        $latest &#x3D; $this-&gt;filterPosts(
+            function(Post $post) use ($sinceADate) &#123;
+              return $post-&gt;createdAt() &gt; $sinceADate;
+            &#125;
+        );
+        $this-&gt;sortByCreatedAt($latest);
+        return array_values($latest);
+    &#125;
+    private function filterPosts(callable $fn)
+    &#123;
+        return array_filter(array_map(function ($data) &#123;
+            return unserialize($data);
+        &#125;,
+        $this-&gt;client-&gt;hgetall(&#39;posts&#39;)), $fn);
+    &#125;
+    private function sortByCreatedAt(&amp;$posts)
+    &#123;
+        usort($posts, function (Post $a, Post $b) &#123;
+            if ($a-&gt;createdAt() &#x3D;&#x3D; $b-&gt;createdAt()) &#123;
+                return 0;
+            &#125;
+            return ($a-&gt;createdAt() &lt; $b-&gt;createdAt()) ? -1 : 1;
+        &#125;);
+    &#125;
+    public function nextIdentity()
+    &#123;
+        return new PostId();
+    &#125;
+&#125;</code></pre>
+
+<h3 id="SQL的实现"><a href="#SQL的实现" class="headerlink" title="SQL的实现"></a>SQL的实现</h3><p>在一个经典案例中，我们可以通过使用原生SQL查询为我们的<code>PostRepository</code>创建一个简单的<code>PDO</code>实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\Sql;
+use Domain\Model\Body;
+use Domain\Model\Post;
+use Domain\Model\PostId;
+use Domain\Model\PostRepository;
+class SqlPostRepository implements PostRepository
+&#123;
+    const DATE_FORMAT &#x3D; &#39;Y-m-d H:i:s&#39;;
+    private $pdo;
+    public function __construct(\PDO $pdo)
+    &#123;
+        $this-&gt;pdo &#x3D; $pdo;
+    &#125;
+    public function save(Post $aPost)
+    &#123;
+        $sql &#x3D;&#39;INSERT INTO posts &#39; .
+            &#39;(id, body, created_at) VALUES &#39; .
+            &#39;(:id, :body, :created_at)&#39;;
+        $this-&gt;execute($sql, [
+            &#39;id&#39; &#x3D;&gt; $aPost-&gt;id()-&gt;id(),
+            &#39;body&#39; &#x3D;&gt; $aPost-&gt;body()-&gt;content(),
+            &#39;created_at&#39; &#x3D;&gt; $aPost-&gt;createdAt()-&gt;format(
+            self::DATE_FORMAT
+        )
+        ]);
+    &#125;
+    private function execute($sql, array $parameters)
+    &#123;
+        $st &#x3D; $this-&gt;pdo-&gt;prepare($sql);
+        $st-&gt;execute($parameters);
+        return $st;
+    &#125;
+    public function remove(Post $aPost)
+    &#123;
+        $this-&gt;execute(&#39;DELETE FROM posts WHERE id &#x3D; :id&#39;, [
+            &#39;id&#39; &#x3D;&gt; $aPost-&gt;id()-&gt;id()
+        ]);
+    &#125;
+    public function postOfId(PostId $anId)
+    &#123;
+        $st &#x3D;$this-&gt;execute(&#39;SELECT * FROM posts WHERE id &#x3D; :id&#39;,[
+            &#39;id&#39; &#x3D;&gt; $anId-&gt;id()
+        ]);
+        if($row &#x3D; $st-&gt;fetch(\PDO::FETCH_ASSOC)) &#123;
+            return $this-&gt;buildPost($row);
+        &#125;
+        return null;
+    &#125;
+    private function buildPost($row)
+    &#123;
+        return new Post(
+            new PostId($row[&#39;id&#39;]),
+            new Body($row[&#39;body&#39;]),
+            new \DateTimeImmutable($row[&#39;created_at&#39;])
+        );
+    &#125;
+    public function latestPosts(\DateTimeImmutable $sinceADate)
+    &#123;
+        return $this-&gt;retrieveAll(
+            &#39;SELECT * FROM posts WHERE created_at &gt; :since_date&#39;, [
+                &#39;since_date&#39; &#x3D;&gt; $sinceADate-&gt;format(self::DATE_FORMAT)
+            ]
+        );
+    &#125;
+    private function retrieveAll($sql, array $parameters &#x3D; [])
+    &#123;
+        $st &#x3D; $this-&gt;pdo-&gt;prepare($sql);
+        $st-&gt;execute($parameters);
+        return array_map(function ($row) &#123;
+            return $this-&gt;buildPost($row);
+        &#125;, $st-&gt;fetchAll(\PDO::FETCH_ASSOC));
+    &#125;
+    public function nextIdentity()
+    &#123;
+        return new PostId();
+    &#125;
+    public function size()
+    &#123;
+        return $this-&gt;pdo-&gt;query(&#39;SELECT COUNT(*) FROM posts&#39;)
+        -&gt;fetchColumn();
+    &#125;
+&#125;</code></pre>
+
+<p>我们不需要做任何映射配置，因此在同一类中有一个初始化schema的方法非常有用。一起改变的事物应该保持在一起：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SqlPostRepository implements PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    public function initSchema()
+    &#123;
+        $this-&gt;pdo-&gt;exec(&lt;&lt;&lt;SQL
+            DROP TABLE IF EXISTS posts;
+            CREATE TABLE posts (
+            id CHAR(36) PRIMARY KEY,
+            body VARCHAR (250) NOT NULL,
+            created_at DATETIME NOT NULL
+            ) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8mb4 COLLATE&#x3D;utf8mb4_unicode_ci;
+        SQL);
+    &#125;
+&#125;</code></pre>
+
+<h3 id="额外的行为"><a href="#额外的行为" class="headerlink" title="额外的行为"></a>额外的行为</h3><pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    public function size();
+&#125;</code></pre>
+
+<p>实现像是这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrinePostRepository implements PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    public function size()
+    &#123;
+        return $this-&gt;em-&gt;createQueryBuilder()
+            -&gt;select(&#39;count(p.id)&#39;)
+            -&gt;from(&#39;Domain\Model\Post&#39;, &#39;p&#39;)
+            -&gt;getQuery()
+            -&gt;getSingleScalarResult();
+    &#125;
+&#125;</code></pre>
+<p>向Repository中添加额外的行为可能非常有好处。这样的一个例子能够统计出对给定的集合中所有元素的数量。你可能会考虑增加一个名为<code>count</code>的方法，但是，当我们尝试模仿集合时，更好的名称应该是<code>size</code>：</p>
+<p>你还可以将特定的计算、统计、读取优化查询、复杂命令（INSERT、UPDATE或者DELETE）放如Repository。但是，所有的行为仍然要遵循集合所具有的特征。我们鼓励你将尽可能多的逻辑移到特定的领域的无状态的领域服务中，而不是简单的将这些职责放在Repository中。</p>
+<p>在某些情况下，对于一些简单少量的信息你不需要获得整个聚合。为了这样，你可以在Repository中添加作为快捷访问这些信息的方法。你应该确保只能通过遍历聚合根来访问可以获取的数据。因此，你不应该被允许访问聚合根的私有或内部区域，因为这将违反已经指定的约束规定。</p>
+<p>对于一些用例，你可能需要由多个聚合类型组成的特定的查询，每个类型返回特定的信息。这些查询可以运行，并且作为一个值对象被返回。对于Repository来说返回值对象是很常见的。</p>
+<p>如果你发现自己创建了许多针对用例优化过的查找方法，则可能会引入了常见的 <code>code smell</code>。这可能表明聚合边界判断有问题。但是，如果你确信边界是正确的，那么时候探索CQRS了。</p>
+<h1 id="查询仓储"><a href="#查询仓储" class="headerlink" title="查询仓储"></a>查询仓储</h1><p>通过比较，如果考虑仓储的查询能力，则它们与集合有些不同。Repository执行查询时通常处理的不是在内存中的对象。将领域对象所有实例加载到内存中并对其执行查询是不可行的。</p>
+<p>一个好的解决方案是传入一个<code>criterion</code>，并让Repository处理实现细节以成功执行操作。它可能会将criterion转换为SQL或者ORM查询，或者遍历内存中的集合。但是这并不重要，因为实现可以处理它。</p>
+<h2 id="规约模式"><a href="#规约模式" class="headerlink" title="规约模式"></a>规约模式</h2><p><code>criterion</code>对象的一个通用实现是规约模式（Specification pattern）。规约是一个简单的谓词，它接受领域对象并返回一个bool值。给定的一个领域对象，如果指定了规约，则将返回true，否则返回false：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostSpecification
+&#123;
+    &#x2F;**
+    * @return boolean
+    *&#x2F;
+    public function specifies(Post $aPost);
+&#125;</code></pre>
+<p>我们只需要添加一个<code>query</code>方法到我们的Repository中：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    public function query($specification);
+&#125;</code></pre>
+
+<h3 id="内存实现"><a href="#内存实现" class="headerlink" title="内存实现"></a>内存实现</h3><p>如果我们想要通过使用内存实现规约的方式来在我们的<code>PostRepository</code>中复制<code>latestPosts</code>，可能像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\InMemory;
+use Domain\Model\Post;
+interface InMemoryPostSpecification
+&#123;
+    &#x2F;**
+    * @return boolean
+    *&#x2F;
+    public function specifies(Post $aPost);
+&#125;</code></pre>
+
+<p><code>latestPosts</code>的内存实现像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\InMemory;
+use Domain\Model\Post;
+class InMemoryLatestPostSpecification
+implements InMemoryPostSpecification
+&#123;
+    private $since;
+    public function __construct(\DateTimeImmutable $since)
+    &#123;
+        $this-&gt;since &#x3D; $since;
+    &#125;
+    public function specifies(Post $aPost)
+    &#123;
+        return $aPost-&gt;createdAt() &gt; $this-&gt;since;
+    &#125;
+&#125;</code></pre>
+<p>对于我们仓储的实现的<code>query</code>方法像是这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class InMemoryPostRepository implements PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @param InMemoryPostSpecification $specification
+    *
+    * @return Post[]
+    *&#x2F;
+    public function query($specification)
+    &#123;
+        return $this-&gt;filterPosts(
+            function (Post $post) use($specification) &#123;
+                return $specification-&gt;specifies($post);
+            &#125;
+        );
+    &#125;
+&#125;</code></pre>
+<p>从仓储中获取最新的帖子，就像创建上面的实现一样简单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$latestPosts &#x3D; $postRepository-&gt;query(
+    new InMemoryLatestPostSpecification(new \DateTimeImmutable(&#39;-24&#39;))
+);</code></pre>
+
+<h3 id="SQL的实现-1"><a href="#SQL的实现-1" class="headerlink" title="SQL的实现"></a>SQL的实现</h3><p>标准规约非常适合内存的实现。但是，由于我们没有为SQL实现预加载所有领域对象到内存中，因此我们针对这种情需要特定的规约：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Infrastructure\Persistence\Sql;
+interface SqlPostSpecification
+&#123;
+    &#x2F;**
+    * @return string
+    *&#x2F;
+    public function toSqlClauses();
+&#125;</code></pre>
+
+<p>SQL实现这个规约像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">
+namespace Infrastructure\Persistence\Sql;
+class SqlLatestPostSpecification implements SqlPostSpecification
+&#123;
+    private $since;
+    public function __construct(\DateTimeImmutable $since)
+    &#123;
+        $this-&gt;since &#x3D; $since;
+    &#125;
+    public function toSqlClauses()
+    &#123;
+        return &quot;created_at &gt;&#39;&quot; .
+            $this-&gt;since-&gt;format(&#39;Y-m-d H:i:s&#39;) .
+        &quot;&#39;&quot;;
+    &#125;
+&#125;</code></pre>
+<p>这是一个如何查询<code>SQLPostRepository</code>的实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SqlPostRepository implements PostRepository
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @param SqlPostSpecification $specification
+    *
+    * @return Post[]
+    *&#x2F;
+    public function query($specification)
+    &#123;
+        return $this-&gt;retrieveAll(
+            &#39;SELECT * FROM posts WHERE &#39; .
+            $specification-&gt;toSqlClauses()
+        );
+    &#125;
+    private function retrieveAll($sql, array $parameters &#x3D; [])
+    &#123;
+        $st &#x3D; $this-&gt;pdo-&gt;prepare($sql);
+        $st-&gt;execute($parameters);
+        return array_map(function ($row) &#123;
+            return $this-&gt;buildPost($row);
+        &#125;, $st-&gt;fetchAll(\PDO::FETCH_ASSOC));
+    &#125;
+&#125;</code></pre>
+
+<h1 id="管理事务"><a href="#管理事务" class="headerlink" title="管理事务"></a>管理事务</h1><p>领域模型不是管理事务的地方。在领域模型上的操作应该与持久机制无关。解决此问题的常用方法是在用用层放一个Facade（外观模式），从而将相关的用例分组在一起。当从UI层调用Facade方法时，业务方法开始一个事务。完成后，Facade将通过提交事务来结束交互。如果发生任何错误，事务将回滚：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SomeApplicationServiceFacade
+&#123;
+    private $em;
+    public function __construct(EntityManager $em)
+    &#123;
+        $this-&gt;em &#x3D; $em;
+    &#125;
+    public function doSomeUseCaseTask()
+    &#123;
+        try &#123;
+            $this-&gt;em-&gt;getConnection()-&gt;beginTransaction();
+            &#x2F;&#x2F; Use domain model
+            $this-&gt;em-&gt;getConnection()-&gt;commit();
+        &#125; catch (Exception $e) &#123;
+            $this-&gt;em-&gt;getConnection()-&gt;rollback();
+            throw $e;
+        &#125;
+    &#125;
+&#125;</code></pre>
+<p>Facade产生的问题是，我们必须一遍又一遍重复相同的样板代码。如果我们统一执行用例的方法，则可以使用Decorator（修饰器模式）将它们包装在一个事务中：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface ApplicationService
+&#123;
+    &#x2F;**
+    * @param $request
+    * @return mixed
+    *&#x2F;
+    public function execute(BaseRequest $request);
+    &#125;
+    
+class SomeApplicationService implements ApplicationService
+&#123;
+    public function execute(BaseRequest $request)
+    &#123;
+        &#x2F;&#x2F; do something
+    &#125;
+&#125;</code></pre>
+<p>我们不想将我们的应用层与具体的事务过程耦合在一起，因此我们可以为其创建一个简单的接口：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface TransactionalSession
+&#123;
+    &#x2F;**
+    * @param callable $operation
+    * @return mixed
+    *&#x2F;
+    public function executeAtomically(callable $operation);
+&#125;</code></pre>
+
+<p>修饰器模式的实现可以使得任意应用服务的事务变得如此容易：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class TransactionalApplicationService implements ApplicationService
+&#123;
+    private $session;
+    private $service;
+    public function __construct(
+        ApplicationService $service,
+        TransactionalSession $session
+    ) &#123;
+        $this-&gt;session &#x3D; $session;
+        $this-&gt;service &#x3D; $service;
+    &#125;
+    public function execute(BaseRequest $request)
+    &#123;
+        $operation &#x3D; function() use($request) &#123;
+            return $this-&gt;service-&gt;execute($request);
+        &#125;;
+        return $this-&gt;session-&gt;executeAtomically(
+            $operation-&gt;bindTo($this)
+        );
+    &#125;
+&#125;</code></pre>
+
+<p>然后，我们可以选择创建一个Doctrine事务会话的实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrineSession implements TransactionalSession
+&#123;
+    private $entityManager;
+    public function __construct(EntityManager $entityManager)
+    &#123;
+        $this-&gt;entityManager &#x3D; $entityManager;
+    &#125;
+    public function executeAtomically(callable $operation)
+    &#123;
+        return $this-&gt;entityManager-&gt;transactional($operation);
+    &#125;
+&#125;</code></pre>
+
+<p>现在我们在一个事务中执行我们的用例了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$useCase &#x3D; new TransactionalApplicationService(
+    new SomeApplicationService(
+        &#x2F;&#x2F; ...
+    ),
+    new DoctrineSession(
+        &#x2F;&#x2F; ...
+    )
+);
+$response &#x3D; $useCase-&gt;execute();</code></pre>
+
+<h1 id="测试仓储"><a href="#测试仓储" class="headerlink" title="测试仓储"></a>测试仓储</h1><p>为了确保仓储可以在生产环境中运行，我们需要测试它的实现。为此，我们必须测试系统边界，以确保我们的期望是正确的。</p>
+<p>对于Doctrine测试，配置将更加复杂：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools;
+use Domain\Model\Post;
+class DoctrinePostRepositoryTest extends \PHPUnit_Framework_TestCase
+&#123;
+    private $postRepository;
+    public function setUp()
+    &#123;
+        $this-&gt;postRepository &#x3D; $this-&gt;createPostRepository();
+    &#125;
+    private function createPostRepository()
+    &#123;
+        $this-&gt;addCustomTypes();
+        $em &#x3D; $this-&gt;initEntityManager();
+        $this-&gt;initSchema($em);
+        return new PrecociousDoctrinePostRepository($em);
+    &#125;
+    private function addCustomTypes()
+    &#123;
+        if (!Type::hasType(&#39;post_id&#39;)) &#123;
+            Type::addType(
+                &#39;post_id&#39;,
+                &#39;Infrastructure\Persistence\Doctrine\Types\PostIdType&#39;
+            );
+        &#125;
+        if (!Type::hasType(&#39;body&#39;)) &#123;
+            Type::addType(
+                &#39;body&#39;,
+                &#39;Infrastructure\Persistence\Doctrine\Types\BodyType&#39;
+            );
+        &#125;
+    &#125;
+    protected function initEntityManager()
+    &#123;
+        return EntityManager::create(
+            [&#39;url&#39; &#x3D;&gt; &#39;sqlite:&#x2F;&#x2F;&#x2F;:memory:&#39;],
+            Tools\Setup::createXMLMetadataConfiguration(
+                [&#39;&#x2F;Path&#x2F;To&#x2F;Infrastructure&#x2F;Persistence&#x2F;Doctrine&#x2F;Mapping&#39;],
+                $devMode &#x3D; true
+            )
+        );
+    &#125;
+    private function initSchema(EntityManager $em)
+    &#123;
+        $tool &#x3D; new Tools\SchemaTool($em);
+        $tool-&gt;createSchema([
+            $em-&gt;getClassMetadata(&#39;Domain\Model\Post&#39;)
+        ]);
+    &#125;
+    &#x2F;&#x2F; ...
+&#125;
+class PrecociousDoctrinePostRepository extends DoctrinePostRepository
+&#123;
+    public function persist(Post $aPost)
+    &#123;
+        parent::persist($aPost);
+        $this-&gt;em-&gt;flush();
+    &#125;
+    public function remove(Post $aPost)
+    &#123;
+        parent::remove($aPost);
+        $this-&gt;em-&gt;flush();
+    &#125;
+&#125;</code></pre>
+<p>一旦我们设置好了环境和配置，我们就可以测试Repository的行为了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrinePostRepositoryTest extends \PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itShouldRemovePost()
+    &#123;
+        $post &#x3D; $this-&gt;persistPost(&#39;irrelevant body&#39;);
+        $this-&gt;postRepository-&gt;remove($post);
+        $this-&gt;assertPostExist($post-&gt;id());
+    &#125;
+    private function assertPostExist($id)
+    &#123;
+        $result &#x3D; $this-&gt;postRepository-&gt;postOfId($id);
+        $this-&gt;assertNull($result);
+    &#125;
+    private function persistPost(
+        $body,
+        \DateTimeImmutable $createdAt &#x3D; null
+    ) &#123;
+        $this-&gt;postRepository-&gt;add(
+            $post &#x3D; new Post(
+                $this-&gt;postRepository-&gt;nextIdentity(),
+                new Body($body),
+                $createdAt
+            )
+        );
+    return $post;
+    &#125;
+&#125;</code></pre>
+<p>按照我们先前设置的断言，如果我们保存一个<code>Post</code>，我们希望它是处于一个特定的状态。</p>
+<p>现在我们可以通过给定的日期来查询最新的帖子了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DoctrinePostRepositoryTest extends \PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itShouldFetchLatestPosts()
+    &#123;
+        $this-&gt;persistPost(
+            &#39;a year ago&#39;, new \DateTimeImmutable(&#39;-1 year&#39;)
+        );
+        $this-&gt;persistPost(
+            &#39;a month ago&#39;, new \DateTimeImmutable(&#39;-1 month&#39;)
+        );
+        $this-&gt;persistPost(
+            &#39;few hours ago&#39;, new \DateTimeImmutable(&#39;-3 hours&#39;)
+        );
+        $this-&gt;persistPost(
+            &#39;few minutes ago&#39;, new \DateTimeImmutable(&#39;-2 minutes&#39;)
+        );
+        $posts &#x3D; $this-&gt;postRepository-&gt;latestPosts(
+            new \DateTimeImmutable(&#39;-24 hours&#39;)
+        );
+        $this-&gt;assertCount(2, $posts);
+        $this-&gt;assertEquals(
+            &#39;few hours ago&#39;, $posts[0]-&gt;body()-&gt;content()
+        );
+        $this-&gt;assertEquals(
+            &#39;few minutes ago&#39;, $posts[1]-&gt;body()-&gt;content()
+        );
+    &#125;
+&#125;</code></pre>
+
+<h1 id="使用内存实现测试你的服务"><a href="#使用内存实现测试你的服务" class="headerlink" title="使用内存实现测试你的服务"></a>使用内存实现测试你的服务</h1><p>配置一个完整的持久化Reposiotry可能会很复杂，并且导致执行缓慢。你应该关注一下如何快速测试。现在完成整个数据库的配置，然后查询将极大的降低你的速度。在内存中的实现可能有助于你将持久化决策推迟到最后，我们可以像以前一样进行测试。但是这次，我们将使用功能齐全的快速简单内存实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class MyServiceTest extends \PHPUnit_Framework_TestCase
+&#123;
+    private $service;
+    public function setUp()
+    &#123;
+        $this-&gt;service &#x3D; new MyService(
+            new InMemoryPostRepository()
+        );
+    &#125;
+&#125;</code></pre>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>一个Repository是一种充当存储位置的机制。DAO和Repository之间的区别在于，DAO遵循数据库优先的方式，使用许多底层方法来降低查询数据库的内聚性。根据底层持久化机制，我们已经看到了不同的Repository方法了：</p>
+<ul>
+<li><p>面向集合的Repository：倾向于使用领域模型。从客户端的角度来看，面向集合的Repository就像是一个collection(Set)。不需要对实体修改时进行显示的持久性方法调用，因为Repository可以跟踪对象上的内容修改。我们探索了如何使用Doctrine作为面向集合的Repository的持久机制。</p>
+</li>
+<li><p>面向持久化的Repository：需要一个显示的持久化方法调用，因为它们不会追踪对象的变化。我们探索了Redis和原生SQL的实现。</p>
+</li>
+</ul>
+<p>在此过程中，我们发现规约模式（Specifications）可以帮助我们在补习生灵活性和内聚性的情况下查询数据库。我们还研究了如何通过简单、快速的内存实现的Repository来管理事务以及如何测试我们的服务。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-factories/" rel="prev" title="[译]工厂 - 《Domain-Driven Design in PHP》第9章">
+                  <i class="fa fa-angle-left"></i> [译]工厂 - 《Domain-Driven Design in PHP》第9章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-application/" rel="next" title="[译]应用 - 《Domain-Driven Design in PHP》第11章">
+                  [译]应用 - 《Domain-Driven Design in PHP》第11章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

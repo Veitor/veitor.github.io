@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="今天试用了一下facebook的php性能调试工具xhprof，在安装的时候是一波三折，虽说从百度了安装方法，但也折腾了半天，不知是说明没写全还是我个人操作失误，那么我在这把我的安装方法讲述一下。环境是：Linux+Nginx+PHP #cd &#x2F;tmp#mkdir xhprof#cd xhprof#wget http:&#x2F;&#x2F;pecl.php.net&#x2F;get&#x2F;xhprof-0.9.4.tgz">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP性能调试工具xhprof的安装与使用">
+<meta property="og:url" content="http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="今天试用了一下facebook的php性能调试工具xhprof，在安装的时候是一波三折，虽说从百度了安装方法，但也折腾了半天，不知是说明没写全还是我个人操作失误，那么我在这把我的安装方法讲述一下。环境是：Linux+Nginx+PHP #cd &#x2F;tmp#mkdir xhprof#cd xhprof#wget http:&#x2F;&#x2F;pecl.php.net&#x2F;get&#x2F;xhprof-0.9.4.tgz">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103143752.jpg">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103154222.jpg">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104133618.jpg">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104135151.jpg">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/callgraph.png">
+<meta property="article:published_time" content="2014-11-02T23:47:41.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.993Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="xhprof">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103143752.jpg">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/","path":"posts/installation-and-usage-of-tool-xhprof/","title":"PHP性能调试工具xhprof的安装与使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PHP性能调试工具xhprof的安装与使用 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xhprof%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">xhprof的使用</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/installation-and-usage-of-tool-xhprof/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="PHP性能调试工具xhprof的安装与使用 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PHP性能调试工具xhprof的安装与使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-11-03 07:47:41" itemprop="dateCreated datePublished" datetime="2014-11-03T07:47:41+08:00">2014-11-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">计算机系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>今天试用了一下facebook的php性能调试工具xhprof，在安装的时候是一波三折，虽说从百度了安装方法，但也折腾了半天，不知是说明没写全还是我个人操作失误，那么我在这把我的安装方法讲述一下。环境是：Linux+Nginx+PHP</p>
+<p>#cd &#x2F;tmp<br>#mkdir xhprof<br>#cd xhprof<br>#wget <a target="_blank" rel="noopener" href="http://pecl.php.net/get/xhprof-0.9.4.tgz">http://pecl.php.net/get/xhprof-0.9.4.tgz</a><br>&#x2F;&#x2F;解压<br>#tar zxf xhprof-0.9.4.tgz<br>#cd xhprof-0.9.4&#x2F;extension<br>&#x2F;&#x2F;拷贝xhprof_html和xhprof_lib两个文件夹至可访问的web目录下，我的web根目录为&#x2F;home&#x2F;www<br>#cp -r xhprof_html xhprof_lib &#x2F;home&#x2F;www<br>&#x2F;&#x2F;运行phpize<br>#&#x2F;usr&#x2F;local&#x2F;webserver&#x2F;php&#x2F;bin&#x2F;phpize<br>&#x2F;&#x2F;运行configure为下一步编译做准备，详情了解Linux下的configure命令<br>#.&#x2F;configure –with-php-config&#x3D;&#x2F;usr&#x2F;local&#x2F;php&#x2F;bin&#x2F;php-config<br>#make<br>#make install</p>
+<p>安装完后你会看到一个提示Installing shared extensions &#x2F;usr&#x2F;local&#x2F;php&#x2F;lib&#x2F;php&#x2F;extensions&#x2F;no-debug-non-zts-20060626&#x2F;xhprof.so，说明xhprof.so这个模块被生成了 接下来修改php.ini文件，添加：</p>
+<p>&#x2F;&#x2F;添加xhprof.so这个扩展，位置就是刚才生成给你的<br>extension&#x3D;&#x2F;usr&#x2F;local&#x2F;php&#x2F;lib&#x2F;php&#x2F;extensions&#x2F;no-debug-non-zts-20060626&#x2F;xhprof.so<br>&#x2F;&#x2F;指定生成测试报告分析日志的目录，并保证可写权限<br>xhprof.output_dir&#x3D;&#x2F;home&#x2F;www&#x2F;tmp</p>
+<p>重启php-fpm重新加载php配置文件 #&#x2F;etc&#x2F;init.d&#x2F;php-fpm restart 至此安装完毕，可以搞个phpinfo();页面看看，如果能看到下图则说明安装成功了<a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103143752.jpg"><img data-src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103143752.jpg" alt="QQ截图20141103143752"></a>  </p>
+<h2 id="xhprof的使用"><a href="#xhprof的使用" class="headerlink" title="xhprof的使用"></a>xhprof的使用</h2><p>写一个php脚本如</p>
+<p>xhprof_enable();<br>function test()<br>{<br> return ‘this is a test demo’;<br>}<br>test();<br>$xhprofData &#x3D; xhprof_disable();<br>include_once ‘&#x2F;home&#x2F;www&#x2F;houseinfo&#x2F;xhprof_lib&#x2F;utils&#x2F;xhprof_lib.php’;<br>include_once ‘&#x2F;home&#x2F;www&#x2F;houseinfo&#x2F;xhprof_lib&#x2F;utils&#x2F;xhprof_runs.php’;<br>$xhprofRuns &#x3D; new XHProfRuns_Default();<br>$xhprofRuns-&gt;save_run($xhprofData,’xhprof_foo’);<br>?&gt;</p>
+<p>通过URL访问该脚本后，会在之前设定的&#x2F;home&#x2F;www&#x2F;tmp（php.ini中设定的）目录下生成分析日志，如“5457280fd8500.xhprof_foo.xhprof” 其中5457280fd8500为日志生成的id，通过地址<a target="_blank" rel="noopener" href="http://your/_URL/xhprof_html/index.php?run=**5457315580b0e**&source=xhprof_foo%E5%8D%B3%E5%8F%AF%E6%9F%A5%E7%9C%8B%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%EF%BC%88%E5%A6%82%E4%B8%8B%E5%9B%BE%EF%BC%89">http://YOUR\_URL/xhprof_html/index.php?run=**5457315580b0e**&amp;source=xhprof_foo即可查看性能分析（如下图）</a> <a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103154222.jpg"><img data-src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141103154222.jpg" alt="QQ截图20141103154222"></a> 你可以将上面php代码最后一行改为这样，以便直接点击链接到分析页查看，而无需自己再查看id并拼接成URL访问</p>
+<?php
+$run\_id = $xhprofRuns->save\_run($xhprofData,'xhprof_foo');
+echo '<a href="/xhprof\_html/index.php?run='.$run\_id.'&source=xhprof\_foo" target="\_blank">查看分析报告</a>';
+?>
+
+<p>xhprof提供3种报告： 一、单一运行报告：通过<a target="_blank" rel="noopener" href="http://your/_URL/xhprof/_html/index.php?run=**5457315580b0e**&source=xhprof%5C_foo%E5%9C%B0%E5%9D%80%E6%9F%A5%E7%9C%8B%E7%9A%84%E5%8D%95%E4%B8%80%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E6%8A%A5%E5%91%8A">http://YOUR\_URL/xhprof\_html/index.php?run=**5457315580b0e**&amp;source=xhprof\_foo地址查看的单一运行时的报告</a> 二、diff报告：地址如<a target="_blank" rel="noopener" href="http://your/_URL/xhprof_html/index.php?run1=**xxxxxx**&run2=**xxxxxxx**&source=xhprof%5C_foo%EF%BC%8C%E6%8F%90%E4%BE%9B%E4%B8%A4%E6%AC%A1%E5%AF%B9%E6%AF%94id%E5%8D%B3%E5%8F%AF%E3%80%82">http://YOUR\_URL/xhprof_html/index.php?run1=**xxxxxx**&amp;run2=**xxxxxxx**&amp;source=xhprof\_foo，提供两次对比id即可。</a> 三、汇总报告，指定一组run id来汇总得到您想要的报告视图。如果你有三个XHProf运行，都在”xhprof_foo‘命名空间下,run id分别是1，2，3。要查看这些运行的汇总报告:<a target="_blank" rel="noopener" href="http://your/_URL/xhprof/_html/index.php?run**=1%EF%BC%8C2%EF%BC%8C3**&source=xhprof_foo">http://YOUR\_URL/xhprof\_html/index.php?run**=1，2，3**&amp;source=xhprof_foo</a> XHProf输出说明 1. Inclusive Time ： 包括子函数所有执行时间。 2. Exclusive Time&#x2F;Self Time ： 函数执行本身花费的时间，不包括子树执行时间。 3. Wall Time ： 花去了的时间或挂钟时间。 4. CPU Time ： 用户耗的时间+ 内核耗的时间 5. Inclusive CPU ： 包括子函数一起所占用的CPU 6. Exclusive CPU ： 函数自身所占用的CPU 可是这个界面看起来不是很直观也不爽，我们还可以装一个graphviz画图工具</p>
+<p>#wget <a target="_blank" rel="noopener" href="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.28.0.tar.gz">http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.28.0.tar.gz</a><br>#tar -zxvf graphviz-2.28.0.tar.gz<br>#cd graphviz-2.28.0<br>#.&#x2F;configure<br>#make<br>#make install</p>
+<p>安装完成后，会生成&#x2F;usr&#x2F;local&#x2F;bin&#x2F;dot文件，确保路径在PATH环境变量里，以便XHProf能找到它，graphviz处于**&#x2F;usr&#x2F;local&#x2F;lib&#x2F;graphviz**。 #vi ~&#x2F;.bash_profile <a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104133618.jpg"><img data-src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104133618.jpg" alt="QQ截图20141104133618"></a>#echo $PATH 输出一下看看应该有了这个路径 <a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104135151.jpg"><img data-src="http://storage.veitor.net/uploads/2014/11/QQ%E6%88%AA%E5%9B%BE20141104135151.jpg" alt="QQ截图20141104135151"></a> 之后进入分析页面点击[View Full Callgraph]就能看到类似下图了</p>
+<p><a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/callgraph.png"><img data-src="http://storage.veitor.net/uploads/2014/11/callgraph.png" alt="callgraph"></a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/xhprof/" rel="tag"># xhprof</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/understanding-of-inode-in-Linux/" rel="prev" title="Linux的inode的理解">
+                  <i class="fa fa-angle-left"></i> Linux的inode的理解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/the-difference-between-responsive-and-adaptive/" rel="next" title="响应式与自适应的区别">
+                  响应式与自适应的区别 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

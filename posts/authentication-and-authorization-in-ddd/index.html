@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？ 在下面我将基于一个虚拟的用例来展示两种实现方式。 基本要求这些概念最好了解一下：  Application Service Hexagonal Architecture">
+<meta property="og:type" content="article">
+<meta property="og:title" content="领域驱动设计中的认证和授权">
+<meta property="og:url" content="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？ 在下面我将基于一个虚拟的用例来展示两种实现方式。 基本要求这些概念最好了解一下：  Application Service Hexagonal Architecture">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-27T00:49:59.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.992Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/authentication-and-authorization-in-ddd/","path":"posts/authentication-and-authorization-in-ddd/","title":"领域驱动设计中的认证和授权"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>领域驱动设计中的认证和授权 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%A6%81%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">基本要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">用例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%88%E6%9C%AC1%EF%BC%9A%E5%9C%A8Application-Srvice%E5%A4%96%E8%BF%9B%E8%A1%8C"><span class="nav-number">2.1.</span> <span class="nav-text">版本1：在Application Srvice外进行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-Service"><span class="nav-number">2.1.1.</span> <span class="nav-text">Application Service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web"><span class="nav-number">2.1.2.</span> <span class="nav-text">Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REST"><span class="nav-number">2.1.3.</span> <span class="nav-text">REST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Console"><span class="nav-number">2.1.4.</span> <span class="nav-text">Console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.1.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%88%E6%9C%AC2%EF%BC%9A%E5%9C%A8Application-Service%E5%86%85%E8%BF%9B%E8%A1%8C"><span class="nav-number">2.2.</span> <span class="nav-text">版本2：在Application Service内进行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Application-Service-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">Application Service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">Web</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#REST-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">REST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Console-1"><span class="nav-number">2.2.4.</span> <span class="nav-text">Console</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">2.2.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/authentication-and-authorization-in-ddd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="领域驱动设计中的认证和授权 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          领域驱动设计中的认证和授权
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-27 08:49:59" itemprop="dateCreated datePublished" datetime="2020-08-27T08:49:59+08:00">2020-08-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>认证(Authentication)和授权(Authorization)是一个应用中常见的场景。但在DDD中实现认证&#x2F;授权的最佳方式是什么？</p>
+<p>在下面我将基于一个虚拟的用例来展示两种实现方式。</p>
+<h1 id="基本要求"><a href="#基本要求" class="headerlink" title="基本要求"></a>基本要求</h1><p>这些概念最好了解一下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://martinfowler.com/eaaCatalog/serviceLayer.html">Application Service</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/84223605">Hexagonal Architecture</a></li>
+</ul>
+<span id="more"></span>
+
+<h1 id="用例"><a href="#用例" class="headerlink" title="用例"></a>用例</h1><p>假设我们想开发一个<strong>博客平台</strong>。</p>
+<p>我们在下面定义了<strong>博客平台</strong>上下文(Context)中的通用语言(Ubiquitous Languate)：</p>
+<ul>
+<li><strong>Author:</strong> 博客平台中的用户，它是一个带有<code>authorId</code>唯一标识的Entity。</li>
+<li><strong>Blog:</strong> 博客平台中含有博文的特定区域，它是一个带有<code>blogId</code>唯一标识的Entity。</li>
+<li><strong>Collaborator:</strong> 可以在给定的Blog中创建博文的Author。</li>
+<li><strong>Authentication:</strong> 识别一个Author的过程。</li>
+<li><strong>Authorization:</strong> 检查在给定的Blog中Author是否是Collaborator。</li>
+</ul>
+<p>我们将要开发的用例是Blog的Collaborator可以在Blog中创建博文。为了能够比较两种实现方式，该用例可以在Web、REST和Console中执行。</p>
+<blockquote>
+<p>注意：为了把注意力放在重要概念上，示例代码中对dependencies、getters等概念已经简化了。</p>
+</blockquote>
+<h2 id="版本1：在Application-Srvice外进行"><a href="#版本1：在Application-Srvice外进行" class="headerlink" title="版本1：在Application Srvice外进行"></a>版本1：在Application Srvice外进行</h2><p>这种方式下，一旦发起对<code>Application Service</code>的请求，则它将被执行，且没有任何Authentication和Authorization的过程。</p>
+<h3 id="Application-Service"><a href="#Application-Service" class="headerlink" title="Application Service"></a>Application Service</h3><pre class="line-numbers language-php" data-language="php"><code class="language-php">&#x2F;&#x2F; Request
+class AddPostRequest()
+&#123;
+   public function authorId() &#123;…&#125;
+   public function blogId() &#123;…&#125;
+   public function title() &#123;…&#125;
+   public function text() &#123;…&#125;
+&#125;
+&#x2F;&#x2F; Application Service
+class AddPostService()
+&#123;
+   public function execute($request)
+   &#123;
+       $authorId &#x3D; $request-&gt;authorId();
+       $blogId   &#x3D; $request-&gt;blogId();
+       $title    &#x3D; $request-&gt;title();
+       $text     &#x3D; $request-&gt;text();
+       if (!$blog &#x3D; $this-&gt;blogRepository-&gt;blogOfId($blogId)) &#123;
+             throw new BlogNotFoundException();
+       &#125;
+ 
+       $post &#x3D; $blog-&gt;buildPost(
+          $this-&gt;postRepository-&gt;nextIdentity(),
+          $authorId,
+          $title,
+          $text
+       );
+       $this-&gt;postRepository-&gt;save($post);
+   &#125;
+&#125;</code></pre>
+
+<h3 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h3><p>在控制器中（或框架的其他hook中），用例执行之前，对当前用户进行认证检查，同时也检查其是否是Blog的collaborator。</p>
+<p>为了检查这些，我们在Controller中使用<code>Domain Service</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostController
+&#123;
+   public newPostAction()
+   &#123;
+       if (!$this-&gt;sessionService()-&gt;isAuthenticated()) &#123;
+           throw new UnauthenticatedUserException();
+       &#125;
+       $blogId &#x3D; $this-&gt;request-&gt;get(‘blog_id’);
+       $userId &#x3D; $this-&gt;sessionService()-&gt;currentUserId();
+   
+       $isCollaborator &#x3D; $this-&gt;permissionService()-&gt;isCollaborator(
+           $userId, $blogId
+       );
+       if (!$isCollaborator) &#123;
+           throw new UnauthorizedUserException();
+       &#125;
+       &#x2F;&#x2F; executes AddPostService use case
+   &#125;
+&#125;</code></pre>
+
+<h3 id="REST"><a href="#REST" class="headerlink" title="REST"></a>REST</h3><p>REST方式中，会使用header中的Authorization获取token，需要检查这个token是否属于某个用户，并且这用户是否是Blog的collaborator。</p>
+<p>为了检查这些，我们在Controller中使用<code>Domain Service</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostRestFulController
+&#123;
+   public newPostAction()
+   &#123;
+       $authorizationValue &#x3D; $this-&gt;authorizationHeader();
+       $userId &#x3D; $this-&gt;oauthService()-&gt;userId($authorizationValue);
+       $blogId &#x3D; $this-&gt;request-&gt;get(‘blog_id’);
+       if (!$userId) &#123;
+           throw new UnauthenticatedUserException();
+       &#125;
+       $isCollaborator &#x3D; $this-&gt;permissionService()-&gt;isCollaborator(
+           $userId, $blogId
+       );
+       if (!$isCollaborator) &#123;
+           throw new UnauthorizedUserException();
+       &#125;
+       &#x2F;&#x2F; execute AddPostService use case
+    &#125;
+&#125;</code></pre>
+
+<h3 id="Console"><a href="#Console" class="headerlink" title="Console"></a>Console</h3><p>Console下，执行用例没有检查authentication和authorization。<code>userId</code>来自命令行的参数。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">&gt; blog add-post — user-id 1 — blog-id 1 — title Foo …
+
+class PostConsole
+&#123;
+    public newPostCommand()
+    &#123;
+       &#x2F;&#x2F; gets values from console parameters
+       &#x2F;&#x2F; execute AddPostService use case
+    &#125;
+&#125;</code></pre>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>Authentication&#x2F;Authorization检查是在Application Service之外的Controller或框架的其他hook中进行。</li>
+<li>Authentication&#x2F;Authorization必须在Application Service用例执行前进行。</li>
+<li>根据应用的入口（如Web、REST、Console）来使用authentication服务，实例中使用的是<em>OauthService</em>、<em>SessionService</em>。</li>
+</ul>
+<h2 id="版本2：在Application-Service内进行"><a href="#版本2：在Application-Service内进行" class="headerlink" title="版本2：在Application Service内进行"></a>版本2：在Application Service内进行</h2><p>我们可以在用例内使用通用语言，来隐式的执行authentication&#x2F;authorization。</p>
+<h3 id="Application-Service-1"><a href="#Application-Service-1" class="headerlink" title="Application Service"></a>Application Service</h3><p>它将使用一个名为<em>CollaboratorService</em>的<em>Domain Service</em>来检查authentication和authorization。<em>CollaboratorService</em>返回Author的值对象。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">interface CollaboratorService
+&#123;
+    public function authorFrom($authorId, $blogId);
+&#125;
+&#x2F;&#x2F; Request
+class AddPostRequest
+&#123;
+    public function authorId() &#123;…&#125;
+    public function blogId() &#123;…&#125;
+    public function title() &#123;…&#125;
+    public function text() &#123;…&#125;
+&#125;
+&#x2F;&#x2F; Application Service
+class AddPostService
+&#123;
+    public function execute($request)
+    &#123;
+       $authorId &#x3D; $request-&gt;authorId();
+       $blogId   &#x3D; $request-&gt;blogId();
+       $title    &#x3D; $request-&gt;title();
+       $text     &#x3D; $request-&gt;text();
+       $author &#x3D; $this-&gt;collaboratorService-&gt;authorFrom(
+           $authorId, 
+           $blogId
+       );
+       if (!$author) &#123;
+           throw new InvalidAuthorException();
+       &#125;
+       if (!$blog &#x3D; $this-&gt;blogRepository-&gt;blogOfId($blogId)) &#123;
+           throw new BlogNotFoundException();
+       &#125;
+ 
+       $post &#x3D; $blog-&gt;buildPost(
+           $this-&gt;postRepository-&gt;nextIdentity(),
+           $author,
+           $title,
+           $text
+       );
+ 
+       $this-&gt;postRepository-&gt;save($post);
+    &#125;
+&#125;</code></pre>
+
+<h3 id="Web-1"><a href="#Web-1" class="headerlink" title="Web"></a>Web</h3><p><em>Controller</em>不需要检查authentication&#x2F;authorization，但它需要创建用例请求和传入<em>authorId</em>参数，一个通用场景是从session中读取<em>userId</em>。剩下的参数从http请求中读取到。</p>
+<p>随后<em>CollaboratorService</em>的实现直接与userId进行交互。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class UserIdCollaboratorService implements CollaboratorService
+&#123;
+    public function authorFrom($authorId, $blogId) &#123; … &#125;
+&#125;
+class PostController
+&#123;
+    public newPostAction()
+    &#123;
+        $authorId &#x3D; $this-&gt;sessionService()-&gt;userId();
+        &#x2F;&#x2F; executes ApplicationService use case
+    &#125;
+&#125;</code></pre>
+
+<h3 id="REST-1"><a href="#REST-1" class="headerlink" title="REST"></a>REST</h3><p>REST下使用http headr头中Authorization获取用户的token，在REST入口中，认证机制可能是OAuth、JTW等。<em>CollaboratorService</em>的实现可能与那个token进行交互。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class OAuthCollaboratorService implements CollaboratorService
+&#123;
+     public function authorFrom($authorId, $blogId) &#123; … &#125;
+&#125;
+class PostRestFulController
+&#123;
+     public newPostAction()
+     &#123;
+         $authorId &#x3D; $this-&gt;authorizationHeader();
+         &#x2F;&#x2F; executes ApplicationService use case
+     &#125;
+&#125;</code></pre>
+
+<h3 id="Console-1"><a href="#Console-1" class="headerlink" title="Console"></a>Console</h3><p><em>authorId</em>参数来自命令行，因此如果给出的<em>author-id</em>属于这个blog则不会有任何异常抛出：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">blog add-post — author-id 1 — blog-id 1 — title Foo</code></pre>
+
+<p><em>CallaboratorService</em>的实现可能与Web或其他实现一样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class ConsoleCollaboratorService implements CollaboratorService
+&#123;
+     public function authorFrom($authorId, $blogId) &#123; … &#125;
+&#125;
+class PostConsole
+&#123;
+     public newPostCommand()
+     &#123;
+        &#x2F;&#x2F; gets values from console parameters
+        &#x2F;&#x2F; executes AddPostService use case
+     &#125;
+&#125;</code></pre>
+
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>所有对authentication&#x2F;authorization的检查都在<em>Application Service</em>中的<em>CollaboratorService</em>中隐式的完成。</li>
+<li><em>Application Service</em>中<em>authorId</em>参数的输入某种程度上是多态的，因为它接收来自Web的直接的id或来自REST的token。也许这也是允许我们将authentication&#x2F;auuthorization放进<em>Application Service</em>之内的关键点。</li>
+<li><em>CollaboratorService</em>根据认证机制需要几种不同的实现。</li>
+</ul>
+<blockquote>
+<p>原文：<a target="_blank" rel="noopener" href="https://medium.com/@martinezdelariva/authentication-and-authorization-in-ddd-671f7a5596ac">https://medium.com/@martinezdelariva/authentication-and-authorization-in-ddd-671f7a5596ac</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/sso-and-identity-federation/" rel="prev" title="我所理解的单点登录和身份联邦">
+                  <i class="fa fa-angle-left"></i> 我所理解的单点登录和身份联邦
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/compiler-vs-interpreter/" rel="next" title="编译器(Compiler)和解释器(Interpreter)">
+                  编译器(Compiler)和解释器(Interpreter) <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

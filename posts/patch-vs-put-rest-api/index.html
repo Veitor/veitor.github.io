@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="RESTful接口现在很普遍，但是如果你作为一名web开发者，你应该知道对于不同的情况如何去选择一个最合适的HTTP方法有点困难。 对于开发REST接口来说，更新一个资源是常见的事，这里有两个开发者经常使用的HTTP方法：PUT和PATCH，一般你会选择哪一个？ 这两个方法看起来作用相同，都是更新一个服务的资源，但它们底层确是完成不同的事情。本篇文章将帮助你理解PUT和PATCH请求之间的区别，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RESTful接口中的PATCH和PUT">
+<meta property="og:url" content="http://www.veitor.net/posts/patch-vs-put-rest-api/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="RESTful接口现在很普遍，但是如果你作为一名web开发者，你应该知道对于不同的情况如何去选择一个最合适的HTTP方法有点困难。 对于开发REST接口来说，更新一个资源是常见的事，这里有两个开发者经常使用的HTTP方法：PUT和PATCH，一般你会选择哪一个？ 这两个方法看起来作用相同，都是更新一个服务的资源，但它们底层确是完成不同的事情。本篇文章将帮助你理解PUT和PATCH请求之间的区别，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://storage.veitor.net/2022/10/1665389211.webp">
+<meta property="og:image" content="http://storage.veitor.net/2022/10/1665389212.jpg">
+<meta property="og:image" content="http://storage.veitor.net/2022/10/1665389213.webp">
+<meta property="og:image" content="http://storage.veitor.net/2022/10/1665389214.webp">
+<meta property="article:published_time" content="2022-10-10T06:15:17.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.994Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://storage.veitor.net/2022/10/1665389211.webp">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/patch-vs-put-rest-api/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/patch-vs-put-rest-api/","path":"posts/patch-vs-put-rest-api/","title":"RESTful接口中的PATCH和PUT"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>RESTful接口中的PATCH和PUT | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PUT%E5%92%8CPATCH%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">PUT和PATCH之间的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PUT"><span class="nav-number">2.</span> <span class="nav-text">PUT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8PUT%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">2.1.</span> <span class="nav-text">使用PUT的优势</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCH"><span class="nav-number">3.</span> <span class="nav-text">PATCH</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PATCH%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">3.1.</span> <span class="nav-text">PATCH的优势</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%88%AC%E6%80%A7%E7%9A%84%E6%9B%B4%E6%96%B0%E5%92%8C%E6%84%8F%E5%9B%BE"><span class="nav-number">4.</span> <span class="nav-text">一般性的更新和意图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%82%E7%AD%89%E5%8E%9F%E5%88%99"><span class="nav-number">5.</span> <span class="nav-text">幂等原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%9B%B4%E6%96%B0"><span class="nav-number">6.</span> <span class="nav-text">并发更新</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">8.</span> <span class="nav-text">FAQ</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/patch-vs-put-rest-api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="RESTful接口中的PATCH和PUT | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RESTful接口中的PATCH和PUT
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-10-10 14:15:17" itemprop="dateCreated datePublished" datetime="2022-10-10T14:15:17+08:00">2022-10-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img data-src="//storage.veitor.net/2022/10/1665389211.webp" alt="头图"></p>
+<p>RESTful接口现在很普遍，但是如果你作为一名web开发者，你应该知道对于不同的情况如何去选择一个最合适的HTTP方法有点困难。</p>
+<p>对于开发REST接口来说，更新一个资源是常见的事，这里有两个开发者经常使用的HTTP方法：<code>PUT</code>和<code>PATCH</code>，一般你会选择哪一个？</p>
+<p>这两个方法看起来作用相同，都是更新一个服务的资源，但它们底层确是完成不同的事情。本篇文章将帮助你理解PUT和PATCH请求之间的区别，以便你可以设计一个专业的生产级别的API。</p>
+<span id="more"></span>
+
+<p><img data-src="//storage.veitor.net/2022/10/1665389212.jpg" alt="PUT VS PATCH"></p>
+<h1 id="PUT和PATCH之间的区别"><a href="#PUT和PATCH之间的区别" class="headerlink" title="PUT和PATCH之间的区别"></a>PUT和PATCH之间的区别</h1><p>REST API中PUT和PATCH的主要区别在于<code>PUT通过替换整个实体来完成更新操作</code>，而<code>PATCH仅仅更新你提供给它的字段</code>，PATCH不会改变其他的任何值。</p>
+<p>如果你使用PUT方法，那么你更新的资源的整体内容都会被更新。这依赖于服务端的实现，在大多数的实现中，这意味着你没有提供的字段将会被覆盖为空值。PATCH方法只更新你提供的单独的几个字段内容，而不会去改变其他已经存在的字段内容。</p>
+<p>PUT需要消耗更多的带宽，因为它需要你提供完整的资源内容，因此PATCH诞生了，为了减少带宽的消耗。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>PUT</th>
+<th>PATCH</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>部分更新</td>
+<td>✖</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>带宽消耗</td>
+<td>高</td>
+<td>低</td>
+</tr>
+<tr>
+<td>创建一个资源</td>
+<td>✔</td>
+<td>✖</td>
+</tr>
+<tr>
+<td>幂等性</td>
+<td>✔</td>
+<td>✖</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>✖</td>
+<td>✖</td>
+</tr>
+</tbody></table>
+<h1 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h1><p>HTTP的PUT方法被用来<code>创建一个资源</code>或<code>替换一个旧的资源</code>。IETF定义PUT方法为”only allowing a full replacement of a document”（只允许对文档的完整替换）。</p>
+<p>客户端必须在请求body内发送一个完整的实体内容。</p>
+<ul>
+<li>客户端提供一个资源ID</li>
+<li>如果资源存在，将其替换为新的数据</li>
+<li>如果资源不存在，则创建一个新的</li>
+</ul>
+<h2 id="使用PUT的优势"><a href="#使用PUT的优势" class="headerlink" title="使用PUT的优势"></a>使用PUT的优势</h2><ul>
+<li>我们无需在更新一个资源后再重新获取这个资源内容，因为PUT发送的内容就是整个资源实体内容。</li>
+<li>如果我们发送所有字段并对不包含对已存在字段的增量修改，那么我们总是可以覆盖整个实体。这意味着我们的API客户端只需要实现一个PUT方法就可以了，而不需要实现多个部分更新的方法。</li>
+<li>如果资源不存在，那么会进行新建一个资源，这有时会比较有用。</li>
+</ul>
+<h1 id="PATCH"><a href="#PATCH" class="headerlink" title="PATCH"></a>PATCH</h1><p>PATCH用来对一个已经存在的资源进行修改或新增内容。PUT方法一次性创建整个资源实体，而PATCH只更新所需要更新的字段。</p>
+<p>PATCH方法在2010年被创建，用来应对PUT方法无法对部分内容进行更新的缺陷。</p>
+<p><img data-src="//storage.veitor.net/2022/10/1665389213.webp" alt="Paypal API uses PATCH to update an order"></p>
+<h2 id="PATCH的优势"><a href="#PATCH的优势" class="headerlink" title="PATCH的优势"></a>PATCH的优势</h2><ul>
+<li>客户端在发送更新请求之前无需知道资源的完整的状态</li>
+<li>对于每个修改资源的请求，PATCH方法可以更方便的看出其更新的意图，这个优势在debug日志的一些情况下很有用，使用PATCH而不是PUT来关注资源的更新会更加容易，因为请求body体的内容带有非常明显的意图。</li>
+<li>PATCH由于允许资源的部分内容更新，因此很节省带宽，当更新大的对象时PATCH比PUT会更有效率。</li>
+</ul>
+<h1 id="一般性的更新和意图"><a href="#一般性的更新和意图" class="headerlink" title="一般性的更新和意图"></a>一般性的更新和意图</h1><p>当选择PATCH还是PUT时，考虑客户端和服务端的实现很重要。</p>
+<p>从客户端的角度来看，PATCH看起来很好用，因为其只更新你需要更新的部分。但是当你从服务端的角度看时，事情就会变得比较复杂。</p>
+<p>例如：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">PATCH &#x2F;orders&#x2F;533
+&#123;
+	&quot;total&quot;: 8.34
+&#125;</code></pre>
+
+<p>在这个请求中，我们只想要更新<code>total</code>字段，意味着服务端的实现不应该影响到其他字段。但是服务端开发者现在需要知道客户端可能更新的所有字段。</p>
+<p>我们称这个更新的“意图”在PATCH请求中并不是很明显。为了克服这个问题，我们可以使用一个称为<code>JSON PATCH</code>的特性，其可以定义更新的意图。</p>
+<p>一个“意图”可以将你想要对资源实体的修改展示出来，对于基于属性的patch请求，你可以使用HTTP header来表达你对更新的意图。</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">PATCH &#x2F;orders&#x2F;533
+[
+
+	&#123; &quot;op&quot;: &quot;replace&quot;, &quot;path&quot;: &quot;&#x2F;total&quot;, &quot;value&quot;: &quot;8.34&quot; &#125;
+
+]</code></pre>
+<p>根据<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc6902">RFC6902</a>，可支持的意图有<code>add</code>、<code>remove</code>、<code>replace</code>、<code>move</code>、<code>copy</code>和<code>test</code>。</p>
+<p>JSON PATCH使得更新一个资源更加简单了一点。客户端定义一个更新意图，服务端则根据定义的内容来对资源对象进行更新。</p>
+<h1 id="幂等原则"><a href="#幂等原则" class="headerlink" title="幂等原则"></a>幂等原则</h1><p>RESTful架构都是和幂等操作有关的。一个幂等操作无论什么时候执行，都只会产生相同的结果，非幂等操作则会导致不同的结果。</p>
+<p>幂等方法的定义适用于<code>资源</code>而不是<code>结果</code>。如果你调用了相同的幂等操作两次，则<code>该方法两次产生的结果应该是相同的</code>。幂等操作不应该具有副作用，这里的副作用指的是在幂等操作方法之外任何状态的改变。</p>
+<p>PUT是一个幂等操作而PATCH不是，这是因为PUT能修改资源的整个内容而不是部分的字段。</p>
+<p>PATCH方法不是幂等操作，是因为若资源从未被patched过，则其修改的数据可能会导致不同的状态。PATCH应该只能用于修改一个已经存在的资源。</p>
+<h1 id="并发更新"><a href="#并发更新" class="headerlink" title="并发更新"></a>并发更新</h1><p>当使用PATCH更新资源时，在请求中包含一些条件来防止其他人同时更新这个资源是一个不错的主意。</p>
+<p><code>ETag</code>HTTP响应头是一个ID，用来识别资源的特定版本。</p>
+<p>当<code>If-Match</code>和<code>ETag</code>头一起使用时，将有助于在客户端尝试更新一个资源时来确定是否能更新。</p>
+<p><img data-src="//storage.veitor.net/2022/10/1665389214.webp"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>如果你需要在PATCH和PUT之间做选择，请考虑它们之间的区别：</p>
+<ul>
+<li>使用PUT请求，会修改整个资源，而使用PATCH请求，只会修改指定的资源的部分内容。</li>
+<li>当我们使用PUT请求时，我们将请求发送的整个实体视为修改的版本，并替换掉服务端上已存在的版本。而使用PATCH请求时，请求的实体包含了一组指令，来描述了如何修改服务端上的现有资源，以产生一个新的版本。</li>
+</ul>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li>PUT和PATCH之间的区别</li>
+</ul>
+<p>在REST API中PUT和PATCH的区别是，PUT通过替换整个资源实体来达到更新的目的，而PATCH只更新你给定的字段。</p>
+<ul>
+<li>PATCH请求中含有请求Body吗？</li>
+</ul>
+<p>有，PATCH请求中含有请求体Body来指示修改或者添加一些内容到已经存在的资源上。</p>
+<ul>
+<li>PATCH和PUT需要返回哪种HTTP状态码？</li>
+</ul>
+<p>成功的PATCH请求应该返回2XX范围的状态码。两个最常用的是204（没有响应的数据）和200（有响应的数据）。成功的PUT请求也应该返回2XX范围的状态码，同样最常用的也是204和200，如果想要修改的资源还不存在，并且创建新的资源成功，服务端需要响应201（Created）状态码。</p>
+<ul>
+<li>能否同时使用PUT和PATCH？</li>
+</ul>
+<p>可以，因为PUT和PATCH具有不同的目的，因此你可以都使用。</p>
+<ul>
+<li>对于客户端来说用PATCH还是PUT更容易？</li>
+</ul>
+<p>这要看具体的情况的，但是PATCH通常对客户端来说更容易，因为客户端想要修改资源内容的话不需要提前加载获取整个资源。</p>
+<ul>
+<li>PATCH是否可以被用在只读资源上？</li>
+</ul>
+<p>可以，如果你只是想在JSON PATCH使用”test”意图做一些测试，那你可以使用，你不需要修改任何资源。</p>
+<ul>
+<li>为什么PUT是幂等的而PATCH不是？</li>
+</ul>
+<p>PUT幂等是因为调用它一次或多次所产生的效果是一样的。而PATCH不幂等是因为每次调用会产生不同结果。例如，我们想要使用PUT更新订单的总价total字段，我们需要指定值为￥22.9，而如果使用PATCH，我们可能会发送“increase 10.4”增加10.4元的指令，当订单总价为12.5元时，我们通过PATCH会使得订单状态更新为22.9元，但如果当前订单总价不是12.5元，那么就会导致不一样的结果。</p>
+<ul>
+<li>PATCH能否做到幂等？</li>
+</ul>
+<p>也是可以的，例如你发送的指令是<code>&quot;set&quot;:&quot;price&quot;:50</code>，意味着将价格设置为50元，这样就具有幂等性了。</p>
+<ul>
+<li>PUT请求安全吗？</li>
+</ul>
+<p>不安全，只有不会改变服务器资源状态的HTTP请求才是安全的，只读的HTTP操作才是安全的。</p>
+<ul>
+<li>PATCH能创建一个资源吗？</li>
+</ul>
+<p>根据<code>RFC 5789</code>应该可以，但实践上是不行的</p>
+<blockquote>
+<p>原文： <a target="_blank" rel="noopener" href="https://josipmisko.com/posts/patch-vs-put-rest-api">https://josipmisko.com/posts/patch-vs-put-rest-api</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/pod-stuck-in-terminating-state/" rel="prev" title="Pod长时间处于Terminating状态的问题">
+                  <i class="fa fa-angle-left"></i> Pod长时间处于Terminating状态的问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/the-problem-with-using-a-uuid-primary-key-in-mysql/" rel="next" title="在Mysql中使用UUID作为主键的问题">
+                  在Mysql中使用UUID作为主键的问题 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

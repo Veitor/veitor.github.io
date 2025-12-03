@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Veitor的技术博客">
+<meta property="og:url" content="http://www.veitor.net/page/9/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/page/9/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"page/9/index.html","title":""}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Veitor的技术博客</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/analysis-of-rendering-views-in-Yii/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/analysis-of-rendering-views-in-Yii/" class="post-title-link" itemprop="url">Yii：render渲染视图分析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-28 03:12:42" itemprop="dateCreated datePublished" datetime="2014-04-28T03:12:42+08:00">2014-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>一起了解一下render方法的工作原理，先看render代码：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">public function render($view,$data&#x3D;null,$return&#x3D;false)
+	&#123;
+		if($this-&gt;beforeRender($view))
+		&#123;
+			$output&#x3D;$this-&gt;renderPartial($view,$data,true);
+			if(($layoutFile&#x3D;$this-&gt;getLayoutFile($this-&gt;layout))!&#x3D;&#x3D;false)
+				$output&#x3D;$this-&gt;renderFile($layoutFile,array(&#39;content&#39;&#x3D;&gt;$output),true);
+			$this-&gt;afterRender($view,$output);
+			$output&#x3D;$this-&gt;processOutput($output);
+			if($return)
+				return $output;
+			else
+				echo $output;
+		&#125;
+	&#125;</code></pre>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/analysis-of-rendering-views-in-Yii/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/all-programming-is-web-programming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/all-programming-is-web-programming/" class="post-title-link" itemprop="url">所有编程皆为Web编程</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-28 00:49:48" itemprop="dateCreated datePublished" datetime="2014-04-28T00:49:48+08:00">2014-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A8%8B%E5%BA%8F%E4%B8%8E%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">程序与生活</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>大部分人想去做Web编程的原因是，他们不够聪明，因此也做不了别的事。</strong>他们不懂编译器、并发性、3D或类继承。他们根本不明白我为什么要使用接口或者抽象类。他们不理解虚函数、指针、引用、垃圾回收、终结器、传引用与传值的区别、C++的虚拟析构函数、或者C#的结构体与类之间的差别。他们对进程也一无所知。更别提瀑布、螺旋、敏捷了！他们从来没看过需求文档，也从来没写过设计文档；他们从没画过一张UML图，甚至听都没听说过有“顺序图”这种东西。 　　不过，他们确实有些手段：他们知道怎样匆匆拼凑一个ASP.NET网页，向数据库发一些（写得很糟糕的）SQL指令，填上一个数据集，然后用网格控件展示出来。他们也就会这些了吧。而且，他们在弄明白这些东西的时候，很可能也没费多长时间。 　　因此，请恕我冒犯——我才不想当Web程序员呢！我有两个理由。第一，那对我太没有挑战性了。第二，因为绝大多数互联网公司的工程师都很糟糕，更准确地说，因为你不必去琢磨深奥的东西就能成为一个Web开发者。在我看来，互联网正让我们变得越来越弱智。拼凑出一个网页真的不需要你有那么聪明。 　　我真心希望大家都错了，希望不必所有的东西都“转向Web”。因为如果真这样的话，将来的某一天，我要么会不情愿地接受这种无聊的转变，要么只能换一个职业了。 Web开发没有挑战性，所以吸引了不够格的软件开发者？让我们姑且不讨论这种荒谬的观点。即使过去真是这样，如今的情况也已经不同了。 我其实不想在Michael面前扮演“坏人”，告诉他这个坏消息：对于越来越多的用户来说，桌面应用软件已经完蛋了。几年来，大部分桌面应用软件都被Web应用代替了。随着网络浏览器进化得越来越强大和健壮，每天都有更多的桌面应用被取代。 你希望不必所有的东西都“转向Web”？醒醒吧！这已经发生了！ 任何学习计算机历史的学生都可以告诉你，Web应用成为主流正是“最不强大原则”（<a target="_blank" rel="noopener" href="http://blog.codinghorror.com/the-principle-of-least-power/">The Principle of Least Power</a>）所预示的： 　计算机科学界过去花了40年的时间，致力于让语言尽可能地强大。时至今日，我们必须感激那些让我们选择不是最强大的解决方案（而选择最不强大的方案）的原因。计算机语言越不强大，你对用那种语言存储的数据能做的事情就越多。如果你以一种简单的陈述形式来书写，任何人都可以写一个程序去分析它。比方说，一个呈现天气信息的网页使用RDF（译者注：资源描述框架，一种用于描述Web资源的标记语言）来描述数据，用户可以把它装进一个表格，也许再做一下平均计算，绘制图表，然后结合其他信息做出某种推断。另一种极端的做法是，天气信息通过巧妙的Java小程序描绘出来。尽管这种方式可能做出很酷的用户界面，但它完全不能被分析。找到这个页面的搜索引擎将无法判断那是什么数据或者那些数据有什么用。要想知道一个Java小程序是做什么的，唯一的办法是亲眼目睹它运行起来。 互联网恰恰是做最简单（或者说最傻）而靠谱之事的具体表现。如果这吓到了你（让你感到不安了），那么我要小声地告诉你，你没有理由成为一名程序员。 所有应用都应该成为Web应用吗？当然不是。总有一些重要的例外，有些种类的软件跟网络也毫无关系。但是，这些是少数情况，是一些特殊应用。它们固然是重要的小生态环境，但不管怎么说，就只是“小生态”。 如果你希望尽可能多的用户来使用你的软件，绝没有比把它做成Web应用更好的方法了。对于现存软件来说，互联网是最高效、最普遍、最直接的分发网络。任何用户只要能连上网，有一个浏览器，不管他身处世界的任何一个角落，只须点两下鼠标就能与你写的软件开始交互了。哪怕是最蹩脚的Web应用，它的受众面和传播度都是令人震惊的；而且还在每天扩大着……我也曾因此杜撰了“<a target="_blank" rel="noopener" href="http://baike.baidu.com/view/10384969.htm">阿特伍德定律</a>”：<strong>任何可以用JavaScript来写的应用，最终都将用JavaScript来写。</strong> 从工程的角度来看，用JavaScript来写Photoshop、Word或Excel毫无意义。但是，这是不可避免的。这事会发生的。实际上，这事已经在发生了。环顾一下你的四周吧。 作为一名软件开发者，最让我开心的是编写有人使用的软件。如果你的软件委身于一个二进制的EXE文件，它必须被购买、授权、运送、下载、安装、维护和升级，你的技艺又有什么意义呢？考虑到程序员与用户之间的所有这些传统障碍，软件行业居然还能生存下来，这真是一个奇迹！然而，在华丽而崭新的Web应用世界里，那些制约已经不复存在。边界没有了。软件可以无处不在！ Web编程还远远没有达到完美的境地。其实，还有点乱！没错，随便会写点代码的人就能三下两下地搞出一个糟糕的Web应用；也确实，99%的Web应用都似狗屎一堆。但是，这也意味着，相当“聪明”的程序员们正在将他们的成果展现在成百上千（或者成千上万，甚至几百万）的用户面前，而这在互联网盛行之前是绝无可能的。在我看来，让代码遭受冷落、让它们就此孤独终老，没什么比这更让人感到悲哀的了！把软件按照Web应用的形式重整一下，即使软件本身并不怎么样，这也使得程序员们能够把他们的软件展现在某个地方的某人面前。 如果受众面和技艺方面的观点不足以说服你，那就从商业的角度来考虑一下吧。<a target="_blank" rel="noopener" href="http://www.skrenta.com/2007/07/fletchers_angry_list_of_startu.html">Mark Fletcher曾经给出过一份创业规则</a>，其中就有这么一条： 　你在做一个Web应用，对吧？这不是20世纪80年代了！纵然你的竞争对手把（桌面）应用软件做得别致优雅，你那简陋而寒酸的Web应用也仍然会比它更加成功。 要不了多久，所有编程都将是Web编程。对于普通的在职程序员来说，如果你不认为这是一个值得庆贺的理由，你也许应该转行了。 原文地址：<a target="_blank" rel="noopener" href="http://blog.codinghorror.com/all-programming-is-web-programming/">http://blog.codinghorror.com/all-programming-is-web-programming/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-cluster-and-distributed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/the-difference-between-cluster-and-distributed/" class="post-title-link" itemprop="url">概念解释：集群与分布式的区别</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-27 13:50:11" itemprop="dateCreated datePublished" datetime="2014-04-27T13:50:11+08:00">2014-04-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">架构</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>之前一直对集群与分布式的概念不是很清楚，认为两个名词概念都差不多，那到底区别在哪呢，我也在网上找了很多解释，但似乎都没有言简意赅的讲清区别，或者说没有很形象的讲明每个名词是什么意思，到底有何用。那么我就依我的看法来讲一下，首先是分别讲解，再来合起来讲一下： 【集群】 处理同一个业务，目的是实现高可用性，可用性顾名思义，就是要让用户能用，并且随时能访问。一个集群针对一个业务并且有着多台服务器，当一个服务器挂掉，剩下的几台能顶替着继续工作（当然这几台服务器在那台服务器没挂的时候也不是闲着的，他们都是在同时处理大量请求的业务，那台服务器挂掉后，它的一些任务只好让这几台来顺带帮着完成了），这样用户能继续访问网站的某一业务。举个例子，比如我有发布日志的业务，如果我只有一台服务器支撑着这个业务，当服务器因某种原因挂掉后，那么用户也就无法发日志，这一业务也就无法使用。然而如果我有着服务器集群，其中一台挂掉，用户仍然能发日志。 【分布式】 将不同的业务放在不同的地方（节点），换句话说，每个分布式节点都处理不同的任务（一个节点处理一个业务），举个例子，有一个节点的业务是处理上传图片，还有一个节点的业务是处理发布文章，就这样把每个业务放在不同的地方（节点）。 【分布式与集群的关系】 每一个分布式节点都可以看做一个集群，上面说了，分布式的每一个节点都处理一种业务，而集群是处理同一业务，那么分布式的节点可以做一个集群。</p>
+<hr>
+<p>  当然，从不同角度看，可能理解也有偏差。主要还是集群的概念比较重要。我个人认为集群除了实现高可用性，还有高并发和高性能。这可能要涉及负载均衡了，比如访问一个网站的一个业务，对应的有一个集群，前面放着相应服务器，后面几台服务器负责处理这个业务，当有业务访问的时候，相应服务器会根据哪台服务器负载情况，将业务交给负载不是很重的服务器去完成</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/PHPer-break-through-growth-bottlenecks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/PHPer-break-through-growth-bottlenecks/" class="post-title-link" itemprop="url">PHP程序员突破成长瓶颈</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-23 12:37:40" itemprop="dateCreated datePublished" datetime="2014-04-23T12:37:40+08:00">2014-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>先明确我所指的<strong>PHP</strong>工程师，是指毕业工作后，主要以PHP进行WEB系统的开发，没有使用其他语言工作过。工作经验大概在3~4年，普通的WEB系统（百万级访问，千成级数据以内或业务逻辑不是特别复杂）开发起基本得心应手，没有什么问题。但他们会这样的物点： 除了PHP不使用其它的语言,可能会点shell 脚本。 对PHP的掌握不精（很多PHP手册都没有看完,库除外） 知识面比较窄（面对需求，除开使用PHP和mysql ，不知道其它的解决办法） PHP代码以过程为主，认为面向对象的实现太绕，看不懂 这些PHPer 在遇到需要高性能，处理高并发，大量数据的项目或业务逻辑比较复杂（系统需要解决多领域业务的问题）时，缺少思路。不能分析问题的本质，技术判断力比较差，对于问题较快能找出临时的解决办法，但常常在不断临时性的解决办法中，系统和自己一步步走向崩溃。那怎么提高自己呢？怎么可以挑战难度更高的系统？ </p>
+<p><strong>更高的挑战在那里？</strong> 结合我自己的经验，我列出一些具体挑战，让大家先有个感性的认识。 </p>
+<p><strong>高性能系统的挑战在哪里？</strong> 如何选择WEB服务器？要不要使用fast-cgi 模式 要不要使用反向代理服务？选择全内存缓存还是硬盘缓存？ 是否需要负载均衡？是基于应用层，还是网络层？ 如何保证高可靠性？ 你的PHP代码性能如何，使用优化工具后怎么样？ 性能瓶颈在那里？ 是否需要写成C的扩展？ 用户访问有什么特点,是读多还是写多？是否需要读写分离？ 数据如何存储？写入速度和读出速度如何？ 数据增涨访问速读如何变化？ 如何使用缓存？ 怎么样考虑失效？数据的一致性怎么保证？ </p>
+<p><strong>高复杂性系统的挑战在哪里？</strong> 能否识别业务所对应的领域？是一个还是多个？ 能否合理对业务进行抽象，在业务规则变化能以很小的代价实现？ 数据的一致性、安全性可否保证？ 是否撑握了面向对象的分析和设计的方法 当我所列出的问题，你都能肯定的回答，我想在技术上你基本已经可能成为架构师了。如何你还不能回答，你需要在以下几个方向加强。 </p>
+<p><strong>怎么样提高，突破瓶颈</strong> 如何你还不能回答，你需要在以下几个方向加强： 分析你所使用的技术其原理和背后运行的机制，这样可以提高你的技术判断力，提高你技术方案选择的正确性; 学习大学期间重要的知识, 操作系统原理，数据结构和算法。知道你以前学习都是为了考试，但现在你需要为自己学习，让自己知其所以然。 重新开始学习C语言，虽然你在大学已经学过。这不仅是因为你可能需要写PHP扩展，而且还因为，在做C的应用中，有一个时刻关心性能、内存控制、变量生命周期、数据结构和算法的环境。 学习面向对象的分析与设计，它是解决复杂问题的有效的方法。学习抽象，它是解决复杂问题的唯一之道。 “这么多的东西怎么学，这得学多久呀” ？ 如果你努力的话，有较好的规划，估计需要1~2年的时间，怎么学习的问题，我们后续再谈。 （注：下面是原文作者左文建分享的学习方法）</p>
+<p> <strong>学习建议</strong> 如何有效的学习是一个大问题。 自己有些实践但很零散，不好总结。昨天晚上睡觉前，突然想到了RUP的核心，“以架构为中心，用例驱动，迭代开发”，借用这个思想，关于有效的学习的方法，可以这样来表述: 以原理、模型或机制为中心，任务驱动，迭代学习 有点抽象， 举个例子来说明如何学习。 目的： 学习如何提高处理性能。 可迭代驱动的任务： 通过IP找到所在地域。 这是WEB应用常见的任务，IP数据库是10左右万行的记录。 </p>
+<p> **第一次迭代： 不考虑性能的情况下实现功能（通过PHP来实现）</p>
+<p> ** 因为无法直接通过KEY(IP)进行查找地域，所以直接放到数据或通过关联数组这种简单的方法都是不行的。思路还是先把数据进行排序，然后再进行查找 1. 如何通过IP查找？ 已序的数据，二分查找是最快的。 2. 如何排序？用库函数sort当然 是可以，但是即然是学习，那还是自己实现快速排序吧。 学习目标： 排序算法，查找算法 PHPer 数据结构和算法基础比较差，平时也没有这方面的任务，自己也不学习，因此这方面的知识很缺乏。但是，编程解决的问题，最终都会归结到数据结构和对这种数据结构操作的算法。如果数据结构算法常在心中，那遇到问题就能清晰认识到它内在的结构，解决方法就会自然产生。 </p>
+<p> <strong>第二次迭代：优化数据的加载与排序</strong> 如果做到第一步，那基本上还是不可用，因为数据每次都需要的加载和排序，这样太耗时间。 解决的思路是，数据一次加载排序后，放到每个PHP进程能访问到的地方。 放到memcache 这是大家容易想到问题。其实放到共享内存(EA等加速器都支持)中是更快的方式，因为memcache还多了网络操作。 数据是整体放入到共享内存，还是分块放入，如何测试性能? 如何分析瓶颈所在(xdebug)? 在这些问题的驱动下你会学习到 学习目标： 检测、定位、优化PHP性能的方法; PHP实现结构对性能的影响。 </p>
+<p> <strong>第三次迭代： 编写PHP的扩展</strong> 性能还是上不去，不得不进入C&#x2F;C++的世界了，不过从此你将不只是PHPer 而服务端的全能型工程师，当然这对没有做过C&#x2F;C++的同学挑战是巨大的。 我这里无法再简单来说如何学习C&#x2F;C++ ，可以参看 《PHP程序员学习C++》 学习目标：C&#x2F;C++的学习，PHP扩展的编写 怎么确定需要学习的机制和原理呢？ 怎么找到驱动学习任务呢？ 我对需要学习的东西，都没有什么概念，怎么回答以上的两个问题？ 从这个技术的定位来找出需要学习的重点，即它怎么做到(机制）的和它为什么能这样做到 （模型或原理） 列出这个技术最常见的应用，做为学习的任务，从简到难进行实践。 假如我需要学习Javascript ，我对于HTML，CSS有点感性认识 首要我了解到，JS 是WEB领域的动态语言，主要解决网页的动态交互的。 那我要学习的要点如下： JS如何与HTML 进行交互 （机制） JS的动态特性在那里，与其它动态语言有何区别？（语言模型） 如果完全自学，找到需要学习的要点（机制、模型、原理） 设定学习任务的确不是那么容易把握。如果找到一个有经验的人来指导你或加一个学习型的团队，那学习的速度的确会大大提高。 最后，我想说的是： PHP因为简单而使用，但不能因为它的简单而限制我们成长！</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/some-methods-to-get-PHP-script-file-path/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/some-methods-to-get-PHP-script-file-path/" class="post-title-link" itemprop="url">获取PHP脚本文件路径的几个方法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-21 05:23:12" itemprop="dateCreated datePublished" datetime="2014-04-21T05:23:12+08:00">2014-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>别的不扯，直接正题。 在PHP中获得所执行脚本文件路径有以下几个方法：</p>
+<ol>
+<li>魔术常量__FILE__：这个魔术常量使用率非常高，经常在定义目录的绝对路径时用dirname(__FILE__)这种形式。另一种绝对路径定义见这篇博文<a href="http://www.veitor.net/article/37.html" title="魔术常量__DIR__和__FILE__的用法区别">《魔术常量__DIR__和__FILE__的用法区别》</a>，但是使用场合与下面两种有区别，使用该常量最终返回的都是包含的文件（这句话的意思就看下面的示例代码吧）。</li>
+<li>使用两个全局变量字符串连接$_SERVER[‘DOCUMENT_ROOT’] . $SERVER[‘PHP_SELF’]：两个变量拼接而成，前一个变量是获取根目录完整路径，后一个变量是获取从网站根目录到该执行文件的绝对路径。拼接后即是所需要的脚本文件完整路径。</li>
+<li>依然是全局变量$_SERVER[‘SCRIPT_FILENAME’]：这个变量效果和第2种类似</li>
+</ol>
+<p>示例代码： index.php文件，存放在e:&#x2F;project&#x2F;文件夹下，其中include了同级目录中的test1.php和子目录test中的test2.php</p>
+<?php
+include './test1.php';
+include './test/test2.php';
+echo "<br>";
+echo \_\_FILE\_\_;
+echo "<br>";
+echo $\_SERVER\['DOCUMENT\_ROOT'\].$\_SERVER\['PHP\_SELF'\];
+echo "<br>";
+echo $\_SERVER\['SCRIPT\_FILENAME'\];
+echo "<br>";
+?>
+
+<p>.&#x2F;test.1php和.&#x2F;test&#x2F;test2.php文件代码相同。</p>
+<?php
+echo "<br>";
+echo \_\_FILE\_\_;
+echo "<br>";
+echo $\_SERVER\['DOCUMENT\_ROOT'\].$\_SERVER\['PHP\_SELF'\];
+echo "<br>";
+echo $\_SERVER\['SCRIPT\_FILENAME'\];
+echo "<br>";
+?>
+
+<p>接下来看一下结果：</p>
+<p>E:\project\test1.php<br>E:&#x2F;project&#x2F;index.php<br>E:&#x2F;project&#x2F;index.php<br>E:\project\test\test2.php<br>E:&#x2F;project&#x2F;index.php<br>E:&#x2F;project&#x2F;index.php<br>E:\project\index.php<br>E:&#x2F;project&#x2F;index.php<br>E:&#x2F;projectt&#x2F;index.php</p>
+<p>你会发现结果第5行有个不同处，该行就是输出的__FILE__，并且代码是在子目录test中test2.php文件里的。也就是说明__FILE__写在哪个文件里，输出结果就是显示哪个文件。而其他两个全局变量$_SERVER输出的结果都是最终包含的文件，在这个示例中也就是index.php文件（如果不明白这句话意思，看前面红色的文字，意思就是和它相反的）。 如果对本文有疑问，欢迎留言，一起探讨。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/difference-and-usage-of-constants-DIR-and-FILE-in-PHP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/difference-and-usage-of-constants-DIR-and-FILE-in-PHP/" class="post-title-link" itemprop="url">魔术常量__DIR__和__FILE__的用法区别</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-21 03:28:31" itemprop="dateCreated datePublished" datetime="2014-04-21T03:28:31+08:00">2014-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在写PHP脚本的时候，要定义一个文件目录的绝对路径，通常会使用这两种PHP内置的魔术方法：__DIR__和dirname(__FILE__) 我们可以用var_dump把这两个方法显示结果打印出来看一下</p>
+<p>string ‘E:\project\newapp’ (length&#x3D;17)</p>
+<p>你会发现，两个打印结果一样。 但其实他们至少有两处区别：</p>
+<ol>
+<li>__DIR__只能用于PHP &gt;&#x3D; 5.3 版本，这也是为什么大多数你看到的代码中都是使用的dirname(__FILE__)这种写法</li>
+<li>__DIR__在编译时运算的，而dirname(__FILE__)要调用函数且在执行时运算</li>
+</ol>
+<p>  其他可以参考一下PHP手册， __DIR__：文件所在的目录。如果用在被包括文件中，则返回被包括的文件所在的目录。它等价于_dirname(__FILE__)_。除非是根目录，否则目录中名不包括末尾的斜杠。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-processes-and-threads/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/the-difference-between-processes-and-threads/" class="post-title-link" itemprop="url">进程与线程及其区别</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-13 05:15:28" itemprop="dateCreated datePublished" datetime="2014-04-13T05:15:28+08:00">2014-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">计算机系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>1.进程和线程</strong></p>
+<h2 id="1-1概述"><a href="#1-1概述" class="headerlink" title="1.1概述:"></a>1.1概述:</h2><p>进程是具有一定独立功能的程序关于某个数据集合上的一次运行活动,进程是系统进行资源分配和调度的一个独立单位. 线程是进程的一个实体,是CPU调度和分派的基本单位,它是比进程更小的能独立运行的基本单位.线程自己基本上不拥有系统资源,只拥有一点在运行中必不可少的资源(如程序计数器,一组寄存器和栈),但是它可与同属一个进程的其他的线程共享进程所拥有的全部资源. 一个线程可以创建和撤销另一个线程;同一个进程中的多个线程之间可以并发执行. 相对进程而言，线程是一个更加接近于执行体的概念，它可以与同进程中的其他线程共享数据，但拥有自己的栈空间，拥有独立的执行序列。 在串行程序基础上引入线程和进程是为了提高程序的并发度，从而提高程序运行效率和响应时间。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/the-difference-between-processes-and-threads/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/SNS-website-feed-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/SNS-website-feed-design/" class="post-title-link" itemprop="url">SNS网站Feed功能设计</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-11 08:00:56" itemprop="dateCreated datePublished" datetime="2014-04-11T08:00:56+08:00">2014-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在SNS的网站中，最核心的功能就是Feed功能，Feed就是一条twitter或一条好友动态。该功能面临的挑战是：每天产生成千上万条数据，数据推送的需要实时性等，做网站其实最大的难点就是对海量数据和高并发的处理。</p>
+<p>本人通过对Twitter和新浪微博架构的一些资料的学习，大致了解了如何实现一个Feed功能。一个Feed功能往往有多种实现方式，最常见的是这3种：推模式、拉模式、推拉结合模式。 </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/SNS-website-feed-design/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/anonymous-functions-and-function-closures-in-javascript/" class="post-title-link" itemprop="url">JavaScript中的匿名函数及函数的闭包</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-11 07:59:49" itemprop="dateCreated datePublished" datetime="2014-04-11T07:59:49+08:00">2014-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/JS/" itemprop="url" rel="index"><span itemprop="name">JS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h3 id="1、匿名函数"><a href="#1、匿名函数" class="headerlink" title="1、匿名函数"></a>1、匿名函数</h3><p>函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。</p>
+<h4 id="1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"><a href="#1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式" class="headerlink" title="1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"></a>1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式</h4><p>第一种：这也是最常规的一种</p>
+<p>function double(x){<br>    return 2 * x;<br>}</p>
+<p>第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。</p>
+<p>var double &#x3D; new Function(‘x’, ‘return 2 * x;’);</p>
+<p>第三种：</p>
+<p>var double &#x3D; function(x) { return 2* x; }</p>
+<p>注意“&#x3D;”右边的函数就是一个匿名函数，创造完毕函数后，又将该函数赋给了变量square。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/anonymous-functions-and-function-closures-in-javascript/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/what-do-you-need-to-do-to-be-a-PHPer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/posts/what-do-you-need-to-do-to-be-a-PHPer/" class="post-title-link" itemprop="url">想成为PHPer 你都要干些什么</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-11 07:58:32" itemprop="dateCreated datePublished" datetime="2014-04-11T07:58:32+08:00">2014-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>phper刚入门的思考以下问题</strong>： 修改过别人的开源代码没？ oop熟悉吗，class自省ok？ mvc知道吗？设计过吗？ framework你知道几个？代码研究过没？ js库用过几个？ sql掌握得怎样了？</p>
+<p><strong>phper 一两年的思考以下问题：</strong> php安全你研究透了？ 分布式应用你懂吗？ 缓存你懂得多少？ soap你也用过了？ unix，linux系统你能拿几分，简单shell你也ok了？ mysql你真懂了吗？ sql优化你也在行了？ js你写吗？水平怎样了？…………</p>
+<p><strong>3年以上的：</strong> c语言懂吗？ php 内核研究过没？ 写php拓展没问题吗？ webservice ok吗？ 你有带队的能力吗？…………</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+  </nav>
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

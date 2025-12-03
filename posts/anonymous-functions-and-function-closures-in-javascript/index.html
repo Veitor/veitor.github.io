@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="1、匿名函数函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。 1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式第一种：这也是最常规的一种 function double(x){    return 2 * x;} 第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。 va">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript中的匿名函数及函数的闭包">
+<meta property="og:url" content="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="1、匿名函数函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。 1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式第一种：这也是最常规的一种 function double(x){    return 2 * x;} 第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。 va">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-04-10T23:59:49.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.992Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="php,CQRS,DDD,Event Sourcing,linux,Yii,kubernetes,golang,docker">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/","path":"posts/anonymous-functions-and-function-closures-in-javascript/","title":"JavaScript中的匿名函数及函数的闭包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JavaScript中的匿名函数及函数的闭包 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">1、匿名函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89%EF%BC%8C%E9%A6%96%E5%85%88%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E4%B8%80%E4%B8%8B%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89%EF%BC%8C%E5%A4%A7%E8%87%B4%E5%8F%AF%E5%88%86%E4%B8%BA%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 匿名函数的创建</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E9%97%AD%E5%8C%85"><span class="nav-number">2.</span> <span class="nav-text">2、闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%B8%80"><span class="nav-number">2.1.</span> <span class="nav-text">示例一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BA%8C%EF%BC%8C%E4%BC%98%E5%8C%96%E4%BB%A3%E7%A0%81"><span class="nav-number">2.2.</span> <span class="nav-text">示例二，优化代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E4%B8%BE%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">3、举例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%B8%89%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">示例三：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E5%9B%9B%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">示例四：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E4%BA%94%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">示例五：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%B3%A8%E6%84%8F"><span class="nav-number">4.</span> <span class="nav-text">4、注意</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%97%AD%E5%8C%85%E5%85%81%E8%AE%B8%E5%86%85%E5%B1%82%E5%87%BD%E6%95%B0%E5%BC%95%E7%94%A8%E7%88%B6%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F%EF%BC%8C%E4%BD%86%E6%98%AF%E8%AF%A5%E5%8F%98%E9%87%8F%E6%98%AF%E6%9C%80%E7%BB%88%E5%80%BC"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 闭包允许内层函数引用父函数中的变量，但是该变量是最终值</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/anonymous-functions-and-function-closures-in-javascript/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JavaScript中的匿名函数及函数的闭包 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript中的匿名函数及函数的闭包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-04-11 07:59:49" itemprop="dateCreated datePublished" datetime="2014-04-11T07:59:49+08:00">2014-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/JS/" itemprop="url" rel="index"><span itemprop="name">JS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="1、匿名函数"><a href="#1、匿名函数" class="headerlink" title="1、匿名函数"></a>1、匿名函数</h3><p>函数是JavaScript中最灵活的一种对象，这里只是讲解其匿名函数的用途。匿名函数：就是没有函数名的函数。</p>
+<h4 id="1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"><a href="#1-1-函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式" class="headerlink" title="1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式"></a>1.1 函数的定义，首先简单介绍一下函数的定义，大致可分为三种方式</h4><p>第一种：这也是最常规的一种</p>
+<p>function double(x){<br>    return 2 * x;<br>}</p>
+<p>第二种：这种方法使用了Function构造函数，把参数列表和函数体都作为字符串，很不方便，不建议使用。</p>
+<p>var double &#x3D; new Function(‘x’, ‘return 2 * x;’);</p>
+<p>第三种：</p>
+<p>var double &#x3D; function(x) { return 2* x; }</p>
+<p>注意“&#x3D;”右边的函数就是一个匿名函数，创造完毕函数后，又将该函数赋给了变量square。</p>
+<span id="more"></span>
+
+<h4 id="1-2-匿名函数的创建"><a href="#1-2-匿名函数的创建" class="headerlink" title="1.2 匿名函数的创建"></a>1.2 匿名函数的创建</h4><p>第一种方式：就是上面所讲的定义square函数，这也是最常用的方式之一。 第二种方式：</p>
+<p>(function(x, y){<br>    alert(x + y);<br>})(2, 3);</p>
+<p>这里创建了一个匿名函数(在第一个括号内)，第二个括号用于调用该匿名函数，并传入参数。<a target="_blank" rel="noopener" href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#"></a></p>
+<h3 id="2、闭包"><a href="#2、闭包" class="headerlink" title="2、闭包"></a>2、闭包</h3><p>闭包的英文单词是closure，这是JavaScript中非常重要的一部分知识，因为使用闭包可以大大减少我们的代码量，使我们的代码看上去更加清晰等等，总之功能十分强大。 闭包的含义：闭包说白了就是函数的嵌套，内层的函数可以使用外层函数的所有变量，即使外层函数已经执行完毕（这点涉及JavaScript作用域链）。</p>
+<h4 id="示例一"><a href="#示例一" class="headerlink" title="示例一"></a>示例一</h4><p>function checkClosure(){<br>    var str &#x3D; ‘rain-man’;<br>    setTimeout(<br>        function(){ alert(str); } &#x2F;&#x2F;这是一个匿名函数<br>    , 2000);<br>}<br>checkClosure();</p>
+<p>这个例子看上去十分的简单，仔细分析下它的执行过程还是有许多知识点的：checkClosure函数的执行是瞬间的（也许用时只是0.00001毫秒），在checkClosure的函数体内创建了一个变量str，在checkClosure执行完毕之后str并没有被释放，这是因为setTimeout内的匿名函数存在这对str的引用。待到2秒后函数体内的匿名函数被执行完毕,str才被释放。</p>
+<h4 id="示例二，优化代码"><a href="#示例二，优化代码" class="headerlink" title="示例二，优化代码"></a>示例二，优化代码</h4><p>function forTimeout(x, y){<br>    alert(x + y);<br>}<br>function delay(x , y  , time){<br>    setTimeout(‘forTimeout(‘ +  x + ‘,’ +  y + ‘)’ , time);<br>}<br>&#x2F;**<br> * 上面的delay函数十分难以阅读，也不容易编写，但如果使用闭包就可以让代码更加清晰<br> * function delay(x , y , time){<br> *     setTimeout(<br> *         function(){<br> *             forTimeout(x , y)<br> *         }<br> *     , time);<br> * }<br> *&#x2F;</p>
+<p><a target="_blank" rel="noopener" href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#"></a></p>
+<h3 id="3、举例"><a href="#3、举例" class="headerlink" title="3、举例"></a>3、举例</h3><p>匿名函数最大的用途是创建闭包（这是JavaScript语言的特性之一），并且还可以构建命名空间，以减少全局变量的使用。</p>
+<h4 id="示例三："><a href="#示例三：" class="headerlink" title="示例三："></a>示例三：</h4><p>var oEvent &#x3D; {};<br>(function(){<br>    var addEvent &#x3D; function(){ &#x2F;<em>代码的实现省略了</em>&#x2F; };<br>    function removeEvent(){}<br>    oEvent.addEvent &#x3D; addEvent;<br>    oEvent.removeEvent &#x3D; removeEvent;<br>})();</p>
+<p>在这段代码中函数addEvent和removeEvent都是局部变量，但我们可以通过全局变量oEvent使用它，这就大大减少了全局变量的使用，增强了网页的安全性。 我们要想使用此段代码：oEvent.addEvent(document.getElementById(‘box’) , ‘click’ , function(){});</p>
+<h4 id="示例四："><a href="#示例四：" class="headerlink" title="示例四："></a>示例四：</h4><p>var rainman &#x3D; (function(x , y){<br>    return x + y;<br>})(2 , 3);<br>&#x2F;**<br> * 也可以写成下面的形式，因为第一个括号只是帮助我们阅读，但是不推荐使用下面这种书写格式。<br> * var rainman &#x3D; function(x , y){<br> *    return x + y;<br> * }(2 , 3);<br> *&#x2F;</p>
+<p>在这里我们创建了一个变量rainman，并通过直接调用匿名函数初始化为5，这种小技巧有时十分实用。</p>
+<h4 id="示例五："><a href="#示例五：" class="headerlink" title="示例五："></a>示例五：</h4><p>var outer &#x3D; null;<br>(function(){<br>    var one &#x3D; 1;<br>    function inner (){<br>        one +&#x3D; 1;<br>        alert(one);<br>    }<br>    outer &#x3D; inner;<br>})();<br>outer();    &#x2F;&#x2F;2<br>outer();    &#x2F;&#x2F;3<br>outer();    &#x2F;&#x2F;4</p>
+<p>这段代码中的变量one是一个局部变量（因为它被定义在一个函数之内），因此外部是不可以访问的。但是这里我们创建了inner函数，inner函数是可以访问变量one的；又将全局变量outer引用了inner，所以三次调用outer会弹出递增的结果。<a target="_blank" rel="noopener" href="http://www.cnblogs.com/rainman/archive/2009/05/04/1448899.html#"></a></p>
+<h3 id="4、注意"><a href="#4、注意" class="headerlink" title="4、注意"></a>4、注意</h3><h4 id="4-1-闭包允许内层函数引用父函数中的变量，但是该变量是最终值"><a href="#4-1-闭包允许内层函数引用父函数中的变量，但是该变量是最终值" class="headerlink" title="4.1 闭包允许内层函数引用父函数中的变量，但是该变量是最终值"></a>4.1 闭包允许内层函数引用父函数中的变量，但是该变量是最终值</h4><p>示例六：</p>
+<p>&#x2F;**<br> * <body><br> * <ul><br> *     <li>one</li><br> *     <li>two</li><br> *     <li>three</li><br> *     <li>one</li><br> * </ul><br> *&#x2F;<br>var lists &#x3D; document.getElementsByTagName(‘li’);<br>for(var i &#x3D; 0 , len &#x3D; lists.length ; i &lt; len ; i++){<br>    lists[ i ].onmouseover &#x3D; function(){<br>        alert(i);<br>    };<br>}</p>
+<p>你会发现当鼠标移过每一个&lt;li&rt;元素时，总是弹出4，而不是我们期待的元素下标。这是为什么呢？注意事项里已经讲了（最终值）。显然这种解释过于简单，当mouseover事件调用监听函数时，首先在匿名函数（ function(){ alert(i); }）内部查找是否定义了 i，结果是没有定义；因此它会向上查找，查找结果是已经定义了，并且i的值是4（循环后的i值）；所以，最终每次弹出的都是4。 解决方法一：</p>
+<p>var lists &#x3D; document.getElementsByTagName(‘li’);<br>for(var i &#x3D; 0 , len &#x3D; lists.length ; i &lt; len ; i++){<br>    (function(index){<br>        lists[ index ].onmouseover &#x3D; function(){<br>            alert(index);<br>        };<br>    })(i);<br>}</p>
+<p>解决方法二：</p>
+<p>var lists &#x3D; document.getElementsByTagName(‘li’);<br>for(var i &#x3D; 0, len &#x3D; lists.length; i &lt; len; i++){<br>    lists[ i ].$$index &#x3D; i;    &#x2F;&#x2F;通过在Dom元素上绑定$$index属性记录下标<br>    lists[ i ].onmouseover &#x3D; function(){<br>        alert(this.$$index);<br>    };<br>}</p>
+<p>解决方法三：</p>
+<p>function eventListener(list, index){<br>    list.onmouseover &#x3D; function(){<br>        alert(index);<br>    };<br>}<br>var lists &#x3D; document.getElementsByTagName(‘li’);<br>for(var i &#x3D; 0 , len &#x3D; lists.length ; i &lt; len ; i++){<br>    eventListener(lists[ i ] , i);<br>}</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/what-do-you-need-to-do-to-be-a-PHPer/" rel="prev" title="想成为PHPer 你都要干些什么">
+                  <i class="fa fa-angle-left"></i> 想成为PHPer 你都要干些什么
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/SNS-website-feed-design/" rel="next" title="SNS网站Feed功能设计">
+                  SNS网站Feed功能设计 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

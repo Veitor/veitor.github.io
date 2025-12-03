@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  我们已经讨论了先尝试将领域中的所有东西构建为Value Object的好处。但是当领域建模时，可能你会遇到这样的情况，通用语言中的一些概念需要有一些Identiy。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]实体 - 《Domain-Driven Design in PHP》第4章">
+<meta property="og:url" content="http://www.veitor.net/posts/DDD-in-php-entities/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  我们已经讨论了先尝试将领域中的所有东西构建为Value Object的好处。但是当领域建模时，可能你会遇到这样的情况，通用语言中的一些概念需要有一些Identiy。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-25T01:58:39.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.990Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-entities/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/DDD-in-php-entities/","path":"posts/DDD-in-php-entities/","title":"[译]实体 - 《Domain-Driven Design in PHP》第4章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译]实体 - 《Domain-Driven Design in PHP》第4章 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1-Vs-%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">对象 Vs. 原始类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Identity%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">Identity的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6%E7%94%9F%E6%88%90Identity"><span class="nav-number">3.1.</span> <span class="nav-text">持久化机制生成Identity</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86Identity"><span class="nav-number">3.1.1.</span> <span class="nav-text">代理Identity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Active-Record-Vs-%E5%85%85%E8%A1%80%E6%A8%A1%E5%9E%8BData-Mapper"><span class="nav-number">3.1.2.</span> <span class="nav-text">Active Record Vs. 充血模型Data Mapper</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8F%90%E4%BE%9BIdentity"><span class="nav-number">3.2.</span> <span class="nav-text">客户端提供Identity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%94%9F%E6%88%90Identity"><span class="nav-number">3.3.</span> <span class="nav-text">应用生成Identity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%99%90%E7%95%8C%E4%B8%8A%E4%B8%8B%E6%96%87%E7%94%9F%E6%88%90Identity"><span class="nav-number">3.4.</span> <span class="nav-text">其他限界上下文生成Identity</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%AE%9E%E4%BD%93"><span class="nav-number">4.</span> <span class="nav-text">持久化实体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEDoctine"><span class="nav-number">4.1.</span> <span class="nav-text">配置Doctine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93"><span class="nav-number">4.2.</span> <span class="nav-text">映射实体</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B3%A8%E9%87%8A%E5%BD%A2%E5%BC%8F%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93"><span class="nav-number">4.2.1.</span> <span class="nav-text">使用注释形式映射实体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8xml%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93"><span class="nav-number">4.2.2.</span> <span class="nav-text">使用xml映射实体</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84%E5%AE%9E%E4%BD%93Identity"><span class="nav-number">4.3.</span> <span class="nav-text">映射实体Identity</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6"><span class="nav-number">4.3.1.</span> <span class="nav-text">最终映射文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%AE%9E%E4%BD%93"><span class="nav-number">5.</span> <span class="nav-text">测试实体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DateTimes"><span class="nav-number">5.1.</span> <span class="nav-text">DateTimes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E5%85%A5%E6%89%80%E6%9C%89%E6%97%A5%E6%9C%9F%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0"><span class="nav-number">5.1.1.</span> <span class="nav-text">传入所有日期作为参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Test-Class"><span class="nav-number">5.1.2.</span> <span class="nav-text">Test Class</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E7%9A%84Fake"><span class="nav-number">5.1.3.</span> <span class="nav-text">外部的Fake</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84"><span class="nav-number">5.1.4.</span> <span class="nav-text">反射</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">6.</span> <span class="nav-text">验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E9%AA%8C%E8%AF%81"><span class="nav-number">6.1.</span> <span class="nav-text">属性验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E5%AF%B9%E8%B1%A1%E9%AA%8C%E8%AF%81"><span class="nav-number">6.2.</span> <span class="nav-text">整体对象验证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6%E9%AA%8C%E8%AF%81%E6%B6%88%E6%81%AF"><span class="nav-number">6.2.1.</span> <span class="nav-text">解耦验证消息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E5%AF%B9%E8%B1%A1%E7%BB%84%E5%90%88"><span class="nav-number">6.3.</span> <span class="nav-text">验证对象组合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93%E5%92%8C%E9%A2%86%E5%9F%9F%E4%BA%8B%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">实体和领域事件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-entities/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译]实体 - 《Domain-Driven Design in PHP》第4章 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]实体 - 《Domain-Driven Design in PHP》第4章
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-25 09:58:39" itemprop="dateCreated datePublished" datetime="2020-05-25T09:58:39+08:00">2020-05-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>我们已经讨论了先尝试将领域中的所有东西构建为Value Object的好处。但是当领域建模时，可能你会遇到这样的情况，通用语言中的一些概念需要有一些Identiy。</p>
+<span id="more"></span>
+
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>需要Identity的对象的几个示例：</p>
+<ul>
+<li><strong>一个人</strong>： 一个人总是具有一个Identity，这身份总是与其姓名或身份证相同。</li>
+<li><strong>电商系统中的一个订单</strong>： 在这样的上下文中，每个新创建的订单都有其自己的Identity，并且不会随时间变化。</li>
+</ul>
+<p>这些概念都有着一成不变的Identity。无论概念中的数据变更多少次，他们的Identity总是不变。<code>这就是它们成为Entity而不是Value Object的原因</code>。以下是一个<code>Person</code>的例子：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Identity\Domain\Model;
+
+class Person
+&#123;
+	private $identificationNumber;
+
+	private $firstName;
+
+	private $lastName;
+
+	public function __construct(
+		$anIdentificationNumber, $aFirstName, $aLastName
+	) &#123;
+		$this-&gt;identificationNumber &#x3D; $anIdentificationNumber;
+		$this-&gt;firstName &#x3D; $aFirstName;
+		$this-&gt;lastName &#x3D; $aLastName;
+	&#125;
+
+	public function identificationNumber()
+	&#123;
+		return $this-&gt;identificationNumber;
+	&#125;
+
+	public function firstName()
+	&#123;
+		return $this-&gt;firstName;
+	&#125;
+
+	public function lastName()
+	&#123;
+		return $this-&gt;lastName;
+	&#125;
+&#125;</code></pre>
+<p>再看一下<code>Order</code>的例子：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Domain\Model\Order;
+
+class Order
+&#123;
+	private $id;
+
+	private $amount;
+
+	private $firstName;
+
+	private $lastName;
+
+	public function __construct(
+		$anId, Amount $amount, $aFirstName, $aLastName
+	) &#123;
+		$this-&gt;id &#x3D; $anId;
+		$this-&gt;amount &#x3D; $amount;
+		$this-&gt;firstName &#x3D; $aFirstName;
+		$this-&gt;lastName &#x3D; $aLastName;
+	&#125;
+
+	public function id()
+	&#123;
+		return $this-&gt;id;
+	&#125;
+
+	public function firstName()
+	&#123;
+		return $this-&gt;firstName;
+	&#125;
+
+	public function lastName()
+	&#123;
+		return $this-&gt;lastName;
+	&#125;
+&#125;</code></pre>
+
+<h1 id="对象-Vs-原始类型"><a href="#对象-Vs-原始类型" class="headerlink" title="对象 Vs. 原始类型"></a>对象 Vs. 原始类型</h1><p>大多数情况下，实体的Identity用原始类型来表示——通常是string或integer。但是使用Value Object来表示它具有一些优势：</p>
+<ul>
+<li>Value Object是不可变的，因此它们不能被修改。</li>
+<li>Value Object是可以拥有一些动作行为的复杂类型，而原始类型没有。例如<code>判断相等的操作</code>可以被封装在值对象的类里，从而使这个操作从隐式的变成显示的。</li>
+</ul>
+<p>让我们看一下<code>OrderID</code>可能的实现方式，订单的<code>Identity</code>已经被处理成了<code>Value Object</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Domain\Model;
+
+class OrderId
+&#123;
+	private $id;
+
+	public function __construct($anId)
+	&#123;
+		$this-&gt;id &#x3D; $anId;
+	&#125;
+	
+	public function id()
+	&#123;
+		return $this-&gt;id;
+	&#125;
+
+	public function equalsTo(OrderId $anOrderId)
+	&#123;
+		return $anOrderId-&gt;id &#x3D;&#x3D;&#x3D; $this-&gt;id;
+	&#125;
+&#125;</code></pre>
+
+<p>上面的示例相当简单，你也可以有其他不同的<code>OrderId</code>的实现。我们在第3章里提到过，你可以使构造函数__construct私有化，使用静态工厂方法来创建新的实例。因为实体的<code>Identity</code>是一个不太复杂的<code>Value Object</code>，所以你在这不需要在此过于担心。</p>
+<p>让我们回到Order，是时候修改它来引用OrderId了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Order
+&#123;
+	private $id;
+	private $amount;
+	private $firstName;
+	private $lastName;
+
+	public function __construct(
+		OrderId $anOrderId, Amount $amount, $aFirstName, $aLastName
+	) &#123;
+		$this-&gt;id &#x3D; $anOrderId;
+		$this-&gt;amount &#x3D; $amount;
+		$this-&gt;firstName &#x3D; $aFirstName;
+		$this-&gt;lastName &#x3D; $aLastName;
+	&#125;
+	public function id()
+	&#123;
+		return $this-&gt;id;
+	&#125;
+	public function firstName()
+	&#123;
+		return $this-&gt;firstName;
+	&#125;
+	public function lastName()
+	&#123;
+		return $this-&gt;lastName;
+	&#125;
+	public function amount()
+	&#123;
+		return $this-&gt;amount;
+	&#125;
+&#125;</code></pre>
+<p>我们实体拥有了一个<code>Value Object</code>类型的<code>Identity</code>。让我们考虑一下创建OrderId的不同方法。</p>
+<h1 id="Identity的操作"><a href="#Identity的操作" class="headerlink" title="Identity的操作"></a>Identity的操作</h1><p>前面我们已经讲了什么是<code>Identity</code>，而处理实体的Identity是实体重要的一个方面。通常有四个方式来定义一个实体的<code>Identiy</code>：持久化机制提供<code>Identity</code>、客户端提供<code>Identity</code>、应用自己提供<code>Identity</code>，或者另一个限界上下文提供<code>Identity</code>。</p>
+<h2 id="持久化机制生成Identity"><a href="#持久化机制生成Identity" class="headerlink" title="持久化机制生成Identity"></a>持久化机制生成Identity</h2><p>通常，最简单的生成<code>Identity</code>的方式通过持久化机制来生成，因为大多数持久机制支持一些<code>Identity</code>的生成，比如Mysql的AUTO_INCREMENT属性或者Postgres和Oracle序列。尽管如此简单，但也有一个主要的缺点：实体在被持久化之前是没有<code>Identity</code>的。在某种程度上，如果我们使用持久化机制生成<code>Identity</code>，我们将会使得<code>Identity</code>的操作与底层持久化系统产生耦合：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">CREATE TABLE &#96;orders&#96; (
+	&#96;id&#96; int(11) NOT NULL auto_increment,
+	&#96;amount&#96; decimal (10,5) NOT NULL,
+	&#96;first_name&#96; varchar(100) NOT NULL,
+	&#96;last_name&#96; varchar(100) NOT NULL,
+	PRIMARY KEY (&#96;id&#96;)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8mb4 COLLATE&#x3D;utf8mb4_unicode_ci;</code></pre>
+
+<p>再思考一下下面的代码：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Identity\Domain\Model;
+
+class Person
+&#123;
+	private $identificationNumber;
+	private $firstName;
+	private $lastName;
+
+	public function __construct(
+		$anIdentificationNumber, $aFirstName, $aLastName
+	) &#123;
+		$this-&gt;identificationNumber &#x3D; $anIdentificationNumber;
+		$this-&gt;firstName &#x3D; $aFirstName;
+		$this-&gt;lastName &#x3D; $aLastName;
+	&#125;
+	public function identificationNumber()
+	&#123;
+		return $this-&gt;identificationNumber;
+	&#125;
+	public function firstName()
+	&#123;
+		return $this-&gt;firstName;
+	&#125;
+	public function lastName()
+	&#123;
+		return $this-&gt;lastName;
+	&#125;
+&#125;</code></pre>
+
+<p>如果你尝试使用过你自己的ORM，你可能已经遇到过这情况了。创建一个新Person的方式是什么？如果数据库生成<code>Identity</code>，我们是否要在构造函数中传进去？什么时候并且在哪里用<code>Identity</code>来更新Person？如果我们最终不去保存这个实体又会发生什么？</p>
+<h3 id="代理Identity"><a href="#代理Identity" class="headerlink" title="代理Identity"></a>代理Identity</h3><p>有时当使用ORM映射实体到持久化系统时，会存在一些约束，例如，在Doctrine中使用了IDENTITY生成器策略，则要求<code>Identity</code>应是一个整数字段，这可能与领域模型中要求使用其他类型的<code>Identity</code>会产生冲突。</p>
+<p>处理这种情况最简单的方式使用<code>Layer Supertype</code>模式（译者注：如果一层中的组件具有相同的一组行为，就可以将这些行为提取到一个公共类或组件中，并使层中的所有组件都继承该公共类或组件。），这是<code>Identity</code>字段创建的地方：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Common\Domain\Model;
+
+abstract class IdentifiableDomainObject
+&#123;
+	private $id;
+	protected function id()
+	&#123;
+		return $this-&gt;id;
+	&#125;
+	protected function setId($anId)
+	&#123;
+		$this-&gt;id &#x3D; $anId;
+	&#125;
+&#125;
+
+namespace Acme\Billing\Domain;
+use Acme\Common\Domain\IdentifiableDomainObject;
+class Order extends IdentifiableDomainObject
+&#123;
+	private $orderId;
+	public function orderId()
+	&#123;
+		if (null &#x3D;&#x3D;&#x3D; $this-&gt;orderId) &#123;
+			$this-&gt;orderId &#x3D; new OrderId($this-&gt;id());
+		&#125;
+		return $this-&gt;orderId;
+	&#125;
+&#125;</code></pre>
+
+<h3 id="Active-Record-Vs-充血模型Data-Mapper"><a href="#Active-Record-Vs-充血模型Data-Mapper" class="headerlink" title="Active Record Vs. 充血模型Data Mapper"></a>Active Record Vs. 充血模型Data Mapper</h3><p>每个项目总是会面临使用哪个ORM的问题，这有许多好的PHP ORM：Doctrine，Propel，Eloquent，Paris等。</p>
+<p>它们大多数是ActiveRecord的实现，ActiveRecord实现通常适合CRUD的应用程序，但它不是充血模型的理想解决方案，因为：</p>
+<ul>
+<li>ActiveRecord模式假设了Entity与数据库表之间是一对一的关系。因此这将数据库表的设计与对象的设计耦合在了一起。在充血模型中，有时Entity使用的是来自不同数据库数据源的信息构建的。</li>
+<li>像集合(collection)、继承(inheritance)这样的高级功能难以去实现。</li>
+<li>大多数的实现强制使用继承(inheritance)、一些强加约束的构造函数，通过耦合领域模型和ORM，这会导致持久性泄漏到领域模型中。</li>
+</ul>
+<p>如前一章节所述，当前最好的PHP ORM是Doctrine，是一个Data Mapper模式的实现。Data Mapper将持久化方面与领域解耦，这使之成为想要构建充血模型的最佳工具。</p>
+<h2 id="客户端提供Identity"><a href="#客户端提供Identity" class="headerlink" title="客户端提供Identity"></a>客户端提供Identity</h2><p>有时当我们处理某些领域时，<code>Identity</code>自然而然的出现了，客户端使用了领域模型。这可能是理想的状况，因为可以轻易的对<code>Identity</code>进行建模，让我们看一下图书销售市场：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Catalog\Domain\Model\Book;
+class ISBN
+&#123;
+	private $isbn;
+	private function __construct($anIsbn)
+	&#123;
+		$this-&gt;setIsbn($anIsbn);
+	&#125;
+	private function setIsbn($anIsbn)
+	&#123;
+		$this-&gt;assertIsbnIsValid($anIsbn, &#39;The ISBN is invalid.&#39;);
+		$this-&gt;isbn &#x3D; $anIsbn;
+	&#125;
+	public static function create($anIsbn)
+	&#123;
+		return new static($anIsbn);
+	&#125;
+	private function assertIsbnIsValid($anIsbn, $string)
+	&#123;
+		&#x2F;&#x2F; ... Validates an ISBN code
+	&#125;
+&#125;</code></pre>
+
+<p>根据维基百科：国际标准书号（ISBN）是唯一的数字商业书本标识符。书的每个版本（重新印刷除外）都分配有一个ISBN。</p>
+<p>因为ISBN是唯一的有效的身份标识，并且能够被轻松的验证，这么酷的事情发生在了领域内，这是一个由客户端提供<code>Identity</code>的示例：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Book
+&#123;
+    private $isbn;
+    private $title;
+    public function __construct(ISBN $anIsbn, $aTitle)
+    &#123;
+        $this-&gt;isbn &#x3D; $anIsbn;
+        $this-&gt;title &#x3D; $aTitle;
+    &#125;
+&#125;</code></pre>
+
+<p>现在让我们使用它：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$book &#x3D; new Book(
+ISBN::create(&#39;...&#39;),
+&#39;Domain-Driven Design in PHP&#39;
+);</code></pre>
+
+<h2 id="应用生成Identity"><a href="#应用生成Identity" class="headerlink" title="应用生成Identity"></a>应用生成Identity</h2><p>如果客户端无法提供<code>Identity</code>，则处理<code>Identity</code>的操作是让应用通过UUID生成<code>Identity</code>。如果你没有遇到上一节中类似的场景，那这是我们推荐的方法。</p>
+<p>（译者注：这里省略掉原文中介绍UUID的长文翻译，不影响整体阅读和理解）</p>
+<p>创建<code>Identity</code>的首选位置是在Repository中（我们将在第10章进行深入介绍）：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Domain\Model\Order;
+interface OrderRepository
+&#123;
+    public function nextIdentity();
+    public function add(Order $anOrder);
+    public function remove(Order $anOrder);
+&#125;</code></pre>
+
+<p>当使用Doctrine时，我们需要创建一个实现了此interface的自定义Repository。它将创建新的<code>Identity</code>并且使用<code>EntityManager</code>来持久化和删除实体。一个小的变化是将<code>nextIdentity</code>实现放入了interface：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Infrastructure\Domain\Model\Order;
+use Ddd\Billing\Domain\Model\Order\Order;
+use Ddd\Billing\Domain\Model\Order\OrderId;
+use Ddd\Billing\Domain\Model\Order\OrderRepository;
+use Doctrine\ORM\EntityRepository;
+
+class DoctrineOrderRepository extends EntityRepository implements OrderRepository
+&#123;
+    public function nextIdentity()
+    &#123;
+        return OrderId::create();
+    &#125;
+    public function add(Order $anOrder)
+    &#123;
+        $this-&gt;getEntityManager()-&gt;persist($anOrder);
+    &#125;
+    public function remove(Order $anOrder)
+    &#123;
+        $this-&gt;getEntityManager()-&gt;remove($anOrder);
+    &#125;
+&#125;</code></pre>
+
+<p>让我们快速回顾<code>OrderId</code>值对象的最终实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Domain\Model\Order;
+use Ramsey\Uuid\Uuid;
+class OrderId
+&#123;
+    private $id;
+    private function __construct($anId &#x3D; null)
+    &#123;
+        $this-&gt;id &#x3D; $id ? :Uuid::uuid4()-&gt;toString();
+    &#125;
+    public static function create($anId &#x3D; null )
+    &#123;
+        return new static($anId);
+    &#125;
+&#125;</code></pre>
+
+<p>你将在下面的章节中看到，这种方式的持久化包含值对象的实体是多么的容易。但是，根据ORM的不同，在实体中映射嵌入的Value Object可能会变得棘手。</p>
+<h2 id="其他限界上下文生成Identity"><a href="#其他限界上下文生成Identity" class="headerlink" title="其他限界上下文生成Identity"></a>其他限界上下文生成Identity</h2><p>这可能是复杂的<code>Identity</code>生成策略，因为它迫使本地实体依赖于本地绑定的上下文事件，还依赖于外部绑定的上下文事件，因此在维护方面成本会很高。</p>
+<p>另一个限界上下文提供了从本地实体中选择<code>Identity</code>的接口，它可以将某些公开属性作为自己的属性。</p>
+<p>当在限界上下文之间的实体需要同步时，这通常会在需要被通知的限界上下文上使用事件驱动(Event-Driven)架构，并且在原始的实体变更时需要进行事件通知。</p>
+<h1 id="持久化实体"><a href="#持久化实体" class="headerlink" title="持久化实体"></a>持久化实体</h1><p>到目前为止，最好的保存实体状态到持久库的工具是Doctrine ORM。Doctine有几种方式来指定实体的元数据(metadata)：在Entity类中写注释、通过编写XML、编写Yaml或者编写原生PHP代码。在这节中 ，我们将深入讨论为什么在映射实体中通过写注释的方式不是最好的。</p>
+<h2 id="配置Doctine"><a href="#配置Doctine" class="headerlink" title="配置Doctine"></a>配置Doctine</h2><p>首先，我们需要通过Composer安装Doctine（译者注：由于本书年代较为久远，最新的composer安装方式建议查看Doctine官网，这里就不再翻译旧的安装方式原文了）。</p>
+<p>像这样进行配置：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">require_once &#39;&#x2F;path&#x2F;to&#x2F;vendor&#x2F;autoload.php&#39;;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+$paths &#x3D; [&#39;&#x2F;path&#x2F;to&#x2F;entity-files&#39;];
+$isDevMode &#x3D; false;
+&#x2F;&#x2F; the connection configuration
+$dbParams &#x3D; [
+	&#39;driver&#39; &#x3D;&gt; &#39;pdo_mysql&#39;,
+	&#39;user&#39; &#x3D;&gt; &#39;the_database_username&#39;,
+	&#39;password&#39; &#x3D;&gt; &#39;the_database_password&#39;,
+	&#39;dbname&#39; &#x3D;&gt; &#39;the_database_name&#39;,
+];
+$config &#x3D; Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+$entityManager &#x3D; EntityManager::create($dbParams, $config);</code></pre>
+
+<h2 id="映射实体"><a href="#映射实体" class="headerlink" title="映射实体"></a>映射实体</h2><p>Doctrine官网上的演示代码使用的是annotations注释形式。所以我们也使用注释形式并讨论为什么要尽可能的避免使用这形式。</p>
+<p>我们将使用前面章节讨论过的<code>Order</code>类。</p>
+<h3 id="使用注释形式映射实体"><a href="#使用注释形式映射实体" class="headerlink" title="使用注释形式映射实体"></a>使用注释形式映射实体</h3><p>为了映射<code>Order</code>实体到持久化仓库，<code>Order</code>的代码需要被修改加上Doctine注释内容：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Column;
+&#x2F;** @Entity *&#x2F;
+class Order
+&#123;
+	&#x2F;** @Id @GeneratedValue(strategy&#x3D;&quot;AUTO&quot;) *&#x2F;
+	private $id;
+	&#x2F;** @Column(type&#x3D;&quot;decimal&quot;, precision&#x3D;&quot;10&quot;, scale&#x3D;&quot;5&quot;) *&#x2F;
+	private $amount;
+	&#x2F;** @Column(type&#x3D;&quot;string&quot;) *&#x2F;
+	private $firstName;
+	&#x2F;** @Column(type&#x3D;&quot;string&quot;) *&#x2F;
+	private $lastName;
+	public function __construct(
+		Amount $anAmount,
+		$aFirstName,
+		$aLastName
+	) &#123;
+		$this-&gt;amount &#x3D; $anAmount;
+		$this-&gt;firstName &#x3D; $aFirstName;
+		$this-&gt;lastName &#x3D; $aLastName;
+	&#125;
+	public function id()
+	&#123;
+		return $this-&gt;id;
+	&#125;
+	public function firstName()
+	&#123;
+		return $this-&gt;firstName;
+	&#125;
+	public function lastName()
+	&#123;
+		return $this-&gt;lastName;
+	&#125;
+	public function amount()
+	&#123;
+		return $this-&gt;amount;
+	&#125;
+&#125;</code></pre>
+<p>随后，持久化一个实体到持久库中像下面这样简单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$order &#x3D; new Order(
+new Amount(15, Currency::EUR()),
+    &#39;AFirstName&#39;,
+    &#39;ALastName&#39;
+);
+$entityManager-&gt;persist($order);
+$entityManager-&gt;flush();</code></pre>
+
+<p>乍一眼，代码看起来如此简单，这应该是最简单的方式来映射信息了。但是这是有代价的，最终代码会有什么奇怪的地方？</p>
+<p>首先，领域关注点中被混入了infrastructure基础设施内容。Order是领域概念，而Table、Column等是基础设施概念。</p>
+<p>结果这个实体在代码中被annotations紧密的与映射信息耦合在了一起。如果要使用其他Entity manager和不同的映射元数据来持久化实体时，这是不可能的了。</p>
+<p>Annotations紧密的耦合导致了副作用，所以我们最好不要使用注释形式。</p>
+<p>那最好的映射信息的方式是什么呢？最好的方式是允许你从实体中分离映射信息出来。这可以通过xml映射、yaml映射或者php映射实现，本书中将讨论xml映射。</p>
+<h3 id="使用xml映射实体"><a href="#使用xml映射实体" class="headerlink" title="使用xml映射实体"></a>使用xml映射实体</h3><p>为了使用XML映射<code>Order</code>实体，Doctrine的代码配置应该被稍微修改一下：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">require_once &#39;&#x2F;path&#x2F;to&#x2F;vendor&#x2F;autoload.php&#39;;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+$paths &#x3D; [&#39;&#x2F;path&#x2F;to&#x2F;mapping-files&#39;];
+$isDevMode &#x3D; false;
+&#x2F;&#x2F; the connection configuration
+$dbParams &#x3D; [
+    &#39;driver&#39; &#x3D;&gt; &#39;pdo_mysql&#39;,
+    &#39;user&#39; &#x3D;&gt; &#39;the_database_username&#39;,
+    &#39;password&#39; &#x3D;&gt; &#39;the_database_password&#39;,
+    &#39;dbname&#39; &#x3D;&gt; &#39;the_database_name&#39;,
+];
+$config &#x3D; Setup::createXMLMetadataConfiguration($paths, $isDevMode);
+$entityManager &#x3D; EntityManager::create($dbParams, $config);</code></pre>
+
+<p>映射文件应该放置在Doctrine搜寻映射文件的路径中，映射文件名应该以完全限定的类名命名，并用点替换反斜杠\：</p>
+<p><code>Acme\Billing\Domain\Model\Order</code>类对应着名称为<code>Acme.Billing.Domain.Model.Order.dcm.xml</code>的xml文件。</p>
+<h2 id="映射实体Identity"><a href="#映射实体Identity" class="headerlink" title="映射实体Identity"></a>映射实体Identity</h2><p>我们的身份<code>OrderId</code>是一个值对象，如我们前面几节看到，有不同方法如Doctrine、嵌入的、自定义类型等方法来映射值对象。</p>
+<p>Doctrine2.5中一个有趣的新特性可以使用对象作为实体的身份（译者注：由于原文年代久远，读者请根据实际版本的Doctrine操作），因为它们实现了魔术方法<code>__toString()</code>。所以我们添加<code>__toString()</code>方法到我们的身份值对象中来：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Billing\Domain\Model\Order;
+use Ramsey\Uuid\Uuid;
+class OrderId
+&#123;
+    &#x2F;&#x2F; ...
+    public function __toString()
+    &#123;
+        return $this-&gt;id;
+    &#125;
+&#125;</code></pre>
+
+<p>检查Doctrine自定义类型的实现，它们继承自GuidType，所以它们内部的表现形式是UUID。我们需要指定数据库的原生转换，然后我们需要在使用自定义类型前对其进行注册，你可以参考Doctrine官网关于“自定义类型”相关的文档。（译者注：建议这部分先了解一下Doctrine中自定义类型的实现）</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\GuidType;
+class DoctrineOrderId extends GuidType
+&#123;
+    public function getName()
+    &#123;
+        return &#39;OrderId&#39;;
+    &#125;
+    public function convertToDatabaseValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return $value-&gt;id();
+    &#125;
+    public function convertToPHPValue(
+        $value, AbstractPlatform $platform
+    ) &#123;
+        return new OrderId($value);
+    &#125;
+&#125;</code></pre>
+
+<p>最后，我们注册自定义类型：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">require_once &#39;&#x2F;path&#x2F;to&#x2F;vendor&#x2F;autoload.php&#39;;
+&#x2F;&#x2F; ...
+\Doctrine\DBAL\Types\Type::addType(
+    &#39;OrderId&#39;,
+    &#39;Ddd\Billing\Infrastructure\Domain\Model\DoctrineOrderId&#39;
+);
+$config &#x3D; Setup::createXMLMetadataConfiguration($paths, $isDevMode);
+$entityManager &#x3D; EntityManager::create($dbParams, $config);</code></pre>
+
+<h3 id="最终映射文件"><a href="#最终映射文件" class="headerlink" title="最终映射文件"></a>最终映射文件</h3><p>让我们看一下最终的映射文件。有趣的是看一下id如何与我们自定义的类型OrderId进行映射的：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;
+&lt;doctrine-mapping
+xmlns&#x3D;&quot;http:&#x2F;&#x2F;doctrine-project.org&#x2F;schemas&#x2F;orm&#x2F;doctrine-mapping&quot;
+xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;
+xsi:schemaLocation&#x3D;&quot;
+http:&#x2F;&#x2F;doctrine-project.org&#x2F;schemas&#x2F;orm&#x2F;doctrine-mapping
+https:&#x2F;&#x2F;raw.github.com&#x2F;doctrine&#x2F;doctrine2&#x2F;master&#x2F;doctrine-mapping.xsd&quot;&gt;
+    &lt;entity
+    name&#x3D;&quot;Ddd\Billing\Domain\Model\Order&quot;
+    table&#x3D;&quot;orders&quot;&gt;
+        &lt;id name&#x3D;&quot;id&quot; column&#x3D;&quot;id&quot; type&#x3D;&quot;OrderId&quot; &#x2F;&gt;
+        &lt;field
+            name&#x3D;&quot;amount&quot;
+            type&#x3D;&quot;decimal&quot;
+            nullable&#x3D;&quot;false&quot;
+            scale&#x3D;&quot;10&quot;
+            precision&#x3D;&quot;5&quot;
+        &#x2F;&gt;
+        &lt;field
+            name&#x3D;&quot;firstName&quot;
+            type&#x3D;&quot;string&quot;
+            nullable&#x3D;&quot;false&quot;
+        &#x2F;&gt;
+        &lt;field
+            name&#x3D;&quot;lastName&quot;
+            type&#x3D;&quot;string&quot;
+            nullable&#x3D;&quot;false&quot;
+        &#x2F;&gt;
+    &lt;&#x2F;entity&gt;
+&lt;&#x2F;doctrine-mapping&gt;</code></pre>
+
+<h1 id="测试实体"><a href="#测试实体" class="headerlink" title="测试实体"></a>测试实体</h1><p>测试实体相对简单，因为它们是原生的PHP类，并且具有从领域概念派生出来的行为动作。测试的重点应该是实体所保护的不变性，因为实体的行为会围绕这些不变性进行建模。</p>
+<p>例如，为了简单起见，假设博客需要一个领域建模，则可能是：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    private $title;
+    private $content;
+    private $status;
+    private $createdAt;
+    private $publishedAt;
+    
+    public function __construct($aContent, $title)
+    &#123;
+        $this-&gt;setContent($aContent);
+        $this-&gt;setTitle($title);
+        $this-&gt;unpublish();
+        $this-&gt;createdAt(new DateTimeImmutable());
+    &#125;
+    private function setContent($aContent)
+    &#123;
+        $this-&gt;assertNotEmpty($aContent);
+        $this-&gt;content &#x3D; $aContent;
+    &#125;
+    private function setTitle($aPostTitle)
+    &#123;
+        $this-&gt;assertNotEmpty($aPostTitle);
+        $this-&gt;title &#x3D; $aPostTitle;
+    &#125;
+    private function setStatus(Status $aPostStatus)
+    &#123;
+        $this-&gt;assertIsAValidPostStatus($aPostStatus);
+        $this-&gt;status &#x3D; $aPostStatus;
+    &#125;
+    private function createdAt(DateTimeImmutable $aDate)
+    &#123;
+        $this-&gt;assertIsAValidDate($aDate);
+        $this-&gt;createdAt &#x3D; $aDate;
+    &#125;
+    private function publishedAt(DateTimeImmutable $aDate)
+    &#123;
+        $this-&gt;assertIsAValidDate($aDate);
+        $this-&gt;publishedAt &#x3D; $aDate;
+    &#125;
+    public function publish()
+    &#123;
+        $this-&gt;setStatus(Status::published());
+        $this-&gt;publishedAt(new DateTimeImmutable());
+    &#125;
+    public function unpublish()
+    &#123;
+        $this-&gt;setStatus(Status::draft());
+        $this-&gt;publishedAt &#x3D; null ;
+    &#125;
+    public function isPublished()
+    &#123;
+        return $this-&gt;status-&gt;equalsTo(Status::published());
+    &#125;
+    public function publicationDate()
+    &#123;
+        return $this-&gt;publishedAt;
+    &#125;
+&#125;
+class Status
+&#123;
+    const PUBLISHED &#x3D; 10;
+    const DRAFT &#x3D; 20;
+    private $status;
+    
+    public static function published()
+    &#123;
+        return new self(self::PUBLISHED);
+    &#125;
+    public static function draft()
+    &#123;
+        return new self(self::DRAFT);
+    &#125;
+    private function __construct($aStatus)
+    &#123;
+        $this-&gt;status &#x3D; $aStatus;
+    &#125;
+    public function equalsTo(self $aStatus)
+    &#123;
+        return $this-&gt;status &#x3D;&#x3D;&#x3D; $aStatus-&gt;status;
+    &#125;
+&#125;</code></pre>
+<p>为了测试这个领域模型，我们必须确保测试覆盖所有的Post不变性：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostTest extends PHPUnit_Framework_TestCase
+&#123;
+	&#x2F;** @test *&#x2F;
+	public function aNewPostIsNotPublishedByDefault()
+	&#123;
+		$aPost &#x3D; new Post(
+			&#39;A Post Content&#39;,
+			&#39;A Post Title&#39;
+		);
+		$this-&gt;assertFalse(
+			$aPost-&gt;isPublished()
+		);
+		$this-&gt;assertNull(
+			$aPost-&gt;publicationDate()
+		);
+	&#125;
+	&#x2F;** @test *&#x2F;
+	public function aPostCanBePublishedWithAPublicationDate()
+	&#123;
+		$aPost &#x3D; new Post(
+			&#39;A Post Content&#39;,
+			&#39;A Post Title&#39;
+		);
+		$aPost-&gt;publish();
+		$this-&gt;assertTrue(
+			$aPost-&gt;isPublished()
+		);
+		$this-&gt;assertInstanceOf(
+			&#39;DateTimeImmutable&#39;,
+			$aPost-&gt;publicationDate()
+		);
+	&#125;
+&#125;</code></pre>
+
+<h2 id="DateTimes"><a href="#DateTimes" class="headerlink" title="DateTimes"></a>DateTimes</h2><p>因为<code>Datetimes</code>在实体中被广泛使用，因此我们认为必须指出具有日期类型字段的单元测试实体的方法很重要。我们看一个例子<code>当帖子是最近15天内创建的则标记其为new</code>：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    const NEW_TIME_INTERVAL_DAYS &#x3D; 15;
+    &#x2F;&#x2F; ...
+    private $createdAt;
+    public function __construct($aContent, $title)
+    &#123;
+        &#x2F;&#x2F; ...
+        $this-&gt;createdAt(new DateTimeImmutable());
+    &#125;
+    &#x2F;&#x2F; ...
+    public function isNew()
+    &#123;
+        return
+        (new DateTimeImmutable())
+            -&gt;diff($this-&gt;createdAt)
+            -&gt;days &lt;&#x3D; self::NEW_TIME_INTERVAL_DAYS;
+    &#125;
+&#125;</code></pre>
+<p><code>isNew()</code>方法需要比较两个<code>Datetimes</code>，它是比较今天的日期与帖子创建的日期。我们计算差值是否小于指定的天数。那我们如何单元测试<code>isNew()</code>方法？正如我们在演示中的那样，很难去重现在单元测试中重现这个特定流程，那我们还有其他选择吗？</p>
+<h3 id="传入所有日期作为参数"><a href="#传入所有日期作为参数" class="headerlink" title="传入所有日期作为参数"></a>传入所有日期作为参数</h3><p>一种方法是传入所有日期作为参数：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    &#x2F;&#x2F; ...
+    public function __construct($aContent, $title, $createdAt &#x3D; null)
+    &#123;
+        &#x2F;&#x2F; ...
+        $this-&gt;createdAt($createdAt ?: new DateTimeImmutable());
+    &#125;
+    &#x2F;&#x2F; ...
+    public function isNew($today &#x3D; null)
+    &#123;
+        return
+        ($today ? :new DateTimeImmutable())
+            -&gt;diff($this-&gt;createdAt)
+            -&gt;days &lt;&#x3D; self::NEW_TIME_INTERVAL_DAYS;
+    &#125;
+&#125;</code></pre>
+<p>这是最容易进行单元测试的方法。只要传入不同的不同的日期就能测试100%的覆盖率的所有场景。但是如果你思考一下那些创建并获取<code>isNew()</code>方法结果的客户端，事情就没有那么美好了。由于总是传入今天的日期，结果显得有点怪异：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$aPost &#x3D; new Post(
+    &#39;Hello world!&#39;,
+    &#39;Hi&#39;,
+    new DateTimeImmutable()
+);
+$aPost-&gt;isNew(
+    new DateTimeImmutable()
+);</code></pre>
+
+<h3 id="Test-Class"><a href="#Test-Class" class="headerlink" title="Test Class"></a>Test Class</h3><p>另一种方法是使用Test Class模式，其思路是使用一个新的类来继承Post类，我们可以通过新的类来实现特定的场景。这个新的类仅用于单元测试的目的。坏消息是，我们必须稍微修改一些原始的Post类，提取一些方法并将某些字段和方法从private改为protected。一些开发人员可能仅处于测试原因而担心增加类的属性的可见性。但是，我们认为在大多数情况下这是值得的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    protected $createdAt;
+    
+    public function isNew()
+    &#123;
+        return
+        ($this-&gt;today())
+            -&gt;diff($this-&gt;createdAt)
+            -&gt;days &lt;&#x3D; self::NEW_TIME_INTERVAL_DAYS;
+    &#125;
+    protected function today()
+    &#123;
+        return new DateTimeImmutable();
+    &#125;
+    protected function createdAt(DateTimeImmutable $aDate)
+    &#123;
+        $this-&gt;assertIsAValidDate($aDate);
+        $this-&gt;createdAt &#x3D; $aDate;
+    &#125;
+&#125;</code></pre>
+<p>如你所见，我们已经提取了获取今天日期的逻辑到了<code>today()</code>方法中。通过使用<code>Template Method</code>模式，我们可以在测试类中改变该方法的逻辑行为。其他相似的场景如<code>createdAt</code>方法等。现在它们的可见性是protected，因此可以在测试类中进行重写覆盖：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostTestClass extends Post
+&#123;
+    private $today;
+    protected function today()
+    &#123;
+        return $this-&gt;today;
+    &#125;
+    public function setToday($today)
+    &#123;
+        $this-&gt;today &#x3D; $today;
+    &#125;
+&#125;</code></pre>
+
+<p>有了这些修改，我们现在可以通过测试<code>PostTestClass</code>类来测试我们原始的<code>Post</code>类了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;** @test *&#x2F;
+    public function aPostIsNewIfIts15DaysOrLess()
+    &#123;
+        $aPost &#x3D; new PostTestClass(
+            &#39;A Post Content&#39; ,
+            &#39;A Post Title&#39;
+        );
+        $format &#x3D; &#39;Y-m-d&#39;;
+        $dateString &#x3D; &#39;2016-01-01&#39;;
+        $createdAt &#x3D; DateTimeImmutable::createFromFormat(
+            $format,
+            $dateString
+        );
+        $aPost-&gt;createdAt($createdAt);
+        $aPost-&gt;setToday(
+            $createdAt-&gt;add(
+                new DateInterval(&#39;P15D&#39;)
+            )
+        );
+        $this-&gt;assertTrue(
+            $aPost-&gt;isNew()
+        );
+        $aPost-&gt;setToday(
+            $createdAt-&gt;add(
+                new DateInterval(&#39;P16D&#39;)
+            )
+        );
+        $this-&gt;assertFalse(
+            $aPost-&gt;isNew()
+        );
+    &#125;
+&#125;</code></pre>
+
+<h3 id="外部的Fake"><a href="#外部的Fake" class="headerlink" title="外部的Fake"></a>外部的Fake</h3><p>另一种方法是使用新的类或者静态方法封装对<code>DateTimeImmutable</code>构造函数或命名构造函数的调用，这样我们可以根据特定的测试场景将这些方法的结果修改成不同的行为。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    &#x2F;&#x2F; ...
+    private $createdAt;
+    public function __construct($aContent, $title)
+    &#123;
+        &#x2F;&#x2F; ...
+        $this-&gt;createdAt(MyCustomDateTimeBuilder::today());
+    &#125;
+    &#x2F;&#x2F; ...
+    public function isNew()
+    &#123;
+        return
+        (MyCustomDateTimeBuilder::today())
+            -&gt;diff($this-&gt;createdAt)
+            -&gt;days &lt;&#x3D; self::NEW_TIME_INTERVAL_DAYS;
+    &#125;
+&#125;</code></pre>
+
+<p>对于获取今天的<code>DateTime</code>，我们现在可以静态调用<code>MyCustomeDateTimeBuilder::today()</code>，这个类也有一些setter方法来fake一些返回结果：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PostTest extends PHPUnit_Framework_TestCase
+&#123;
+    &#x2F;&#x2F; ...
+    &#x2F;** @test *&#x2F;
+    public function aPostIsNewIfIts15DaysOrLess()
+    &#123;
+        $createdAt &#x3D; DateTimeImmutable::createFromFormat(
+            &#39;Y-m-d&#39;,
+            &#39;2016-01-01&#39;
+        );
+        MyCustomDateTimeBuilder::setReturnDates(
+            [
+                $createdAt,
+                $createdAt-&gt;add(
+                    new DateInterval(&#39;P15D&#39;)
+                ),
+                $createdAt-&gt;add(
+                    new DateInterval(&#39;P16D&#39;)
+                )
+            ]
+        );
+        $aPost &#x3D; new Post(
+            &#39;A Post Content&#39; ,
+            &#39;A Post Title&#39;
+        );
+        $this-&gt;assertTrue(
+            $aPost-&gt;isNew()
+        );
+        $this-&gt;assertFalse(
+            $aPost-&gt;isNew()
+        );
+    &#125;
+&#125;</code></pre>
+<p>这方法的主要问题是它与对象静态耦合，要根据你的用例创建一个灵活的fake对象也挺棘手的。</p>
+<h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><p>你可以使用自定义日期和反射的方式来构建一个新的Post类。下面的例子使用了<code>Mimic</code>库，该库用于对象原型设计、数据水合(hydration)、和数据展示的功能库：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Domain;
+use mimic as m;
+class ComputerScientist &#123;
+    private $name;
+    private $surname;
+    public function __construct($name, $surname)
+    &#123;
+        $this-&gt;name &#x3D; $name;
+        $this-&gt;surname &#x3D; $surname;
+    &#125;
+    public function rocks()
+    &#123;
+        return $this-&gt;name . &#39; &#39; . $this-&gt;surname . &#39; rocks!&#39;;
+    &#125;
+&#125;
+assert(m\prototype(&#39;Domain\ComputerScientist&#39;)
+instanceof Domain\ComputerScientist);
+m\hydrate(&#39;Domain\ComputerScientist&#39;, [
+    &#39;name&#39; &#x3D;&gt;&#39;John&#39; ,
+    &#39;surname&#39;&#x3D;&gt;&#39;McCarthy&#39;
+])-&gt;rocks(); &#x2F;&#x2F;John McCarthy rocks!
+assert(m\expose(
+    new Domain\ComputerScientist(&#39;Grace&#39;, &#39;Hopper&#39;)) &#x3D;&#x3D;
+    [
+    &#39;name&#39; &#x3D;&gt; &#39;Grace&#39; ,
+    &#39;surname&#39; &#x3D;&gt; &#39;Hopper&#39;
+    ]
+)</code></pre>
+<p>如果你想要知道更多关于测试模式和方法，可以看一下Gerard Meszaros的《xUnit Test Patterns: Refactoring Test Code》一书。</p>
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><p><strong>在领域模型中，验证是一个非常重要的过程</strong>，它不仅检查属性的正确性，也检查整个对象以及这些对象组成的正确性。为了使得模型保持有效状态，需要不同级别的验证。仅仅因为对象的属性有效并不意味着该对象是有效的。</p>
+<h2 id="属性验证"><a href="#属性验证" class="headerlink" title="属性验证"></a>属性验证</h2><p>一些人理解验证是一个服务验证给定对象的状态的过程。在这种情况下，验证符合契约模式的做法，该做法由先决条件、后置条件和不变式组成。一种保护单个属性的方法是使用第3章讲到的值对象。为了使我们设计更加灵活的被修改，我们仅关注断言必须满足领域先决条件。在这里，我们将使用guard作为一种验证先决条件的简单方法：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Username
+&#123;
+    const MIN_LENGTH &#x3D; 5;
+    const MAX_LENGTH &#x3D; 10;
+    const FORMAT &#x3D; &#39;&#x2F;^[a-zA-Z0-9_]+$&#x2F;&#39;;
+    private $username;
+    public function __construct($username)
+    &#123;
+        $this-&gt;setUsername($username);
+    &#125;
+    private setUsername($username)
+    &#123;
+        $this-&gt;assertNotEmpty($username);
+        $this-&gt;assertNotTooShort($username);
+        $this-&gt;assertNotTooLong($username);
+        $this-&gt;assertValidFormat($username);
+        $this-&gt;username &#x3D; $username;
+    &#125;
+    private function assertNotEmpty($username)
+    &#123;
+        if (empty($username)) &#123;
+            throw new InvalidArgumentException(&#39;Empty username&#39;);
+        &#125;
+    &#125;
+    private function assertNotTooShort($username)
+    &#123;
+        if (strlen($username) &lt; self::MIN_LENGTH) &#123;
+            throw new InvalidArgumentException(sprintf(
+                &#39;Username must be %d characters or more&#39;,
+                self::MIN_LENGTH
+            ));
+        &#125;
+    &#125;
+    private function assertNotTooLong($username)
+    &#123;
+        if (strlen( $username) &gt; self::MAX_LENGTH) &#123;
+            throw new InvalidArgumentException(sprintf(
+                &#39;Username must be %d characters or less&#39;,
+                self::MAX_LENGTH
+            ));
+        &#125;
+    &#125;
+    private function assertValidFormat($username)
+    &#123;
+        if (preg_match(self:: FORMAT, $username) !&#x3D;&#x3D; 1) &#123;
+            throw new InvalidArgumentException(
+                &#39;Invalid username format&#39;
+            );
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>如上示例，为了构建一个Username值对象，这有四个先决条件必须被满足：</p>
+<ul>
+<li>必须不为空</li>
+<li>必须至少5个字符</li>
+<li>必须少于10个字符</li>
+<li>必须只能含字母、数字、下划线</li>
+</ul>
+<p>如果所有的先决条件满足，属性将被赋值并且对象将被成功创建。否则一个<code>InvalidArgumentException</code>将会被抛出，执行被挂起，客户端将会显示错误。</p>
+<p>一些开发者可能会考虑这种验证防御性编程（Defensive programming）。但是，我们不检查输入是否为字符串或者不允许为空，我们无法避免人们错误的使用我们的代码，但是我们能够控制领域状态的正确性。如第3章值对象中所示，验证可以帮助我们提高安全性。</p>
+<p>防御性编程不是坏事情，一般来说，当开发用于其他项目的第三方库或组件的时候，这是有意义的。但是，当开发你自己的限界上下文时，可以通过提高单元测试覆盖率来避免这些额外过度的检查（如检查基本类型、类型提示等），这会降低开发速度。</p>
+<h2 id="整体对象验证"><a href="#整体对象验证" class="headerlink" title="整体对象验证"></a>整体对象验证</h2><p>当一个对象由有效的属性组成时，作为整体来看，也可能是无效的。将这种验证添加到对象本身看上去挺不错，但通常这是一种反模式(anti-pattern)。更高级别的验证的变化速度与对象本身逻辑的变化速度不同，最好将这些职责分开来。</p>
+<p>验证会将发现的任何错误告诉客户端，或者收集结果以后供客户端获取查询，因为有时我们不希望在遇到错误时就终止执行代码逻辑。</p>
+<p>一个抽象且可重用的验证器像这个样子：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">abstract class Validator
+&#123;
+    private $validationHandler;
+    
+    public function __construct(ValidationHandler $validationHandler)
+    &#123;
+        $this-&gt;validationHandler &#x3D; $validationHandler;
+    &#125;
+    protected function handleError($error)
+    &#123;
+        $this-&gt;validationHandler-&gt;handleError($error);
+    &#125;
+    abstract public function validate();
+&#125;</code></pre>
+
+<p>作为一个具体的示例，我们想要验证整个<code>Location</code>对象，有效的国家、城市和邮政编码值对象的组成。但是，这些单个值可能处于无效状态，也许城市不属于该国，或者邮政编码不是该城市的。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Location
+&#123;
+    private $country;
+    private $city;
+    private $postcode;
+    public function __construct(
+        Country $country, City $city, Postcode $postcode
+    ) &#123;
+        $this-&gt;country &#x3D; $country;
+        $this-&gt;city &#x3D; $city;
+        $this-&gt;postcode &#x3D; $postcode;
+    &#125;
+    public function country()
+    &#123;
+        return $this-&gt;country;
+    &#125;
+    public function city()
+    &#123;
+        return $this-&gt;city;
+    &#125;
+    public function postcode()
+    &#123;
+        return $this-&gt;postcode;
+    &#125;
+&#125;</code></pre>
+<p>验证器在<code>Location</code>对象中检查其有状态，分析两个属性间的关系和意义：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class LocationValidator extends Validator
+&#123;
+    private $location;
+    public function __construct(
+        Location $location, ValidationHandler $validationHandler
+    ) &#123;
+        parent:: __construct($validationHandler);
+        $this-&gt;location &#x3D; $location;
+    &#125;
+    public function validate()
+    &#123;
+        if (!$this-&gt;location-&gt;country()-&gt;hasCity(
+            $this-&gt;location-&gt;city()
+        )) &#123;
+            $this-&gt;handleError(&#39;City not found&#39;);
+        &#125;
+        if (!$this-&gt;location-&gt;city()-&gt;isPostcodeValid(
+            $this-&gt;location-&gt;postcode()
+        )) &#123;
+            $this-&gt;handleError(&#39;Invalid postcode&#39;);
+        &#125;
+    &#125;
+&#125;</code></pre>
+<p>一旦所有的属性被设置好，我们就能够验证实体。在表面上看，Location对象似乎是在自我验证，但是并非如此。<code>Location</code>对象委托了验证给到一个具体的验证器实例，将这两个职责划清了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Location
+&#123;
+    &#x2F;&#x2F; ...
+    public function validate(ValidationHandler $validationHandler)
+    &#123;
+        $validator &#x3D; new LocationValidator($this, $validationHandler);
+        $validator-&gt;validate();
+    &#125;
+&#125;</code></pre>
+
+<h3 id="解耦验证消息"><a href="#解耦验证消息" class="headerlink" title="解耦验证消息"></a>解耦验证消息</h3><p>我们通过最少修改现有例子，来将验证消息与验证器解耦：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class LocationValidationHandler implements ValidationHandler
+&#123;
+    public function handleCityNotFoundInCountry();
+    public function handleInvalidPostcodeForCity();
+&#125;
+class LocationValidator
+&#123;
+    private $location;
+    private $validationHandler;
+    public function __construct(
+        Location $location,
+        LocationValidationHandler $validationHandler
+    ) &#123;
+        $this-&gt;location &#x3D; $location;
+        $this-&gt;validationHandler &#x3D; $validationHandler;
+    &#125;
+    public function validate()
+    &#123;
+        if (!$this-&gt;location-&gt;country()-&gt;hasCity(
+        $this-&gt;location-&gt;city()
+        )) &#123;
+            $this-&gt;validationHandler-&gt;handleCityNotFoundInCountry();
+        &#125;
+        if (! $this-&gt;location-&gt;city()-&gt;isPostcodeValid(
+            $this-&gt;location-&gt;postcode()
+        )) &#123;
+            $this-&gt;validationHandler-&gt;handleInvalidPostcodeForCity();
+        &#125;
+    &#125;
+&#125;</code></pre>
+<p>我们也需要修改验证方法的入参：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Location
+&#123;
+    &#x2F;&#x2F; ...
+    public function validate(
+        LocationValidationHandler $validationHandler
+    ) &#123;
+        $validator &#x3D; new LocationValidator($this, $validationHandler);
+        $validator-&gt;validate();
+    &#125;
+&#125;</code></pre>
+
+<h2 id="验证对象组合"><a href="#验证对象组合" class="headerlink" title="验证对象组合"></a>验证对象组合</h2><p>验证对象组合很复杂。要实现这样的目标首选的方法是使用领域服务（Domain Service）。然后该服务与仓储(Repository)进行通信来获取有效的聚合。由于可能会创建复杂的对象，因此聚合可能处于中间状态，因此需要实现验证其他聚合。我们可以使用领域事件来通知系统的其他部分，告知他们某个特性元素已经通过验证。</p>
+<h1 id="实体和领域事件"><a href="#实体和领域事件" class="headerlink" title="实体和领域事件"></a>实体和领域事件</h1><p>我们将在第6章探索领域事件。但是，这里重点是强调一下在实体上执行的操作可能会发起领域事件。这个方法用于将领域中的变化信息传递到应用的其他部分，甚至传递到其他应用，你会在第12章集成限界上下文中看到。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Post
+&#123;
+    &#x2F;&#x2F; ...
+    public function publish()
+    &#123;
+        $this-&gt;setStatus(
+        Status::published()
+    );
+        $this-&gt;publishedAt(new DateTimeImmutable());
+        DomainEventPublisher::instance()-&gt;publish(
+            new PostPublished($this-&gt;id)
+        );
+    &#125;
+    public function unpublish()
+    &#123;
+        $this-&gt;setStatus(
+            Status::draft()
+        );
+        $this-&gt; publishedAt &#x3D; null;
+        DomainEventPublisher::instance()-&gt;publish(
+            new PostUnpublished($this-&gt;id)
+        );
+    &#125;
+    &#x2F;&#x2F; ...
+&#125;</code></pre>
+<p>下面例子中，当我们的新实体被创建时，领域事件会被发起：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class User
+&#123;
+    &#x2F;&#x2F; ...
+    public function __construct(UserId $userId, $email, $password)
+    &#123;
+        $this-&gt;setUserId($userId);
+        $this-&gt;setEmail($email);
+        $this-&gt;setPassword($password);
+        DomainEventPublisher::instance()-&gt;publish(
+            new UserRegistered($this-&gt;userId)
+        );
+    &#125;
+&#125;</code></pre>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>领域中的某些概念需要身份，对其内部状态的修改不会修改其自身的唯一身份。我们已经了解了将身份建模为值对象所带来的好处，如不可变性、添加额外的逻辑行为等。我们还展示了提供几种身份的方法：</p>
+<ul>
+<li>持久机制：容易实现，但你在持久化对象之前是没有身份的，这会延迟事件的发起，并使得事件传播复杂化。</li>
+<li>代理身份：一些ORMORM要求你实体中要有一个额外的字段，来与持久化机制做映射。</li>
+<li>客户端提供：有时身份适合领域中的某个概念，则你可以将其在你的领域中建模。</li>
+<li>应用提供：你可以使用第三方库生成ID。</li>
+<li>限界上下文提供：最复杂的策略。其他限界上下文提供一个生成ID的接口。</li>
+</ul>
+<p>我们已经讨论了使用Doctrine作为持久机制。我们也看到了使用ActiveRecord模式的缺点，最后，我们也检查了不同层面的实体验证：</p>
+<ul>
+<li>属性验证：通过先决条件、后置条件、不变性检查对象内部的状态。</li>
+<li>整体的对象验证：寻找对象的一致性，将验证提取到外部服务是一个好习惯。</li>
+<li>对象的组合：复杂的对象组合能够通过领域服务验证，来与应用其他部分通信的一个好方法是通过领域事件。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-services/" rel="prev" title="[译]服务 - 《Domain-Driven Design in PHP》第5章">
+                  <i class="fa fa-angle-left"></i> [译]服务 - 《Domain-Driven Design in PHP》第5章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-aggregates/" rel="next" title="[译]聚合 - 《Domain-Driven Design in PHP》第8章">
+                  [译]聚合 - 《Domain-Driven Design in PHP》第8章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

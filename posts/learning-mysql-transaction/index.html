@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="mysql事务可能大多数人都有所了解，本篇博文主要记录我了解的事务的一些细节之处，也必然对事务能有进一步的理解。 看过《高性能mysql》一书，上面写道事务就是一组原子性的sql查询，或者说一个独立的工作单元。可能这句话并不是那么好理解，什么叫原子性？什么又是独立的工作单元？看几个例子和几个名词解释或许更加有帮助。 在事务中，如果数据库引擎能够成功地对数据库应用一组查询的全部语句，那么就执行这组查">
+<meta property="og:type" content="article">
+<meta property="og:title" content="了解mysql事务">
+<meta property="og:url" content="http://www.veitor.net/posts/learning-mysql-transaction/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="mysql事务可能大多数人都有所了解，本篇博文主要记录我了解的事务的一些细节之处，也必然对事务能有进一步的理解。 看过《高性能mysql》一书，上面写道事务就是一组原子性的sql查询，或者说一个独立的工作单元。可能这句话并不是那么好理解，什么叫原子性？什么又是独立的工作单元？看几个例子和几个名词解释或许更加有帮助。 在事务中，如果数据库引擎能够成功地对数据库应用一组查询的全部语句，那么就执行这组查">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-12-04T06:20:56.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.993Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="事务">
+<meta property="article:tag" content="ACID">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/learning-mysql-transaction/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/learning-mysql-transaction/","path":"posts/learning-mysql-transaction/","title":"了解mysql事务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>了解mysql事务 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#A%E3%80%81%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%88atomicity%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">A、原子性（atomicity）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C%E3%80%81%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%88consistency%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">C、一致性（consistency）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I%E3%80%81%E9%9A%94%E7%A6%BB%E6%80%A7%EF%BC%88isolation%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">I、隔离性（isolation）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D%E3%80%81%E6%8C%81%E4%B9%85%E6%80%A7%EF%BC%88durability%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">D、持久性（durability）</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/learning-mysql-transaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="了解mysql事务 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          了解mysql事务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-12-04 14:20:56" itemprop="dateCreated datePublished" datetime="2014-12-04T14:20:56+08:00">2014-12-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>mysql事务可能大多数人都有所了解，本篇博文主要记录我了解的事务的一些细节之处，也必然对事务能有进一步的理解。 看过《高性能mysql》一书，上面写道事务就是一组原子性的sql查询，或者说一个独立的工作单元。可能这句话并不是那么好理解，什么叫原子性？什么又是独立的工作单元？看几个例子和几个名词解释或许更加有帮助。</p>
+<p>在事务中，如果数据库引擎能够成功地对数据库应用一组查询的全部语句，那么就执行这组查询。如果其中有任何一条语句因为崩溃或其他原因无法执行，那么所有的语句都不会执行。也就是说，事务内的语句，要么全部执行成功，要么全部执行失败。 讲解事务最经典的例子还是银行转帐。</p>
+<span id="more"></span>
+
+<p>假设银行的数据库有两张表：支票表和储蓄表，现在要从用户A的支票账户转义200元到他的储蓄帐户，那么至少需要三个步骤</p>
+<pre class="line-numbers language-none"><code class="language-none">1、检查支票账户的余额高于200元。
+2、从支票账户余额中减去200元。 
+3、在储蓄帐户余额中增加200元。</code></pre>
+
+<p>上面三个步骤操作必须打包在一个事务中，其中任何一个步骤失败，则必须回滚所有步骤，即之前操作的几个步骤都失效。 一般可以用START TRANSACTION语句开始一个事务，然后要么使用COMMIT提交事务将修改的数据持久保留，要么使用ROLLBACK撤销所有的修改。上面三个步骤用语句可以这样表示：</p>
+<pre class="line-numbers language-none"><code class="language-none">1、START TRANSACTION; 
+2、SELECT balance FROM checking WHERE customer_id&#x3D;123123; 
+3、UPDATE checking SET balance &#x3D; balance -200 WHERE customer_id&#x3D;123123; 
+4、UPDATE savings SET balance &#x3D; &#x3D;balance + 200 WHERE customer_id&#x3D;123123; 
+5、COMMIT;</code></pre>
+
+<p>单纯的讲事务还是不够的。试想一下，如果执行到第四条语句时服务器崩溃了，会发生什么？用户可能会损失200元。再假如，在执行到第三条语句和第四条语句之间时，另一个进程要删除支票账户的所有余额，那么结果可能就是银行在不知情的状况下白了用户200元。 由此看来空谈事务还是不够的，需要通过严格的ACID测试，一个运作良好的事务系统必须具备四个特性，即ACID。这是本篇博文重点要记的，也是我所说的需要记忆的细节之处。下面就介绍一下ACID：</p>
+<h3 id="A、原子性（atomicity）"><a href="#A、原子性（atomicity）" class="headerlink" title="A、原子性（atomicity）"></a>A、原子性（atomicity）</h3><p>一个事务必须被视为一个不可分割的最小工作单位，整个事务中的所有操作要么全部提交成功，要么全部失败回滚，对于一个事务来说，不可能只执行其中的一部分操作。这也就解开了本篇博文开头的疑问。</p>
+<h3 id="C、一致性（consistency）"><a href="#C、一致性（consistency）" class="headerlink" title="C、一致性（consistency）"></a>C、一致性（consistency）</h3><p>数据库总是从一个一致性的状态转换到另一个一致性的状态。在前面的例子中，即使在执行第三、四条语句之间时系统崩溃，支票账户中也不会损失200元，储蓄帐户也不会多出200元。因为事务最终没有提交，如果所有语句都顺利执行完成，并且事务也提交成功，那么就转换到了另一个一致性。尤其是在进行多表update的时候，根据业务的操作，在更新前是一个一致性状态，更新成功后又是另一个一致性状态（因为更新后的数据结果就是预期的结果）。</p>
+<h3 id="I、隔离性（isolation）"><a href="#I、隔离性（isolation）" class="headerlink" title="I、隔离性（isolation）"></a>I、隔离性（isolation）</h3><p>通常来说，一个事务所做的修改在最终提交以前，对其他事务是不可见的，在前面的例子中，当执行完第三条语句，第四条语句还未开始时，此时有另外一个帐户汇总程序开始运行，则其看到的支票账户的额并没有减去200元。在下一篇博文中将理解讨论隔离级别（isolation level），那时你会发现为什么要说“同样来说”是不可见的。当然，关于隔离级别见这篇文章《<a href="http://www.veitor.net/article/319.html" title="Mysql事务以及隔离级别">Mysql事务以及隔离级别</a>》。</p>
+<h3 id="D、持久性（durability）"><a href="#D、持久性（durability）" class="headerlink" title="D、持久性（durability）"></a>D、持久性（durability）</h3><p>一旦事务提交，则其所做的修改就会永久保存到数据库中。此时系统崩溃也不会影响到已经修改的数据了。话说持久性是个模糊的概念，因为实际上持久性也分很多不同的级别。有些持久性策略能够提供非常强的安全保障，而有些未必。而且不可能有能做到100%的持久性保证的策略（<strong>如果数据库本身就能做到真正的持久性，那么还需要备份来增加持久性做什么呢？</strong>）. </p>
+<p>虽然事务的ACID特性可以增加事务处理过程中额外的安全性，但如同锁粒度的升级会增加系统开销一样（详见上一篇博文《<a href="http://www.veitor.net/article/427.html" title="了解mysql的并发控制">了解mysql的并发控制</a>》），这也会需要数据库系统做更多的工作。因此一个实现了ACID的数据库，相比没有实现ACID的数据库，通常会需要更强的CPU处理能力、更大的内存和更多的磁盘空间。当然用户可以根据业务是否需要事务处理，来选择合适的存储引擎。对于一些非事务性的存储引擎，可以获得更高的性能。 本篇重点理解ACID的概念，如有疑问，欢迎留言探讨。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+              <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+              <a href="/tags/ACID/" rel="tag"># ACID</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/understanding-concurrency-control-in-mysql/" rel="prev" title="了解mysql的并发控制">
+                  <i class="fa fa-angle-left"></i> 了解mysql的并发控制
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/understanding-multiversion-concurrency-control-in-mysql/" rel="next" title="了解mysql中多版本并发控制">
+                  了解mysql中多版本并发控制 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

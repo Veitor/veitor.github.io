@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Soft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]服务 - 《Domain-Driven Design in PHP》第5章">
+<meta property="og:url" content="http://www.veitor.net/posts/DDD-in-php-services/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Soft">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-25T01:58:39.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.991Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-services/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/DDD-in-php-services/","path":"posts/DDD-in-php-services/","title":"[译]服务 - 《Domain-Driven Design in PHP》第5章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译]服务 - 《Domain-Driven Design in PHP》第5章 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">应用服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%86%E5%9F%9F%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">领域服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%86%E5%9F%9F%E6%9C%8D%E5%8A%A1%E5%92%8C%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">领域服务和基础设施服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E9%87%8D%E7%94%A8%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">代码重用问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%A2%86%E5%9F%9F%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">测试领域服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%AB%E8%A1%80%E6%A8%A1%E5%9E%8B-Vs-%E5%85%85%E8%A1%80%E6%A8%A1%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">贫血模型 Vs. 充血模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AB%E8%A1%80%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B%E7%A0%B4%E5%9D%8F%E4%BA%86%E5%B0%81%E8%A3%85%E6%80%A7"><span class="nav-number">5.1.</span> <span class="nav-text">贫血领域模型破坏了封装性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AB%E8%A1%80%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B%E7%BB%99%E4%BB%A3%E7%A0%81%E9%87%8D%E7%94%A8%E5%B8%A6%E6%9D%A5%E4%BA%86%E9%94%99%E8%A7%89"><span class="nav-number">5.2.</span> <span class="nav-text">贫血领域模型给代码重用带来了错觉</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8E%BB%E9%81%BF%E5%85%8D%E8%B4%AB%E8%A1%80%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B"><span class="nav-number">5.3.</span> <span class="nav-text">如何去避免贫血领域模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-services/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译]服务 - 《Domain-Driven Design in PHP》第5章 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]服务 - 《Domain-Driven Design in PHP》第5章
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-25 09:58:39" itemprop="dateCreated datePublished" datetime="2020-05-25T09:58:39+08:00">2020-05-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>你已经了解了实体和值对象了。作为基本构建块，他们应该包含了任何应用的大部分业务逻辑。但是，在一些场景中值对象和实体并不是一个最好的解决方案。让我们看一下Eric Evans在他的《Domain-Driven Design: Tackling Complexity in the Heart of Software:》书中说的话：</p>
+<blockquote>
+<p>当领域中的一个重要过程或转化不是实体或者值对象的自然职责时，增加一个操作作为一个单独的接口，此时该接口被声明为Service领域服务。根据模型的通用语言定义接口，并确保名称是通用语言中的一部分，是服务成为无状态。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>因此，当有一些操作，并且实体和值对象不是最佳的选择时，你应该考虑将这些操作建模为<code>服务</code>。在领域驱动设计中，通常会遇到三种不同类型的服务：</p>
+<ul>
+<li><p>应用服务（Application Services）：对标量类型进行操作，并将该类型数据转换为领域类型。一个标量类型对于领域模型来说是个任意未知的类型。这包含了原始类型和不属于领域的类型。我们也会在本章中提供简单概述，但如果要深入了解请查看第11章内容Application。</p>
+</li>
+<li><p>领域服务（Domain Service）：只对属于领域的类型进行操作。它们包含了通用语言中的有意义的概念。它们持有不适合在值对象和实体中出现的操作。</p>
+</li>
+<li><p>基础设施服务（Infrastructure Service）：满足基础架构问题的操作。例如发送邮件、记录日志数据等。就六边形架构而言，它们位于领域层之外。</p>
+</li>
+</ul>
+<h1 id="应用服务"><a href="#应用服务" class="headerlink" title="应用服务"></a>应用服务</h1><p>应用服务是位于外部世界和领域逻辑的中间者。其目的是将外部世界的命令转换为有意义的领域中的指令。</p>
+<p>让我们思考一下<code>用户在我们平台中注册</code>的用例。由外部到内部来看：从分发机制（delivery mechanism）开始，我们需要为领域操作编写输入请求。使用Symfony之类的框架作为分发机制，代码如下：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpController extends Controller
+&#123;
+    public function signUpAction(Request $request)
+    &#123;
+        $signUpService &#x3D; new SignUpUserService(
+            $this-&gt;get(&#39;user_repository&#39;)
+        );
+        try &#123;
+            $response &#x3D; $signUpService-&gt;execute(new SignUpUserRequest(
+                $request-&gt;request-&gt;get(&#39;email&#39;),
+                $request-&gt;request-&gt;get(&#39;password&#39;)
+            ));
+        &#125; catch (UserAlreadyExistsException $e) &#123;
+            return $this-&gt;render(&#39;error.html.twig&#39;, $response);
+        &#125;
+        return $this-&gt;render(&#39;success.html.twig&#39;, $response);
+    &#125;
+&#125;</code></pre>
+
+<p>如你所见，我们创建了应用服务的一个新实例，传入所有依赖的信息，在这个用例中，是一个<code>UserRepository</code>。<code>UserRepository</code>是一个可以使用任何技术（如Mysql、redis、Elasticsearch等）实现的interface。然后，我们为应用服务创建一个请求对象，为了从业务逻辑中抽象出分发机制。在这例子中，是一个web请求。最后，我们执行应用服务，获取响应，并使用响应来渲染结果。在领域方面，让我们看一下应用服务可能的实现，该实现协调了满足用户注册用例的逻辑：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpUserService
+&#123;
+    private $userRepository;
+    public function __construct(UserRepository $userRepository)
+    &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+    &#125;
+    public function execute(SignUpUserRequest $request)
+    &#123;
+        $user &#x3D; $this-&gt;userRepository-&gt;userOfEmail($request-&gt;email);
+        if ($user) &#123;
+            throw new UserAlreadyExistsException();
+        &#125;
+        $user &#x3D; new User(
+            $this-&gt;userRepository-&gt;nextIdentity(),
+            $request-&gt;email,
+            $request-&gt;password
+        );
+        $this-&gt;userRepository-&gt;add($user);
+        return new SignUpUserResponse($user);
+    &#125;
+&#125;</code></pre>
+<p>代码中的所有东西都是与我们想要解决的领域问题相关，而不是与我们想要解决问题时使用的特定技术有关。利用这一点，我们可以将高级策略和低级实现细节分开。承载分发机制与领域之间联系信息的数据结构被称之为<code>DTO</code>，我们在第2章架构风格中介绍过：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpUserRequest
+&#123;
+    public $email;
+    public $password;
+    public function __construct($email, $password)
+    &#123;
+        $this-&gt;email &#x3D; $email;
+        $this-&gt;password &#x3D; $password;
+    &#125;
+&#125;</code></pre>
+
+<p>对于返回的内容有许多的不同策略。但是现在，我们不应该return我们的实体，以至于不让它们在应用服务的外部被修改。这就是为啥通常都返回另一个DTO，而不是整个实体。看一下简单示例：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpUserResponse
+&#123;
+    public $id;
+    public $email;
+    public function __construct(User $user)
+    &#123;
+        $this-&gt;id &#x3D; $user-&gt;id();
+        $this-&gt;email &#x3D; $user-&gt;email();
+    &#125;
+&#125;</code></pre>
+<p>对于创建你的响应，你可以使用getter方法或者直接公开对象实例的属性。应用服务应该注意事务范围和安全性。但是你将在第11章“应用程序”中深入了解与应用服务有关的更多内容。</p>
+<h1 id="领域服务"><a href="#领域服务" class="headerlink" title="领域服务"></a>领域服务</h1><p>在与领域专家的整个对话中，你会遇到通用语言中的概念。这些概念不能被巧妙的表示为实体或值对象，例如：</p>
+<ul>
+<li>用户可以自己登录系统</li>
+<li>一个购物车能够自己成为一个订单</li>
+</ul>
+<p>这是两个具体概念，它们都不能自然的以实体或者值对象的形式来表示。为了进一步强调这一点，我们尝试这样建模：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class User
+&#123;
+    public function signUp($aUsername, $aPassword)
+    &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+&#125;
+
+class Cart
+&#123;
+    public function createOrder()
+    &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+&#125;</code></pre>
+<p>第一个用例的实现，我们不知道给定的用户名和密码与被调用的user实例是否有关。显然，此操作不适合这个实体；相反，应将其提取到一个单独的类中，使其意图明确。</p>
+<p>有了这一点，我们可以创建一个完全负责验证用户身份的领域服务：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUp
+&#123;
+    public function execute($aUsername, $aPassword)
+    &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+&#125;</code></pre>
+
+<p>同样，第二个例子我们可以一个领域服务专门用于从提供的购物车中创建订单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class CreateOrderFromCart
+&#123;
+    public function execute(Cart $aCart)
+    &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+&#125;</code></pre>
+
+<p>领域服务被定义为一个操作，这些操作不适合在实体或值对象中表示。作为领域中操作的概念，由客户端使用领域服务，而不用管其之前的历史记录，因为领域本身不拥有任何状态，所以领域服务是无状态的。</p>
+<h1 id="领域服务和基础设施服务"><a href="#领域服务和基础设施服务" class="headerlink" title="领域服务和基础设施服务"></a>领域服务和基础设施服务</h1><p>在对领域服务建模时，通常会遇到基础设施依赖的问题。例如，在需要处理哈希密码的情况下，你可以使用<a target="_blank" rel="noopener" href="https://martinfowler.com/eaaCatalog/separatedInterface.html">Separated Interface</a>，这允许接口定义多种哈希机制。使用此模式仍然可以为你提供领域和基础设施之间关注点的分离：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Auth\Domain\Model;
+interface SignUp
+&#123;
+    public function execute($aUsername, $aPassword);
+&#125;</code></pre>
+
+<p>使用上面领域中定义的接口，我们可以在Infrastructure层中创建一个实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Auth\Infrastructure\Authentication;
+class DefaultHashingSignUp implements Ddd\Auth\Domain\Model\SignUp
+&#123;
+    private $userRepository;
+    
+    public function __construct(UserRepository $userRepository)
+    &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+    &#125;
+    public function execute($aUsername, $aPassword)
+    &#123;
+        if (!$this-&gt;userRepository-&gt;has($aUsername)) &#123;
+            throw UserDoesNotExistException::fromUsername($aUsername);
+        &#125;
+        $aUser &#x3D; $this-&gt;userRepository-&gt;byUsername($aUsername);
+        if (!$this-&gt;isPasswordValidForUser($aUser, $aPassword)) &#123;
+            throw new BadCredentialsException($aUser, $aPassword);
+        &#125;
+        return $aUser;
+    &#125;
+    private function isPasswordValidForUser(
+        User $aUser, $anUnencryptedPassword
+    ) &#123;
+        return password_verify($anUnencryptedPassword,$aUser-&gt;hash());
+    &#125;
+&#125;</code></pre>
+
+<p>这是我们另一个基于MD5算法的实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Auth\Infrastructure\Authentication;
+use Ddd\Auth\Domain\Model\SignUp
+class Md5HashingSignUp implements SignUp
+&#123;
+    const SALT &#x3D; &#39;S0m3S4lT&#39; ;
+    private $userRepository;
+    public function __construct(UserRepository $userRepository)
+    &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+    &#125;
+    public function execute($aUsername, $aPassword)
+    &#123;
+        if (!$this-&gt;userRepository-&gt;has($aUsername)) &#123;
+            throw new InvalidArgumentException(
+            sprintf(&#39;The user &quot;%s&quot; does not exist.&#39;, $aUsername)
+            );
+        &#125;
+        $aUser &#x3D; $this-&gt;userRepository-&gt;byUsername($aUsername);
+        if ($this-&gt;isPasswordInvalidFor($aUser, $aPassword)) &#123;
+            throw new BadCredentialsException($aUser, $aPassword);
+        &#125;
+        return $aUser;
+    &#125;
+    private function salt()
+    &#123;
+        return md5(self::SALT);
+    &#125;
+    private function isPasswordInvalidFor(
+        User $aUser, $anUnencryptedPassword
+    ) &#123;
+        $encryptedPassword &#x3D; md5(
+            $anUnencryptedPassword . &#39;_&#39; .$this-&gt;salt()
+        );
+        return $aUser-&gt;hash() !&#x3D;&#x3D; $encryptedPassword;
+    &#125;
+&#125;</code></pre>
+<p>这样我们可以在Infrastructure层允许对领域服务的interface有多种实现。每个基础设施服务将会负责处理一种不同的哈希机制。根据实现，其用法可以通过ID容器轻松管理，例如Symfony的依赖注入组件（译者注：这里建议大家可以先去了解一下<code>依赖注入</code>相关的概念）：</p>
+<pre class="line-numbers language-markup" data-language="markup"><code class="language-markup">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;
+&lt;container
+xmlns&#x3D;&quot;http:&#x2F;&#x2F;symfony.com&#x2F;schema&#x2F;dic&#x2F;services&quot;
+xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;
+xsi:schemaLocation&#x3D;&quot;
+http:&#x2F;&#x2F;symfony.com&#x2F;schema&#x2F;dic&#x2F;services
+http:&#x2F;&#x2F;symfony.com&#x2F;schema&#x2F;dic&#x2F;services&#x2F;services-1.0.xsd&quot;&gt;
+    &lt;services&gt;
+        &lt;service id&#x3D;&quot;sign_in&quot; alias&#x3D;&quot;sign_in.default&quot; &#x2F;&gt;
+        &lt;service id&#x3D;&quot;sign_in.default&quot;
+        class&#x3D;&quot;Ddd\Auth\Infrastructure\Authentication
+        \DefaultHashingSignUp&quot;&gt;
+            &lt;argument type&#x3D;&quot;service&quot; id&#x3D;&quot;user_repository&quot;&#x2F;&gt;
+        &lt;&#x2F;service&gt;
+        &lt;service id&#x3D;&quot;sign_in.md5&quot;
+        class&#x3D;&quot;Ddd\Auth\Infrastructure\Authentication
+        \Md5HashingSignUp&quot;&gt;
+            &lt;argument type&#x3D;&quot;service&quot; id&#x3D;&quot;user_repository&quot;&#x2F;&gt;
+        &lt;&#x2F;service&gt;
+    &lt;&#x2F;services&gt;
+&lt;&#x2F;container&gt;</code></pre>
+
+<p>如果未来我们希望处理新的哈希机制，我们可以简单的去实现领域服务接口。然后在依赖注入容器中声明领域服务，然后用新创建的服务别名替换之前用的服务别名。</p>
+<h2 id="代码重用问题"><a href="#代码重用问题" class="headerlink" title="代码重用问题"></a>代码重用问题</h2><p>尽管之前描述的实现明确定义了关注点分离，但每次我们希望实现新的哈希机制时，都需要重复密码验证算法。解决此问题的另一种方法是分离这两个职责，从而提高代码的复用性。相反，我们可以对已有的哈希算法使用策略模式，将密码哈希逻辑提取到专门的类里：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Auth\Domain\Model;
+class SignUp
+&#123;
+    private $userRepository;
+    private $passwordHashing;
+    public function __construct(
+        UserRepository $userRepository, PasswordHashing $passwordHashing
+    ) &#123;
+        $this-&gt;userRepository &#x3D; $userRepository;
+        $this-&gt;passwordHashing &#x3D; $passwordHashing;
+    &#125;
+    public function execute($aUsername, $aPassword)
+    &#123;
+        if (!$this-&gt;userRepository-&gt;has($aUsername)) &#123;
+            throw new InvalidArgumentException(
+                sprintf(&#39;The user &quot;%s&quot; does not exist.&#39;, $aUsername)
+            );
+        &#125;
+        $aUser &#x3D; $this-&gt;userRepository-&gt;byUsername($aUsername);
+        if ($this-&gt;isPasswordInvalidFor($aUser, $aPassword)) &#123;
+            throw new BadCredentialsException($aUser, $aPassword);
+        &#125;
+        return $aUser;
+    &#125;
+    private function isPasswordInvalidFor(User $aUser, $plainPassword)
+    &#123;
+        return !$this-&gt;passwordHashing-&gt;verify(
+            $plainPassword,
+            $aUser-&gt;hash()
+        );
+    &#125;
+&#125;
+interface PasswordHashing
+&#123;
+    &#x2F;**
+    * @param string $password
+    * @param string $hash
+    * @return boolean
+    *&#x2F;
+    public function verify($plainPassword, hash);
+&#125;</code></pre>
+<p>定义不同的哈希策略如同实现<code>PasswordHashing</code>接口一样简单：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">namespace Ddd\Auth\Infrastructure\Authentication;
+class BasicPasswordHashing
+implements \Ddd\Auth\Domain\Model\PasswordHashing
+&#123;
+    public function verify($plainPassword, $hash)
+    &#123;
+        return password_verify($plainPassword, $hash);
+    &#125;
+&#125;
+class Md5PasswordHashing
+implements Ddd\Auth\Domain\Model\PasswordHashing
+&#123;
+    const SALT &#x3D; &#39;S0m3S4lT&#39; ;
+    public function verify($plainPassword, $hash)
+    &#123;
+        return $hash &#x3D;&#x3D;&#x3D; $this-&gt; calculateHash($plainPassword);
+    &#125;
+    private function calculateHash($plainPassword)
+    &#123;
+        return md5($plainPassword . &#39;_&#39; .$this-&gt; salt());
+    &#125;
+    private function salt()
+    &#123;
+        return md5(self::SALT);
+    &#125;
+&#125;</code></pre>
+
+<h1 id="测试领域服务"><a href="#测试领域服务" class="headerlink" title="测试领域服务"></a>测试领域服务</h1><p>前面的多个领域服务用户认证示例，能够轻松被测试。但是，通常测试<code>Template Method</code>实现有些棘手，我们使用原生密码哈希实现来进行测试：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class PlainPasswordHashing implements PasswordHashing
+&#123;
+    public function verify($plainPassword, $hash)
+    &#123;
+        return $plainPassword &#x3D;&#x3D;&#x3D; $hash;
+    &#125;
+&#125;</code></pre>
+
+<p>现在我们可以在领域服务中测试所有的用例了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class SignUpTest extends PHPUnit_Framework_TestCase
+&#123;
+    private $signUp;
+    private $userRepository;
+    protected function setUp()
+    &#123;
+        $this-&gt;userRepository &#x3D; new InMemoryUserRepository();
+        $this-&gt;signUp &#x3D; new SignUp(
+            $this-&gt;userRepository,
+            new PlainPasswordHashing()
+        );
+    &#125;
+    &#x2F;**
+    * @test
+    * @expectedException InvalidArgumentException
+    *&#x2F;
+    public function itShouldComplainIfTheUserDoesNotExist()
+    &#123;
+        $this-&gt;signUp-&gt;execute(&#39;test-username&#39;, &#39;test-password&#39;);
+    &#125;
+    &#x2F;**
+    * @test
+    * @expectedException BadCredentialsException
+    *&#x2F;
+    public function itShouldTellIfThePasswordDoesNotMatch()
+    &#123;
+        $this-&gt;userRepository-&gt;add(
+        new User(
+            &#39;test-username&#39;,
+            &#39;test-password&#39;
+        )
+    );
+    $this-&gt;signUp-&gt;execute(&#39;test-username&#39;, &#39;no-matching-password&#39;)
+    &#125;
+    &#x2F;**
+    * @test
+    *&#x2F;
+    public function itShouldTellIfTheUserMatchesProvidedPassword()
+    &#123;
+        $this-&gt;userRepository-&gt;add(
+            new User(
+                &#39;test-username&#39;,
+                &#39;test-password&#39;
+            )
+        );
+        $this-&gt;assertInstanceOf(
+            &#39;Ddd\Domain\Model\User\User&#39;,
+            $this-&gt;signUp-&gt;execute(&#39;test-username&#39;, &#39;test-password&#39;)
+        );
+    &#125;
+&#125;</code></pre>
+
+<h1 id="贫血模型-Vs-充血模型"><a href="#贫血模型-Vs-充血模型" class="headerlink" title="贫血模型 Vs. 充血模型"></a>贫血模型 Vs. 充血模型</h1><p>你必须要注意不要在你的系统中过度使用领域服务。这么做会导致实体与值对象被剥离出所有行为而成了纯粹的数据容器。这与面向对象编程的目标是相反的，该目标可以被认为是将数据和行为组合到成为对象的语义化单元中，目的是表达现实世界中的概念和问题。领域服务的过度使用会被认为是反模式，称为贫血领域模型。</p>
+<p>通常，在开始一个新项目或功能时，很容易陷入对数据建模的陷阱。通常这包括认为数据表与展现形式是直接一对一的关系。但是，这种想法并非始终都是正确的。</p>
+<p>假设我们的任务是为订单处理系统建模，如果我们先对数据进行建模，我们可能会得到一个如下的SQL语句：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">CREATE TABLE &#96;orders&#96; (
+    &#96;ID&#96; INTEGER NOT NULL AUTO_INCREMENT,
+    &#96;CUSTOMER_ID&#96; INTEGER NOT NULL,
+    &#96;AMOUNT&#96; DECIMAL(17, 2) NOT NULL DEFAULT &#39;0.00&#39;,
+    &#96;STATUS&#96; TINYINT NOT NULL DEFAULT 0,
+    &#96;CREATED_AT&#96; DATETIME NOT NULL,
+    &#96;UPDATED_AT&#96; DATETIME NOT NULL,
+    PRIMARY KEY (&#96;ID&#96;)
+) ENGINE&#x3D;INNODB DEFAULT CHARSET&#x3D;utf8mb4 COLLATE&#x3D;utf8mb4_unicode_ci;</code></pre>
+
+<p>基于此，创建Order类展现形式相对容易，此表现形式包括必要的访问方法，可以被用于从底层订单数据表中获取或设置数据。</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Order
+&#123;
+    const STATUS_CREATED &#x3D; 10;
+    const STATUS_ACCEPTED &#x3D; 20;
+    const STATUS_PAID &#x3D; 30;
+    const STATUS_PROCESSED &#x3D; 40;
+    
+    private $id;
+    private $customerId;
+    private $amount;
+    private $status;
+    private $createdAt;
+    private $updatedAt;
+    
+    public function __construct(
+        $customerId,
+        $amount,
+        $status,
+        DateTimeInterface $createdAt,
+        DateTimeInterface $updatedAt
+    ) &#123;
+        $this-&gt;customerId &#x3D; $customerId;
+        $this-&gt;amount &#x3D; $amount;
+        $this-&gt;status &#x3D; $status;
+        $this-&gt;createdAt &#x3D; $createdAt;
+        $this-&gt;updatedAt &#x3D; $updatedAt;
+    &#125;
+    public function setId($id)
+    &#123;
+        $this-&gt;id &#x3D; $id;
+    &#125;
+    public function getId()
+    &#123;
+        return $this-&gt;id;
+    &#125;
+    public function setCustomerId($customerId)
+    &#123;
+        $this-&gt;customerId &#x3D; $customerId;
+    &#125;
+    public function getCustomerId()
+    &#123;
+        return $this-&gt;customerId;
+    &#125;
+    public function setAmount($amount)
+    &#123;
+        $this-&gt;amount &#x3D; $amount;
+    &#125;
+    public function getAmount()
+    &#123;
+        return $this-&gt;amount;
+    &#125;
+    public function setStatus($status)
+    &#123;
+        $this-&gt;status &#x3D; $status;
+    &#125;
+    public function getStatus()
+    &#123;
+        return $this-&gt;status;
+    &#125;
+    public function setCreatedAt(DateTimeInterface $createdAt)
+    &#123;
+        $this-&gt;createdAt &#x3D; $createdAt;
+    &#125;
+    public function getCreatedAt()
+    &#123;
+        return $this-&gt;createdAt;
+    &#125;
+    public function setUpdatedAt(DateTimeInterface $updatedAt)
+    &#123;
+        $this-&gt;updatedAt &#x3D; $updatedAt;
+    &#125;
+    public function getUpdatedAt()
+    &#123;
+        return $this-&gt;updatedAt;
+    &#125;
+&#125;</code></pre>
+
+<p>这个示例用例将可能是这样来更新订单状态的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">&#x2F;&#x2F; Fetch an order from the database
+$anOrder &#x3D; $orderRepository-&gt;find( 1 );
+&#x2F;&#x2F; Update order status
+$anOrder-&gt;setStatus(Order::STATUS_ACCEPTED);
+&#x2F;&#x2F; Update updatedAt field
+$anOrder-&gt;setUpdatedAt(new DateTimeImmutable());
+&#x2F;&#x2F; Save the order to the database
+$orderRepository-&gt;save($anOrder);</code></pre>
+<p>关于代码重用，这个代码有着类似与初始用户身份认证方案的问题。为了解决这问题，建议使用服务层，从而使得操作明确且可重用。现在可以将之前的实现封装到单独的类中：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class ChangeOrderStatusService
+&#123;
+    private $orderRepository;
+    
+    public function __construct(OrderRepository $orderRepository)
+    &#123;
+        $this-&gt;orderRepository &#x3D; $orderRepository;
+    &#125;
+    public function execute($anOrderId, $anOrderStatus)
+    &#123;
+        &#x2F;&#x2F; Fetch an order from the database
+        $anOrder &#x3D; $this-&gt;orderRepository-&gt;find($anOrderId);
+        &#x2F;&#x2F; Update order status
+        $anOrder-&gt;setStatus($anOrderStatus);
+        &#x2F;&#x2F; Update updatedAt field
+        $anOrder-&gt;setUpdatedAt(new DateTimeImmutable());
+        &#x2F;&#x2F; Save the order to the database
+        $this-&gt;orderRepository-&gt;save($anOrder);
+    &#125;
+&#125;</code></pre>
+
+<p>或者是像这样更新订单数量：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class UpdateOrderAmountService
+&#123;
+    private $orderRepository;
+    
+    public function __construct(OrderRepository $orderRepository)
+    &#123;
+        $this-&gt;orderRepository &#x3D; $orderRepository;
+    &#125;
+    public function execute( $orderId, $amount)
+    &#123;
+        $anOrder &#x3D; $this-&gt;orderRepository-&gt;find(1);
+        $anOrder-&gt;setAmount($amount);
+        $anOrder-&gt;setUpdatedAt(new DateTimeImmutable());
+        $this-&gt;orderRepository-&gt;save($anOrder);
+    &#125;
+&#125;</code></pre>
+
+<p>客户端代码将大大减少：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$updateOrderAmountService &#x3D; new UpdateOrderAmountService(
+    $orderRepository
+);
+$updateOrderAmountService-&gt;execute(1, 20.5);</code></pre>
+<p>实现此方法可以让代码很大程度上可以重用。那些希望更新订单数量的人只需要获取<code>UpdateOrderAmountService</code>的实例并使用适当的参数调用execute方法即可。</p>
+<p>但是，选择此方式会破坏面向对象设计原则，并且在没有任何优势的情况下会产生构建领域模型的成本。</p>
+<h2 id="贫血领域模型破坏了封装性"><a href="#贫血领域模型破坏了封装性" class="headerlink" title="贫血领域模型破坏了封装性"></a>贫血领域模型破坏了封装性</h2><p>如果我们重新使用用于在Service层中定义服务的代码，我们可以看到，作为Order实体的客户端，我们需要了解其内部展现形式的每个细节。这一发现违反了面向对象编程的基本原则，即数据与后续行为结合在一起。</p>
+<h2 id="贫血领域模型给代码重用带来了错觉"><a href="#贫血领域模型给代码重用带来了错觉" class="headerlink" title="贫血领域模型给代码重用带来了错觉"></a>贫血领域模型给代码重用带来了错觉</h2><p>假设有一个实例，其中客户端绕过了<code>UpdateOrderAmountService</code>，而是直接获取该实例，更新后并直接持久化保存到了<code>OrderRepository</code>。然后将不会执行<code>UpdateOrderAmountService</code>中可能已经执行的所有其他业务逻辑。这可能导致订单以不一致的状态存储。要想不变性得到保障，最佳的方法是让真正的领域模型来处理它。在此示例中，Order实体是确保这一点的最佳位置：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Order
+&#123;
+    &#x2F;&#x2F; ...
+    public function changeAmount($amount)
+    &#123;
+        $this-&gt;amount &#x3D; $amount;
+        $this-&gt;setUpdatedAt(new DateTimeImmutable());
+    &#125;
+&#125;</code></pre>
+<p>注意将该方法放入实体并使用通用语言来对该方法进行命名，系统实现很好的代码重用。现在希望更改订单金额的任何人都可以直接调用<code>Order::changeAmount</code>方法。</p>
+<p>这使得类变得很丰富，对于代码的重用来说，类中具有行为就是我们的目标。这通常被称之为充血领域模型。</p>
+<h2 id="如何去避免贫血领域模型"><a href="#如何去避免贫血领域模型" class="headerlink" title="如何去避免贫血领域模型"></a>如何去避免贫血领域模型</h2><p>避免陷入贫血领域模型的方式是，当开始新项目或功能时，先考虑行为。数据库、ORM等都只是实现的细节，我们应尽可能的在开发过程的最后阶段再做出使用这些工具的决定，通过这样，我们可以专注于一个重要的真实属性：行为。</p>
+<p>与实体一样，领域服务也可以触发领域事件（第6章的内容）。但是，当事件由领域服务触发而非实体触发时，它再次表明你可能正在创建一个贫血领域模型。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>如我们所见，服务代表了我们系统内的操作，并且我们可以区分它们的三个版本：</p>
+<ul>
+<li>应用服务：帮助将外边真实世界的请求协调到领域中。这些服务不应该包含领域逻辑。事务在应用层级进行处理。将你的服务放入事务修饰器中将会让你的代码对事务无感知。</li>
+<li>领域服务：仅使用领域概念进行操作。记住要尽量晚点再考虑实现细节，先考虑行为，因为领域服务的滥用将导致贫血领域模型和不良的面向对象设计。</li>
+<li>基础设施服务：在基础设施层进行操作，做一些如发送邮件或记录日志的事情。</li>
+</ul>
+<p>我们最重要的建议是，在你决定创建领域服务之前，应该考虑所有的做法。首先尝试将业务逻辑移到实体或值对象内，和同事一次又一次的检查，如果在此之后，如果认为创建领域服务是最佳选择时再去这么做。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-value-objects/" rel="prev" title="[译]值对象 - 《Domain-Driven Design in PHP》第3章">
+                  <i class="fa fa-angle-left"></i> [译]值对象 - 《Domain-Driven Design in PHP》第3章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-entities/" rel="next" title="[译]实体 - 《Domain-Driven Design in PHP》第4章">
+                  [译]实体 - 《Domain-Driven Design in PHP》第4章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="引言数据库表结构的设计会随着与之交互的软件变化而不可避免地演进。能够安全、可靠地将表结构过渡到新需求至关重要。 虽然数据库迁移工具通常可以更新实际的数据结构，但数据本身也必须转换到新格式、迁移到不同的表或列，并更新以符合新的预期。这些过程虽然不一定复杂，但在客户端仍在使用的线上系统中执行时尤为敏感。 幸运的是，有一种称为扩展与收缩模式的多步骤流程，可在不中断系统服务的情况下，安全地逐步将客户端迁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为数据库schema变更使用扩展和收缩模式">
+<meta property="og:url" content="http://www.veitor.net/posts/expand-and-contract-pattern/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="引言数据库表结构的设计会随着与之交互的软件变化而不可避免地演进。能够安全、可靠地将表结构过渡到新需求至关重要。 虽然数据库迁移工具通常可以更新实际的数据结构，但数据本身也必须转换到新格式、迁移到不同的表或列，并更新以符合新的预期。这些过程虽然不一定复杂，但在客户端仍在使用的线上系统中执行时尤为敏感。 幸运的是，有一种称为扩展与收缩模式的多步骤流程，可在不中断系统服务的情况下，安全地逐步将客户端迁">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/expand-and-contract-pattern-cover.png@articleCover">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-1.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-2.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-3.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-4.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-5.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-6.png">
+<meta property="og:image" content="https://storage.veitor.net/2025/11/step-7.png">
+<meta property="article:published_time" content="2025-11-25T08:10:53.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.993Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://storage.veitor.net/2025/11/expand-and-contract-pattern-cover.png@articleCover">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/expand-and-contract-pattern/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/expand-and-contract-pattern/","path":"posts/expand-and-contract-pattern/","title":"为数据库schema变更使用扩展和收缩模式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>为数据库schema变更使用扩展和收缩模式 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%89%A9%E5%B1%95%E4%B8%8E%E6%94%B6%E7%BC%A9%E6%A8%A1%E5%BC%8F%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是扩展与收缩模式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E6%89%A9%E5%B1%95%E4%B8%8E%E6%94%B6%E7%BC%A9%E6%A8%A1%E5%BC%8F%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何使用扩展与收缩模式？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E9%83%A8%E7%BD%B2%E6%96%B0%E7%9A%84schema"><span class="nav-number">3.1.</span> <span class="nav-text">步骤1：部署新的schema</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E6%89%A9%E5%B1%95%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.2.</span> <span class="nav-text">步骤2：扩展客户端接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E8%BF%81%E7%A7%BB%E7%8E%B0%E6%9C%89%E6%95%B0%E6%8D%AE%E5%88%B0%E6%96%B0%E7%9A%84schema"><span class="nav-number">3.3.</span> <span class="nav-text">步骤3：迁移现有数据到新的schema</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E6%B5%8B%E8%AF%95%E6%96%B0%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.4.</span> <span class="nav-text">步骤4：测试新接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A45%EF%BC%9A%E5%B0%86%E8%AF%BB%E5%8F%96%E6%93%8D%E4%BD%9C%E5%88%87%E6%8D%A2%E5%88%B0%E6%96%B0%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.5.</span> <span class="nav-text">步骤5：将读取操作切换到新接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A46%EF%BC%9A%E5%81%9C%E6%AD%A2%E5%90%91%E5%8E%9F%E5%A7%8B%E7%BB%93%E6%9E%84%E5%86%99%E5%85%A5"><span class="nav-number">3.6.</span> <span class="nav-text">步骤6：停止向原始结构写入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A47%EF%BC%9A%E4%BB%8E%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%A7%BB%E9%99%A4%E6%97%A7%E7%BB%93%E6%9E%84"><span class="nav-number">3.7.</span> <span class="nav-text">步骤7：从系统中移除旧结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E4%B8%8E%E6%94%B6%E7%BC%A9%E6%A8%A1%E5%BC%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">扩展与收缩模式示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/expand-and-contract-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="为数据库schema变更使用扩展和收缩模式 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          为数据库schema变更使用扩展和收缩模式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-25 16:10:53" itemprop="dateCreated datePublished" datetime="2025-11-25T16:10:53+08:00">2025-11-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img data-src="https://storage.veitor.net/2025/11/expand-and-contract-pattern-cover.png@articleCover" alt="expand-and-contract-pattern-cover.png"></p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>数据库表结构的设计会随着与之交互的软件变化而不可避免地演进。能够安全、可靠地将表结构过渡到新需求至关重要。</p>
+<p>虽然数据库迁移工具通常可以更新实际的数据结构，但数据本身也必须转换到新格式、迁移到不同的表或列，并更新以符合新的预期。这些过程虽然不一定复杂，但在客户端仍在使用的线上系统中执行时尤为敏感。</p>
+<p>幸运的是，有一种称为<code>扩展与收缩模式</code>的多步骤流程，可在不中断系统服务的情况下，安全地逐步将客户端迁移到使用新的数据结构。本指南将探讨扩展与收缩模式是什么，它如何实现新旧结构之间的无缝过渡，以及如何将其应用于各种数据库转换。</p>
+<h2 id="什么是扩展与收缩模式？"><a href="#什么是扩展与收缩模式？" class="headerlink" title="什么是扩展与收缩模式？"></a>什么是扩展与收缩模式？</h2><p>扩展与收缩模式是一种数据库管理员和软件开发人员可用来将数据从旧数据结构迁移到新数据结构而不影响系统正常运行时间的流程。它通过一系列独立的步骤来应用变更，旨在后台引入新结构、为线上使用准备数据，然后无缝切换到新结构。</p>
+<p>该流程可用于修改许多正在使用的接口，但对数据库表结构变更尤其有用。除了将数据和客户端迁移到新数据结构之外，扩展与收缩模式还有一个优势：如果在过程中的任何阶段出现问题，或者需求发生变化，你都可以轻松地回滚变更。</p>
+<span id="more"></span>
+
+<h2 id="如何使用扩展与收缩模式？"><a href="#如何使用扩展与收缩模式？" class="headerlink" title="如何使用扩展与收缩模式？"></a>如何使用扩展与收缩模式？</h2><p>本节将概述如何实际运用扩展与收缩模式以及它能实现的目标。各个步骤需要协调客户端应用程序与数据库内部使用的schema。理解每一步的目的以及为何应独立于其他步骤执行至关重要。</p>
+<p><strong>注意</strong>：步骤2和步骤3的执行顺序取决于你的需求、设计和偏好。通常，在迁移数据之前先扩展客户端接口是合适的，但在某些情况下，在更改任何客户端行为之前先迁移数据可能更有用。</p>
+<h3 id="步骤1：部署新的schema"><a href="#步骤1：部署新的schema" class="headerlink" title="步骤1：部署新的schema"></a>步骤1：部署新的schema</h3><p><img data-src="https://storage.veitor.net/2025/11/step-1.png" alt="step-1.png"></p>
+<p>扩展与收缩模式的第一步是设计一个满足新需求的新schema。理想情况下，这应涉及对现有结构的小幅修改。较大的变更应拆分为更小、独立的步骤，每个步骤都可以依次经历此流程。</p>
+<p>由于现有结构当前正被客户端使用，你不能直接修改任何列。相反，你需要与现有结构并行地实现变更。例如，如果你想将一个 <code>name</code> 列拆分为 <code>first_name</code> 和 <code>last_name</code>，你应该添加这两个新列，而不是修改原来的 <code>name</code> 列。</p>
+<p>对于列级别的变更，这通常意味着向表中添加具有所需特性的新列，同时保持当前列不变。对于更复杂的变更，这可能意味着创建一个全新的表来表示新的数据结构。</p>
+<p>将代表你新设计的数据结构部署到数据库中。确保任何新列都没有会导致当前客户端行为失败的约束。例如，你可能需要使新列可为空（nullable）和&#x2F;或提供默认值。</p>
+<p>此时，数据库客户端应能够像以前一样访问原始结构。</p>
+<h3 id="步骤2：扩展客户端接口"><a href="#步骤2：扩展客户端接口" class="headerlink" title="步骤2：扩展客户端接口"></a>步骤2：扩展客户端接口</h3><p><img data-src="https://storage.veitor.net/2025/11/step-2.png" alt="step-2.png"></p>
+<p>在将新数据库 schema 与原有 schema 并行部署之后，下一步是扩展客户端，使其能够识别新增的列和表。客户端代码仍然从原有数据结构读取所有值；然而，在执行写操作时，客户端现在会同时在原有结构和新结构中新增或修改数据。</p>
+<p>此时，客户端正主动把数据写入新结构，同时保持对旧结构的写入。这为你提供了验证两个组件之间新接口的机会，并确保后续所有数据都会持久化到新数据结构中。由于客户端仍继续写入旧结构，且所有读操作仍只引用原有结构，因此客户端的外部行为应完全保持不变。</p>
+<h3 id="步骤3：迁移现有数据到新的schema"><a href="#步骤3：迁移现有数据到新的schema" class="headerlink" title="步骤3：迁移现有数据到新的schema"></a>步骤3：迁移现有数据到新的schema</h3><p><img data-src="https://storage.veitor.net/2025/11/step-3.png" alt="step-3.png"></p>
+<p>新的数据模式已在数据库中就位，但它尚未包含原始模式所持有的任何实际数据。为了让新模式真正可用，你需要将现有列或表中的数据迁移到新结构中。</p>
+<p>在某些情况下，这一步可能只需将现有值复制到新结构即可；但通常，你可能需要以某种方式修改数据，以弥补两种模式之间的差异。这可能包括修改数据类型、拆分值、回填默认值等。</p>
+<p>务必仔细思考这一步，以确保你所做的更改是正确的，并且在语义上与原始含义等价。有时这一点会很明显。例如，如果你的原始 <code>color</code> 列以字符串形式存储值，而新列改为存储与另一张表中颜色相对应的 ID，那么转换过程应该相当直接。</p>
+<p>然而，在其他时候，情况可能就没那么清晰。例如，如果你有一个 <code>name</code> 列，并希望将其拆分为 <code>first_name</code> 和 <code>last_name</code>，那么这两个部分之间的分界点可能并不明确。举个例子，虽然你可能很有把握地将 <code>John Smith</code> 拆分开，但你的数据迁移脚本在处理 “Juan Carlos Ferdinand Garcia” 时可能就无法正确处理。请花额外的时间思考新字段与原始字段之间的关系，并判断你的系统是否需要新的信息才能正确迁移某些记录。</p>
+<h3 id="步骤4：测试新接口"><a href="#步骤4：测试新接口" class="headerlink" title="步骤4：测试新接口"></a>步骤4：测试新接口</h3><p><img data-src="https://storage.veitor.net/2025/11/step-4.png" alt="step-4.png"></p>
+<p>一旦数据迁移完成，且客户端同时向新旧结构写入数据，你就可以对新接口进行测试。此时，生产客户端仍以原有数据结构为“唯一真实来源”，但你可以并行运行查询和客户端，验证新结构是否按预期工作。</p>
+<p>本阶段通常包括功能测试，确保新结构能够执行生产客户端所需的所有查询，并返回正确结果。如果条件允许，还应进行性能测试；不过，若直接在承载生产流量的服务器上测试，可能会引发问题。此时可选择在备用或只读副本服务器上进行测试。若性能不达标，可能需要新建索引或调整查询语句。</p>
+<p>这是你在新接口正式承载生产流量前，最后一次验证其行为的机会。务必确保其满足需求，再进入下一步。</p>
+<h3 id="步骤5：将读取操作切换到新接口"><a href="#步骤5：将读取操作切换到新接口" class="headerlink" title="步骤5：将读取操作切换到新接口"></a>步骤5：将读取操作切换到新接口</h3><p><img data-src="https://storage.veitor.net/2025/11/step-5.png" alt="step-5.png"></p>
+<p>此时，你已准备就绪，可以开始将生产流量逐步迁移到新的数据库结构。这意味着要修改客户端行为，使其在读取时使用新 schema，而不再依赖原有 schema。</p>
+<p>这一步标志着正式切换流量，新结构将全权负责处理生产请求；不过，客户端仍会继续同时向新旧两种数据结构写入数据。</p>
+<p>根据 schema 变更的具体性质，这一步也可能是你首次面临回滚时可能丢失数据的风险。虽然旧数据结构仍在接收客户端的写入，但它并不会存储任何仅存在于新设计中的数据。一旦决定回退到旧设计，新表中收集到的独有数据将会丢失，或者需要额外工作才能重新整合。</p>
+<p>在实践中，这一步通常会分阶段进行，以便以受控方式逐步迁移多个客户端。稍后我们将讨论一些有助于完成此过程的策略。</p>
+<h3 id="步骤6：停止向原始结构写入"><a href="#步骤6：停止向原始结构写入" class="headerlink" title="步骤6：停止向原始结构写入"></a>步骤6：停止向原始结构写入</h3><p><img data-src="https://storage.veitor.net/2025/11/step-6.png" alt="step-6.png"></p>
+<p>确认新结构运行正常后，可再次更新数据库客户端，停止对原结构的写入。</p>
+<p>此时，客户端已完全使用新 schema。</p>
+<h3 id="步骤7：从系统中移除旧结构"><a href="#步骤7：从系统中移除旧结构" class="headerlink" title="步骤7：从系统中移除旧结构"></a>步骤7：从系统中移除旧结构</h3><p><img data-src="https://storage.veitor.net/2025/11/step-7.png" alt="step-7.png"></p>
+<p>当所有客户端都已更新，停止向原 schema 写入后，你就可以安全地删除原有数据结构。这是扩展与收缩模式的最后一步，标志着向新结构的迁移彻底完成。</p>
+<h2 id="扩展与收缩模式示例"><a href="#扩展与收缩模式示例" class="headerlink" title="扩展与收缩模式示例"></a>扩展与收缩模式示例</h2><p>为了更好地说明如何使用扩展与收缩模式来变更数据表结构、迁移数据并在不停机的情况下重新配置客户端，我们将通过一个示例展示如何应用这一策略。</p>
+<p>假设你有一个名为 <code>equipment</code> 的表，用于管理整个公园区域内使用的游乐设施。该表包含以下列：</p>
+<pre class="line-numbers language-none"><code class="language-none">Table equipment
+---------------
+id INT
+item_type STRING
+installed_on DATETIME
+city STRING
+park STRING
+playground INT</code></pre>
+<p>目前，<code>equipment</code> 表通过 <code>city</code>、<code>park</code> 和 <code>playground</code> 列来记录设备的安装位置（其中 <code>playground</code> 列用于在公园内有多个游乐场时指定具体的游乐场）。然而，我们发现这些信息更适合单独放在一张表中。新设计方案如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">Table equipment
+---------------
+id INT
+item_type STRING
+installed_on DATETIME
+playground INT FOREIGN KEY (playground.id)
+
+
+Table playground
+----------------
+id INT
+city STRING
+park STRING
+sq_ft INT</code></pre>
+<p>为实现这一变更，团队创建了一个新的 <code>playground</code> 表，用于存放与特定公园内特定游乐场相关的信息。该表将游乐场相关的所有信息独立出来，与设备信息分离。</p>
+<p>团队采取的第一步是在原有 <code>equipment</code> 表旁边创建新的 <code>playground</code> 表：</p>
+<pre class="line-numbers language-none"><code class="language-none">Table equipment
+---------------
+id INT
+item_type STRING
+installed_on DATETIME
+city STRING
+park STRING
+playground INT
+
+
+Table playground
+----------------
+id INT
+city STRING
+park STRING
+sq_ft INT</code></pre>
+
+<p>接下来，客户端应用被更新，通过配置应用写入 Redis 服务器上以列表形式定义的 feature flag <code>DATABASE:equipment_location:write</code> 所返回的所有表，从而将任何新增的游乐场相关数据同时写入 <code>equipment</code> 表和 <code>playground</code> 表。在添加此变更的同时，他们还实现了另一个 feature flag，该 flag 会检查 <code>DATABASE:equipment_location:read</code> 的值，以决定从哪个数据源读取数据。</p>
+<p>客户端代码变更后，最新的两条记录被同时记录在两个位置：</p>
+<p><code>equipment</code> 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>item_type</th>
+<th>installed_at</th>
+<th>city</th>
+<th>park</th>
+<th>playground</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>“slide”</td>
+<td>2018-12-30</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>“swing”</td>
+<td>2016-05-07</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>“seesaw”</td>
+<td>2012-08-18</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>“swing”</td>
+<td>2015-02-17</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>“swing”</td>
+<td>2019-04-02</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“seesaw”</td>
+<td>2017-08-03</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>“slide”</td>
+<td>2014-07-03</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+<tr>
+<td>8</td>
+<td>“monkey bars”</td>
+<td>2019-11-22</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+<tr>
+<td>9</td>
+<td>“merry-go-round”</td>
+<td>2018-07-28</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>7</td>
+</tr>
+<tr>
+<td>10</td>
+<td>“merry-go-round”</td>
+<td>2021-03-18</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>4</td>
+</tr>
+<tr>
+<td>11</td>
+<td>“swing”</td>
+<td>2021-03-18</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+</tbody></table>
+<p><code>playground</code> 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>city</th>
+<th>park</th>
+<th>sq_ft</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>4</td>
+<td>“Westfield”</td>
+<td>“Clear View Park”</td>
+<td>200</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“Fairmont”</td>
+<td>“Lincoln Woods”</td>
+<td>180</td>
+</tr>
+</tbody></table>
+<p>由于所有新数据都已同时写入两个位置，团队可以专注于将旧数据迁移到新结构。他们编写了一个脚本，从 equipment 表中提取现有记录来填充 playground 表。该脚本还引用外部数据源，为每个游乐场补全其面积（平方英尺）。最终得到的结果大致如下：</p>
+<p><code>equipment</code> 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>item_type</th>
+<th>installed_at</th>
+<th>city</th>
+<th>park</th>
+<th>playground</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>“slide”</td>
+<td>2018-12-30</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>“swing”</td>
+<td>2016-05-07</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>“seesaw”</td>
+<td>2012-08-18</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>“swing”</td>
+<td>2015-02-17</td>
+<td>Westfield</td>
+<td>Gloria Maynard Park</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>“swing”</td>
+<td>2019-04-02</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“seesaw”</td>
+<td>2017-08-03</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>“slide”</td>
+<td>2014-07-03</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+<tr>
+<td>8</td>
+<td>“monkey bars”</td>
+<td>2019-11-22</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+<tr>
+<td>9</td>
+<td>“merry-go-round”</td>
+<td>2018-07-28</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>7</td>
+</tr>
+<tr>
+<td>10</td>
+<td>“merry-go-round”</td>
+<td>2021-03-18</td>
+<td>Westfield</td>
+<td>Clear View Park</td>
+<td>4</td>
+</tr>
+<tr>
+<td>11</td>
+<td>“swing”</td>
+<td>2021-03-18</td>
+<td>Fairmont</td>
+<td>Lincoln Woods</td>
+<td>6</td>
+</tr>
+</tbody></table>
+<p><code>playground</code>表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>city</th>
+<th>park</th>
+<th>sq_ft</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>4</td>
+<td>“Westfield”</td>
+<td>“Clear View Park”</td>
+<td>200</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“Fairmont”</td>
+<td>“Lincoln Woods”</td>
+<td>180</td>
+</tr>
+<tr>
+<td>1</td>
+<td>“Westfield”</td>
+<td>“Gloria Maynard Park”</td>
+<td>500</td>
+</tr>
+<tr>
+<td>2</td>
+<td>“Westfield”</td>
+<td>“Gloria Maynard Park”</td>
+<td>380</td>
+</tr>
+<tr>
+<td>5</td>
+<td>“Westfield”</td>
+<td>“Clear View Park”</td>
+<td>850</td>
+</tr>
+<tr>
+<td>7</td>
+<td>“Fairmont”</td>
+<td>“Lincoln Woods”</td>
+<td>444</td>
+</tr>
+</tbody></table>
+<p>两张表现在都已同步。需要注意的是，新的 <code>playground</code> 表包含了 <code>equipment</code> 表中没有的信息（即 sq_ft 列）。如果此时回滚变更，你可以恢复到之前的表结构，但会丢失已采集的每个游乐场的面积数据。</p>
+<p>当团队准备就绪后，他们在 Redis 服务器上把 <code>DATABASE:equipment_location:read</code> 变量的值改为从新 <code>playground</code> 表读取位置信息。客户端应用开始只从 <code>equipment</code> 表读取设备相关信息，并使用新的 <code>playground</code> 表来获取所有位置信息。</p>
+<p>一旦确认一切运行正常，他们就可以修改 <code>DATABASE:equipment_location:write</code> 变量，将 <code>equipment</code> 表从写入目标列表中移除。最后，他们可以删除 <code>equipment</code> 表中的旧列，清理 schema，完成整个迁移。</p>
+<p><code>equipment</code> 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>item_type</th>
+<th>installed_at</th>
+<th>playground</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>“slide”</td>
+<td>2018-12-30</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>“swing”</td>
+<td>2016-05-07</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>“seesaw”</td>
+<td>2012-08-18</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>“swing”</td>
+<td>2015-02-17</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>“swing”</td>
+<td>2019-04-02</td>
+<td>4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“seesaw”</td>
+<td>2017-08-03</td>
+<td>5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>“slide”</td>
+<td>2014-07-03</td>
+<td>6</td>
+</tr>
+<tr>
+<td>8</td>
+<td>“monkey bars”</td>
+<td>2019-11-22</td>
+<td>6</td>
+</tr>
+<tr>
+<td>9</td>
+<td>“merry-go-round”</td>
+<td>2018-07-28</td>
+<td>7</td>
+</tr>
+<tr>
+<td>10</td>
+<td>“merry-go-round”</td>
+<td>2021-03-18</td>
+<td>4</td>
+</tr>
+<tr>
+<td>11</td>
+<td>“swing”</td>
+<td>2021-03-18</td>
+<td>6</td>
+</tr>
+</tbody></table>
+<p><code>playground</code> 表：</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>city</th>
+<th>park</th>
+<th>sq_ft</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>4</td>
+<td>“Westfield”</td>
+<td>“Clear View Park”</td>
+<td>200</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“Fairmont”</td>
+<td>“Lincoln Woods”</td>
+<td>180</td>
+</tr>
+<tr>
+<td>1</td>
+<td>“Westfield”</td>
+<td>“Gloria Maynard Park”</td>
+<td>500</td>
+</tr>
+<tr>
+<td>2</td>
+<td>“Westfield”</td>
+<td>“Gloria Maynard Park”</td>
+<td>380</td>
+</tr>
+<tr>
+<td>5</td>
+<td>“Westfield”</td>
+<td>“Clear View Park”</td>
+<td>850</td>
+</tr>
+<tr>
+<td>7</td>
+<td>“Fairmont”</td>
+<td>“Lincoln Woods”</td>
+<td>444</td>
+</tr>
+</tbody></table>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本问中，我们探讨了如何将扩展与收缩模式作为工具箱的一部分，安全地将数据库及其数据过渡到新的 schema。我们了解了该模式的运作方式及其带来的优势，最后通过一个示例展示了数据库变更在现实世界中是如何实施的。</p>
+<p>扩展与收缩模式的核心价值在于“零停机”与“可回滚”：  </p>
+<ol>
+<li>零停机——新旧结构并存，读写切换分阶段完成，用户无感知。  </li>
+<li>可回滚——任何一步出错，都能迅速退回旧结构，把损失降到最低。</li>
+</ol>
+<p>只要遵循“先扩后收”的节奏：  </p>
+<ul>
+<li>先加字段&#x2F;表（扩），  </li>
+<li>再双写双读，  </li>
+<li>接着迁移历史数据，  </li>
+<li>最后切流量、删旧字段（收），</li>
+</ul>
+<p>就能把一次高风险的“大爆炸”式迁移，拆成一系列低风险、可验证的小步骤。  </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/migrations-strategies/" rel="prev" title="部署数据库迁移的策略">
+                  <i class="fa fa-angle-left"></i> 部署数据库迁移的策略
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/comparing-sql-query-builders-and-orms/" rel="next" title="原生SQL、Query Builder和ORM的区别">
+                  原生SQL、Query Builder和ORM的区别 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  通过使用self关键字，我们不会将”值对象”作为领域驱动设计的基本构建块，而是在代码中将它们作为你通用语言的概念。一个值对象在你的领域中不仅仅是一个东西，它能够度量、量化或者描述一些信息。值对象可以看作是小的简单对象（如金钱或者日期范围），它们不像实体（Entity）通过身份标识来进行区分，而是根据其所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]值对象 - 《Domain-Driven Design in PHP》第3章">
+<meta property="og:url" content="http://www.veitor.net/posts/DDD-in-php-value-objects/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="本篇博文由本博客(http:&#x2F;&#x2F;www.veitor.net)经原文翻译，转载请注明出处。  通过使用self关键字，我们不会将”值对象”作为领域驱动设计的基本构建块，而是在代码中将它们作为你通用语言的概念。一个值对象在你的领域中不仅仅是一个东西，它能够度量、量化或者描述一些信息。值对象可以看作是小的简单对象（如金钱或者日期范围），它们不像实体（Entity）通过身份标识来进行区分，而是根据其所">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-23T12:35:51.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.991Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="ddd">
+<meta property="article:tag" content="领域驱动设计">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/DDD-in-php-value-objects/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/DDD-in-php-value-objects/","path":"posts/DDD-in-php-value-objects/","title":"[译]值对象 - 《Domain-Driven Design in PHP》第3章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[译]值对象 - 《Domain-Driven Design in PHP》第3章 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Value-Object%E4%B8%8EEntity%E5%AF%B9%E6%AF%94"><span class="nav-number">2.</span> <span class="nav-text">Value Object与Entity对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Currency-%E8%B4%A7%E5%B8%81-%E5%92%8CMoney%EF%BC%88%E9%92%B1%EF%BC%89%E7%9A%84%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">Currency(货币)和Money（钱）的示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%B9%E5%BE%81"><span class="nav-number">4.</span> <span class="nav-text">特征</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%A6%E9%87%8F%E3%80%81%E9%87%8F%E5%8C%96%E3%80%81%E6%8F%8F%E8%BF%B0"><span class="nav-number">4.1.</span> <span class="nav-text">度量、量化、描述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E5%8F%98"><span class="nav-number">4.1.1.</span> <span class="nav-text">不可变</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%A6%82%E5%BF%B5"><span class="nav-number">4.2.</span> <span class="nav-text">整体概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%BC%E7%9A%84%E7%9B%B8%E7%AD%89%E6%80%A7"><span class="nav-number">4.3.</span> <span class="nav-text">值的相等性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E6%9B%BF%E4%BB%A3%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">可替代性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%89%AF%E4%BD%9C%E7%94%A8%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="nav-number">4.5.</span> <span class="nav-text">无副作用的行为</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">基本类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%80%BC%E5%AF%B9%E8%B1%A1"><span class="nav-number">6.</span> <span class="nav-text">测试值对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%80%BC%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.</span> <span class="nav-text">持久化值对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%8D%95%E4%B8%AA%E5%80%BC%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.1.</span> <span class="nav-text">持久化单个值对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%9A%E5%88%B6ORM%E5%92%8CEmbedded-Value"><span class="nav-number">7.2.</span> <span class="nav-text">使用定制ORM和Embedded Value</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/DDD-in-php-value-objects/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[译]值对象 - 《Domain-Driven Design in PHP》第3章 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [译]值对象 - 《Domain-Driven Design in PHP》第3章
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-23 20:35:51" itemprop="dateCreated datePublished" datetime="2020-05-23T20:35:51+08:00">2020-05-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本篇博文由本博客(<code>http://www.veitor.net</code>)经原文翻译，转载请注明出处。</p>
+</blockquote>
+<p>通过使用<code>self</code>关键字，我们不会将”值对象”作为领域驱动设计的基本构建块，而是在代码中将它们作为你通用语言的概念。一个值对象在你的领域中不仅仅是一个东西，它能够度量、量化或者描述一些信息。值对象可以看作是小的简单对象（如金钱或者日期范围），它们不像实体（Entity）通过身份标识来进行区分，而是根据其所持有的内容来做区分。</p>
+<span id="more"></span>
+
+<p>例如，一个产品价格可以用值对象来表示。此时，该值对象不代表一个东西，而是能够让我们衡量这个产品价值多少钱的一个值。这些对象的内存占用非常容易确定（根据其组成的部分计算），并且开销很少。因此，即使想用一个值对象来代表同一个值，人们还是更喜欢新创建一个值对象实例也不去重复引用之前的值对象。然后根据两个实例的字段内容来检查这两个实例是否相等。</p>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>Ward Cunningham对值对象的定义：</p>
+<p>某个事物的量或者描述。值对象的例子有数字、日期、金钱、字符串。通常他们是被使用最多的小对象。它们的身份是基于它们的状态而不是它们的对象标识。你可以拥有相同概念值对象的多个副本。每张5元的钞票都有其自己的标识（该钞票上印的标记号码），但是在使用上每张5元钞票与其他的5元钞票都具有相同的价值。</p>
+<p>Martin Fowler对值对象的定义：</p>
+<p>像金钱或者日期范围这样的小对象。它们是遵循值而不是引用。你通常能够区分它们是因为判断它们是否相等并不基于身份标识，而是基于它们所持有的字段内容是否相等。尽管所有字段是相等的，你可能也不必真去比较所有字段（比如一个子集具有唯一性的情况下，如货币代码对于货币对象来说足够来测试是否相等）。值对象不应该被改变。如果要修改值对象，则应该使用新的对象来替换掉该对象。值对象本身的改变会引发aliasing problems（别名问题）。</p>
+<p>值对象的例子有数字、文本字符、日期、时间、一个人的全名、货币、颜色、手机号、邮政编码等等。</p>
+<h1 id="Value-Object与Entity对比"><a href="#Value-Object与Entity对比" class="headerlink" title="Value Object与Entity对比"></a>Value Object与Entity对比</h1><p>为了更好的理解值对象与实体之间的区别，思考一下下面的例子：</p>
+<ul>
+<li><p>值对象：当人们付钱交换钞票时，他们通常不会去区分每张钞票，而是只关注这钞票的面值。这种情况下，钞票是值对象。但是，对于银行来说他们可能会关注每张钞票，此时，每张钞票是实体。</p>
+</li>
+<li><p>实体：大多数飞机航班都区分飞机上的每张座位，此时每张座位就是实体。然而有一些航司不区分每张座位，所有座位都一样可以坐，此时座位是值对象。</p>
+</li>
+</ul>
+<h1 id="Currency-货币-和Money（钱）的示例"><a href="#Currency-货币-和Money（钱）的示例" class="headerlink" title="Currency(货币)和Money（钱）的示例"></a>Currency(货币)和Money（钱）的示例</h1><p>货币和钱是解释值对象最常用的例子了。</p>
+<p>在现实世界中，货币单位的描述方式与距离单位描述方式一样。每个货币都用三个字母的大写ISO来表示：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Currency
+&#123;
+	private $isoCode;
+
+	public function __construct($anIsoCode)
+	&#123;
+		$this-&gt;setIsoCode($anIsoCode);
+	&#125;
+	private function setIsoCode($anIsoCode)
+	&#123;
+		if (!preg_match(&#39;&#x2F;^[A-Z]&#123;3&#125;$&#x2F;&#39;, $anIsoCode)) &#123;
+			throw new InvalidArgumentException();
+		&#125;
+		$this-&gt;isoCode &#x3D; $anIsoCode;
+	&#125;
+	public function isoCode()
+	&#123;
+		return $this-&gt;isoCode;
+	&#125;
+&#125;</code></pre>
+
+<p>值对象的主要目标之一同时也是面向对象设计的目标：封装。通过这种形式，你将有一个地方来进行验证、逻辑比较。</p>
+<blockquote>
+<p>在前一个示例中，我们可以使用AAA的ISO代码构建一个货币对象。这是一个无效的ISO代码。因此在值对象中可以完善写清对货币ISO代码是否有效的验证逻辑。</p>
+</blockquote>
+<p>另外，您可能还注意到，我们正在使用自封装赋值ISO代码，该代码集中在值对象中进行修改：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Money
+&#123;
+	private $amount;
+
+	private $currency;
+
+	public function __construct($anAmount, Currency $aCurrency)
+	&#123;
+		$this-&gt;setAmount($anAmount);
+		$this-&gt;setCurrency($aCurrency);
+	&#125;
+	
+	private function setAmount($anAmount)
+	&#123;
+		$this-&gt;amount &#x3D; (int) $anAmount;
+	&#125;
+
+	private function setCurrency(Currency $aCurrency)
+	&#123;
+		$this-&gt;currency &#x3D; $aCurrency;
+	&#125;
+
+	public function amount()
+	&#123;
+		return $this-&gt;amount;
+	&#125;
+
+	public function currency()
+	&#123;
+		return $this-&gt;currency;
+	&#125;
+&#125;</code></pre>
+
+<p>既然您已经知道了值对象的正式定义，那么让我们更深入地研究它们提供的一些强大功能。</p>
+<h1 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h1><p>在代码中构建通用语言概念模型时，你应该总是优先用值对象而不是实体。值对象容易被创建、测试、使用和维护。</p>
+<p>记住下面这些，你可以确定问题中的概念是否能够被建模成值对象：</p>
+<ul>
+<li>它能在领域中度量、量化或者描述一个事物。</li>
+<li>它能够保持不变。</li>
+<li>它能够将相关属性作为一个整体来对概念建模。</li>
+<li>它能够通过值的相等性来与其他对象进行比较。</li>
+<li>当度量或描述改变时，它是完全可以被替换的。</li>
+<li>它为合作者提供了无副作用的行为。</li>
+</ul>
+<h2 id="度量、量化、描述"><a href="#度量、量化、描述" class="headerlink" title="度量、量化、描述"></a>度量、量化、描述</h2><p>像上面讨论的那样，一个值对象不应该作为你领域中的一个事物。而是作为一个值，它在你领域中可以度量、量化或者描述一个事物。</p>
+<p>在我们的示例中，Currency货币对象描述了Money钱是什么类型。Money钱对象对给定的货币进行了度量或量化。</p>
+<h3 id="不可变"><a href="#不可变" class="headerlink" title="不可变"></a>不可变</h3><p>这是最重要的方面之一。值对象在其生命周期内不应该被改变。由于这种不变性，值对象易于被推理和测试，并且没有不良的副作用。因此，值对象应该通过它们的构造函数创建。构建一个值对象时，你通常传入必要的基本类型或者其他值对象到这个值对象的构造函数。</p>
+<p>值对象总是处于有效的状态（valid state）。这就是为什么我们会在单个原子步骤中创建它们的原因。带有多个settter和getter方法的空构造函数将创建职责移到了客户端，导致贫血模型，这是反面模式。</p>
+<p>还有一点应当指出，就是不要在你的值对象中引用实体（Entity）。实体是可变的，持有实体的值对象可能会导致意想不到的副作用问题。</p>
+<p>在具有<code>方法重载(method overlanding)</code>的语言中（如JAVA），你可以创建多个相同名字的构造函数。每个构造函数都提供了不同的参数选项来构建相同类型的对象。而在PHP中，我们可以通过<code>工厂方法(factory methods)</code>提供类似的功能，这些工厂方法被称为<code>语义化构造函数(semantic constructors)</code>。<code>fromMoney</code>方法的主要目的是提供比纯构造函数更多的上线文含义，甚至可以将<code>__construct</code>构造函数设为private私有，并使用语义化构造函数（即工厂方法）来实例化每个对象。</p>
+<p>在<code>Money</code>对象中，我们可以像这样增加一些有用的工厂方法：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Money
+&#123;
+	&#x2F;&#x2F; ...
+	public static function fromMoney(Money $aMoney)
+	&#123;
+		return new self(
+			$aMoney-&gt;amount(),
+			$aMoney-&gt;currency()
+		);
+	&#125;
+	
+	public static function ofCurrency(Currency $aCurrency)
+	&#123;
+		return new self(0, $aCurrency);
+	&#125;
+&#125;</code></pre>
+
+<p>通过使用<code>self</code>关键字，我们不会将代码与类名耦合。因此更改类名或者命名空间不会影响这些工厂方法。这个小的实现细节有助于以后重构代码。</p>
+<blockquote>
+<p><strong>使用static还是self关键字？</strong><br>当值对象继承另一个值对象时，使用static可能会产生意想不到的问题。（译者注：static和self关键字的使用场景建议另外去了解）</p>
+</blockquote>
+<p>由于这种不变性，我们必须考虑在有状态的上下文中如何处理常见的变化行为。如果我们需要状态进行改变，则必须返回改变后的新的值对象。如果我们需要增加Money值对象的mount数量，则需要返回修改后的新的Money的实例对象。还好，这还是比较容易实现的：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Money
+&#123;
+	&#x2F;&#x2F; ...
+	public function increaseAmountBy($anAmount)
+	&#123;
+		return new self(
+			$this-&gt;amount() + $anAmount,
+			$this-&gt;currency()
+		);
+	&#125;
+&#125;</code></pre>
+
+<p>由<code>increaseAmountBy</code>方法返回的Money对象与接受的参数的Money对象不同，可以通过下面来看出：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$aMoney &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+$otherMoney &#x3D; $aMoney-&gt;increaseAmountBy(100);
+
+var_dump($aMoney &#x3D;&#x3D;&#x3D; otherMoney); &#x2F;&#x2F; bool(false)
+
+$aMoney &#x3D; $aMoney-&gt;increaseAmountBy(100);
+var_dump($aMoney &#x3D;&#x3D;&#x3D; $otherMoney); &#x2F;&#x2F; bool(false)</code></pre>
+
+<h2 id="整体概念"><a href="#整体概念" class="headerlink" title="整体概念"></a>整体概念</h2><p>为什么不像下面这个示例一样来实现，来避免使用新的值对象呢？</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Product
+&#123;
+	private id;
+	private name;
+	&#x2F;**
+	* @var int
+	*&#x2F;
+	private $amount;
+	&#x2F;**
+	* @var string
+	*&#x2F;
+	private $currency;
+	&#x2F;&#x2F; ...
+&#125;</code></pre>
+
+<p>这种方式存在明显的缺陷。比如，你想要验证ISO的有效性。而用Product产品对象来验证货币的ISO代码是没意义的（这违反了单一职责原则）。如果你想在其他地方重用这个ISO验证逻辑，则更加能说明还是需要去遵守DRY原则的。</p>
+<p>基于这些因素，我们所举的例子对于抽象成值对象是一个理想的选择。使用抽象不仅让你有机会将相关属性组合在一起，而且也能让你可以创建更高层的概念和更具体的通用语言。</p>
+<h2 id="值的相等性"><a href="#值的相等性" class="headerlink" title="值的相等性"></a>值的相等性</h2><p>如这章开头所谈到，如果两个值对象所含的数量、描述等内容相同，则这俩值对象相等。</p>
+<p>想象一下两个Money对象表示1美元。我们能认为他们相等吗？在真实世界，两张1美元面额的钞票相等吗？当然相同，我们将注意力转移到代码的实现上，代码是使用两个值对象实例来表示的，但是这两个实例都表示着相同的值，这使得两个实例相等。</p>
+<p>对于PHP，通常会使用<code>==</code>运算符来比较两个值对象，查阅PHP的相关文档中对<code>==</code>这个操作符后会发现一个有趣的情况：</p>
+<pre class="line-numbers language-none"><code class="language-none">使用比较运算符&#x3D;&#x3D;时，将以简单的方式来比较对象变量。即如果两个对象实例具有相同的属性和值，并且是同一个类的实例，则它们相等。</code></pre>
+
+<p>PHP中这样的情况与我们给值对象的定义一样（即值对象中包含内容相等则值对象相等），但是由于精准类匹配谓词的存在，你应该在处理子类型时要小心谨慎。</p>
+<p>更加严格的<code>===</code>运算符对我们没有帮助：当使用运算符<code>===</code>时，只有变量对象引用了相同类的实例时才是相同的。下面的例子有助于我们认识到这些细微差别：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$a &#x3D; new Currency(&#39;USD&#39;);
+$b &#x3D; new Currency(&#39;USD&#39;);
+
+var_dump($a &#x3D;&#x3D; $b); &#x2F;&#x2F; bool(true)
+var_dump($a &#x3D;&#x3D;&#x3D; $b); &#x2F;&#x2F; bool(false)
+
+$c &#x3D; new Currency(&#39;EUR&#39;);
+
+var_dump($a &#x3D;&#x3D; $c); &#x2F;&#x2F; bool(false)
+var_dump($a &#x3D;&#x3D;&#x3D; $c); &#x2F;&#x2F; bool(false)</code></pre>
+
+<p>一种解决方法是在每个值对象中实现如<code>equals</code>这样的方法，该方法负责检查类型和它属性的相等性。使用PHP中内置的类型提示可以轻松实现对类型的检查，如有必要，可以使用<code>get_class()</code>函数来帮助检查类型。</p>
+<p>为了能够用代码解释相等在你领域(Domain)中是什么意思，你需要提供一些必要的代码实现来回答这问题。比如为了比较Currency货币对象什么时候相等，你实现的比较代码中需要对两个对象中ISO代码进行比较即可。这种情况下<code>===</code>运算符可以用上：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Currency
+&#123;
+	&#x2F;&#x2F; ...
+	public function equals(Currency $currency)
+	&#123;
+		return $currency-&gt;isoCode() &#x3D;&#x3D;&#x3D; $this-&gt;isoCode();
+	&#125;
+&#125;</code></pre>
+
+<p>因为<code>Money</code>对象使用了<code>Currency</code>对象，所以<code>equals</code>方法需要执行Currency的检查，同时也要检查amount数量：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Money
+&#123;
+	&#x2F;&#x2F; ...
+	public function equals(Money $money)
+	&#123;
+		return
+		$money-&gt;currency()-&gt;equals($this-&gt;currency()) &amp;&amp;
+		$money-&gt;amount() &#x3D;&#x3D;&#x3D; $this-&gt;amount();
+	&#125;
+&#125;</code></pre>
+
+<h2 id="可替代性"><a href="#可替代性" class="headerlink" title="可替代性"></a>可替代性</h2><p>思考一下两个价格相同的产品实体(Entity)，可以使用两个单独的Money对象或两个引用指向一个值对象的方式对这种情况进行建模。</p>
+<p>共享同一个值对象可能会存在风险，如果其中一个实体的值对象被修改，则两个实体都会有变化，这就是非预期的副作用。比如员工A在2月20日被录用，而我们知道员工B在同一天也被录用，我们可以将员工A的聘用日期设置与员工B的录用日期相同。如果员工A的录用日期改为5月，那么员工B的录用日期也会被修改。我们正确与否，都不是我们所期望的。</p>
+<p>由例子可以看出，当持有值对象的引用时，建议将值对象进行整体替换而不是修改值对象的值：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$this−&gt;price &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+&#x2F;&#x2F;...
+$this-&gt;price &#x3D; $this-&gt;price-&gt;increaseAmountBy(200);</code></pre>
+
+<p>这种方式类似于PHP中<code>strtolower</code>函数，该函数会返回一个新字符串，而不是修改原始字符串，不使用引用，而是返回一个新的值。</p>
+<h2 id="无副作用的行为"><a href="#无副作用的行为" class="headerlink" title="无副作用的行为"></a>无副作用的行为</h2><p>如果我们想要在<code>Money</code>类中包含一些行为——如增加一个<code>add</code>方法，则该方法自然而然的应当会去检查输入参数的各种条件并且维持着自身的不变性。在我们的示例中，我们只希望使用相同的货币来实现add增加：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Money
+&#123;
+	&#x2F;&#x2F; ...
+	public function add(Money $money)
+	&#123;
+		if ($money-&gt;currency() !&#x3D;&#x3D; $this-&gt;currency()) &#123;
+			throw new InvalidArgumentException();
+		&#125;
+		$this-&gt;amount +&#x3D; $money-&gt;amount();
+	&#125;
+&#125;</code></pre>
+<p>如果两种货币不匹配，则会抛出异常。否则金额数量会相加。但是这个代码有一些非预期的陷阱。现在想象一下代码中有一个神秘的方法调用了一个其他方法：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Banking
+&#123;
+	public function doSomething()
+	&#123;
+		$aMoney &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+		$this-&gt;otherMethod($aMoney);&#x2F;&#x2F;mysterious call
+		&#x2F;&#x2F; ...
+	&#125;
+&#125;</code></pre>
+
+<p>目前这示例看起来一切OK。但是当<code>otherMethod</code>方法完成时我们会看到意想不到的结果。突然<code>$aMoney</code>不再包含100美元。发生了什么？如果<code>otherMethod</code>在内部调用我们先前定义的<code>add</code>方法，又会发生什么。也许你不知道add会更改Money的状态，这就是我们所说的副作用。</p>
+<p>怎样去避免这样的问题，很简单，就是确保值对象保持不变，我们就可以避免这类问题。一个简单的方法就是对任何潜在的修改操作都返回一个新的实例，就像这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">
+class Money
+&#123;
+	&#x2F;&#x2F; ...
+	public function add(Money $money)
+	&#123;
+		if (!$money-&gt;currency()-&gt;equals($this-&gt;currency())) &#123;
+			throw new \InvalidArgumentException();
+		&#125;
+		return new self(
+			$money-&gt;amount() + $this-&gt;amount(),
+			$this-&gt;currency()
+		);
+	&#125;
+&#125;</code></pre>
+
+<p>通过这样简单的修改，值对象的不变得到了保障。每次两个Money实例的相加都会得到返回一个新的对象实例。其他类可以执行很多修改操作而不会影响到原始的值对象，没有副作用的代码更易于理解、易于测试和不易出错。</p>
+<h1 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h1><p>看一下下面的代码片段：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$a &#x3D; 10;
+$b &#x3D; 10;
+var_dump($a &#x3D;&#x3D; $b);
+&#x2F;&#x2F; bool(true)
+var_dump($a &#x3D;&#x3D;&#x3D; $b);
+&#x2F;&#x2F; bool(true)
+$a &#x3D; 20;
+var_dump($a);
+&#x2F;&#x2F; integer(20)
+$a &#x3D; $a + 30;
+var_dump($a);
+&#x2F;&#x2F; integer(50);</code></pre>
+
+<p>尽快<code>$a</code>和<code>$b</code>是存储在不同内存位置的不同变量，但是进行比较时它们是相同的。它们持有相同的值，因此我们认为它们相等。你可以随时将<code>$a</code>的值从10修改为20，再将20减掉10，你可以不用考虑前一个值是什么，而随意替换为任意整数，因为你没修改它，你仅仅是替换了它！但如果你对这些变量使用了一些操作（如加法，即<code>$a+$b</code>），则会得到另一个新的值，该值可以分配给另一个变量或者先前定义的变量。你将$a传递给另一个函数时，除非通过引用显示传递，否则你只传递一个值，$a是否在该函数中被修改无关紧要，因为当前代码中，你仍然拥有原始的变量副本，所以值对象的行为与基本类型相同。</p>
+<h1 id="测试值对象"><a href="#测试值对象" class="headerlink" title="测试值对象"></a>测试值对象</h1><p>值对象的测试与普通对象的测试相同。但是，不变性和无副作用行为也需要进行测试。一种方法是在执行任何修改之前创建要测试的值对象的副本，使用已实现的相等性检查来断言两者是否相等。断言的原始对象和副本需要仍然相等。</p>
+<p>让我们在<code>Money</code>类中测试<code>add</code>方法的无副作用实现：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class MoneyTest extends FrameworkTestCase
+&#123;
+	&#x2F;**
+	* @test
+	*&#x2F;
+	public function copiedMoneyShouldRepresentSameValue()
+	&#123;
+		$aMoney &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+		$copiedMoney &#x3D; Money::fromMoney($aMoney);
+		$this-&gt;assertTrue($aMoney-&gt;equals($copiedMoney));
+	&#125;
+
+	&#x2F;**
+	* @test
+	*&#x2F;
+	public function originalMoneyShouldNotBeModifiedOnAddition()
+	&#123;
+		$aMoney &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+		$aMoney-&gt;add(new Money(20, new Currency(&#39;USD&#39;)));
+		$this-&gt;assertEquals(100, $aMoney-&gt;amount());
+	&#125;
+	
+	&#x2F;**
+	* @test
+	*&#x2F;
+	public function moniesShouldBeAdded()
+	&#123;
+		$aMoney &#x3D; new Money(100, new Currency(&#39;USD&#39;));
+		$newMoney &#x3D; $aMoney-&gt;add(new Money(20, new Currency(&#39;USD&#39;)));
+		$this-&gt;assertEquals(120, $newMoney-&gt;amount());
+	&#125;
+	&#x2F;&#x2F; ...
+&#125;</code></pre>
+
+<h1 id="持久化值对象"><a href="#持久化值对象" class="headerlink" title="持久化值对象"></a>持久化值对象</h1><p>值对象不是自己独立持久化的，它们通常在一个聚合(Aggregate)中被持久化。值对象不应该被作为一个记录持久化，即使在某些情况下这是一种选择。相反，最好使用Embedded Value（译者注：映射一个对象的值到一条记录的字段上）或者Serialize LOB（译者注：序列化single large object）模式。这两种模式可以在使用ORM（如Doctrine）持久化对象时可以实现。由于值对象很小，所以Embedded Value通常是最佳选择，因为这样可以通过值对象拥有的任一个属性值来查询实体(Entity)。如果值对象的属性字段查询对你来说并不重要，则序列化的方式更容易来实现持久化。</p>
+<p>思考一下下面带有id、name、price（Money值对象）属性的Product实体。我们故意简化了这个示例，使用了字符串作为id而不是值对象：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class Product
+&#123;
+	private $productId;
+
+	private $name;
+
+	private $price;
+	
+	public function __construct(
+		$aProductId,
+		$aName,
+		Money $aPrice
+	) &#123;
+		$this-&gt;setProductId($aProductId);
+		$this-&gt;setName($aName);
+		$this-&gt;setPrice($aPrice);
+	&#125;
+	&#x2F;&#x2F; ...
+&#125;</code></pre>
+
+<p>假设你使用Repository（第10章内容）仓储来持久化Product实体，一个创建并持久化新的Product的实现会是这样：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">$product &#x3D; new Product(
+	$productRepository-&gt;nextIdentity(),
+	&#39;Domain-Driven Design in PHP&#39;,
+	new Money(999, new Currency(&#39;USD&#39;))
+);
+$productRepository−&gt;persist(product);</code></pre>
+
+<p>现在让我们来看一下使用特性的ORM和Doctrine两个实现方式来持久化包含值对象的Product实体。我们将重点介绍Embedded Value和Serialized LOB模式的使用，以及介绍持久化单个值对象与多个值对象集合的不同之处。</p>
+<blockquote>
+<p><strong>为什么选择Doctrine？</strong></p>
+</blockquote>
+<blockquote>
+<p>Doctrine是一个非常棒的ORM。它可以解决PHP应用所面临的80%的需求，它拥有一个非常好的社区生态。进行正确适当的配置，可以达到与定制ORM相同或者更好的性能（且不会失去可维护性）。我们推荐在处理大多数的Entity和业务逻辑时使用Doctrine，它将节约你许多时间和头疼的事情。</p>
+</blockquote>
+<h2 id="持久化单个值对象"><a href="#持久化单个值对象" class="headerlink" title="持久化单个值对象"></a>持久化单个值对象</h2><p>持久化单个值对象有许多做法。从使用Serialize LOB到Embedded Values，从选择使用定制ORM到选择开源项目（如Doctrine）。我们看一下你的公司为了持久化实体到数据库中而开发的定制的ORM，在我们的场景中，定制ORM代码使用了<code>DBAL</code>库（译者注：详见Doctrine项目中的DBAL库）来实现的。（译者注：省略翻译夸赞DBAL的内容，具体还是去亲自看一下DBAL的文档即可）。</p>
+<h2 id="使用定制ORM和Embedded-Value"><a href="#使用定制ORM和Embedded-Value" class="headerlink" title="使用定制ORM和Embedded Value"></a>使用定制ORM和Embedded Value</h2><p>如果我们使用Embedded Value模式和定制ORM来处理持久化问题，那我们需要在每个Entity表中为值对象的每个属性创建一个字段。这种情况下，当持久化Product实体时我们需要创建额外的两个字段——一个是值对象数量amount，另一个是货币ISO代码：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">CREATE TABLE &#96;products&#96; (
+	id INT NOT NULL,
+	name VARCHAR( 255) NOT NULL,
+	price_amount INT NOT NULL,
+	price_currency VARCHAR( 3) NOT NULL
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8mb4 COLLATE&#x3D;utf8mb4_unicode_ci;</code></pre>
+<p>我们第10章中，对于在数据库中持久化Entity，Repository需要映射Entity和Money值对象的每个字段。</p>
+<p>如果你正在使用基于DBAL的定制ORM（下文我们称之为DbalProductRepository），你必须注意<code>INSERT</code>语句的创建、参数的绑定和执行语句：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DbalProductRepository
+extends DbalRepository
+implements ProductRepository
+&#123;
+	public function add(Product $aProduct)
+	&#123;
+		$sql &#x3D; &#39;INSERT INTO products VALUES (?, ?, ?, ?)&#39; ;
+		$stmt &#x3D; $this-&gt;connection()-&gt;prepare($sql);
+		$stmt-&gt;bindValue(1, $aProduct-&gt;id());
+		$stmt-&gt;bindValue(2, $aProduct-&gt;name());
+		$stmt-&gt;bindValue(3, $aProduct-&gt;price()-&gt;amount());
+		$stmt-&gt;bindValue(4, $aProduct-&gt;price()-&gt;currency()-&gt;isoCode());
+		$stmt-&gt;execute();
+		&#x2F;&#x2F; ...
+	&#125;
+&#125;</code></pre>
+
+<p>在执行了这个代码片段将<code>Product</code>实体持久化到数据库之后，数据库每个字段都将被填充我们所期望的数据内容：</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">mysql&gt; select * from products \G
+*************************** 1. row ***************************
+id: 1
+name: Domain-Driven Design in PHP
+price_amount: 999
+price_currency: USD
+1 row in set (0.00 sec)</code></pre>
+
+<p>如你所看到的，你可以为了持久化值对而在定制ORM中手工映射你的值对象和查询参数。但并不是所有的事情看起来这么简单。让我们尝试从数据库中获取Product和关联的Money值对象。一个通用方式是执行<code>SELECT</code>语句并返回一个新的Entity：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">class DbalProductRepository
+extends DbalRepository
+implements ProductRepository
+&#123;
+	public function productOfId($anId)
+	&#123;
+		$sql &#x3D; &#39;SELECT * FROM products WHERE id &#x3D; ?&#39;;
+		$stmt &#x3D; $this-&gt;connection()-&gt;prepare($sql);
+		$stmt-&gt;bindValue(1, $anId);
+		$res &#x3D; $stmt-&gt;execute();
+		&#x2F;&#x2F; ...
+		return new Product(
+			$row[&#39;id&#39;],
+			$row[&#39;name&#39;],
+			new Money(
+				$row[&#39;price_amount&#39;],
+				new Currency($row[&#39;price_currency&#39;])
+			)
+		);
+	&#125;
+&#125;</code></pre>
+<p>这么做有一些好处，首先，你可以方便的了解对象的持久化和后续的创建过程。其次，你可以基于值对象的任何属性进行查询。最后，持久化实体所需要的空间就那么大，不多不少。</p>
+<p>但是，使用定制ORM方式也有其缺点。正如第6章Domain-Events(领域事件)中解释到的，如果你的领域对创建Aggregate关注，则实体（以Aggregate聚合形式的）应该在构造函数中发起一个Event事件。如果你使用了new语句，则发起的事件将会和从数据库取出的Aggregate一样多。（译者注：因为从数据库取数据后并使用new关键字实例化对象，会发起事件）</p>
+<p>这也正是为什么Doctrine不使用构造函数，而是使用内部代理以及序列化、反序列化方法来重建一个特定状态的对象的原因，一个Entity实体在其生命周期中仅使用一次new关键词来创建：</p>
+<blockquote>
+<p><strong>构造函数</strong></p>
+<p>构造函数不需要为对象中的每个属性都包含一个参数，想一下博客文章，其构造函数可能只需要一个id和title，但是在对象内部也能使它的状态属性设置成draft(草稿)，当发布文章时，publish方法会被调用，来修改文章的状态和发布时间。</p>
+</blockquote>
+<p>如果你仍然打算使用自己定制的ORM，需要准备解决一些问题。例如Event事件、不同的构造函数、值对象、懒加载关联数据等等，这就是为什么我们推荐使用Doctrine来开发DDD应用。</p>
+<p>此外，你需要创建一个继承了Product实体的DbalProduct实体，该实体能够当从数据库获取时不使用new关键字来重建对象，也不需要使用工厂方法。</p>
+<p>（未完待续）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ddd/" rel="tag"># ddd</a>
+              <a href="/tags/%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/" rel="tag"># 领域驱动设计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/what-is-SNI/" rel="prev" title="什么是SNI？">
+                  <i class="fa fa-angle-left"></i> 什么是SNI？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/DDD-in-php-services/" rel="next" title="[译]服务 - 《Domain-Driven Design in PHP》第5章">
+                  [译]服务 - 《Domain-Driven Design in PHP》第5章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

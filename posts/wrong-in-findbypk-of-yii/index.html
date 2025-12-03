@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="树大招风，当然网站被恶意攻击注入是常有的事，这也是对一个程序员代码质量以及经验水平的考验。 今天公司一个项目不幸被sql注入了，根据日志查询到了注入点，是某个详情页的代码，大致就是根据某条数据id查询该条数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Yii中findByPk被sql注入的一个误区">
+<meta property="og:url" content="http://www.veitor.net/posts/wrong-in-findbypk-of-yii/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="树大招风，当然网站被恶意攻击注入是常有的事，这也是对一个程序员代码质量以及经验水平的考验。 今天公司一个项目不幸被sql注入了，根据日志查询到了注入点，是某个详情页的代码，大致就是根据某条数据id查询该条数据。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-11-09T07:15:00.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.996Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="Yii">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/wrong-in-findbypk-of-yii/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/wrong-in-findbypk-of-yii/","path":"posts/wrong-in-findbypk-of-yii/","title":"关于Yii中findByPk被sql注入的一个误区"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于Yii中findByPk被sql注入的一个误区 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/wrong-in-findbypk-of-yii/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="关于Yii中findByPk被sql注入的一个误区 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于Yii中findByPk被sql注入的一个误区
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2015-11-09 15:15:00" itemprop="dateCreated datePublished" datetime="2015-11-09T15:15:00+08:00">2015-11-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>树大招风，当然网站被恶意攻击注入是常有的事，这也是对一个程序员代码质量以及经验水平的考验。</p>
+<p>今天公司一个项目不幸被sql注入了，根据日志查询到了注入点，是某个详情页的代码，大致就是根据某条数据id查询该条数据。</p>
+<span id="more"></span>
+
+<p>理所当然的，我们会使用Yii中Ar类提供的<code>findByPk()</code>方法来查询该数据，而正是这里却被注入了。</p>
+<p>首先有人可能会想，数据的主键，不就是一个自增id数字吗？那未必，但大多数情况下其实就是自增id。</p>
+<p>那么既然是自增id，是int型，Yii提供的这个方法不会帮我们去验证字段类型吗？Yii当然会帮我们验证该字段类型。这里推荐一下这篇文章（<a target="_blank" rel="noopener" href="http://www.yiiframework.com/wiki/275/how-to-write-secure-yii-applications/">http://www.yiiframework.com/wiki/275/how-to-write-secure-yii-applications/</a>），比较适合使用Yii开发的人员如何注意安全</p>
+<p>这篇文章中有段提到：In fact, Yii will help, even in the first case. The method findByPk() uses the table schema to ensure that a numeric column only gets numeric criteria.</p>
+<p>说明使用Yii的findByPk()会使用数据表schema确保对应类型的字段获得对应类型的查询条件，那么也就是说int型自增id字段通过这个函数传入id值，都是能验证或转换成对应的int型。可此时此刻并没有，我们还是被注入了。</p>
+<p>那么我们就要去分析一下到底是什么原因导致了这样，难道是Yii版本的问题？我们分析一下源码。</p>
+<p>从Ar类<code>ActiveRecord</code>入手，找到<code>findByPk()</code>，再找到了<code>CDbCommandBuilder</code>类中的<code>createPkCriteria()</code>方法，接着找到同类中的<code>createInCondition()</code>方法，会发现该方法中使用了一个方法<code>typecast()</code>将传入的id值进行了类型转换，这个方法位于<code>CMysqlColumnSchema</code>类中，该类的一个实例就代表着一张表中的一个字段，在这里是主键id字段，其源代码是这样的：</p>
+<pre><code>public function typecast($value)
+&#123;
+    if(gettype($value)===$this-&gt;type || $value===null || $value instanceof CDbExpression)
+        return $value;
+    if($value===&#39;&#39; &amp;&amp; $this-&gt;allowNull)
+        return $this-&gt;type===&#39;string&#39; ? &#39;&#39; : null;
+    switch($this-&gt;type)
+    &#123;
+        case &#39;string&#39;: return (string)$value;
+        case &#39;integer&#39;: return (integer)$value;
+        case &#39;boolean&#39;: return (boolean)$value;
+        case &#39;double&#39;:
+        default: return $value;
+    &#125;
+&#125;
+</code></pre>
+<p><code>$value</code>是传入的id值，<code>$this-&gt;type</code>是字段类型，假设弱类型语言php获得到的id数字是string类型，字段类型是integer，那么逻辑就会进入switch内，并且走的是case ‘integer’，将string类型转换为integer，但并没有。<br>打印$this-&gt;type出来看，竟然显示的是<code>string</code>，也就是Yii将该表中的主键id认为是string类型，也就因此没有将传入参数转换成integer型，所以被注入了。</p>
+<p>但究竟是什么原因导致的？于是接着开始找是什么地方使得$this-&gt;type值为string的，于是找到该类的<code>extractType()</code>方法，这方法传了一个参数<code>$dyType</code>，但在哪被调用传入的呢？我们可以看到这个<code>CMysqlColumnSchema</code>类继承了<code>CDbColumnSchema</code>，在<code>CDbColumnSchema</code>类中的**<code>init()</code>**方法中就调用了<code>extractType()</code>，但<code>init</code>方法中传入的第一个参数还是我们想要知道的<code>$dbType</code>，于是接着找哪个地方又调用了该方法。</p>
+<p>我们看<br><code>CDbSchema</code>类，这是一个抽象类，<code>CMysqlSchema</code>继承了它，在CDbConnection中使用了<code>CMysqlSchema</code>作为mysql驱动类。<br>当我们要获得表的schema时，必定要调用到该类中的<code>getTable()</code>方法，而该方法又调用了同类或子类中的<code>loadTable()</code>，意思就是获得表信息，传入的参数就是表名，接着调用了同类中的<code>findColumns()</code>方法，查找出当前表中的字段，方法中使用了<code>SHOW FULL COLUMNS FROM TABLE</code>，然后获得的了一个数组，数组中包含着各个字段名，再使用<code>createColumn()</code>方法将每个字段实例化一个<code>CMysqlColumnSchema</code>实例，那么就又回到上面将的这个类了，此时这里执行该类中的<code>init()</code>方法了（上面标粗的地方），并且传入了数据库获得到的字段类型，此时<code>$dbType</code>的值是<code>int(10) unsigned</code>，也正是我们数据库中设定的类型。</p>
+<p><code>init()</code>方法自然就执行了同类中的<code>extractType()</code>方法，现在我们就仔细看这个类：</p>
+<pre><code>protected function extractType($dbType)
+&#123;
+    if(strncmp($dbType,&#39;enum&#39;,4)===0)
+        $this-&gt;type=&#39;string&#39;;
+    elseif(strpos($dbType,&#39;float&#39;)!==false || strpos($dbType,&#39;double&#39;)!==false)
+        $this-&gt;type=&#39;double&#39;;
+    elseif(strpos($dbType,&#39;bool&#39;)!==false)
+        $this-&gt;type=&#39;boolean&#39;;
+    elseif(strpos($dbType,&#39;int&#39;)===0 &amp;&amp; strpos($dbType,&#39;unsigned&#39;)===false || preg_match(&#39;/(bit|tinyint|smallint|mediumint)/&#39;,$dbType))
+        $this-&gt;type=&#39;integer&#39;;
+    else
+        $this-&gt;type=&#39;string&#39;;
+&#125;
+</code></pre>
+<p>其中<code>$dbType</code>的值是”int(10) unsigned”，这是通过<code>SHOW FULL COLUMNS FROM TABLE</code>得来的，那么对应到PHP中该是哪种类型呢？看代码，我们会发现最终程序走了最后的<code>else</code>，这里导致了<code>$this-&gt;type</code>为<code>string</code>。也就因此没有转换我们的传入值。</p>
+<p>网上我们可以看到这个问题：<a target="_blank" rel="noopener" href="https://code.google.com/p/yii/issues/detail?id=1820#c1">https://code.google.com/p/yii/issues/detail?id=1820#c1</a></p>
+<p>数据库中无符号的int型在php中如果用integer型可能会失去精度，因此用了string。</p>
+<p>解决办法就是建表的时候，建议将每个int型字段不要设置unsigned，毕竟signed int能存入的值已经够我们用了。</p>
+<p>这样一来，使用Yii中<code>findByPk()</code>方法就是自动帮我们把传入参数转为<code>integer</code>型了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Yii/" rel="tag"># Yii</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/blog-moved-to-aliyun/" rel="prev" title="博客上阿里云了">
+                  <i class="fa fa-angle-left"></i> 博客上阿里云了
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/interface-based-programming/" rel="next" title="设计模式笔记：第一个设计模式原则——按接口编程">
+                  设计模式笔记：第一个设计模式原则——按接口编程 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

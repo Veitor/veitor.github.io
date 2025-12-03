@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式宽度自适应布局。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：  百分比宽度布局 流式布局  题主说的是第一派，宽度使用百">
+<meta property="og:type" content="article">
+<meta property="og:title" content="响应式与自适应的区别">
+<meta property="og:url" content="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式宽度自适应布局。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：  百分比宽度布局 流式布局  题主说的是第一派，宽度使用百">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif">
+<meta property="article:published_time" content="2014-11-06T00:14:09.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.995Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="前端">
+<meta property="article:tag" content="转载">
+<meta property="article:tag" content="响应式">
+<meta property="article:tag" content="自适应">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/","path":"posts/the-difference-between-responsive-and-adaptive/","title":"响应式与自适应的区别"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>响应式与自适应的区别 | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/the-difference-between-responsive-and-adaptive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="响应式与自适应的区别 | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          响应式与自适应的区别
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2014-11-06 08:14:09" itemprop="dateCreated datePublished" datetime="2014-11-06T08:14:09+08:00">2014-11-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><a target="_blank" rel="noopener" href="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif"><img data-src="http://storage.veitor.net/uploads/2014/11/6310d41cjw1em0lsear2xg20b408cn22.gif" alt="6310d41cjw1em0lsear2xg20b408cn22"></a></p>
+<p>起初，网页设计者都会设计固定宽度的页面，最开始的电脑显示器分辨率种类不多，因为当时电脑本来就少，即使有变化也是 800 850 870 880。 后来随着显示器越来越多，以及笔记本的普及，这种方式的页面出现了问题。于是出现了一种新的布局方式<strong>宽度自适应布局</strong>。我们平时谈论的自适应布局，大多指的就是宽度自适应布局。 在这种布局下，出现了两派：</p>
+<ul>
+<li>百分比宽度布局</li>
+<li>流式布局</li>
+</ul>
+<p>题主说的是第一派，宽度使用百分比，文字使用em。第二派的布局以 iGoogle 为代表（已经停止）。 再后来，浏览器大战 时代，firefox、Oparo、Chrome …… 出现，结束了 IE 一统江湖的局面，N 年没有更新的 IE6 发布了新版本，以前已 IE 为标准的 CSS 向 W3C 标准趋近，随后各种针对浏览器的 <a target="_blank" rel="noopener" href="http://baike.baidu.com/view/1119452.htm">css hack</a> 技术出现。 虽然浏览器这么多，但是<strong>响应式布局</strong>依然不是主流，人们还在使用 css hack 技术。注意我的用词——「不是主流」，虽然不是主流，不代表当时不被使用。 比如一向超前的伟大的 Google。当时没有响应式布局这个词语，但是慢慢出现了一个词——<strong>渐进增强</strong>，新词的出现总是伴随的旧词一起出现。就好比 3G 出现之前，没人管自己的手机叫 2G，所以，3G 和 2G 两个词是一起出现的（技术上当然2G技术先出现）。同理，渐进增强出现后，另一个词「优雅降级」也随之出现了。 词的意思可以自己看 wiki、Google，我只在这儿举一个例子，gmail 和 qqmail。 他俩的宽度都是 100%，都是自适应。但是： qqmail 就是 css hack 的完美体现，你用任何一个浏览器，几乎可以看到同一个样子的邮箱，腾讯的前端工程师们用各种 css hack 技术来展示邮箱页面，为的是<strong>统一的用户体验</strong>。 而 gmail 使用了<strong>渐进增强</strong>，你的浏览器越强，你看到的效果就越好，用户体验就越好。 再后来，就是大家都熟知的 Google 发布了 android，于是互联网大战从 PC 打到了手机。还有 HTML5 标准的发布。 手机虽然屏幕变小了，但是却提供了更丰富的功能。还记得以前用诺基亚上 QQ 的事儿吗？我们访问的是 3g.qq.com，当时我使用的是中兴的手机，访问 wap.qq.com，在后来的职能手机都是访问 m.qq.com。 不禁有人问「真的需要为每个手机分别设计一个网页吗？」、「真的需要为手机和电脑设计不同的网页吗？」，解决方法当然有很多种，可以看看 <a target="_blank" rel="noopener" href="http://www.csszengarden.com/">css zen garden</a> 相信做过前端的都看过这个网站，一个神奇的网站。 最终的解决方案胜出者是<strong>响应式布局</strong>。 响应式布局被大家熟知的一个重要原因就是 twitter 开源了 bootstrap。Google 第一次完成了<strong>从先驱到烈士</strong>。 好了，上面介绍的是从从“自适应”到“响应式”，以下 Responsive design ＝ RWD，Adaptive design ＝ AWD。 先说共同点，两者都是因为越来越多的 移动设备（ mobile, tablet device ）加入到互联网中来而出现的为移动设备提供更好的体验的技术。用技术来使网页适应从小到大（现在到超大）的不同分辨率的屏幕。有人说，RWD 是 AWD 包含的一个子集。 RWD：Ethan Marcote 的文章是大家认为 RWD 的起源。他提出的 RWD 是采用 CSS 的 media query 技术，配合流体布局（ fluid grids ）和同样可以自适应的图片&#x2F;视频等资源素材。以上所说，都是通过 HTML 和 CSS 就能完成的。一般来说，RWD 倾向于只改变元素的外观布局，而不大幅度改变内容。Jeffrey Zeldman 总结说，我们就把 RWD 定义为一切能用来为各种分辨率和设备性能优化<strong>视觉体验</strong>的技术吧。 AWD：Adaptive Design 是 Aaron Gustafson 的书的标题。他认为 AWD 在包括 RWD 的 CSS media query 技术以外，也要用 Javascript 来操作 HTML 来更适应移动设备的能力。AWD 有可能会针对移动端用户减去内容，减去功能。AWD 可以在服务器端就进行优化，把优化过的内容送到终端上。AWD 通常会牵扯到另外一个词 “progressive enhancement” 。 progressive enhancement（渐进增强）：从针对最低端的，最低分辨率的设备的设计做起，逐步逐步为更高阶的设备增加功能和效果的做法。（换个角度说，也就是相当于为移动设备减去功能） RWD 和 AWD 在断点（ break point ）的区别： RWD 采用流体＋断点，在断点之间，页面依然会随窗口大小自动缩放（通过 fluid grid ），直到遇到断点改变界面样式。相对的，AWD 只在针对几种分辨率（如1280，800，640，320px）进行优化，在断点之间的自动过渡比较少。 还有一种说法： RWD 一般来说需要在网页设计初期就开始（通常采用 mobile first 策略），所以旧的网站要做 RWD 很可能要完全重建。而 AWD 则采用保留现有桌面网站（ desktop version ）而对于更小的分辨率做针对性的优化（适应），这点对于很多老的网站来说很重要，因为重构成本太大。 另外，对于 mobile 用户的优化到底应该怎么做，有两方的说法各不相让。有人说，不应该因为用户使用的是 mobile device 就删去内容，限制他们的功能，应该平等对待。也有人说，正因为是移动设备，有其流量，性能，网速的局限性，用移动设备登录网站的目的也会更有针对性，要为 用户精简文字，精简最常用的功能放在首页，服务器端的优化才是真的针对 mobile 的优化。 最后： 在网上的各种说法里确实是有很多相互干扰相互矛盾的地方，但是其实技术都是摆在那里的。其实可以认为，AWD 在针对布局的优化中，可以采用 RWD 的策略，但是AWD 着力于更多其他的 JS 或者服务器上的优化，来强化移动端体验。 不用纠结于词汇，根据网站功能复杂度，预算和资源等，选择要使用的技术，从客户端的展现，到 JS，到服务器的优化等等。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag"># 前端</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+              <a href="/tags/%E5%93%8D%E5%BA%94%E5%BC%8F/" rel="tag"># 响应式</a>
+              <a href="/tags/%E8%87%AA%E9%80%82%E5%BA%94/" rel="tag"># 自适应</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/installation-and-usage-of-tool-xhprof/" rel="prev" title="PHP性能调试工具xhprof的安装与使用">
+                  <i class="fa fa-angle-left"></i> PHP性能调试工具xhprof的安装与使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/usage-of-where-1-0-in-sql/" rel="next" title="sql中where 1&#x3D;1和 0&#x3D;1 的作用">
+                  sql中where 1=1和 0=1 的作用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

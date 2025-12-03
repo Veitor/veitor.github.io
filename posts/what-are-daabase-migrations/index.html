@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="引言数据库模式（Database schemas）定义了关系型数据库所管理数据的结构与相互关系。尽管在项目初期制定一个经过深思熟虑的schema至关重要，但随着需求的不断演进，对初始schema进行更改往往难以甚至无法避免。由于schema决定了数据的形态与边界，任何变更都必须谨慎实施，以符合使用该schema的应用程序的预期，并避免丢失数据库系统当前已存储的数据。 在本文中，我们将介绍什么是数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么是数据库迁移（Database Migrations）">
+<meta property="og:url" content="http://www.veitor.net/posts/what-are-daabase-migrations/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="引言数据库模式（Database schemas）定义了关系型数据库所管理数据的结构与相互关系。尽管在项目初期制定一个经过深思熟虑的schema至关重要，但随着需求的不断演进，对初始schema进行更改往往难以甚至无法避免。由于schema决定了数据的形态与边界，任何变更都必须谨慎实施，以符合使用该schema的应用程序的预期，并避免丢失数据库系统当前已存储的数据。 在本文中，我们将介绍什么是数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-11-22T06:00:47.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.996Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/what-are-daabase-migrations/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/what-are-daabase-migrations/","path":"posts/what-are-daabase-migrations/","title":"什么是数据库迁移（Database Migrations）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>什么是数据库迁移（Database Migrations） | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%81%E7%A7%BB%EF%BC%88Database-Migrations%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">什么是数据库迁移（Database Migrations）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%B7%A5%E5%85%B7%E6%9C%89%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8A%BF"><span class="nav-number">3.</span> <span class="nav-text">迁移工具有哪些优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%B7%A5%E5%85%B7%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8A%A3%E5%8A%BF"><span class="nav-number">4.</span> <span class="nav-text">迁移工具有哪些劣势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%8A%B6%E6%80%81%EF%BC%88state%EF%BC%89%E4%B8%8E%E5%9F%BA%E4%BA%8E%E5%8F%98%E6%9B%B4%EF%BC%88change%EF%BC%89%E7%9A%84%E8%BF%81%E7%A7%BB"><span class="nav-number">5.</span> <span class="nav-text">基于状态（state）与基于变更（change）的迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%8A%B6%E6%80%81%EF%BC%88state-based%EF%BC%89%E7%9A%84%E8%BF%81%E7%A7%BB"><span class="nav-number">5.1.</span> <span class="nav-text">基于状态（state-based）的迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9F%BA%E4%BA%8E%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%81%E7%A7%BB%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88"><span class="nav-number">5.1.1.</span> <span class="nav-text">使用基于状态的迁移时需要注意什么</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8F%98%E6%9B%B4%EF%BC%88change-based%EF%BC%89%E7%9A%84%E8%BF%81%E7%A7%BB"><span class="nav-number">5.2.</span> <span class="nav-text">基于变更（change-based）的迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9F%BA%E4%BA%8E%E5%8F%98%E6%9B%B4%E7%9A%84%E8%BF%81%E7%A7%BB%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88"><span class="nav-number">5.2.1.</span> <span class="nav-text">使用基于变更的迁移时需要注意什么</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%81%E7%A7%BB"><span class="nav-number">6.</span> <span class="nav-text">如何使用数据库迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E6%9C%9F%E9%97%B4"><span class="nav-number">6.1.</span> <span class="nav-text">开发期间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%92%8C%E9%83%A8%E7%BD%B2%E6%9C%9F%E9%97%B4"><span class="nav-number">6.2.</span> <span class="nav-text">测试和部署期间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%81%E7%A7%BB%E5%B7%A5%E5%85%B7"><span class="nav-number">7.</span> <span class="nav-text">如何选择数据库迁移工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/what-are-daabase-migrations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="什么是数据库迁移（Database Migrations） | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          什么是数据库迁移（Database Migrations）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-22 14:00:47" itemprop="dateCreated datePublished" datetime="2025-11-22T14:00:47+08:00">2025-11-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>数据库模式（Database schemas）定义了关系型数据库所管理数据的结构与相互关系。尽管在项目初期制定一个经过深思熟虑的schema至关重要，但随着需求的不断演进，对初始schema进行更改往往难以甚至无法避免。由于schema决定了数据的形态与边界，任何变更都必须谨慎实施，以符合使用该schema的应用程序的预期，并避免丢失数据库系统当前已存储的数据。</p>
+<p>在本文中，我们将介绍什么是数据库模式迁移、它们解决了哪些问题以及不同的实现策略。我们还将探讨它们所解决的各种痛点以及可能带来的一些潜在陷阱。</p>
+<h2 id="什么是数据库迁移（Database-Migrations）"><a href="#什么是数据库迁移（Database-Migrations）" class="headerlink" title="什么是数据库迁移（Database Migrations）"></a>什么是数据库迁移（Database Migrations）</h2><p>数据库迁移（Database migrations），又称 schema 迁移、数据库 schema 迁移，或简称迁移，是一组受控的变更，用于修改关系型数据库中对象的结构。迁移帮助将数据库 schema 从当前状态过渡到新的期望状态，无论是添加表和列、删除元素、拆分字段，还是更改类型和约束。</p>
+<p>迁移以编程管理的方式对数据结构做增量的、通常是可逆的变更。数据库迁移工具的目标是使数据库变更可重复、可共享且可测试，同时避免数据丢失。通常，迁移工具会生成描述将数据库从已知状态转换到新状态所需的确切操作集的产物。这些产物可以被纳入常规的版本控制系统中，以便跟踪变更并在团队成员之间共享。</p>
+<p>尽管防止数据丢失通常是迁移工具的目标之一，但删除或破坏性修改当前包含数据的结构可能会导致数据被删除。为应对这种情况，迁移通常是一个受监督的过程，涉及检查生成的变更脚本，并进行必要的修改以保留重要信息。</p>
+<span id="more"></span>
+
+<h2 id="迁移工具有哪些优势"><a href="#迁移工具有哪些优势" class="headerlink" title="迁移工具有哪些优势"></a>迁移工具有哪些优势</h2><p>迁移之所以有用，是因为它们允许 database schema 随需求变化而演进。它们帮助开发者规划、验证并安全地将 schema 变更应用到各自的环境。这些被切分的变更在粒度级别上定义，描述了在不同“版本”数据库之间迁移所需完成的转换。</p>
+<p>一般而言，迁移工具会生成可共享、可作用于多套数据库系统并能纳入版本控制的产物或文件。这有助于构建一份与客户端应用程序代码变更紧密关联的数据库修改历史，使 database schema 与应用程序对该结构的假设能够同步演进。</p>
+<p>其他好处还包括：允许（有时是必须）手动微调流程，也就是说可以将流程列表的生成与执行分离开来。每一次变更都可被审计、测试和修改，以确保获得正确结果，同时仍让自动化承担大部分工作。</p>
+<h2 id="迁移工具有哪些劣势"><a href="#迁移工具有哪些劣势" class="headerlink" title="迁移工具有哪些劣势"></a>迁移工具有哪些劣势</h2><p>迁移工具并非没有缺陷，但幸运的是，大多数缺陷都可以通过流程和监督加以缓解。</p>
+<p>由于迁移会修改现有的数据库结构，因此必须小心避免数据丢失。这可能是由工具的错误假设引起的，也可能是某些转换需要对数据结构背后的含义有深入理解所致。尽管人们可能倾向于认为生成的迁移文件是正确的，但由于迁移文件主要关注的是数据结构，因此你有责任确保数据也能被正确保留或转换。</p>
+<p>如果迁移被应用到一个与假设状态不同的数据库，也可能出现问题。例如，当没有使用迁移工具对数据库结构进行更改，或者迁移以错误的顺序应用时，就可能发生这种情况。所有迁移工具都依赖于对数据库当前状态的理解，以便正确修改现有结构。如果实际状态与假设状态不一致，迁移可能会失败，或者可能以不希望的方式更改数据库。</p>
+<p>迁移的另一个潜在问题是，它们通常非常依赖于特定工具。迁移工具会生成代表数据库状态或所需变更的产物。尽管有些工具会生成纯 SQL 结果，但它们有时会在注释中编码额外的细节内容（如特定于某个工具的指令）供工具解析，或者使用特殊的文件名格式来表示顺序。在没有对正在使用的迁移工具进行充分理解的情况下，切换到不同的工具可能会很困难。</p>
+<h2 id="基于状态（state）与基于变更（change）的迁移"><a href="#基于状态（state）与基于变更（change）的迁移" class="headerlink" title="基于状态（state）与基于变更（change）的迁移"></a>基于状态（state）与基于变更（change）的迁移</h2><p>迁移工具主要采用两种 schema 转换策略：基于状态（state-based）的迁移和基于变更（change-based）的迁移。选择哪种方式取决于你是追加快速和简单，还是需要精细化的控制和长期可维护性。选择一种正确的策略可以确保你的应用发布过程更加顺畅，数据质量更高，数据库变更管理更加有效。</p>
+<h3 id="基于状态（state-based）的迁移"><a href="#基于状态（state-based）的迁移" class="headerlink" title="基于状态（state-based）的迁移"></a>基于状态（state-based）的迁移</h3><p>基于状态（state-based）的迁移工具会生成描述如何“从零开始”重建目标数据库状态的产物。这些产物可被应用到一个空的关联数据库系统，使其一次性达到最新版本。</p>
+<p>在描述目标状态的产物生成后，实际的迁移过程会将这些文件与数据库当前状态进行对比。工具会借此分析两者差异，并生成新的文件（或一组文件），将当前数据库 schema 调整至产物所描述的 schema。随后，这些变更操作被应用到数据库，以达成最终目标状态。</p>
+<h4 id="使用基于状态的迁移时需要注意什么"><a href="#使用基于状态的迁移时需要注意什么" class="headerlink" title="使用基于状态的迁移时需要注意什么"></a>使用基于状态的迁移时需要注意什么</h4><p>由于该策略的简单和工作原理，其可靠性较低，生成的迁移操作相关文件必须由经验丰富的开发者仔细审查，以监督整个过程。既要检查描述目标最终状态的文件，也要审查将当前数据库调整至该状态所需操作的文件，确保这些转换不会导致数据丢失。<strong>例如，开发者想要修改某个字段的名字，而迁移工具的可能会通过删除原有的列并创建新的列来实现字段的重命名，那么就必须有人工识别并干预，以防止数据丢失。</strong></p>
+<p>如果还需要考虑到出问题需要回滚的话，又会变得非常棘手：</p>
+<ol>
+<li>我该用哪个版本的状态（快照）来回滚？如何确认使用的是正确的版本？</li>
+<li>回滚脚本是预先生成的吗？还需要花费额外的时间和精力来测试和验证吗？</li>
+<li>回滚操作会撤销回滚哪些变更？还是可以部分撤销？</li>
+</ol>
+<p>如果数据库 schema 频繁发生类似这样需要人工介入的重大变更，该策略就会显得笨重。由于这种额外开销，该技术更适合那些 schema 事先经过充分设计、且基本变更不频繁的场景。</p>
+<p>然而，基于状态的迁移也有其优势：它能产出一份在单一上下文中完整描述数据库状态的文件。这有助于新成员快速上手，并且与版本控制系统的工作流契合良好，因为代码分支引入的冲突可以很容易地解决。</p>
+<h3 id="基于变更（change-based）的迁移"><a href="#基于变更（change-based）的迁移" class="headerlink" title="基于变更（change-based）的迁移"></a>基于变更（change-based）的迁移</h3><p>与基于状态的迁移相对的主要方案是“基于变更”的迁移工具。基于变更的迁移同样会生成用于修改数据库现有结构以达到期望状态的文件。不同的是，它并非去“发现”目标数据库状态与当前状态的差异，而是以某个已知数据库状态为起点，明确定义一系列操作，将其过渡到新状态。随后不断生成新的迁移文件，对数据库做进一步修改，形成一串可按顺序依次执行的变更文件，最终重现出目标数据库状态。</p>
+<p>由于基于变更的迁移通过“从已知状态到目标状态所需操作”来工作，因此必须从初始起点开始，保持一条不间断的迁移文件链。该系统需要一个初始状态（可以是一个空数据库，也可以是描述起始结构的文件）、描述每一次模式转换操作的文件，以及一个定义迁移文件必须按何种顺序执行的明确次序。</p>
+<h4 id="使用基于变更的迁移时需要注意什么"><a href="#使用基于变更的迁移时需要注意什么" class="headerlink" title="使用基于变更的迁移时需要注意什么"></a>使用基于变更的迁移时需要注意什么</h4><p>基于变更的迁移通过其生成的一系列转换脚本，将数据库模式设计的<code>血缘</code>一直追溯到最初结构。这有助于展示数据库结构的演进过程，但难以让人在任意时刻一眼看清数据库的完整状态，因为每个文件中的变更都是在上一个迁移文件产出的结构之上再做修改。</p>
+<p>由于<code>前一状态</code>对基于变更的系统至关重要，这类系统往往会在数据库内部再建一张（元数据）表，记录哪些迁移文件已被执行，就像版本控制中的提交记录一样。借此，工具无需分析当前结构并与“期望状态”比对，就能知道系统身处何态；而期望状态只能通过依次编译全部迁移文件才能得知。</p>
+<p>该方法的劣势在于：除初始点外，代码仓库里再也找不到对数据库当前状态的完整描述。每个迁移文件都依赖前一个文件，因此虽然变更被很好地模块化，但在任意时刻想推理出整个数据库全貌却变得困难。此外，操作顺序至关重要，当不同开发者做出冲突变更时，也更难解决冲突。</p>
+<p>然而，基于变更的系统也具备优势：它允许对数据库结构进行快速、迭代的调整，提供了更大的灵活性和更好的跟踪性。省掉了<code>分析当前状态→对比期望状态→生成操作文件→再应用</code>这一耗时流程，系统直接依据之前已执行的变更来假定当前状态。总体而言，该策略的每次更新都会被记录和审查，从而更容易进行测试和回滚，降低部署失败的风险。但可能也存在额外的风险，<strong>例如没有通过执行migration来变更schema，而是直接修改了数据库的schema，这种情况可能会导致数据库系统陷入了未定义状态结构</strong>，因此需要严格把控日常行为流程。</p>
+<h2 id="如何使用数据库迁移"><a href="#如何使用数据库迁移" class="headerlink" title="如何使用数据库迁移"></a>如何使用数据库迁移</h2><p>在介绍了两种主要的迁移工具类别之后，我们来看看在应用开发、部署与协作过程中，如何实际使用这些工具。</p>
+<h3 id="开发期间"><a href="#开发期间" class="headerlink" title="开发期间"></a>开发期间</h3><p>从你对初始数据模型做出第一次修改的那一刻起，数据库迁移就可能变得相关。事实上，大多数迁移工具都会生成迁移文件，将关系型数据库从完全空白的状态带到初始模型。</p>
+<p>在开发应用程序的过程中，你希望存储的数据形态、数据库系统的要求，以及你想保留的具体细节常常会变化。这可能是因为你对问题域的理解更加深入，也可能是因为新增功能需要额外的数据或对现有信息采用不同的布局。重要的是，在开发过程中一旦发生这些模型变更，就要及时定义它们，以确保迁移产物能与相关代码同步并一起部署。</p>
+<p>将迁移文件与对应代码库一起存储和管理，可以让数据库模型变更像代码变更一样接受评审。如前所述，基于状态的迁移能让这一过程更简单，因为通过文件差异就能直观看到期望状态之间的冲突；而基于变更的系统在出现冲突时需要更谨慎地手动解决，因为顺序至关重要，且任何一份迭代迁移文件都无法看到完整的数据结构。</p>
+<p>总体而言，在开发阶段定义数据库变更时应保持保守，并记住这些变更最终可能会在真实生产数据上执行。这一点对破坏性变更尤其重要。应考虑更安全的替代删除方案，例如用重命名列代替删除列、用<code>软删除</code>代替<code>物理删除</code>，或在转换数据结构时先复制再修改，而非直接覆盖。</p>
+<p>换句话说，数据库模型迁移是你随代码变更一起维护的变更之一。模型迁移应与代码变更同步考虑，以确保所有变更都有记录，并且适用于当前的数据库设计。</p>
+<h3 id="测试和部署期间"><a href="#测试和部署期间" class="headerlink" title="测试和部署期间"></a>测试和部署期间</h3><p>迁移文件创建完成后，通常需要依次部署到越来越重要的环境中，以验证它们是否按预期工作，并确保所有代码需求都得到满足。虽然你很可能在开发环境中已经编写并应用了这些迁移，但就像对待代码变更一样，你还需在数据更真实、集成更完整、负载更接近实际的额外环境中进行测试。</p>
+<p>此时，你必须确认迁移文件能够干净地应用到目标数据库，目标数据库的初始结构与你在开发迁移文件时所假设的结构一致，并且数据库中的数据不会因所做的变更而受到负面影响。可以通过手动与自动化检查的组合来确保这些要求得到满足。</p>
+<p>一旦变更在预发布环境中被验证为安全且功能正常，就可以准备将其应用到生产数据库系统。在将迁移应用于生产系统之前，如果近期没有可用的数据副本，务必考虑对当前数据执行一次完整备份。若迁移产生不可预见的后果，或预发布环境与生产环境之间的差异导致数据丢失，备份将是最后的救命稻草。</p>
+<h2 id="如何选择数据库迁移工具"><a href="#如何选择数据库迁移工具" class="headerlink" title="如何选择数据库迁移工具"></a>如何选择数据库迁移工具</h2><p>综合上述内容，你究竟该如何为项目挑选最合适的迁移方案？可以从以下几个维度来缩小选择范围。</p>
+<p>有时，代码语言、开发框架或所用的数据库后端会强烈暗示你该用哪款迁移工具。例如，许多 Web 框架自带迁移工具来管理底层数据库的 schema，虽然通常不是硬性要求，但它们与框架其他工具链集成良好，能减少把数据库变更当作独立流程的摩擦。</p>
+<p>另一个考量是工具的成熟度与支持力度。如前所述，不同工具生成的迁移文件往往互不兼容，尽管它们可能都能以纯 SQL 直接执行。选一个稳定、持续维护的工具，可避免中途因工具弃用而被迫更换迁移流程的尴尬。</p>
+<p>迁移产物的格式也值得留意。如果生成的是排版清晰、结构良好的 SQL 文件，你基本能看懂并验证其效果；若迁移脚本用项目本身的编程语言编写，也更容易理解，无需频繁切换上下文。尽量避免那些产出难以阅读或手工修改的迁移文件。</p>
+<p>此外，迁移工具提供的附加功能也会影响决策。有些工具与其他生态深度集成，或支持把基于变更的迁移文件“压缩”成一份 checkpoint 状态文件；它们在排查失败、回滚变更等方面的能力也各不相同。你的实际需求与开发理念，将决定哪些功能才是刚需。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本文中，我们探讨了数据库模式迁移的概念，并讨论了用于管理数据结构变更的一些策略。我们谈到了迁移为何有用、不同类别的迁移工具以及每种方法所带来的好处。最后，我们介绍了如何实际将迁移纳入开发工作流，以及如何找到最符合自身风格与需求的工具。</p>
+<p>总体而言，尽管模式迁移工具并非必需，但它们所提供的组织性、功能性与可控性，使其成为开发中最常用的数据库工具之一。能够规划并执行数据库结构的变更，并将这些修改与代码一同记录，具有极高的价值。虽然不同迁移工具在功能或分析差异与应用变更的策略上可能各异，但它们所扮演的角色，仍是实现可靠且可预测开发的重要组成部分。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/kubernetes-disk-pressure/" rel="prev" title="Kubernetes Disk Pressure：产生原因 &amp; 如何处理">
+                  <i class="fa fa-angle-left"></i> Kubernetes Disk Pressure：产生原因 & 如何处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/migrations-strategies/" rel="next" title="部署数据库迁移的策略">
+                  部署数据库迁移的策略 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.veitor.net","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"codeblock":{"theme":{"light":"default","dark":"default"},"prism":{"light":"prism-tomorrow.min","dark":"prism-tomorrow.min"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":true,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SYN Queue和Accept Queue">
+<meta property="og:url" content="http://www.veitor.net/posts/syn-queue-and-accept-queue/index.html">
+<meta property="og:site_name" content="Veitor的技术博客">
+<meta property="og:description" content="一个Queue还是两个QueueIPC&#x2F;IP栈对一个处于LISTEN状态的socket有两种实现backlog queue的方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://kingsamchen.github.io/img/syn-and-accept-queues.png">
+<meta property="article:published_time" content="2020-07-01T03:22:06.000Z">
+<meta property="article:modified_time" content="2025-12-03T08:44:15.994Z">
+<meta property="article:author" content="Veitor">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kingsamchen.github.io/img/syn-and-accept-queues.png">
+
+
+<link rel="canonical" href="http://www.veitor.net/posts/syn-queue-and-accept-queue/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://www.veitor.net/posts/syn-queue-and-accept-queue/","path":"posts/syn-queue-and-accept-queue/","title":"SYN Queue和Accept Queue"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SYN Queue和Accept Queue | Veitor的技术博客</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?c422d42123239fdefb0180ed522d050a"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Veitor的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AAQueue%E8%BF%98%E6%98%AF%E4%B8%A4%E4%B8%AAQueue"><span class="nav-number">1.</span> <span class="nav-text">一个Queue还是两个Queue</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AAQueue"><span class="nav-number">1.1.</span> <span class="nav-text">一个Queue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AASYN-Queue-%E5%92%8C-%E4%B8%80%E4%B8%AAAccept-Queue"><span class="nav-number">1.2.</span> <span class="nav-text">一个SYN Queue 和 一个Accept Queue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BSD"><span class="nav-number">1.3.</span> <span class="nav-text">BSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux"><span class="nav-number">1.4.</span> <span class="nav-text">Linux</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93SYN-Queue%E6%BB%A1%E4%BA%86"><span class="nav-number">2.</span> <span class="nav-text">当SYN Queue满了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93Accept-Queue%E6%BB%A1%E4%BA%86"><span class="nav-number">3.</span> <span class="nav-text">当Accept Queue满了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8D%95%E4%B8%AAQueue%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">使用单个Queue的缺点</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Veitor"
+      src="/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Veitor</p>
+  <div class="site-description" itemprop="description">关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/veitor" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/veitor" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;veitor" rel="noopener me" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Veitor_424" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Veitor_424" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.veitor.net/posts/syn-queue-and-accept-queue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.jpg">
+      <meta itemprop="name" content="Veitor">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Veitor的技术博客">
+      <meta itemprop="description" content="关注互联网技术，对Java、Golang、Kubernetes、AI应用、云原生架构等感兴趣">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SYN Queue和Accept Queue | Veitor的技术博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SYN Queue和Accept Queue
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-01 11:22:06" itemprop="dateCreated datePublished" datetime="2020-07-01T11:22:06+08:00">2020-07-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-12-03 16:44:15" itemprop="dateModified" datetime="2025-12-03T16:44:15+08:00">2025-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="一个Queue还是两个Queue"><a href="#一个Queue还是两个Queue" class="headerlink" title="一个Queue还是两个Queue"></a>一个Queue还是两个Queue</h2><p>IPC&#x2F;IP栈对一个处于<code>LISTEN</code>状态的socket有两种实现backlog queue的方式。</p>
+<span id="more"></span>
+
+<h3 id="一个Queue"><a href="#一个Queue" class="headerlink" title="一个Queue"></a>一个Queue</h3><p>一个Queue能够包含两种状态的Connections：</p>
+<ul>
+<li>SYN RECEIVED</li>
+<li>ESTABLISHED</li>
+</ul>
+<p>只有<code>ESTABLISHED</code>状态的Connection才能被应用通过syscall <code>accept()</code>方法获取到。</p>
+<p>因此，该队列的长度由<code>listen()</code>的参数<code>backlog</code>决定。</p>
+<h3 id="一个SYN-Queue-和-一个Accept-Queue"><a href="#一个SYN-Queue-和-一个Accept-Queue" class="headerlink" title="一个SYN Queue 和 一个Accept Queue"></a>一个SYN Queue 和 一个Accept Queue</h3><p>这种情况下，处于<code>SYN RECEIVED</code>状态的connection将会被添加到SYN queue，然后当连接状态变成<code>ESTABLISHED</code>时再把其移动到<code>Accept queue</code>中。</p>
+<p>因此，<code>Accept queue</code>只存储等待<code>accept()</code>调用的connection。</p>
+<p>不像前一个示例，<code>linsten()</code> syscall的参数<code>backlog</code>此时决定了<code>Accept queue</code>的大小。</p>
+<h3 id="BSD"><a href="#BSD" class="headerlink" title="BSD"></a>BSD</h3><p>BSD选择了一个queue作为了它的实现（尽管事实上它内部使用了两个queue）。</p>
+<p>当queue满时，它会简单的丢弃SYN包，并让客户端重试，而不会向接收到的SYN包发送SYN&#x2F;ACK包。</p>
+<h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>从Linux 2.2起，Linux使用了两个queue：</p>
+<ul>
+<li><code>backlog</code>表示<code>Accept queue</code>的最大长度</li>
+<li><code>/proc/sys/net/ipv4/tcp_max_syn_backlog</code>表示<code>SYN queue</code>的最大长度；新内核使用的是<code>/proc/sys/net/core/somaxconn</code>（也叫<code>net.core.somaxconn</code>）</li>
+</ul>
+<p><img data-src="http://kingsamchen.github.io/img/syn-and-accept-queues.png"></p>
+<p>从客户端的角度来看，一个connection在接收到<code>SYN/ACK</code>包后，其状态就成为了<code>ESTABLISHED</code>。</p>
+<h2 id="当SYN-Queue满了"><a href="#当SYN-Queue满了" class="headerlink" title="当SYN Queue满了"></a>当SYN Queue满了</h2><p>当接收到一个SYN包但SYN Queue满时：</p>
+<ul>
+<li>若设置 <code>net.ipv4.tcp_syncookies = 0</code> ，则直接丢弃当前 SYN 包；</li>
+<li>若设置 <code>net.ipv4.tcp_syncookies = 1</code> ，则令 <code>want_cookie = 1</code> 继续后面的处理；<ul>
+<li>若 <code>Accept queue</code> 已满，并且 <code>qlen_young</code> 的值大于 1 ，则直接丢弃当前 SYN 包。<code>req_young_len</code>是<code>SYN Queue</code>中还没有重新发送的<code>SYN/ACK</code>包的连接数。</li>
+<li>若 <code>Accept queue</code> 未满，或者 <code>qlen_young</code> 的值未大于 1 ，则输出 “possible SYN flooding on port %d. Sending cookies.\n”，生成 syncookie 并在 SYN,ACK 中带上。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>以下源码摘自linux-2.6.32版本</p>
+</blockquote>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
+&#123;
+    ...
+#ifdef CONFIG_SYN_COOKIES
+	int want_cookie &#x3D; 0;
+#else
+#define want_cookie 0 &#x2F;* Argh, why doesn&#39;t gcc optimize this :( *&#x2F;
+#endif
+    ...
+	&#x2F;* TW buckets are converted to open requests without
+	 * limitations, they conserve resources and peer is
+	 * evidently real one.
+	 *&#x2F;
+	&#x2F;&#x2F; 判定 SYN queue 是否已满
+	if (inet_csk_reqsk_queue_is_full(sk) &amp;&amp; !isn) &#123;
+#ifdef CONFIG_SYN_COOKIES
+		if (sysctl_tcp_syncookies) &#123;  &#x2F;&#x2F; SYN queue 已满，并且设置了 net.ipv4.tcp_syncookies &#x3D; 1 ，则设置 want_cookie &#x3D; 1 以便后续处理
+			want_cookie &#x3D; 1;
+		&#125; else
+#endif
+		goto drop;    &#x2F;&#x2F; 否则，直接丢弃当前 SYN 包
+	&#125;
+
+	&#x2F;* Accept backlog is full. If we have already queued enough
+	 * of warm entries in syn queue, drop request. It is better than
+	 * clogging syn queue with openreqs with exponentially increasing
+	 * timeout.
+	 *&#x2F;
+	&#x2F;&#x2F; 若此时 accept queue 也已满，并且 qlen_young 的值大于 1（即保存在 SYN queue 中未进行 SYN,ACK 重传的连接超过 1 个）
+	&#x2F;&#x2F; 则直接丢弃当前 SYN 包（相当于针对 SYN 进行了速率限制）
+	if (sk_acceptq_is_full(sk) &amp;&amp; inet_csk_reqsk_queue_young(sk) &gt; 1)
+		goto drop;
+...
+	&#x2F;&#x2F; 若 accept queue 未满，或者 qlen_young 的值未大于 1
+	if (want_cookie) &#123;
+#ifdef CONFIG_SYN_COOKIES
+		syn_flood_warning(skb);  &#x2F;&#x2F; 输出 &quot;possible SYN flooding on port %d. Sending cookies.\n&quot;
+		req-&gt;cookie_ts &#x3D; tmp_opt.tstamp_ok;  &#x2F;&#x2F; 为当前 socket 设置启用 cookie 标识
+#endif
+		&#x2F;&#x2F; 生成 syncookie
+		isn &#x3D; cookie_v4_init_sequence(sk, skb, &amp;req-&gt;mss);
+	&#125; else if (!isn) &#123;
+	    ...
+	&#125;
+	&#x2F;&#x2F; 保存 syncookie 值
+	tcp_rsk(req)-&gt;snt_isn &#x3D; isn;
+
+	&#x2F;&#x2F; 回复 SYN,ACK ，若之前设置了 net.ipv4.tcp_syncookies &#x3D; 1 则会释放对应的 socket 结构
+	if (__tcp_v4_send_synack(sk, req, dst) || want_cookie)
+		goto drop_and_free;
+		
+	&#x2F;&#x2F; 启动 SYN,ACK 重传定时器
+	inet_csk_reqsk_queue_hash_add(sk, req, TCP_TIMEOUT_INIT);
+	return 0;
+
+drop_and_release:
+	dst_release(dst);
+drop_and_free:
+	reqsk_free(req);
+drop:
+	return 0;
+&#125;</code></pre>
+<h2 id="当Accept-Queue满了"><a href="#当Accept-Queue满了" class="headerlink" title="当Accept Queue满了"></a>当Accept Queue满了</h2><p>当接收到一个ACK包但<code>Accept queue</code>满了时：</p>
+<ul>
+<li>若设置 <code>tcp_abort_on_overflow = 1</code> ，则 TCP 协议栈回复 RST 包，并直接从 SYN queue 中删除该连接信息，表示废弃这个握手过程和这个连接；</li>
+<li>若设置 <code>tcp_abort_on_overflow = 0</code> ，则 TCP 协议栈将该连接标记为 <code>acked</code> ，但仍保留在 SYN queue 中，并启动 timer 以便重发 SYN,ACK 包；当 SYN,ACK 的重传次数超过 <code>net.ipv4.tcp_synack_retries</code> 设置的值时，再将该连接从 SYN queue 中删除；</li>
+</ul>
+<blockquote>
+<p>通常把tcp_abort_on_overflow设置为0可以利于应对突发流量，当 TCP 全连接队列满导致服务器丢掉了 ACK，与此同时，客户端的连接状态却是 ESTABLISHED，进程就在建立好的连接上发送请求。只要服务器没有为请求回复 ACK，请求就会被多次重发。如果服务器上的进程只是短暂的繁忙造成 accept 队列满，那么当 TCP 全连接队列有空位时，再次接收到的请求报文由于含有 ACK，仍然会触发服务器端成功建立连接。</p>
+</blockquote>
+<blockquote>
+<p><code>tcp_abort_on_overflow</code> 参数位置位于<code>/proc/sys/net/ipv4/tcp_abort_on_overflow</code></p>
+</blockquote>
+<p>但是，如果<code>Accept queue</code>满时，内核也会对SYN包接收速率强加一个限制：如果太多的SYN包被接受，其中将有一些会被抛弃。</p>
+<p>此时，由客户端决定是否重发SYN包。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">&#x2F;*
+ *	Process an incoming packet for SYN_RECV sockets represented
+ *	as a request_sock.
+ *&#x2F;
+struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+        struct request_sock *req,
+        struct request_sock **prev)
+&#123;
+    ...
+	&#x2F;* OK, ACK is valid, create big socket and
+	 * feed this segment to it. It will repeat all
+	 * the tests. THIS SEGMENT MUST MOVE SOCKET TO
+	 * ESTABLISHED STATE. If it will be dropped after
+	 * socket is created, wait for troubles.
+	 *&#x2F;
+	&#x2F;&#x2F; 调用 net&#x2F;ipv4&#x2F;tcp_ipv4.c 中的 tcp_v4_syn_recv_sock 函数
+	&#x2F;&#x2F; 判定 accept queue 是否已经满，若已满，则返回的 child 为 NULL
+	child &#x3D; inet_csk(sk)-&gt;icsk_af_ops-&gt;syn_recv_sock(sk, skb, req, NULL);
+	if (child &#x3D;&#x3D; NULL)
+		goto listen_overflow;
+
+	&#x2F;&#x2F; 在 accept queue 未满的情况下，将 ESTABLISHED 连接从 SYN queue 搬移到 accept queue 中
+	inet_csk_reqsk_queue_unlink(sk, req, prev);
+	inet_csk_reqsk_queue_removed(sk, req);
+
+	inet_csk_reqsk_queue_add(sk, req, child);
+	return child;
+
+listen_overflow:
+	&#x2F;&#x2F; 若 accept queue 已满，但设置的是 net.ipv4.tcp_abort_on_overflow &#x3D; 0
+	if (!sysctl_tcp_abort_on_overflow) &#123;
+		inet_rsk(req)-&gt;acked &#x3D; 1;    &#x2F;&#x2F; 则只标记为 acked ，直接返回，相当于忽略当前 ACK
+		return NULL;
+	&#125;
+
+embryonic_reset:
+	&#x2F;&#x2F; 若 accept queue 已满，但设置的是 net.ipv4.tcp_abort_on_overflow &#x3D; 1
+	NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_EMBRYONICRSTS);   &#x2F;&#x2F; 变更统计信息
+	if (!(flg &amp; TCP_FLAG_RST))
+		req-&gt;rsk_ops-&gt;send_reset(sk, skb);   &#x2F;&#x2F; 发送 RST
+
+	inet_csk_reqsk_queue_drop(sk, req, prev);    &#x2F;&#x2F; 直接从 SYN queue 中删除该连接信息
+    return NULL;
+&#125;</code></pre>
+
+<h2 id="使用单个Queue的缺点"><a href="#使用单个Queue的缺点" class="headerlink" title="使用单个Queue的缺点"></a>使用单个Queue的缺点</h2><p>导致单个queue满的两个主要因素：</p>
+<ol>
+<li>应用调用<code>accept()</code>不够快，使得建立<code>ESTABLISHED</code>的connection塞满了queue。</li>
+<li>服务端与客户端之间的RTT(round-trip time，往返延时)比较大，处于<code>SYN RECEIVED</code>状态的connection塞满了queue。</li>
+</ol>
+<p>而使用了两个queue，则SYN queue可以看出要传输的ACK包，Accept queue可以看出应用需要处理的连接数。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/php-logging-guide/" rel="prev" title="PHP日志处理指南">
+                  <i class="fa fa-angle-left"></i> PHP日志处理指南
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/account-linking-and-account-mapping-in-IDaaS/" rel="next" title="IDaaS中的帐户映射和帐户关联概念">
+                  IDaaS中的帐户映射和帐户关联概念 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">苏ICP备14016154号-1 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2019 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Veitor</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<!-- Giscus comment script with dynamic container insertion -->
+<script>
+  // 创建一个函数，用于动态插入giscus容器并加载脚本
+  function loadGiscus() {
+    // 查找.post元素
+    const mainInner = document.querySelector('.post');
+    
+    if (mainInner) {
+      // 创建.giscus容器元素
+      const giscusContainer = document.createElement('div');
+      giscusContainer.className = 'giscus';
+      
+      // 将容器插入到.post的最尾部
+      mainInner.appendChild(giscusContainer);
+      
+      // 创建giscus脚本元素
+      const giscusScript = document.createElement('script');
+      giscusScript.src = 'https://giscus.app/client.js';
+      giscusScript.setAttribute('data-repo', 'Veitor/veitor.github.io');
+      giscusScript.setAttribute('data-repo-id', 'MDEwOlJlcG9zaXRvcnkyMjQxOTk3OTU=');
+      giscusScript.setAttribute('data-category', 'Article Discussions');
+      giscusScript.setAttribute('data-category-id', 'DIC_kwDODV0Ec84CpCCm');
+      giscusScript.setAttribute('data-mapping', 'title');
+      giscusScript.setAttribute('data-strict', '1');
+      giscusScript.setAttribute('data-reactions-enabled', '1');
+      giscusScript.setAttribute('data-emit-metadata', '0');
+      giscusScript.setAttribute('data-input-position', 'top');
+      giscusScript.setAttribute('data-theme', 'preferred_color_scheme');
+      giscusScript.setAttribute('data-lang', 'zh-CN');
+      giscusScript.setAttribute('data-loading', 'lazy');
+      giscusScript.setAttribute('crossorigin', 'anonymous');
+      
+      // 将脚本添加到页面
+      document.body.appendChild(giscusScript);
+    } else {
+      // 如果.post元素不存在，在页面加载完成后再次尝试
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGiscus);
+      } else {
+        // 使用setTimeout延迟重试
+        setTimeout(loadGiscus, 100);
+      }
+    }
+  }
+  
+  // 在DOM内容加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    // 如果DOM已经加载完成，直接执行
+    loadGiscus();
+  }
+</script>
+</body>
+</html>
